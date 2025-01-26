@@ -72,7 +72,7 @@ ingress:
         - path: /
           pathType: Prefix
   tls:
-    - secretName: leeszi-tls
+    - secretName: sla2-leeszi-tls
       hosts:
         - sla2.leeszi.cn
 
