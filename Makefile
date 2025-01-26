@@ -81,4 +81,30 @@ help:
 	@echo "  make logs          - 查看服务日志"
 	@echo "  make clean         - 清理构建产物"
 	@echo "  make release       - 构建并推送镜像"
-	@echo "  make deploy        - 更新线上服务" 
+	@echo "  make deploy        - 更新线上服务"
+	@echo "  make helm-install  - 安装 Helm 应用"
+	@echo "  make helm-uninstall - 卸载 Helm 应用"
+	@echo "  make helm-template - 生成 Helm 模板"
+	@echo "  make helm-lint     - 验证 Helm 模板"
+
+# Helm 相关命令
+.PHONY: helm-install
+helm-install:
+	helm upgrade --install $(IMAGE_NAME) ./chart \
+		--set image.repository=$(DOCKER_REGISTRY)/$(IMAGE_NAME) \
+		--set image.tag=$(IMAGE_TAG) \
+		-n default
+
+.PHONY: helm-uninstall
+helm-uninstall:
+	helm uninstall $(IMAGE_NAME) -n default
+
+.PHONY: helm-template
+helm-template:
+	helm template $(IMAGE_NAME) ./chart \
+		--set image.repository=$(DOCKER_REGISTRY)/$(IMAGE_NAME) \
+		--set image.tag=$(IMAGE_TAG)
+
+.PHONY: helm-lint
+helm-lint:
+	helm lint ./chart 

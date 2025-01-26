@@ -28,7 +28,7 @@ import (
 // @contact.name   LazyJean
 // @contact.email  lazyjean@example.com
 
-// @host      localhost:9000
+// @host      sla2.leeszi.cn
 // @BasePath  /api
 
 // @securityDefinitions.apikey  Bearer
