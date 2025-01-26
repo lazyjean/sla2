@@ -171,9 +171,8 @@ func (h *WordHandler) UpdateWord(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        id   path      uint    true  "单词ID"
-// @Success      204  {object}  nil
+// @Success      200  {object}  Response
 // @Failure      400  {object}  Response
-// @Failure      404  {object}  Response
 // @Failure      500  {object}  Response
 // @Router       /words/{id} [delete]
 func (h *WordHandler) DeleteWord(c *gin.Context) {
@@ -183,17 +182,20 @@ func (h *WordHandler) DeleteWord(c *gin.Context) {
 		return
 	}
 
-	if err := h.wordService.DeleteWord(c.Request.Context(), uint(id)); err != nil {
-		if err == errors.ErrWordNotFound {
-			c.JSON(http.StatusNotFound, NewErrorResponse(404, err.Error()))
-			return
+	err = h.wordService.DeleteWord(c.Request.Context(), uint(id))
+	if err != nil {
+		switch err {
+		case errors.ErrWordNotFound:
+			// 返回 200 但在响应中包含错误信息
+			c.JSON(http.StatusOK, NewErrorResponse(404, err.Error()))
+		default:
+			logger.Log.Error("Failed to delete word", zap.Error(err), zap.Uint64("id", id))
+			c.JSON(http.StatusInternalServerError, NewErrorResponse(500, err.Error()))
 		}
-		logger.Log.Error("Failed to delete word", zap.Error(err), zap.Uint64("id", id))
-		c.JSON(http.StatusInternalServerError, NewErrorResponse(500, err.Error()))
 		return
 	}
 
-	c.Status(http.StatusNoContent)
+	c.JSON(http.StatusOK, NewResponse(0, "success", nil))
 }
 
 // SearchWords 搜索单词

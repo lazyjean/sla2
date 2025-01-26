@@ -64,13 +64,7 @@ func NewDB(cfg *config.DatabaseConfig) (*gorm.DB, error) {
 
 // autoMigrate 自动迁移数据库结构
 func autoMigrate(db *gorm.DB) error {
-	// 删除现有表
-	db.Exec("DROP TABLE IF EXISTS word_tags CASCADE")
-	db.Exec("DROP TABLE IF EXISTS tags CASCADE")
-	db.Exec("DROP TABLE IF EXISTS examples CASCADE")
-	db.Exec("DROP TABLE IF EXISTS words CASCADE")
-
-	// 创建表
+	// 只进行表结构迁移，不删除数据
 	err := db.AutoMigrate(
 		&entity.Word{},
 		&entity.Example{},

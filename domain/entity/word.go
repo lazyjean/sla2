@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/lazyjean/sla2/domain/errors"
-	"gorm.io/gorm"
 )
 
 // Word 单词实体
@@ -27,8 +26,6 @@ type Word struct {
 	CreatedAt time.Time
 	// UpdatedAt 更新时间
 	UpdatedAt time.Time
-	// DeletedAt 删除时间（软删除）
-	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
 // Example 例句实体

@@ -182,14 +182,44 @@ func (r *WordRepository) SearchWords(ctx context.Context, query *WordQuery) ([]*
 
 // Delete 实现删除方法
 func (r *WordRepository) Delete(ctx context.Context, id uint) error {
-	result := r.db.WithContext(ctx).Delete(&entity.Word{}, "id = ?", id)
-	if result.Error != nil {
+	tx := r.db.WithContext(ctx).Begin()
+	if tx.Error != nil {
 		return domainErrors.ErrFailedToDelete
 	}
-	if result.RowsAffected == 0 {
+
+	// 先检查记录是否存在
+	exists, err := r.exists(ctx, id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	if !exists {
+		tx.Rollback()
 		return domainErrors.ErrWordNotFound
 	}
-	return nil
+
+	// 删除关联的例句和标签关系（由于设置了 ON DELETE CASCADE，这步可以省略）
+	// 执行真实删除
+	if err := tx.Unscoped().Delete(&entity.Word{}, id).Error; err != nil {
+		tx.Rollback()
+		return domainErrors.ErrFailedToDelete
+	}
+
+	return tx.Commit().Error
+}
+
+func (r *WordRepository) exists(ctx context.Context, id uint) (bool, error) {
+	var exists bool
+	err := r.db.WithContext(ctx).
+		Model(&entity.Word{}).
+		Select("1").
+		Where("id = ?", id).
+		Scan(&exists).Error
+
+	if err != nil {
+		return false, domainErrors.ErrFailedToQuery
+	}
+	return exists, nil
 }
 
 // Update 实现更新方法
@@ -203,7 +233,7 @@ func (r *WordRepository) Update(ctx context.Context, word *entity.Word) error {
 	var exists bool
 	err := tx.Model(&entity.Word{}).
 		Select("1").
-		Where("id = ? AND deleted_at IS NULL", word.ID).
+		Where("id = ?", word.ID).
 		Scan(&exists).Error
 	if err != nil {
 		tx.Rollback()
@@ -215,15 +245,15 @@ func (r *WordRepository) Update(ctx context.Context, word *entity.Word) error {
 	}
 
 	// 更新主记录
-	result := tx.Model(&entity.Word{}).Where("id = ?", word.ID).Updates(map[string]interface{}{
-		"text":        word.Text,
-		"phonetic":    word.Phonetic,
-		"translation": word.Translation,
-		"difficulty":  word.Difficulty,
-		"updated_at":  time.Now(),
-	})
-
-	if result.Error != nil {
+	if err := tx.Model(&entity.Word{}).
+		Where("id = ?", word.ID).
+		Updates(map[string]interface{}{
+			"text":        word.Text,
+			"phonetic":    word.Phonetic,
+			"translation": word.Translation,
+			"difficulty":  word.Difficulty,
+			"updated_at":  time.Now(),
+		}).Error; err != nil {
 		tx.Rollback()
 		return domainErrors.ErrFailedToUpdate
 	}
@@ -247,36 +277,39 @@ func (r *WordRepository) Update(ctx context.Context, word *entity.Word) error {
 	}
 
 	// 更新标签关联
-	if err := tx.Exec("DELETE FROM word_tags WHERE word_id = ?", word.ID).Error; err != nil {
+	if err := tx.Where("word_id = ?", word.ID).Delete(&entity.WordTag{}).Error; err != nil {
 		tx.Rollback()
 		return domainErrors.ErrFailedToUpdate
 	}
 
-	// 添加新的标签关联
-	if len(word.Tags) > 0 {
-		for _, tag := range word.Tags {
-			// 尝试查找或创建标签
-			var existingTag entity.Tag
-			err := tx.Where("name = ?", tag.Name).FirstOrCreate(&existingTag, &entity.Tag{
-				Name:      tag.Name,
-				CreatedAt: time.Now(),
-			}).Error
-			if err != nil {
+	// 处理标签
+	for _, tag := range word.Tags {
+		var existingTag entity.Tag
+		err := tx.Where("name = ?", tag.Name).First(&existingTag).Error
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				// 标签不存在，创建新标签
+				existingTag = entity.Tag{
+					Name:      tag.Name,
+					CreatedAt: time.Now(),
+				}
+				if err := tx.Create(&existingTag).Error; err != nil {
+					tx.Rollback()
+					return domainErrors.ErrFailedToUpdate
+				}
+			} else {
 				tx.Rollback()
 				return domainErrors.ErrFailedToUpdate
 			}
+		}
 
-			// 关联标签和单词
-			err = tx.Exec(`
-				INSERT INTO word_tags (word_id, tag_id)
-				VALUES (?, ?)
-				ON CONFLICT DO NOTHING`,
-				word.ID, existingTag.ID,
-			).Error
-			if err != nil {
-				tx.Rollback()
-				return domainErrors.ErrFailedToUpdate
-			}
+		// 创建标签关联
+		if err := tx.Create(&entity.WordTag{
+			WordID: word.ID,
+			TagID:  existingTag.ID,
+		}).Error; err != nil {
+			tx.Rollback()
+			return domainErrors.ErrFailedToUpdate
 		}
 	}
 
