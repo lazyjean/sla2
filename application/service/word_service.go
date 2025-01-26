@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"strconv"
 
 	"github.com/lazyjean/sla2/application/dto"
 	"github.com/lazyjean/sla2/domain/repository"
@@ -29,14 +28,8 @@ func (s *WordService) CreateWord(ctx context.Context, createDTO *dto.WordCreateD
 	return dto.WordResponseDTOFromEntity(word), nil
 }
 
-func (s *WordService) GetWord(ctx context.Context, id string) (*dto.WordResponseDTO, error) {
-	// 将字符串 ID 转换为 uint
-	idNum, err := strconv.ParseUint(id, 10, 32)
-	if err != nil {
-		return nil, err
-	}
-
-	word, err := s.wordRepo.FindByID(ctx, uint(idNum))
+func (s *WordService) GetWord(ctx context.Context, id uint) (*dto.WordResponseDTO, error) {
+	word, err := s.wordRepo.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -65,6 +58,21 @@ func (s *WordService) DeleteWord(ctx context.Context, id uint) error {
 func (s *WordService) ListWords(ctx context.Context, page, pageSize int) ([]*dto.WordResponseDTO, int64, error) {
 	offset := (page - 1) * pageSize
 	words, total, err := s.wordRepo.List(ctx, offset, pageSize)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// 转换为 DTO
+	dtos := make([]*dto.WordResponseDTO, len(words))
+	for i, word := range words {
+		dtos[i] = dto.WordResponseDTOFromEntity(word)
+	}
+
+	return dtos, total, nil
+}
+
+func (s *WordService) SearchWords(ctx context.Context, query *repository.WordQuery) ([]*dto.WordResponseDTO, int64, error) {
+	words, total, err := s.wordRepo.Search(ctx, query)
 	if err != nil {
 		return nil, 0, err
 	}

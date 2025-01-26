@@ -2,6 +2,7 @@ package logger
 
 import (
 	"os"
+	"time"
 
 	"github.com/lazyjean/sla2/config"
 	"go.uber.org/zap"
@@ -50,4 +51,19 @@ func getLogLevel(level string) zapcore.Level {
 	default:
 		return zapcore.InfoLevel
 	}
+}
+
+func LogRequest(method, path string, latency time.Duration, status int) {
+	Log.Info("HTTP Request",
+		zap.String("method", method),
+		zap.String("path", path),
+		zap.Duration("latency", latency),
+		zap.Int("status", status),
+	)
+}
+
+func LogError(err error, msg string, fields ...zap.Field) {
+	Log.Error(msg,
+		append(fields, zap.Error(err))...,
+	)
 }

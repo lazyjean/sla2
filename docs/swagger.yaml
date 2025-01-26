@@ -1,0 +1,294 @@
+basePath: /api
+definitions:
+  dto.WordCreateDTO:
+    properties:
+      examples:
+        example:
+        - Hello
+        - ' world!'
+        items:
+          type: string
+        type: array
+      phonetic:
+        example: həˈləʊ
+        type: string
+      tags:
+        example:
+        - common
+        - greeting
+        items:
+          type: string
+        type: array
+      text:
+        example: hello
+        type: string
+      translation:
+        example: 你好
+        type: string
+    required:
+    - text
+    - translation
+    type: object
+  dto.WordResponseDTO:
+    properties:
+      created_at:
+        example: "2025-01-26 18:00:00"
+        type: string
+      examples:
+        example:
+        - Hello
+        - ' world!'
+        items:
+          type: string
+        type: array
+      id:
+        example: 1
+        type: integer
+      phonetic:
+        example: həˈləʊ
+        type: string
+      tags:
+        example:
+        - common
+        - greeting
+        items:
+          type: string
+        type: array
+      text:
+        example: hello
+        type: string
+      translation:
+        example: 你好
+        type: string
+      updated_at:
+        example: "2025-01-26 18:00:00"
+        type: string
+    type: object
+  handler.ListResponse:
+    properties:
+      items:
+        description: 列表数据
+      page:
+        description: 当前页码
+        type: integer
+      page_size:
+        description: 每页数量
+        type: integer
+      total:
+        description: 总记录数
+        type: integer
+    type: object
+  handler.Response:
+    properties:
+      code:
+        description: 业务状态码
+        type: integer
+      data:
+        description: 响应数据
+      message:
+        description: 响应消息
+        type: string
+    type: object
+host: localhost:9000
+info:
+  contact:
+    email: lazyjean@example.com
+    name: LazyJean
+  description: 生词本服务 API 文档
+  title: 生词本 API
+  version: "1.0"
+paths:
+  /words:
+    get:
+      consumes:
+      - application/json
+      description: 分页获取单词列表
+      parameters:
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: 每页数量
+        in: query
+        name: perPage
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/handler.ListResponse'
+                  - properties:
+                      items:
+                        items:
+                          $ref: '#/definitions/dto.WordResponseDTO'
+                        type: array
+                    type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.Response'
+      summary: 获取单词列表
+      tags:
+      - words
+    post:
+      consumes:
+      - application/json
+      description: 创建一个新的单词记录
+      parameters:
+      - description: 单词信息
+        in: body
+        name: word
+        required: true
+        schema:
+          $ref: '#/definitions/dto.WordCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.WordResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.Response'
+      summary: 创建新单词
+      tags:
+      - words
+  /words/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除指定ID的单词
+      parameters:
+      - description: 单词ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.Response'
+      summary: 删除单词
+      tags:
+      - words
+    get:
+      consumes:
+      - application/json
+      description: 通过ID获取单词的详细信息
+      parameters:
+      - description: 单词ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.WordResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.Response'
+      summary: 获取单词详情
+      tags:
+      - words
+    put:
+      consumes:
+      - application/json
+      description: 更新指定ID的单词信息
+      parameters:
+      - description: 单词ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 单词信息
+        in: body
+        name: word
+        required: true
+        schema:
+          $ref: '#/definitions/dto.WordCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.WordResponseDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.Response'
+      summary: 更新单词信息
+      tags:
+      - words
+securityDefinitions:
+  Bearer:
+    description: Bearer token for authentication
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

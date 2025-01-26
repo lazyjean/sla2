@@ -8,6 +8,7 @@ import (
 	"github.com/lazyjean/sla2/application/dto"
 	"github.com/lazyjean/sla2/application/service"
 	"github.com/lazyjean/sla2/domain/errors"
+	"github.com/lazyjean/sla2/domain/repository"
 	"github.com/lazyjean/sla2/pkg/logger"
 	"go.uber.org/zap"
 )
@@ -64,19 +65,19 @@ func (h *WordHandler) CreateWord(c *gin.Context) {
 // @Failure      500  {object}  Response
 // @Router       /words/{id} [get]
 func (h *WordHandler) GetWord(c *gin.Context) {
-	id := c.Param("id")
-	if id == "" {
-		c.JSON(http.StatusBadRequest, NewErrorResponse(400, "id is required"))
+	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, NewErrorResponse(400, "invalid id format"))
 		return
 	}
 
-	resp, err := h.wordService.GetWord(c.Request.Context(), id)
+	resp, err := h.wordService.GetWord(c.Request.Context(), uint(id))
 	if err != nil {
 		if err == errors.ErrWordNotFound {
 			c.JSON(http.StatusNotFound, NewErrorResponse(404, err.Error()))
 			return
 		}
-		logger.Log.Error("Failed to get word", zap.Error(err), zap.String("id", id))
+		logger.Log.Error("Failed to get word", zap.Error(err), zap.Uint64("id", id))
 		c.JSON(http.StatusInternalServerError, NewErrorResponse(500, err.Error()))
 		return
 	}
@@ -96,8 +97,17 @@ func (h *WordHandler) GetWord(c *gin.Context) {
 // @Failure      500      {object}  Response
 // @Router       /words [get]
 func (h *WordHandler) ListWords(c *gin.Context) {
-	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
-	pageSize, _ := strconv.Atoi(c.DefaultQuery("page_size", "10"))
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if err != nil || page < 1 {
+		c.JSON(http.StatusBadRequest, NewErrorResponse(400, "invalid page number"))
+		return
+	}
+
+	pageSize, err := strconv.Atoi(c.DefaultQuery("page_size", "10"))
+	if err != nil || pageSize < 1 || pageSize > 100 {
+		c.JSON(http.StatusBadRequest, NewErrorResponse(400, "invalid page size"))
+		return
+	}
 
 	words, total, err := h.wordService.ListWords(c.Request.Context(), page, pageSize)
 	if err != nil {
@@ -184,4 +194,49 @@ func (h *WordHandler) DeleteWord(c *gin.Context) {
 	}
 
 	c.Status(http.StatusNoContent)
+}
+
+// SearchWords 搜索单词
+// @Summary      搜索单词
+// @Description  根据条件搜索单词
+// @Tags         words
+// @Accept       json
+// @Produce      json
+// @Param        text           query    string  false  "单词文本"
+// @Param        tags           query    []string  false  "标签列表"
+// @Param        minDifficulty  query    int     false  "最小难度"
+// @Param        maxDifficulty  query    int     false  "最大难度"
+// @Param        page           query    int     false  "页码"  default(1)
+// @Param        pageSize       query    int     false  "每页数量"  default(10)
+// @Success      200            {object}  Response{data=ListResponse{items=[]dto.WordResponseDTO}}
+// @Failure      400            {object}  Response
+// @Failure      500            {object}  Response
+// @Router       /words/search [get]
+func (h *WordHandler) SearchWords(c *gin.Context) {
+	// 解析查询参数
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("page_size", "10"))
+	minDifficulty, _ := strconv.Atoi(c.Query("min_difficulty"))
+	maxDifficulty, _ := strconv.Atoi(c.Query("max_difficulty"))
+
+	query := &repository.WordQuery{
+		Text:          c.Query("text"),
+		Tags:          c.QueryArray("tags"),
+		MinDifficulty: minDifficulty,
+		MaxDifficulty: maxDifficulty,
+		Offset:        (page - 1) * pageSize,
+		Limit:         pageSize,
+	}
+
+	words, total, err := h.wordService.SearchWords(c.Request.Context(), query)
+	if err != nil {
+		logger.Log.Error("Failed to search words",
+			zap.Error(err),
+			zap.Any("query", query),
+		)
+		c.JSON(http.StatusInternalServerError, NewErrorResponse(500, err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, NewListResponse(words, page, pageSize, total))
 }

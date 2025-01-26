@@ -80,11 +80,11 @@ func main() {
 	// 创建路由
 	r := gin.Default()
 
-	// 注册路由
-	routes.RegisterWordRoutes(r, wordHandler)
-
-	// 添加 Swagger 文档路由
+	// 注册 Swagger 路由
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	// 注册业务路由
+	routes.RegisterWordRoutes(r, wordHandler)
 
 	// 创建服务器
 	srv := &http.Server{

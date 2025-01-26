@@ -53,6 +53,13 @@ type Tag struct {
 	CreatedAt time.Time
 }
 
+type WordTag struct {
+	// WordID 关联的单词ID
+	WordID uint `gorm:"not null"`
+	// TagID 关联的标签ID
+	TagID uint `gorm:"not null"`
+}
+
 // NewWord 创建新单词
 func NewWord(text string, translation string) (*Word, error) {
 	if text == "" {

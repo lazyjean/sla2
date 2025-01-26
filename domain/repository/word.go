@@ -14,4 +14,14 @@ type WordRepository interface {
 	List(ctx context.Context, offset, limit int) ([]*entity.Word, int64, error)
 	Update(ctx context.Context, word *entity.Word) error
 	Delete(ctx context.Context, id uint) error
+	Search(ctx context.Context, query *WordQuery) ([]*entity.Word, int64, error)
+}
+
+type WordQuery struct {
+	Text          string
+	Tags          []string
+	MinDifficulty int
+	MaxDifficulty int
+	Offset        int
+	Limit         int
 }
