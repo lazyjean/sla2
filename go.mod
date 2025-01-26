@@ -1,17 +1,25 @@
 module github.com/lazyjean/sla2
 
-go 1.23.5
+go 1.21.0
+
+toolchain go1.23.5
 
 require (
-	github.com/gin-gonic/gin v1.10.0
-	github.com/redis/go-redis/v9 v9.7.0
+	github.com/gin-gonic/gin v1.9.1
+	github.com/redis/go-redis/v9 v9.3.0
 	github.com/stretchr/testify v1.10.0
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0
-	github.com/swaggo/swag v1.16.4
-	go.uber.org/zap v1.27.0
-	gorm.io/driver/postgres v1.5.11
-	gorm.io/gorm v1.25.12
+	github.com/swaggo/swag v1.16.2
+	go.uber.org/zap v1.26.0
+	gorm.io/driver/postgres v1.5.4
+	gorm.io/gorm v1.25.5
+)
+
+// 强制使用较低版本的间接依赖
+replace (
+	github.com/rogpeppe/go-internal => github.com/rogpeppe/go-internal v1.11.0
+	golang.org/x/tools => golang.org/x/tools v0.15.0
 )
 
 require (
@@ -48,7 +56,6 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.3 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/rogpeppe/go-internal v1.13.1 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
