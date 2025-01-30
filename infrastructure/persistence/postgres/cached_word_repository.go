@@ -7,10 +7,9 @@ import (
 	"time"
 
 	"github.com/lazyjean/sla2/domain/entity"
+	domainErrors "github.com/lazyjean/sla2/domain/errors"
 	"github.com/lazyjean/sla2/domain/repository"
 	"github.com/lazyjean/sla2/infrastructure/cache"
-	"github.com/lazyjean/sla2/pkg/logger"
-	"go.uber.org/zap"
 )
 
 type CachedWordRepository struct {
@@ -90,39 +89,43 @@ func (r *CachedWordRepository) FindByID(ctx context.Context, id uint) (*entity.W
 }
 
 func (r *CachedWordRepository) FindByText(ctx context.Context, text string) (*entity.Word, error) {
-	// 这个方法不使用缓存，因为是按文本搜索
-	return r.repo.FindByText(ctx, text)
+	query := &repository.WordQuery{
+		Text:   text,
+		Limit:  1,
+		Offset: 0,
+	}
+	words, _, err := r.Search(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	if len(words) == 0 {
+		return nil, domainErrors.ErrWordNotFound
+	}
+	return words[0], nil
 }
 
-func (r *CachedWordRepository) List(ctx context.Context, offset, limit int) ([]*entity.Word, int64, error) {
-	// 缓存键
-	cacheKey := fmt.Sprintf("words:list:%d:%d", offset, limit)
-
-	// 尝试从缓存获取
+func (r *CachedWordRepository) List(ctx context.Context, userID uint, offset, limit int) ([]*entity.Word, int64, error) {
+	// 从缓存获取
+	cacheKey := fmt.Sprintf("words:list:%d:%d:%d", userID, offset, limit)
 	var words []*entity.Word
 	var total int64
 
+	// 尝试从缓存获取
+	if cachedData, err := r.cache.Get(ctx, cacheKey); err == nil {
+		if err := json.Unmarshal([]byte(cachedData), &words); err == nil {
+			return words, total, nil
+		}
+	}
+
 	// 从数据库获取
-	words, total, err := r.repo.List(ctx, offset, limit)
+	words, total, err := r.repo.List(ctx, userID, offset, limit)
 	if err != nil {
 		return nil, 0, err
 	}
 
-	// 更新缓存
-	cacheData := struct {
-		Words []*entity.Word `json:"words"`
-		Total int64          `json:"total"`
-	}{
-		Words: words,
-		Total: total,
-	}
-
-	if cacheJSON, err := json.Marshal(cacheData); err == nil {
-		if err := r.cache.Set(ctx, cacheKey, string(cacheJSON), time.Hour); err != nil {
-			logger.Log.Error("Failed to cache words list", zap.Error(err))
-		}
-	} else {
-		logger.Log.Error("Failed to marshal cache data", zap.Error(err))
+	// 设置缓存
+	if wordsJSON, err := json.Marshal(words); err == nil {
+		r.cache.Set(ctx, cacheKey, string(wordsJSON), 30*time.Minute)
 	}
 
 	return words, total, nil
@@ -134,3 +137,5 @@ func (r *CachedWordRepository) Search(ctx context.Context, query *repository.Wor
 }
 
 // 其他方法类似，实现缓存逻辑...
+
+var _ repository.WordRepository = (*CachedWordRepository)(nil)

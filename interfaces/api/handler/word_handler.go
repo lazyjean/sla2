@@ -13,6 +13,23 @@ import (
 	"go.uber.org/zap"
 )
 
+// @title           单词本 API
+// @version         1.0
+// @description     单词本服务 API 文档
+// @termsOfService  http://swagger.io/terms/
+
+// @host      localhost:9000
+// @BasePath  /api
+// @schemes   http
+
+// @servers   url=http://localhost:9000/api   description=本地开发环境
+// @servers   url=http://api.example.com/api  description=生产环境
+
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
+// @description 请在此输入 Bearer token
+
 type WordHandler struct {
 	wordService *service.WordService
 }
@@ -23,33 +40,37 @@ func NewWordHandler(wordService *service.WordService) *WordHandler {
 	}
 }
 
-// CreateWord 创建单词
+// CreateWord 创建生词
 // @Summary      创建新单词
 // @Description  创建一个新的单词记录
 // @Tags         words
 // @Accept       json
 // @Produce      json
-// @Param        word  body      dto.WordCreateDTO  true  "单词信息"
+// @Security     Bearer
+// @Param        Authorization  header    string           true   "Bearer 令牌"
+// @Param        word          body      dto.WordCreateDTO  true  "单词信息"
 // @Success      201   {object}  Response{data=dto.WordResponseDTO}
-// @Failure      400   {object}  Response
-// @Failure      500   {object}  Response
-// @Router       /words [post]
+// @Failure      400   {object}  Response          "请求参数错误"
+// @Failure      401   {object}  Response          "未授权"
+// @Failure      500   {object}  Response          "服务器内部错误"
+// @Router       /v1/words [post]
 func (h *WordHandler) CreateWord(c *gin.Context) {
 	var createDTO dto.WordCreateDTO
 	if err := c.ShouldBindJSON(&createDTO); err != nil {
-		logger.Log.Error("Failed to bind JSON", zap.Error(err))
-		c.JSON(http.StatusBadRequest, NewErrorResponse(400, errors.ErrInvalidInput.Error()))
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	resp, err := h.wordService.CreateWord(c.Request.Context(), &createDTO)
+	// 从上下文获取用户ID
+	userID := getUserIDFromContext(c)
+
+	word, err := h.wordService.CreateWord(c.Request.Context(), &createDTO, userID)
 	if err != nil {
-		logger.Log.Error("Failed to create word", zap.Error(err))
-		c.JSON(http.StatusInternalServerError, NewErrorResponse(500, err.Error()))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusCreated, NewResponse(0, "success", resp))
+	c.JSON(http.StatusCreated, dto.WordResponseDTOFromEntity(word))
 }
 
 // GetWord 获取单词
@@ -58,12 +79,15 @@ func (h *WordHandler) CreateWord(c *gin.Context) {
 // @Tags         words
 // @Accept       json
 // @Produce      json
+// @Security     Bearer
+// @Param        Authorization  header    string  true   "Bearer 令牌"
 // @Param        id   path      uint    true  "单词ID"
 // @Success      200  {object}  Response{data=dto.WordResponseDTO}
-// @Failure      400  {object}  Response
-// @Failure      404  {object}  Response
-// @Failure      500  {object}  Response
-// @Router       /words/{id} [get]
+// @Failure      400  {object}  Response          "请求参数错误"
+// @Failure      401  {object}  Response          "未授权"
+// @Failure      404  {object}  Response          "单词不存在"
+// @Failure      500  {object}  Response          "服务器内部错误"
+// @Router       /v1/words/{id} [get]
 func (h *WordHandler) GetWord(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
@@ -85,83 +109,43 @@ func (h *WordHandler) GetWord(c *gin.Context) {
 	c.JSON(http.StatusOK, NewResponse(0, "success", resp))
 }
 
-// ListWords 获取单词列表
+// ListWords 获取生词列表
 // @Summary      获取单词列表
 // @Description  分页获取单词列表
 // @Tags         words
 // @Accept       json
 // @Produce      json
+// @Security     Bearer
+// @Param        Authorization  header    string  true   "Bearer 令牌"
 // @Param        page     query     int  false  "页码"  default(1)
 // @Param        perPage  query     int  false  "每页数量"  default(10)
 // @Success      200      {object}  Response{data=ListResponse{items=[]dto.WordResponseDTO}}
-// @Failure      500      {object}  Response
-// @Router       /words [get]
+// @Failure      401      {object}  Response          "未授权"
+// @Failure      500      {object}  Response          "服务器内部错误"
+// @Router       /v1/words [get]
 func (h *WordHandler) ListWords(c *gin.Context) {
-	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
-	if err != nil || page < 1 {
-		c.JSON(http.StatusBadRequest, NewErrorResponse(400, "invalid page number"))
-		return
-	}
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("page_size", "10"))
 
-	pageSize, err := strconv.Atoi(c.DefaultQuery("page_size", "10"))
-	if err != nil || pageSize < 1 || pageSize > 100 {
-		c.JSON(http.StatusBadRequest, NewErrorResponse(400, "invalid page size"))
-		return
-	}
+	userID := getUserIDFromContext(c)
+	offset := (page - 1) * pageSize
 
-	words, total, err := h.wordService.ListWords(c.Request.Context(), page, pageSize)
+	words, total, err := h.wordService.ListWords(c.Request.Context(), userID, offset, pageSize)
 	if err != nil {
-		logger.Log.Error("Failed to list words",
-			zap.Error(err),
-			zap.Int("page", page),
-			zap.Int("page_size", pageSize),
-		)
-		c.JSON(http.StatusInternalServerError, NewErrorResponse(500, err.Error()))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, NewListResponse(words, page, pageSize, total))
-}
-
-// UpdateWord 更新单词
-// @Summary      更新单词信息
-// @Description  更新指定ID的单词信息
-// @Tags         words
-// @Accept       json
-// @Produce      json
-// @Param        id    path      uint             true  "单词ID"
-// @Param        word  body      dto.WordCreateDTO  true  "单词信息"
-// @Success      200   {object}  Response{data=dto.WordResponseDTO}
-// @Failure      400   {object}  Response
-// @Failure      404   {object}  Response
-// @Failure      500   {object}  Response
-// @Router       /words/{id} [put]
-func (h *WordHandler) UpdateWord(c *gin.Context) {
-	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, NewErrorResponse(400, "invalid id format"))
-		return
+	// 转换为响应 DTO
+	dtos := make([]*dto.WordResponseDTO, len(words))
+	for i, word := range words {
+		dtos[i] = dto.WordResponseDTOFromEntity(word)
 	}
 
-	var updateDTO dto.WordCreateDTO
-	if err := c.ShouldBindJSON(&updateDTO); err != nil {
-		logger.Log.Error("Failed to bind JSON", zap.Error(err))
-		c.JSON(http.StatusBadRequest, NewErrorResponse(400, errors.ErrInvalidInput.Error()))
-		return
-	}
-
-	resp, err := h.wordService.UpdateWord(c.Request.Context(), uint(id), &updateDTO)
-	if err != nil {
-		if err == errors.ErrWordNotFound {
-			c.JSON(http.StatusNotFound, NewErrorResponse(404, err.Error()))
-			return
-		}
-		logger.Log.Error("Failed to update word", zap.Error(err), zap.Uint64("id", id))
-		c.JSON(http.StatusInternalServerError, NewErrorResponse(500, err.Error()))
-		return
-	}
-
-	c.JSON(http.StatusOK, NewResponse(0, "success", resp))
+	c.JSON(http.StatusOK, gin.H{
+		"total": total,
+		"items": dtos,
+	})
 }
 
 // DeleteWord 删除单词
@@ -170,11 +154,15 @@ func (h *WordHandler) UpdateWord(c *gin.Context) {
 // @Tags         words
 // @Accept       json
 // @Produce      json
+// @Security     Bearer
+// @Param        Authorization  header    string  true   "Bearer 令牌"
 // @Param        id   path      uint    true  "单词ID"
 // @Success      200  {object}  Response
-// @Failure      400  {object}  Response
-// @Failure      500  {object}  Response
-// @Router       /words/{id} [delete]
+// @Failure      400  {object}  Response          "请求参数错误"
+// @Failure      401  {object}  Response          "未授权"
+// @Failure      404  {object}  Response          "单词不存在"
+// @Failure      500  {object}  Response          "服务器内部错误"
+// @Router       /v1/words/{id} [delete]
 func (h *WordHandler) DeleteWord(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
@@ -204,16 +192,19 @@ func (h *WordHandler) DeleteWord(c *gin.Context) {
 // @Tags         words
 // @Accept       json
 // @Produce      json
-// @Param        text           query    string  false  "单词文本"
+// @Security     Bearer
+// @Param        Authorization  header    string    true   "Bearer 令牌"
+// @Param        text           query    string    false  "单词文本"
 // @Param        tags           query    []string  false  "标签列表"
-// @Param        minDifficulty  query    int     false  "最小难度"
-// @Param        maxDifficulty  query    int     false  "最大难度"
-// @Param        page           query    int     false  "页码"  default(1)
-// @Param        pageSize       query    int     false  "每页数量"  default(10)
+// @Param        minDifficulty  query    int       false  "最小难度"
+// @Param        maxDifficulty  query    int       false  "最大难度"
+// @Param        page           query    int       false  "页码"  default(1)
+// @Param        pageSize       query    int       false  "每页数量"  default(10)
 // @Success      200            {object}  Response{data=ListResponse{items=[]dto.WordResponseDTO}}
-// @Failure      400            {object}  Response
-// @Failure      500            {object}  Response
-// @Router       /words/search [get]
+// @Failure      400            {object}  Response          "请求参数错误"
+// @Failure      401            {object}  Response          "未授权"
+// @Failure      500            {object}  Response          "服务器内部错误"
+// @Router       /v1/words/search [get]
 func (h *WordHandler) SearchWords(c *gin.Context) {
 	// 解析查询参数
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))

@@ -8,6 +8,7 @@ import (
 
 	"github.com/lazyjean/sla2/config"
 	"github.com/lazyjean/sla2/domain/entity"
+	"github.com/lazyjean/sla2/infrastructure/persistence/postgres/migrations"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -64,19 +65,20 @@ func NewDB(cfg *config.DatabaseConfig) (*gorm.DB, error) {
 
 // autoMigrate 自动迁移数据库结构
 func autoMigrate(db *gorm.DB) error {
-	// 只进行表结构迁移，不删除数据
-	err := db.AutoMigrate(
-		&entity.Word{},
-		&entity.Example{},
-		&entity.Tag{},
-	)
-	if err != nil {
-		return err
-	}
+	// 开启事务
+	return db.Transaction(func(tx *gorm.DB) error {
+		// 1. 先创建基础表结构
+		if err := tx.AutoMigrate(
+			&entity.Word{},
+		); err != nil {
+			return err
+		}
 
-	// 创建索引
-	db.Exec(`CREATE INDEX IF NOT EXISTS idx_words_text ON words (text)`)
-	db.Exec(`CREATE INDEX IF NOT EXISTS idx_tags_name ON tags (name)`)
+		// 2. 执行迁移
+		if err := migrations.AddUserIDToWords(tx); err != nil {
+			return err
+		}
 
-	return nil
+		return nil
+	})
 }

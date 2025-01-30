@@ -4,7 +4,7 @@ import (
 	"github.com/lazyjean/sla2/domain/entity"
 )
 
-// WordCreateDTO 创建单词的数据传输对象
+// WordCreateDTO 创建单词的请求数据
 type WordCreateDTO struct {
 	Text        string   `json:"text" binding:"required" example:"hello"`
 	Translation string   `json:"translation" binding:"required" example:"你好"`
@@ -26,50 +26,26 @@ type WordResponseDTO struct {
 }
 
 // ToEntity 将DTO转换为领域实体
-func (dto *WordCreateDTO) ToEntity() (*entity.Word, error) {
-	word, err := entity.NewWord(dto.Text, dto.Translation)
-	if err != nil {
-		return nil, err
-	}
-
-	word.Phonetic = dto.Phonetic
-
-	// 添加例句
-	for _, example := range dto.Examples {
-		if err := word.AddExample(example); err != nil {
-			return nil, err
-		}
-	}
-
-	// 添加标签
-	for _, tag := range dto.Tags {
-		if err := word.AddTag(tag); err != nil {
-			return nil, err
-		}
-	}
-
-	return word, nil
+func (dto *WordCreateDTO) ToEntity(userID uint) (*entity.Word, error) {
+	return entity.NewWord(
+		userID,
+		dto.Text,
+		dto.Phonetic,
+		dto.Translation,
+		dto.Examples,
+		dto.Tags,
+	)
 }
 
 // FromEntity 从领域实体转换为DTO
 func WordResponseDTOFromEntity(word *entity.Word) *WordResponseDTO {
-	examples := make([]string, len(word.Examples))
-	for i, example := range word.Examples {
-		examples[i] = example.Text
-	}
-
-	tags := make([]string, len(word.Tags))
-	for i, tag := range word.Tags {
-		tags[i] = tag.Name
-	}
-
 	return &WordResponseDTO{
 		ID:          word.ID,
 		Text:        word.Text,
 		Translation: word.Translation,
 		Phonetic:    word.Phonetic,
-		Examples:    examples,
-		Tags:        tags,
+		Examples:    word.Examples,
+		Tags:        word.Tags,
 		CreatedAt:   word.CreatedAt.Format("2006-01-02 15:04:05"),
 		UpdatedAt:   word.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}

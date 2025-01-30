@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"errors"
 	"time"
 
 	"github.com/lazyjean/sla2/domain/entity"
@@ -16,121 +15,167 @@ type WordRepository struct {
 	db *gorm.DB
 }
 
-func NewWordRepository(db *gorm.DB) *WordRepository {
-	return &WordRepository{db: db}
-}
-
-func (r *WordRepository) Save(ctx context.Context, word *entity.Word) error {
-	tx := r.db.WithContext(ctx).Begin()
-	if tx.Error != nil {
-		return domainErrors.ErrFailedToSave
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
-
-	// 设置时间戳
-	now := time.Now()
-	word.CreatedAt = now
-	word.UpdatedAt = now
-
-	// 先处理所有的 tags
-	for i, tag := range word.Tags {
-		var existingTag entity.Tag
-		err := tx.Where("name = ?", tag.Name).First(&existingTag).Error
-		if err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				// 标签不存在，创建新标签
-				existingTag = entity.Tag{
-					Name:      tag.Name,
-					CreatedAt: now,
-				}
-				if err := tx.Create(&existingTag).Error; err != nil {
-					tx.Rollback()
-					return domainErrors.ErrFailedToSave
-				}
-			} else {
-				tx.Rollback()
-				return domainErrors.ErrFailedToSave
-			}
-		}
-		word.Tags[i] = existingTag
-	}
-
-	// 保存主记录
-	if err := tx.Clauses(clause.OnConflict{DoNothing: true}).Create(word).Error; err != nil {
-		tx.Rollback()
-		return domainErrors.ErrFailedToSave
-	}
-
-	return tx.Commit().Error
-}
-
-func (r *WordRepository) FindByID(ctx context.Context, id uint) (*entity.Word, error) {
-	var word entity.Word
-
-	err := r.db.WithContext(ctx).
-		Preload("Examples").
-		Preload("Tags").
-		Unscoped().
-		Where("id = ? AND deleted_at IS NULL", id).
-		Take(&word).Error
-
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, domainErrors.ErrWordNotFound
-	}
-	if err != nil {
-		return nil, domainErrors.ErrFailedToQuery
-	}
-
-	return &word, nil
-}
-
-func (r *WordRepository) FindByText(ctx context.Context, text string) (*entity.Word, error) {
-	var word entity.Word
-
-	err := r.db.WithContext(ctx).
-		Preload("Examples").
-		Preload("Tags").
-		Unscoped().
-		Where("text = ? AND deleted_at IS NULL", text).
-		Take(&word).Error
-
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, domainErrors.ErrWordNotFound
-	}
-	if err != nil {
-		return nil, domainErrors.ErrFailedToQuery
-	}
-
-	return &word, nil
-}
-
-func (r *WordRepository) List(ctx context.Context, offset, limit int) ([]*entity.Word, int64, error) {
+// List implements repository.WordRepository.
+func (r *WordRepository) List(ctx context.Context, userID uint, offset int, limit int) ([]*entity.Word, int64, error) {
 	var words []*entity.Word
 	var total int64
 
 	// 获取总数
-	if err := r.db.WithContext(ctx).Model(&entity.Word{}).
-		Where("deleted_at IS NULL").
-		Count(&total).Error; err != nil {
+	if err := r.db.WithContext(ctx).Model(&entity.Word{}).Where("user_id = ?", userID).Count(&total).Error; err != nil {
 		return nil, 0, domainErrors.ErrFailedToQuery
 	}
 
-	// 获取分页数据
+	// 获取列表
 	err := r.db.WithContext(ctx).
-		Preload("Examples").
-		Preload("Tags").
-		Unscoped().
-		Where("deleted_at IS NULL").
+		Where("user_id = ?", userID).
+		Order("created_at DESC").
 		Offset(offset).
 		Limit(limit).
-		Order("created_at DESC").
 		Find(&words).Error
 
 	if err != nil {
+		return nil, 0, domainErrors.ErrFailedToQuery
+	}
+
+	return words, total, nil
+}
+
+func NewWordRepository(db *gorm.DB) *WordRepository {
+	return &WordRepository{db: db}
+}
+
+// Save 保存单词
+func (r *WordRepository) Save(ctx context.Context, word *entity.Word) error {
+	// 先验证数据有效性
+	if err := word.Validate(); err != nil {
+		return err
+	}
+
+	// 使用 Create 方法，GORM 会自动处理 JSON 类型的序列化
+	if err := r.db.WithContext(ctx).Create(word).Error; err != nil {
+		return domainErrors.ErrFailedToSave
+	}
+	return nil
+}
+
+// FindByID 通过ID查找单词
+func (r *WordRepository) FindByID(ctx context.Context, id uint) (*entity.Word, error) {
+	var word entity.Word
+	err := r.db.WithContext(ctx).
+		First(&word, id).Error
+
+	if err == gorm.ErrRecordNotFound {
+		return nil, domainErrors.ErrWordNotFound
+	}
+	if err != nil {
+		return nil, domainErrors.ErrFailedToQuery
+	}
+	return &word, nil
+}
+
+// FindByUserAndText 通过用户ID和文本查找单词
+func (r *WordRepository) FindByUserAndText(ctx context.Context, userID uint, text string) (*entity.Word, error) {
+	var word entity.Word
+	err := r.db.WithContext(ctx).
+		Where("user_id = ? AND text = ?", userID, text).
+		First(&word).Error
+
+	if err == gorm.ErrRecordNotFound {
+		return nil, domainErrors.ErrWordNotFound
+	}
+	if err != nil {
+		return nil, domainErrors.ErrFailedToQuery
+	}
+	return &word, nil
+}
+
+func (r *WordRepository) ListByUserID(ctx context.Context, userID uint, offset, limit int) ([]*entity.Word, int64, error) {
+	var words []*entity.Word
+	var total int64
+
+	// 获取总数
+	if err := r.db.WithContext(ctx).Model(&entity.Word{}).Where("user_id = ?", userID).Count(&total).Error; err != nil {
+		return nil, 0, domainErrors.ErrFailedToQuery
+	}
+
+	// 获取列表
+	err := r.db.WithContext(ctx).
+		Where("user_id = ?", userID).
+		Order("created_at DESC").
+		Offset(offset).
+		Limit(limit).
+		Find(&words).Error
+
+	if err != nil {
+		return nil, 0, domainErrors.ErrFailedToQuery
+	}
+
+	return words, total, nil
+}
+
+func (r *WordRepository) ListNeedReview(ctx context.Context, userID uint, before time.Time) ([]*entity.Word, error) {
+	var words []*entity.Word
+	err := r.db.WithContext(ctx).
+		Where("user_id = ? AND next_review_at <= ? AND mastery_level < 5", userID, before).
+		Order("next_review_at ASC").
+		Find(&words).Error
+
+	if err != nil {
+		return nil, domainErrors.ErrFailedToQuery
+	}
+	return words, nil
+}
+
+func (r *WordRepository) Search(ctx context.Context, query *repository.WordQuery) ([]*entity.Word, int64, error) {
+	db := r.db.WithContext(ctx).Model(&entity.Word{})
+
+	// 构建查询条件
+	db = db.Where("user_id = ?", query.UserID)
+
+	if query.Text != "" {
+		db = db.Where("text ILIKE ?", "%"+query.Text+"%")
+	}
+
+	if len(query.Tags) > 0 {
+		db = db.Joins("JOIN word_tags ON words.id = word_tags.word_id").
+			Joins("JOIN tags ON tags.id = word_tags.tag_id").
+			Where("tags.name IN ?", query.Tags)
+	}
+
+	if query.MasteryLevel != nil {
+		db = db.Where("mastery_level = ?", *query.MasteryLevel)
+	}
+
+	if !query.ReviewBefore.IsZero() {
+		db = db.Where("next_review_at <= ?", query.ReviewBefore)
+	}
+
+	if !query.CreatedAfter.IsZero() {
+		db = db.Where("created_at >= ?", query.CreatedAfter)
+	}
+
+	// 获取总数
+	var total int64
+	if err := db.Count(&total).Error; err != nil {
+		return nil, 0, domainErrors.ErrFailedToQuery
+	}
+
+	// 排序
+	if query.OrderBy != "" {
+		db = db.Order(clause.OrderByColumn{Column: clause.Column{Name: query.OrderBy}, Desc: query.OrderDesc})
+	} else {
+		db = db.Order("created_at DESC")
+	}
+
+	// 分页
+	db = db.Offset(query.Offset).Limit(query.Limit)
+
+	// 加载关联数据
+	db = db.Preload("Examples").Preload("Tags")
+
+	// 执行查询
+	var words []*entity.Word
+	if err := db.Find(&words).Error; err != nil {
 		return nil, 0, domainErrors.ErrFailedToQuery
 	}
 
@@ -258,105 +303,23 @@ func (r *WordRepository) Update(ctx context.Context, word *entity.Word) error {
 		return domainErrors.ErrFailedToUpdate
 	}
 
-	// 删除旧的例句
-	if err := tx.Where("word_id = ?", word.ID).Delete(&entity.Example{}).Error; err != nil {
-		tx.Rollback()
-		return domainErrors.ErrFailedToUpdate
-	}
-
-	// 添加新的例句
-	if len(word.Examples) > 0 {
-		for i := range word.Examples {
-			word.Examples[i].WordID = word.ID
-			word.Examples[i].CreatedAt = time.Now()
-		}
-		if err := tx.Create(&word.Examples).Error; err != nil {
-			tx.Rollback()
-			return domainErrors.ErrFailedToUpdate
-		}
-	}
-
-	// 更新标签关联
-	if err := tx.Where("word_id = ?", word.ID).Delete(&entity.WordTag{}).Error; err != nil {
-		tx.Rollback()
-		return domainErrors.ErrFailedToUpdate
-	}
-
-	// 处理标签
-	for _, tag := range word.Tags {
-		var existingTag entity.Tag
-		err := tx.Where("name = ?", tag.Name).First(&existingTag).Error
-		if err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				// 标签不存在，创建新标签
-				existingTag = entity.Tag{
-					Name:      tag.Name,
-					CreatedAt: time.Now(),
-				}
-				if err := tx.Create(&existingTag).Error; err != nil {
-					tx.Rollback()
-					return domainErrors.ErrFailedToUpdate
-				}
-			} else {
-				tx.Rollback()
-				return domainErrors.ErrFailedToUpdate
-			}
-		}
-
-		// 创建标签关联
-		if err := tx.Create(&entity.WordTag{
-			WordID: word.ID,
-			TagID:  existingTag.ID,
-		}).Error; err != nil {
-			tx.Rollback()
-			return domainErrors.ErrFailedToUpdate
-		}
-	}
-
 	return tx.Commit().Error
 }
 
-func (r *WordRepository) Search(ctx context.Context, query *repository.WordQuery) ([]*entity.Word, int64, error) {
-	db := r.db.WithContext(ctx).Model(&entity.Word{})
+// FindByText implements repository.WordRepository.
+func (r *WordRepository) FindByText(ctx context.Context, text string) (*entity.Word, error) {
+	var word entity.Word
+	err := r.db.WithContext(ctx).
+		Where("text = ?", text).
+		First(&word).Error
 
-	// 添加文本搜索条件
-	if query.Text != "" {
-		db = db.Where("text ILIKE ?", "%"+query.Text+"%")
+	if err == gorm.ErrRecordNotFound {
+		return nil, domainErrors.ErrWordNotFound
 	}
-
-	// 添加标签过滤
-	if len(query.Tags) > 0 {
-		db = db.Joins("JOIN word_tags ON words.id = word_tags.word_id").
-			Joins("JOIN tags ON word_tags.tag_id = tags.id").
-			Where("tags.name IN ?", query.Tags)
-	}
-
-	// 添加难度范围过滤
-	if query.MinDifficulty > 0 {
-		db = db.Where("difficulty >= ?", query.MinDifficulty)
-	}
-	if query.MaxDifficulty > 0 {
-		db = db.Where("difficulty <= ?", query.MaxDifficulty)
-	}
-
-	// 获取总数
-	var total int64
-	if err := db.Count(&total).Error; err != nil {
-		return nil, 0, err
-	}
-
-	// 获取分页数据
-	var words []*entity.Word
-	err := db.Preload("Examples").
-		Preload("Tags").
-		Offset(query.Offset).
-		Limit(query.Limit).
-		Order("created_at DESC").
-		Find(&words).Error
-
 	if err != nil {
-		return nil, 0, err
+		return nil, domainErrors.ErrFailedToQuery
 	}
-
-	return words, total, nil
+	return &word, nil
 }
+
+var _ repository.WordRepository = (*WordRepository)(nil)

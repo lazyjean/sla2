@@ -17,6 +17,7 @@ import (
 	"github.com/lazyjean/sla2/interfaces/api/handler"
 	"github.com/lazyjean/sla2/interfaces/api/routes"
 	"github.com/lazyjean/sla2/pkg/logger"
+	"github.com/lazyjean/sla2/pkg/swagger"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -28,8 +29,9 @@ import (
 // @contact.name   LazyJean
 // @contact.email  lazyjean@example.com
 
-// @host      sla2.leeszi.cn
+// @host      localhost:9000
 // @BasePath  /api
+// @schemes   http
 
 // @securityDefinitions.apikey  Bearer
 // @in                         header
@@ -73,9 +75,15 @@ func main() {
 
 	// 初始化处理器
 	wordHandler := handler.NewWordHandler(wordService)
+	authHandler := handler.NewAuthHandler()
+
+	handlers := handler.NewHandlers(wordHandler, authHandler)
 
 	// 设置gin模式
 	gin.SetMode(cfg.Server.Mode)
+
+	// 初始化 Swagger 配置
+	swagger.InitSwagger()
 
 	// 创建路由
 	r := gin.Default()
@@ -84,7 +92,7 @@ func main() {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// 注册业务路由
-	routes.RegisterWordRoutes(r, wordHandler)
+	routes.SetupRoutes(r, handlers)
 
 	// 创建服务器
 	srv := &http.Server{

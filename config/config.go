@@ -9,6 +9,9 @@ type Config struct {
 	Database DatabaseConfig
 	Redis    RedisConfig
 	Log      LogConfig
+	JWT      struct {
+		SecretKey string `mapstructure:"secret_key"`
+	} `mapstructure:"jwt"`
 }
 
 type ServerConfig struct {
@@ -79,6 +82,11 @@ func GetConfig() *Config {
 		},
 		Log: LogConfig{
 			Level: "info", // 默认使用 info 级别
+		},
+		JWT: struct {
+			SecretKey string `mapstructure:"secret_key"`
+		}{
+			SecretKey: "dj2m#9K$pL7&vX4@nR5*wQ8^hF3!tY6", // 32字节的随机字符串
 		},
 	}
 }

@@ -1,4 +1,4 @@
-basePath: /api
+basePath: /api/v1
 definitions:
   dto.WordCreateDTO:
     properties:
@@ -89,7 +89,7 @@ definitions:
         description: 响应消息
         type: string
     type: object
-host: localhost:9000
+host: sla2.leeszi.cn
 info:
   contact:
     email: lazyjean@example.com
@@ -98,12 +98,23 @@ info:
   title: 生词本 API
   version: "1.0"
 paths:
-  /words:
+  /v1/login:
+    post:
+      responses: {}
+  /v1/register:
+    post:
+      responses: {}
+  /v1/words:
     get:
       consumes:
       - application/json
       description: 分页获取单词列表
       parameters:
+      - description: Bearer 令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - default: 1
         description: 页码
         in: query
@@ -133,10 +144,16 @@ paths:
                         type: array
                     type: object
               type: object
-        "500":
-          description: Internal Server Error
+        "401":
+          description: 未授权
           schema:
             $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      security:
+      - Bearer: []
       summary: 获取单词列表
       tags:
       - words
@@ -145,6 +162,11 @@ paths:
       - application/json
       description: 创建一个新的单词记录
       parameters:
+      - description: Bearer 令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 单词信息
         in: body
         name: word
@@ -164,22 +186,33 @@ paths:
                   $ref: '#/definitions/dto.WordResponseDTO'
               type: object
         "400":
-          description: Bad Request
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
           schema:
             $ref: '#/definitions/handler.Response'
         "500":
-          description: Internal Server Error
+          description: 服务器内部错误
           schema:
             $ref: '#/definitions/handler.Response'
+      security:
+      - Bearer: []
       summary: 创建新单词
       tags:
       - words
-  /words/{id}:
+  /v1/words/{id}:
     delete:
       consumes:
       - application/json
       description: 删除指定ID的单词
       parameters:
+      - description: Bearer 令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 单词ID
         in: path
         name: id
@@ -188,20 +221,28 @@ paths:
       produces:
       - application/json
       responses:
-        "204":
-          description: No Content
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.Response'
         "400":
-          description: Bad Request
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
           schema:
             $ref: '#/definitions/handler.Response'
         "404":
-          description: Not Found
+          description: 单词不存在
           schema:
             $ref: '#/definitions/handler.Response'
         "500":
-          description: Internal Server Error
+          description: 服务器内部错误
           schema:
             $ref: '#/definitions/handler.Response'
+      security:
+      - Bearer: []
       summary: 删除单词
       tags:
       - words
@@ -210,6 +251,11 @@ paths:
       - application/json
       description: 通过ID获取单词的详细信息
       parameters:
+      - description: Bearer 令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 单词ID
         in: path
         name: id
@@ -228,36 +274,66 @@ paths:
                   $ref: '#/definitions/dto.WordResponseDTO'
               type: object
         "400":
-          description: Bad Request
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
           schema:
             $ref: '#/definitions/handler.Response'
         "404":
-          description: Not Found
+          description: 单词不存在
           schema:
             $ref: '#/definitions/handler.Response'
         "500":
-          description: Internal Server Error
+          description: 服务器内部错误
           schema:
             $ref: '#/definitions/handler.Response'
+      security:
+      - Bearer: []
       summary: 获取单词详情
       tags:
       - words
-    put:
+  /v1/words/search:
+    get:
       consumes:
       - application/json
-      description: 更新指定ID的单词信息
+      description: 根据条件搜索单词
       parameters:
-      - description: 单词ID
-        in: path
-        name: id
+      - description: Bearer 令牌
+        in: header
+        name: Authorization
         required: true
+        type: string
+      - description: 单词文本
+        in: query
+        name: text
+        type: string
+      - collectionFormat: csv
+        description: 标签列表
+        in: query
+        items:
+          type: string
+        name: tags
+        type: array
+      - description: 最小难度
+        in: query
+        name: minDifficulty
         type: integer
-      - description: 单词信息
-        in: body
-        name: word
-        required: true
-        schema:
-          $ref: '#/definitions/dto.WordCreateDTO'
+      - description: 最大难度
+        in: query
+        name: maxDifficulty
+        type: integer
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
       produces:
       - application/json
       responses:
@@ -268,21 +344,30 @@ paths:
             - $ref: '#/definitions/handler.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/dto.WordResponseDTO'
+                  allOf:
+                  - $ref: '#/definitions/handler.ListResponse'
+                  - properties:
+                      items:
+                        items:
+                          $ref: '#/definitions/dto.WordResponseDTO'
+                        type: array
+                    type: object
               type: object
         "400":
-          description: Bad Request
+          description: 请求参数错误
           schema:
             $ref: '#/definitions/handler.Response'
-        "404":
-          description: Not Found
+        "401":
+          description: 未授权
           schema:
             $ref: '#/definitions/handler.Response'
         "500":
-          description: Internal Server Error
+          description: 服务器内部错误
           schema:
             $ref: '#/definitions/handler.Response'
-      summary: 更新单词信息
+      security:
+      - Bearer: []
+      summary: 搜索单词
       tags:
       - words
 securityDefinitions:
