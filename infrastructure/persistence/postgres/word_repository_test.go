@@ -17,15 +17,18 @@ func TestWordRepository_Save(t *testing.T) {
 	ctx := context.WithValue(context.Background(), repository.UserIDKey, 1)
 
 	word := &entity.Word{
-		Text:        "test",
-		Translation: "测试",
-		Phonetic:    "test",
-		Difficulty:  1,
-		Examples:    []string{"This is a test."},
-		Tags:        []string{"common"},
-		UserID:      1,
+		Text:        "resilient",
+		Translation: "有弹性的；能快速恢复的；适应力强的",
+		Phonetic:    "rɪˈzɪliənt",
+		Examples: []string{
+			"Children are generally more resilient than adults.",
+			"The company proved resilient during the economic crisis.",
+		},
+		Tags:   []string{"adjective", "personality", "advanced"},
+		UserID: 1,
 	}
 
+	// 第一次保存
 	err := repo.Save(ctx, word)
 	require.NoError(t, err)
 	require.NotEmpty(t, word.ID)
@@ -37,10 +40,40 @@ func TestWordRepository_Save(t *testing.T) {
 
 	assert.Equal(t, word.Text, saved.Text)
 	assert.Equal(t, word.Translation, saved.Translation)
-	require.NotEmpty(t, saved.Examples)
-	assert.Equal(t, word.Examples[0], saved.Examples[0])
-	require.NotEmpty(t, saved.Tags)
-	assert.Equal(t, word.Tags[0], saved.Tags[0])
+	assert.Equal(t, word.Examples, saved.Examples)
+	assert.Equal(t, word.Tags, saved.Tags)
+
+	// 尝试再次保存相同的单词，但有不同的翻译和例句
+	duplicateWord := &entity.Word{
+		Text:        "resilient",
+		Translation: "坚韧的；有复原力的", // 不同的翻译
+		Phonetic:    "rɪˈzɪliənt",
+		Examples: []string{
+			"She is remarkably resilient in the face of adversity.",
+			"A resilient economy can withstand external shocks.",
+		},
+		Tags:   []string{"adjective", "character", "psychology"},
+		UserID: 1,
+	}
+
+	// 保存重复单词应该成功，但不会创建新记录
+	err = repo.Save(ctx, duplicateWord)
+	require.NoError(t, err)
+
+	// 验证数据库中仍然只有一条记录
+	var count int64
+	db.Model(&entity.Word{}).Count(&count)
+	assert.Equal(t, int64(1), count)
+
+	// 验证原始数据保持不变
+	saved, err = repo.FindByID(ctx, word.ID)
+	require.NoError(t, err)
+	assert.Equal(t, "有弹性的；能快速恢复的；适应力强的", saved.Translation)
+	assert.Equal(t, []string{"adjective", "personality", "advanced"}, saved.Tags)
+	assert.Equal(t, []string{
+		"Children are generally more resilient than adults.",
+		"The company proved resilient during the economic crisis.",
+	}, saved.Examples)
 }
 
 func TestWordRepository_FindByText(t *testing.T) {
@@ -50,9 +83,16 @@ func TestWordRepository_FindByText(t *testing.T) {
 
 	// 先保存一个单词
 	word := &entity.Word{
-		Text:        "unique_test",
-		Translation: "唯一测试",
-		UserID:      1,
+		Text:        "resilient",
+		Translation: "有弹性的；能快速恢复的；适应力强的",
+		Phonetic:    "rɪˈzɪliənt",
+		Difficulty:  4,
+		Examples: []string{
+			"Children are generally more resilient than adults.",
+			"The company proved resilient during the economic crisis.",
+		},
+		Tags:   []string{"adjective", "personality"},
+		UserID: 1,
 	}
 	err := repo.Save(ctx, word)
 	require.NoError(t, err)
@@ -64,7 +104,7 @@ func TestWordRepository_FindByText(t *testing.T) {
 	}{
 		{
 			name:    "existing word",
-			text:    "unique_test",
+			text:    "resilient",
 			wantErr: nil,
 		},
 		{

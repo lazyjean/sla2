@@ -52,7 +52,10 @@ func (r *WordRepository) Save(ctx context.Context, word *entity.Word) error {
 	}
 
 	// 使用 Create 方法，GORM 会自动处理 JSON 类型的序列化
-	if err := r.db.WithContext(ctx).Create(word).Error; err != nil {
+	if err := r.db.WithContext(ctx).Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "text"}, {Name: "user_id"}},
+		DoNothing: true,
+	}).Create(word).Error; err != nil {
 		return domainErrors.ErrFailedToSave
 	}
 	return nil
