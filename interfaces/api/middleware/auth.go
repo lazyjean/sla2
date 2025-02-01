@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -11,14 +12,20 @@ import (
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// 这里实现您的认证逻辑
-		// 例如解析 JWT token 获取用户ID
+		userID := extractUserIDFromToken(c)
 
-		userID := extractUserIDFromToken(c) // 实现此函数以从token中提取用户ID
+		// 如果未能获取有效的userID，返回未授权错误
+		if userID == 0 {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"code":    401,
+				"message": "未授权访问",
+			})
+			c.Abort()
+			return
+		}
 
 		// 设置用户ID到上下文
 		handler.SetUserIDToContext(c, userID)
-
 		c.Next()
 	}
 }

@@ -27,10 +27,10 @@ import (
 // @description  生词本服务 API 文档
 
 // @contact.name   LazyJean
-// @contact.email  lazyjean@example.com
+// @contact.email  lazyjean@foxmail.com
 
 // @host      localhost:9000
-// @BasePath  /api
+// @BasePath  /api/v1
 // @schemes   http
 
 // @securityDefinitions.apikey  Bearer
@@ -69,15 +69,18 @@ func main() {
 	// 初始化仓储
 	baseWordRepo := postgres.NewWordRepository(db)
 	wordRepo := postgres.NewCachedWordRepository(baseWordRepo, redisCache)
+	learningRepo := postgres.NewLearningRepository(db)
 
 	// 初始化应用服务
 	wordService := service.NewWordService(wordRepo)
+	learningService := service.NewLearningService(learningRepo)
 
 	// 初始化处理器
 	wordHandler := handler.NewWordHandler(wordService)
 	authHandler := handler.NewAuthHandler()
+	learningHandler := handler.NewLearningHandler(learningService)
 
-	handlers := handler.NewHandlers(wordHandler, authHandler)
+	handlers := handler.NewHandlers(wordHandler, authHandler, learningHandler)
 
 	// 设置gin模式
 	gin.SetMode(cfg.Server.Mode)

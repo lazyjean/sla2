@@ -1,5 +1,62 @@
 basePath: /api/v1
 definitions:
+  dto.CourseProgressDTO:
+    properties:
+      completed_at:
+        type: string
+      course_id:
+        type: integer
+      id:
+        type: integer
+      score:
+        type: integer
+      started_at:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dto.SectionProgressDTO:
+    properties:
+      completed_at:
+        type: string
+      course_id:
+        type: integer
+      id:
+        type: integer
+      progress:
+        type: number
+      section_id:
+        type: integer
+      started_at:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dto.UnitProgressDTO:
+    properties:
+      completed_at:
+        type: string
+      id:
+        type: integer
+      last_word_id:
+        type: integer
+      progress:
+        type: number
+      section_id:
+        type: integer
+      started_at:
+        type: string
+      status:
+        type: string
+      unit_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
   dto.WordCreateDTO:
     properties:
       examples:
@@ -89,7 +146,7 @@ definitions:
         description: 响应消息
         type: string
     type: object
-host: sla2.leeszi.cn
+host: localhost:9000
 info:
   contact:
     email: lazyjean@example.com
@@ -98,6 +155,258 @@ info:
   title: 生词本 API
   version: "1.0"
 paths:
+  /learning/courses/{courseId}/progress:
+    get:
+      parameters:
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      - description: 课程ID
+        in: path
+        name: courseId
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.CourseProgressDTO'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: 获取课程学习进度列表
+      tags:
+      - learning
+    post:
+      parameters:
+      - description: 课程ID
+        in: path
+        name: courseId
+        required: true
+        type: integer
+      - description: 学习状态
+        enum:
+        - not_started
+        - in_progress
+        - completed
+        in: query
+        name: status
+        required: true
+        type: string
+      - description: 得分
+        in: query
+        name: score
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.CourseProgressDTO'
+              type: object
+      security:
+      - Bearer: []
+      summary: 保存课程学习进度
+      tags:
+      - learning
+  /learning/courses/{courseId}/sections/progress:
+    get:
+      parameters:
+      - description: 课程ID
+        in: path
+        name: courseId
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.SectionProgressDTO'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: 获取课程的章节学习进度列表
+      tags:
+      - learning
+  /learning/sections/{sectionId}/progress:
+    get:
+      parameters:
+      - description: 章节ID
+        in: path
+        name: sectionId
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.SectionProgressDTO'
+              type: object
+      security:
+      - Bearer: []
+      summary: 获取章节学习进度
+      tags:
+      - learning
+    post:
+      parameters:
+      - description: 章节ID
+        in: path
+        name: sectionId
+        required: true
+        type: integer
+      - description: 课程ID
+        in: query
+        name: courseId
+        required: true
+        type: integer
+      - description: 学习状态
+        enum:
+        - not_started
+        - in_progress
+        - completed
+        in: query
+        name: status
+        required: true
+        type: string
+      - description: 进度
+        in: query
+        maximum: 100
+        minimum: 0
+        name: progress
+        required: true
+        type: number
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.SectionProgressDTO'
+              type: object
+      security:
+      - Bearer: []
+      summary: 保存章节学习进度
+      tags:
+      - learning
+  /learning/sections/{sectionId}/units/progress:
+    get:
+      parameters:
+      - description: 章节ID
+        in: path
+        name: sectionId
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.UnitProgressDTO'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: 获取章节的单元学习进度列表
+      tags:
+      - learning
+  /learning/units/{unitId}/progress:
+    get:
+      parameters:
+      - description: 单元ID
+        in: path
+        name: unitId
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.UnitProgressDTO'
+              type: object
+      security:
+      - Bearer: []
+      summary: 获取单元学习进度
+      tags:
+      - learning
+    post:
+      parameters:
+      - description: 单元ID
+        in: path
+        name: unitId
+        required: true
+        type: integer
+      - description: 章节ID
+        in: query
+        name: sectionId
+        required: true
+        type: integer
+      - description: 学习状态
+        enum:
+        - not_started
+        - in_progress
+        - completed
+        in: query
+        name: status
+        required: true
+        type: string
+      - description: 进度
+        in: query
+        maximum: 100
+        minimum: 0
+        name: progress
+        required: true
+        type: number
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.UnitProgressDTO'
+              type: object
+      security:
+      - Bearer: []
+      summary: 保存单元学习进度
+      tags:
+      - learning
   /v1/login:
     post:
       responses: {}
@@ -370,6 +679,8 @@ paths:
       summary: 搜索单词
       tags:
       - words
+schemes:
+- http
 securityDefinitions:
   Bearer:
     description: Bearer token for authentication

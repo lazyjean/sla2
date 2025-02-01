@@ -70,6 +70,9 @@ func autoMigrate(db *gorm.DB) error {
 		// 1. 先创建基础表结构
 		if err := tx.AutoMigrate(
 			&entity.Word{},
+			&entity.CourseLearningProgress{},
+			&entity.SectionProgress{},
+			&entity.UnitProgress{},
 		); err != nil {
 			return err
 		}

@@ -17,8 +17,8 @@ func SetupRoutes(r *gin.Engine, handlers *handler.Handlers) {
 	// API 路由组
 	api := r.Group("/api/v1")
 
-	// 公开路由
-	public := api.Group("")
+	// 认证相关路由
+	public := api.Group("/auth")
 	{
 		public.POST("/login", handlers.AuthHandler.Login)
 		public.POST("/register", handlers.AuthHandler.Register)
@@ -28,10 +28,21 @@ func SetupRoutes(r *gin.Engine, handlers *handler.Handlers) {
 	protected := api.Group("")
 	protected.Use(middleware.AuthMiddleware())
 	{
-		// 单词相关路由
-		protected.POST("/words", handlers.WordHandler.CreateWord)
+		// 单词相关
 		protected.GET("/words", handlers.WordHandler.ListWords)
-		protected.GET("/words/:id", handlers.WordHandler.GetWord)
-		protected.DELETE("/words/:id", handlers.WordHandler.DeleteWord)
+		protected.POST("/words", handlers.WordHandler.CreateWord)
+		protected.GET("/words/:wordId", handlers.WordHandler.GetWord)
+		protected.DELETE("/words/:wordId", handlers.WordHandler.DeleteWord)
+
+		// 学习进度相关
+		protected.GET("/learning/courses/progress", handlers.LearningHandler.ListCourseProgress)
+		protected.POST("/learning/courses/:courseId/progress", handlers.LearningHandler.SaveCourseProgress)
+		protected.GET("/learning/courses/:courseId/progress", handlers.LearningHandler.GetCourseProgress)
+		protected.GET("/learning/courses/:courseId/sections/progress", handlers.LearningHandler.ListSectionProgress)
+		protected.POST("/learning/sections/:sectionId/progress", handlers.LearningHandler.SaveSectionProgress)
+		protected.GET("/learning/sections/:sectionId/progress", handlers.LearningHandler.GetSectionProgress)
+		protected.POST("/learning/units/:unitId/progress", handlers.LearningHandler.SaveUnitProgress)
+		protected.GET("/learning/units/:unitId/progress", handlers.LearningHandler.GetUnitProgress)
+		protected.GET("/learning/sections/:sectionId/units/progress", handlers.LearningHandler.ListUnitProgress)
 	}
 }
