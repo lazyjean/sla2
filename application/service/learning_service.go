@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"time"
 
 	"github.com/lazyjean/sla2/domain/entity"
 	"github.com/lazyjean/sla2/domain/repository"
@@ -21,16 +20,14 @@ func NewLearningService(learningRepo repository.LearningRepository) *LearningSer
 // SaveCourseProgress 保存课程学习进度
 func (s *LearningService) SaveCourseProgress(ctx context.Context, userID, courseID uint, status string, score int) (*entity.CourseLearningProgress, error) {
 	progress := &entity.CourseLearningProgress{
-		UserID:    userID,
-		CourseID:  courseID,
-		Status:    status,
-		Score:     score,
-		StartedAt: time.Now(),
+		UserID:   userID,
+		CourseID: courseID,
+		Status:   status,
+		Score:    score,
 	}
 
 	if status == "completed" {
-		now := time.Now()
-		progress.CompletedAt = &now
+		progress.Score = score
 	}
 
 	if err := s.learningRepo.SaveCourseProgress(ctx, progress); err != nil {
@@ -59,12 +56,10 @@ func (s *LearningService) SaveSectionProgress(ctx context.Context, userID, cours
 		SectionID: sectionID,
 		Status:    status,
 		Progress:  progress,
-		StartedAt: time.Now(),
 	}
 
 	if status == "completed" {
-		now := time.Now()
-		sectionProgress.CompletedAt = &now
+		sectionProgress.Progress = 100
 	}
 
 	if err := s.learningRepo.SaveSectionProgress(ctx, sectionProgress); err != nil {
@@ -92,13 +87,11 @@ func (s *LearningService) SaveUnitProgress(ctx context.Context, userID, sectionI
 		UnitID:     unitID,
 		Status:     status,
 		Progress:   progress,
-		StartedAt:  time.Now(),
 		LastWordID: lastWordID,
 	}
 
 	if status == "completed" {
-		now := time.Now()
-		unitProgress.CompletedAt = &now
+		unitProgress.Progress = 100
 	}
 
 	if err := s.learningRepo.SaveUnitProgress(ctx, unitProgress); err != nil {

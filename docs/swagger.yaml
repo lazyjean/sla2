@@ -17,6 +17,41 @@ definitions:
       updated_at:
         type: string
     type: object
+  dto.LoginDTO:
+    properties:
+      account:
+        description: 支持用户名/邮箱/手机号登录
+        example: johndoe
+        type: string
+      password:
+        example: password123
+        type: string
+    required:
+    - account
+    - password
+    type: object
+  dto.RegisterDTO:
+    properties:
+      email:
+        example: john@example.com
+        type: string
+      password:
+        example: password123
+        maxLength: 50
+        minLength: 6
+        type: string
+      phone:
+        example: "13800138000"
+        type: string
+      username:
+        example: johndoe
+        maxLength: 50
+        minLength: 3
+        type: string
+    required:
+    - password
+    - username
+    type: object
   dto.SectionProgressDTO:
     properties:
       completed_at:
@@ -34,6 +69,19 @@ definitions:
       status:
         type: string
       updated_at:
+        type: string
+    type: object
+  dto.TokenDTO:
+    properties:
+      access_token:
+        example: eyJhbGciOiJIUzI1NiIs...
+        type: string
+      expires_in:
+        description: 过期时间(秒)
+        example: 3600
+        type: integer
+      token_type:
+        example: Bearer
         type: string
     type: object
   dto.UnitProgressDTO:
@@ -55,6 +103,24 @@ definitions:
       unit_id:
         type: integer
       updated_at:
+        type: string
+    type: object
+  dto.UserDTO:
+    properties:
+      created_at:
+        example: "2025-01-26 18:00:00"
+        type: string
+      email:
+        example: john@example.com
+        type: string
+      id:
+        example: 1
+        type: integer
+      phone:
+        example: "13800138000"
+        type: string
+      username:
+        example: johndoe
         type: string
     type: object
   dto.WordCreateDTO:
@@ -149,7 +215,7 @@ definitions:
 host: localhost:9000
 info:
   contact:
-    email: lazyjean@example.com
+    email: lazyjean@foxmail.com
     name: LazyJean
   description: 生词本服务 API 文档
   title: 生词本 API
@@ -407,12 +473,80 @@ paths:
       summary: 保存单元学习进度
       tags:
       - learning
-  /v1/login:
+  /login:
     post:
-      responses: {}
-  /v1/register:
+      consumes:
+      - application/json
+      description: 使用账号密码登录
+      parameters:
+      - description: 登录凭证
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.TokenDTO'
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 认证失败
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      summary: 用户登录
+      tags:
+      - auth
+  /register:
     post:
-      responses: {}
+      consumes:
+      - application/json
+      description: 创建新用户账号
+      parameters:
+      - description: 用户注册信息
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.UserDTO'
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      summary: 用户注册
+      tags:
+      - auth
   /v1/words:
     get:
       consumes:

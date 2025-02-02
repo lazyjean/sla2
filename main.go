@@ -70,14 +70,16 @@ func main() {
 	baseWordRepo := postgres.NewWordRepository(db)
 	wordRepo := postgres.NewCachedWordRepository(baseWordRepo, redisCache)
 	learningRepo := postgres.NewLearningRepository(db)
+	userRepo := postgres.NewUserRepository(db)
 
 	// 初始化应用服务
 	wordService := service.NewWordService(wordRepo)
 	learningService := service.NewLearningService(learningRepo)
+	authService := service.NewAuthService(userRepo)
 
 	// 初始化处理器
 	wordHandler := handler.NewWordHandler(wordService)
-	authHandler := handler.NewAuthHandler()
+	authHandler := handler.NewAuthHandler(authService)
 	learningHandler := handler.NewLearningHandler(learningService)
 
 	handlers := handler.NewHandlers(wordHandler, authHandler, learningHandler)
@@ -96,6 +98,10 @@ func main() {
 
 	// 注册业务路由
 	routes.SetupRoutes(r, handlers)
+
+	// 注册用户路由
+	r.POST("/api/v1/register", authHandler.Register)
+	r.POST("/api/v1/login", authHandler.Login)
 
 	// 创建服务器
 	srv := &http.Server{

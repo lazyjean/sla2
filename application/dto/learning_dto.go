@@ -49,35 +49,40 @@ func CourseProgressToDTO(progress *entity.CourseLearningProgress) *CourseProgres
 		CourseID:    progress.CourseID,
 		Status:      progress.Status,
 		Score:       progress.Score,
-		StartedAt:   progress.StartedAt,
-		CompletedAt: progress.CompletedAt,
+		StartedAt:   progress.CreatedAt,
+		CompletedAt: nil,
 		UpdatedAt:   progress.UpdatedAt,
 	}
 }
 
 func SectionProgressToDTO(progress *entity.SectionProgress) *SectionProgressDTO {
-	return &SectionProgressDTO{
-		ID:          progress.ID,
-		CourseID:    progress.CourseID,
-		SectionID:   progress.SectionID,
-		Status:      progress.Status,
-		Progress:    progress.Progress,
-		StartedAt:   progress.StartedAt,
-		CompletedAt: progress.CompletedAt,
-		UpdatedAt:   progress.UpdatedAt,
+	dto := &SectionProgressDTO{
+		ID:        progress.ID,
+		SectionID: progress.SectionID,
+		Status:    progress.Status,
+		Progress:  progress.Progress,
+		StartedAt: progress.CreatedAt,
+		UpdatedAt: progress.UpdatedAt,
 	}
+
+	if progress.Status == "completed" {
+		dto.CompletedAt = &progress.UpdatedAt
+	}
+	return dto
 }
 
 func UnitProgressToDTO(progress *entity.UnitProgress) *UnitProgressDTO {
-	return &UnitProgressDTO{
-		ID:          progress.ID,
-		SectionID:   progress.SectionID,
-		UnitID:      progress.UnitID,
-		Status:      progress.Status,
-		Progress:    progress.Progress,
-		StartedAt:   progress.StartedAt,
-		CompletedAt: progress.CompletedAt,
-		LastWordID:  progress.LastWordID,
-		UpdatedAt:   progress.UpdatedAt,
+	dto := &UnitProgressDTO{
+		ID:        progress.ID,
+		UnitID:    progress.UnitID,
+		Status:    progress.Status,
+		Progress:  progress.Progress,
+		StartedAt: progress.CreatedAt,
+		UpdatedAt: progress.UpdatedAt,
 	}
+
+	if progress.Status == "completed" {
+		dto.CompletedAt = &progress.UpdatedAt
+	}
+	return dto
 }
