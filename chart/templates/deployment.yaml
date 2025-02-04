@@ -59,6 +59,8 @@ spec:
               value: {{ .Values.config.redis.host | quote }}
             - name: REDIS_PORT
               value: {{ .Values.config.redis.port | quote }}
+            - name: ACTIVE_PROFILE
+              value: {{ .Values.config.activeProfile | quote }}
           {{- with .Values.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
