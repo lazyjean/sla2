@@ -1,6 +1,6 @@
 # 变量定义
 IMAGE_NAME := sla2
-IMAGE_TAG := $(shell git describe --tags --always)
+IMAGE_TAG := prod-$(shell git describe --tags --always)
 DOCKER_REGISTRY := leeszi
 FULL_IMAGE_NAME := $(DOCKER_REGISTRY)/$(IMAGE_NAME):$(IMAGE_TAG)
 LATEST_IMAGE_NAME := $(DOCKER_REGISTRY)/$(IMAGE_NAME):latest
@@ -13,7 +13,10 @@ all: build
 # 本地编译
 .PHONY: build
 build:
-	go build -o bin/$(BINARY_NAME) .
+	GOOS=linux GOARCH=amd64 go build -o bin/$(BINARY_NAME) .
+
+build-arm:
+	GOOS=linux GOARCH=arm64 go build -o bin/$(BINARY_NAME)-arm64 .
 
 # 本地构建镜像
 .PHONY: docker-build-local

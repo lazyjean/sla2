@@ -1,92 +1,147 @@
 package config
 
 import (
+	"bytes"
+	"embed"
+	"fmt"
+	"os"
 	"time"
+
+	"github.com/apolloconfig/agollo/v4"
+	"github.com/apolloconfig/agollo/v4/env/config"
+	"github.com/fsnotify/fsnotify"
+	"github.com/spf13/viper"
 )
 
+//go:embed config-*.yaml
+var configFS embed.FS
+
 type Config struct {
-	Server   ServerConfig
-	Database DatabaseConfig
-	Redis    RedisConfig
-	Log      LogConfig
-	JWT      struct {
-		SecretKey string `mapstructure:"secret_key"`
-	} `mapstructure:"jwt"`
+	Server   ServerConfig   `mapstructure:"server"`
+	Database DatabaseConfig `mapstructure:"database"`
+	Redis    RedisConfig    `mapstructure:"redis"`
+	Log      LogConfig      `mapstructure:"log"`
+	JWT      JWTConfig      `mapstructure:"jwt"`
 }
 
 type ServerConfig struct {
-	Port    string
-	Mode    string // 运行模式：debug, release
-	Version string
+	Port    string `mapstructure:"port"`
+	Mode    string `mapstructure:"mode"`
+	Version string `mapstructure:"version"`
 }
 
 type DatabaseConfig struct {
-	Host            string
-	Port            string
-	User            string
-	Password        string
-	DBName          string
-	Debug           bool          // 是否开启调试模式
-	MaxOpenConns    int           // 最大打开连接数
-	MaxIdleConns    int           // 最大空闲连接数
-	ConnMaxLifetime time.Duration // 连接最大生命周期
-	ConnMaxIdleTime time.Duration // 空闲连接最大生命周期
+	Host            string        `mapstructure:"host"`
+	Port            string        `mapstructure:"port"`
+	User            string        `mapstructure:"user"`
+	Password        string        `mapstructure:"password"`
+	DBName          string        `mapstructure:"dbname"`
+	Debug           bool          `mapstructure:"debug"`
+	MaxOpenConns    int           `mapstructure:"max_open_conns"`
+	MaxIdleConns    int           `mapstructure:"max_idle_conns"`
+	ConnMaxLifetime time.Duration `mapstructure:"conn_max_lifetime"`
+	ConnMaxIdleTime time.Duration `mapstructure:"conn_max_idle_time"`
 }
 
 type RedisConfig struct {
-	Host            string
-	Port            string
-	Password        string
-	DB              int
-	MaxRetries      int           // 最大重试次数
-	MinRetryBackoff time.Duration // 最小重试间隔
-	MaxRetryBackoff time.Duration // 最大重试间隔
-	PoolSize        int           // 连接池大小
-	MinIdleConns    int           // 最小空闲连接数
-	MaxConnAge      time.Duration // 连接最大生命周期
+	Host            string        `mapstructure:"host"`
+	Port            string        `mapstructure:"port"`
+	Password        string        `mapstructure:"password"`
+	DB              int           `mapstructure:"db"`
+	MaxRetries      int           `mapstructure:"max_retries"`
+	MinRetryBackoff time.Duration `mapstructure:"min_retry_backoff"`
+	MaxRetryBackoff time.Duration `mapstructure:"max_retry_backoff"`
+	PoolSize        int           `mapstructure:"pool_size"`
+	MinIdleConns    int           `mapstructure:"min_idle_conns"`
+	MaxConnAge      time.Duration `mapstructure:"max_conn_age"`
 }
 
 type LogConfig struct {
-	Level string // debug, info, warn, error
+	Level string `mapstructure:"level"`
+}
+
+type JWTConfig struct {
+	SecretKey string `mapstructure:"secret_key"`
+}
+
+var globalConfig *Config
+
+func InitConfig() error {
+	v := viper.New()
+	v.SetConfigType("yaml")
+
+	// 从环境变量获取环境配置，默认为 development
+	env := os.Getenv("ACTIVE_PROFILE")
+	var fileName string
+	if env == "" {
+		fileName = "config"
+	} else {
+		fileName = fmt.Sprintf("config-%s", env)
+	}
+
+	// try to read embedded config
+	configFile := fmt.Sprintf("%s.yaml", fileName)
+	fileData, err := configFS.ReadFile(configFile)
+	if err == nil {
+		if err := v.ReadConfig(bytes.NewReader(fileData)); err != nil {
+			return fmt.Errorf("failed to read embedded config: %w", err)
+		}
+	} else {
+		// 2. 如果嵌入文件不存在，尝试从本地文件系统读取
+		v.SetConfigName(fileName)
+		v.AddConfigPath(".") // 当前目录
+		if err := v.ReadInConfig(); err != nil {
+			return fmt.Errorf("failed to read config from file system: %w", err)
+		}
+	}
+
+	// 3. 支持从 Apollo 配置中心加载配置
+	if v.GetBool("apollo.enabled") {
+		apolloConfig := &config.AppConfig{
+			AppID:          v.GetString("apollo.app_id"),
+			Cluster:        v.GetString("apollo.cluster"),
+			IP:             v.GetString("apollo.ip"),
+			NamespaceName:  v.GetString("apollo.namespace"),
+			IsBackupConfig: true,
+			Secret:         v.GetString("apollo.secret"),
+		}
+
+		client, err := agollo.StartWithConfig(func() (*config.AppConfig, error) {
+			return apolloConfig, nil
+		})
+		if err != nil {
+			return fmt.Errorf("failed to start Apollo client: %w", err)
+		}
+
+		// 将 Apollo 配置合并到 Viper 中
+		apolloConfigMap := client.GetConfig(apolloConfig.NamespaceName).GetValue("content")
+		if err := v.MergeConfig(bytes.NewBufferString(apolloConfigMap)); err != nil {
+			return fmt.Errorf("failed to merge Apollo config: %w", err)
+		}
+	}
+
+	// 自动加载环境变量
+	v.AutomaticEnv()
+	v.SetEnvPrefix("APP")
+	v.AllowEmptyEnv(true)
+
+	// 设置配置监听
+	v.WatchConfig()
+	v.OnConfigChange(func(e fsnotify.Event) {
+		fmt.Println("Config file changed:", e.Name)
+		if err := v.Unmarshal(&globalConfig); err != nil {
+			fmt.Printf("Error reloading config: %v\n", err)
+		}
+	})
+
+	if err := v.Unmarshal(&globalConfig); err != nil {
+		return fmt.Errorf("failed to unmarshal config: %w", err)
+	}
+
+	return nil
 }
 
 func GetConfig() *Config {
-	return &Config{
-		Server: ServerConfig{
-			Port:    "9000",
-			Mode:    "debug",
-			Version: "v1.0.0",
-		},
-		Database: DatabaseConfig{
-			Host:            "localhost",
-			Port:            "5432",
-			User:            "sla",
-			Password:        "sla1234",
-			DBName:          "sla2",
-			MaxOpenConns:    100,
-			MaxIdleConns:    10,
-			ConnMaxLifetime: 30 * time.Minute,
-			ConnMaxIdleTime: 10 * time.Minute,
-		},
-		Redis: RedisConfig{
-			Host:            "localhost",
-			Port:            "6379",
-			Password:        "",
-			DB:              0,
-			MaxRetries:      3,
-			MinRetryBackoff: time.Millisecond * 100,
-			MaxRetryBackoff: time.Second * 2,
-			PoolSize:        100,
-			MinIdleConns:    10,
-			MaxConnAge:      30 * time.Minute,
-		},
-		Log: LogConfig{
-			Level: "info", // 默认使用 info 级别
-		},
-		JWT: struct {
-			SecretKey string `mapstructure:"secret_key"`
-		}{
-			SecretKey: "dj2m#9K$pL7&vX4@nR5*wQ8^hF3!tY6", // 32字节的随机字符串
-		},
-	}
+	InitConfig()
+	return globalConfig
 }

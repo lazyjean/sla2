@@ -6,6 +6,9 @@ WORKDIR /app
 # 安装构建依赖
 RUN apk add --no-cache gcc musl-dev
 
+# 设置 Go 模块代理
+ENV GOPROXY=https://goproxy.cn,direct
+
 # 复制 go.mod 和 go.sum
 COPY go.mod go.sum ./
 RUN go mod download
@@ -30,4 +33,4 @@ COPY --from=builder /app/sla2 .
 
 EXPOSE 9000
 
-CMD ["./sla2"]  
+CMD ["./sla2"]
