@@ -69,7 +69,7 @@ release: test docker-build docker-push
 # 更新线上服务（需要配置 kubectl）
 .PHONY: deploy
 deploy:
-	kubectl set image deployment/$(IMAGE_NAME) $(IMAGE_NAME)=$(FULL_IMAGE_NAME) -n your-namespace
+	kubectl set image deployment/$(IMAGE_NAME) $(IMAGE_NAME)=$(FULL_IMAGE_NAME) -n default
 
 # 帮助信息
 .PHONY: help
