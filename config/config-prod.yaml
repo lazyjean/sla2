@@ -6,7 +6,7 @@ server:
 database:
   host: "postgres-postgresql.default.svc.cluster.local"
   port: "5432"
-  user: "root"
+  user: "sla"
   password: "sla1234"
   dbname: "sla2"
   debug: false
