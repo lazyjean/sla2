@@ -202,3 +202,46 @@ Swagger 文档提供：
 2. 提交信息需要清晰描述改动内容
 3. 重要功能需要添加单元测试
 4. 接口需要添加文档注释
+
+## 环境搭建
+
+### microk8s 安装
+
+```bash
+sudo snap install microk8s --classic
+```
+
+### 组件安装 (cert-manager, ingress, registry)
+
+```bash
+microk8s enable cert-manager ingress registry
+```
+
+### 配置远程访问集群
+
+todo
+
+### 配置代理，解决镜像拉取问题
+
+编辑 `/var/snap/microk8s/current/args/containerd-env` 文件，添加以下内容：
+
+```bash
+HTTP_PROXY=http://your-proxy-server:port
+HTTPS_PROXY=http://your-proxy-server:port
+NO_PROXY=localhost,127.0.0.1
+```
+
+然后重启 MicroK8s：
+
+```bash
+sudo systemctl restart snap.microk8s.daemon-containerd
+```
+
+### 备案域名
+
+### cert-manager 使用
+
+```bash
+microk8s kubectl get cert # 查看证书
+microk8s kubectl delete cert <xxx> # 重新生成证书
+```

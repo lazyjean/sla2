@@ -45,4 +45,7 @@ func SetupRoutes(r *gin.Engine, handlers *handler.Handlers) {
 		protected.GET("/learning/units/:unitId/progress", handlers.LearningHandler.GetUnitProgress)
 		protected.GET("/learning/sections/:sectionId/units/progress", handlers.LearningHandler.ListUnitProgress)
 	}
+
+	// 健康检查路由
+	r.GET("/healthz", handlers.HealthHandler.HealthCheck)
 }

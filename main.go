@@ -20,6 +20,7 @@ import (
 	"github.com/lazyjean/sla2/pkg/swagger"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"go.uber.org/zap"
 )
 
 // @title        生词本 API
@@ -39,6 +40,11 @@ import (
 // @description               Bearer token for authentication
 
 func main() {
+	// 初始化配置
+	if err := config.InitConfig(); err != nil {
+		logger.Log.Fatal("Failed to initialize config", zap.Error(err))
+	}
+
 	// 加载配置
 	cfg := config.GetConfig()
 
@@ -81,8 +87,9 @@ func main() {
 	wordHandler := handler.NewWordHandler(wordService)
 	authHandler := handler.NewAuthHandler(authService)
 	learningHandler := handler.NewLearningHandler(learningService)
+	healthHandler := handler.NewHealthHandler()
 
-	handlers := handler.NewHandlers(wordHandler, authHandler, learningHandler)
+	handlers := handler.NewHandlers(wordHandler, authHandler, learningHandler, healthHandler)
 
 	// 设置gin模式
 	gin.SetMode(cfg.Server.Mode)
