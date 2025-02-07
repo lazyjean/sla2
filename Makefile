@@ -1,7 +1,7 @@
 # 变量定义
 IMAGE_NAME := sla2
 IMAGE_TAG := prod-$(shell git describe --tags --always)
-DOCKER_REGISTRY := leeszi
+DOCKER_REGISTRY := registry.leeszi.cn/leeszi
 FULL_IMAGE_NAME := $(DOCKER_REGISTRY)/$(IMAGE_NAME):$(IMAGE_TAG)
 LATEST_IMAGE_NAME := $(DOCKER_REGISTRY)/$(IMAGE_NAME):latest
 BINARY_NAME := sla2
