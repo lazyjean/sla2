@@ -111,3 +111,8 @@ helm-template:
 .PHONY: helm-lint
 helm-lint:
 	helm lint ./chart 
+
+# 本地运行服务
+.PHONY: local-run
+local-run:
+	ACTIVE_PROFILE=local go run ./...

@@ -52,6 +52,30 @@ func main() {
 	logger.InitLogger(&cfg.Log)
 	defer logger.Log.Sync()
 
+	// 设置 gin 的日志输出
+	gin.DefaultWriter = logger.NewGinLogger()
+	gin.DefaultErrorWriter = gin.DefaultWriter
+
+	// 禁用 gin 的控制台颜色
+	gin.DisableConsoleColor()
+
+	// 设置gin模式
+	gin.SetMode(cfg.Server.Mode)
+
+	// 初始化 Swagger 配置
+	swagger.InitSwagger()
+
+	// 创建路由 - 使用 New() 而不是 Default()
+	r := gin.New()
+
+	// 使用自定义的日志中间件
+	r.Use(gin.LoggerWithConfig(gin.LoggerConfig{
+		Output: logger.NewGinLogger(),
+	}))
+
+	// 使用 Recovery 中间件
+	r.Use(gin.Recovery())
+
 	// 初始化数据库
 	db, err := postgres.NewDB(&cfg.Database)
 	if err != nil {
@@ -90,15 +114,6 @@ func main() {
 	healthHandler := handler.NewHealthHandler()
 
 	handlers := handler.NewHandlers(wordHandler, authHandler, learningHandler, healthHandler)
-
-	// 设置gin模式
-	gin.SetMode(cfg.Server.Mode)
-
-	// 初始化 Swagger 配置
-	swagger.InitSwagger()
-
-	// 创建路由
-	r := gin.Default()
 
 	// 注册 Swagger 路由
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
