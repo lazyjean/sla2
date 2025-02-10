@@ -70,6 +70,38 @@ func (m *MockLearningRepository) ListUnitProgress(ctx context.Context, userID, s
 	return args.Get(0).([]*entity.UnitProgress), args.Error(1)
 }
 
+func (m *MockLearningRepository) GetUserStats(ctx context.Context, userID uint) (*entity.LearningStats, error) {
+	args := m.Called(ctx, userID)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*entity.LearningStats), args.Error(1)
+}
+
+func (m *MockLearningRepository) ListByUserID(ctx context.Context, userID uint, page, pageSize int) ([]*entity.LearningProgress, int, error) {
+	args := m.Called(ctx, userID, page, pageSize)
+	if args.Get(0) == nil {
+		return nil, 0, args.Error(2)
+	}
+	return args.Get(0).([]*entity.LearningProgress), args.Get(1).(int), args.Error(2)
+}
+
+func (m *MockLearningRepository) ListReviewWords(ctx context.Context, userID uint, page, pageSize int) ([]*entity.Word, []*entity.LearningProgress, int, error) {
+	args := m.Called(ctx, userID, page, pageSize)
+	if args.Get(0) == nil {
+		return nil, nil, 0, args.Error(3)
+	}
+	return args.Get(0).([]*entity.Word), args.Get(1).([]*entity.LearningProgress), args.Get(2).(int), args.Error(3)
+}
+
+func (m *MockLearningRepository) UpdateProgress(ctx context.Context, userID, wordID uint, familiarity int, nextReviewAt time.Time) (*entity.LearningProgress, error) {
+	args := m.Called(ctx, userID, wordID, familiarity, nextReviewAt)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*entity.LearningProgress), args.Error(1)
+}
+
 func TestLearningService_SaveCourseProgress(t *testing.T) {
 	mockRepo := new(MockLearningRepository)
 	service := NewLearningService(mockRepo)

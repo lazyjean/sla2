@@ -9,7 +9,6 @@ import (
 	"github.com/lazyjean/sla2/pkg/auth"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type UserService struct {
@@ -118,9 +117,7 @@ func (s *UserService) UpdateUserInfo(ctx context.Context, req *pb.UpdateUserInfo
 		return nil, status.Error(codes.Internal, "failed to update user")
 	}
 
-	return &pb.UpdateUserInfoResponse{
-		User: convertUserToPb(user),
-	}, nil
+	return &pb.UpdateUserInfoResponse{}, nil
 }
 
 func (s *UserService) ChangePassword(ctx context.Context, req *pb.ChangePasswordRequest) (*pb.ChangePasswordResponse, error) {
@@ -146,14 +143,12 @@ func (s *UserService) ChangePassword(ctx context.Context, req *pb.ChangePassword
 		return nil, status.Error(codes.Internal, "failed to update password")
 	}
 
-	return &pb.ChangePasswordResponse{
-		Success: true,
-	}, nil
+	return &pb.ChangePasswordResponse{}, nil
 }
 
 func (s *UserService) ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest) (*pb.ResetPasswordResponse, error) {
 	// 查找用户
-	user, err := s.userRepo.FindByEmail(ctx, req.Email)
+	user, err := s.userRepo.FindByID(ctx, uint(req.UserId))
 	if err != nil {
 		return nil, status.Error(codes.NotFound, "user not found")
 	}
@@ -175,22 +170,20 @@ func (s *UserService) ResetPassword(ctx context.Context, req *pb.ResetPasswordRe
 	// TODO: 发送重置密码邮件
 	// 这里需要实现发送邮件的逻辑
 
-	return &pb.ResetPasswordResponse{
-		Success: true,
-	}, nil
+	return &pb.ResetPasswordResponse{}, nil
 }
 
 // 辅助函数：将 domain.User 转换为 pb.User
 func convertUserToPb(user *entity.User) *pb.User {
 	return &pb.User{
-		Id:        int64(user.ID),
+		Id:        uint64(user.ID),
 		Username:  user.Username,
 		Email:     user.Email,
 		Nickname:  user.Nickname,
 		Avatar:    user.Avatar,
 		Status:    convertUserStatusToPb(user.Status),
-		CreatedAt: timestamppb.New(user.CreatedAt),
-		UpdatedAt: timestamppb.New(user.UpdatedAt),
+		CreatedAt: user.CreatedAt.Unix(),
+		UpdatedAt: user.UpdatedAt.Unix(),
 	}
 }
 

@@ -10,6 +10,16 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// JWTServicer 定义了 JWT 服务的接口
+type JWTServicer interface {
+	HashPassword(password string) (string, error)
+	ComparePasswords(hashedPassword, password string) bool
+	GenerateToken(userID uint) (string, error)
+	ValidateToken(tokenString string) (uint, error)
+	GenerateRandomPassword() string
+}
+
+// JWTService 是 JWTServicer 接口的实现
 type JWTService struct {
 	secretKey string
 }
