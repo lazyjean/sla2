@@ -8,6 +8,7 @@ require (
 	github.com/apolloconfig/agollo/v4 v4.4.0
 	github.com/fsnotify/fsnotify v1.8.0
 	github.com/gin-gonic/gin v1.9.1
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/redis/go-redis/v9 v9.3.0
 	github.com/spf13/viper v1.19.0

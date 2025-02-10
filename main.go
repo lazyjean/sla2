@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -17,11 +18,11 @@ import (
 	grpcServer "github.com/lazyjean/sla2/internal/interfaces/grpc"
 	"github.com/lazyjean/sla2/internal/interfaces/http/handler"
 	"github.com/lazyjean/sla2/internal/interfaces/http/routes"
+	"github.com/lazyjean/sla2/pkg/auth"
 	"github.com/lazyjean/sla2/pkg/logger"
 	"github.com/lazyjean/sla2/pkg/swagger"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"go.uber.org/zap"
 )
 
 // @title        生词本 API
@@ -41,12 +42,11 @@ import (
 // @description               Bearer token for authentication
 
 func main() {
-	// 初始化配置
-	if err := config.InitConfig(); err != nil {
-		logger.Log.Fatal("Failed to initialize config", zap.Error(err))
-	}
-
 	// 加载配置
+	err := config.InitConfig()
+	if err != nil {
+		logger.Log.Fatal("Failed to load config: " + err.Error())
+	}
 	cfg := config.GetConfig()
 
 	// 初始化日志
@@ -103,10 +103,13 @@ func main() {
 	learningRepo := postgres.NewLearningRepository(db)
 	userRepo := postgres.NewUserRepository(db)
 
+	// 初始化认证服务
+	authSvc := auth.NewJWTService(cfg.JWT.SecretKey)
+
 	// 初始化应用服务
 	wordService := service.NewWordService(wordRepo)
 	learningService := service.NewLearningService(learningRepo)
-	authService := service.NewAuthService(userRepo)
+	authService := service.NewAuthService(userRepo, authSvc)
 
 	// 初始化处理器
 	wordHandler := handler.NewWordHandler(wordService)
@@ -133,7 +136,7 @@ func main() {
 	}
 
 	// 创建 gRPC 服务器
-	grpcSrv := grpcServer.NewServer(wordRepo, learningRepo)
+	grpcSrv := grpcServer.NewServer(userRepo, authSvc)
 
 	// 优雅关闭
 	go func() {
@@ -169,10 +172,7 @@ func main() {
 
 	// 启动 gRPC 服务器
 	grpcPort := cfg.GRPC.Port
-	if grpcPort == "" {
-		grpcPort = "9090" // 默认端口
-	}
-	logger.Log.Info("gRPC server starting on port " + grpcPort)
+	logger.Log.Info("gRPC server starting on port " + strconv.Itoa(grpcPort))
 	if err := grpcSrv.Start(grpcPort); err != nil {
 		logger.Log.Fatal("Failed to start gRPC server: " + err.Error())
 	}

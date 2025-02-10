@@ -11,10 +11,10 @@ import (
 )
 
 type AuthHandler struct {
-	authService service.AuthService
+	authService *service.AuthService
 }
 
-func NewAuthHandler(authService service.AuthService) *AuthHandler {
+func NewAuthHandler(authService *service.AuthService) *AuthHandler {
 	return &AuthHandler{authService: authService}
 }
 
@@ -36,7 +36,11 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		return
 	}
 
-	user, err := h.authService.Register(c.Request.Context(), &req)
+	user, err := h.authService.Register(c.Request.Context(), &service.RegisterRequest{
+		Username: req.Username,
+		Password: req.Password,
+		Email:    req.Email,
+	})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, NewErrorResponse(errors.CodeInternalError, err.Error()))
 		return
@@ -64,13 +68,17 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	userDTO, err := h.authService.Login(c.Request.Context(), &req)
+	userDTO, err := h.authService.Login(c.Request.Context(), &service.LoginRequest{
+		Account:  req.Account,
+		Password: req.Password,
+	})
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, NewErrorResponse(errors.CodeInvalidCredentials, err.Error()))
 		return
 	}
+
 	// 生成JWT
-	token, err := jwt.GenerateToken(int(userDTO.ID))
+	token, err := jwt.GenerateToken(int(userDTO.UserID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
 		return
@@ -78,13 +86,13 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 	// 设置 JWT token 到 cookie
 	c.SetCookie(
-		"jwt",   // cookie 名称
-		token,   // cookie 值
-		3600*24, // 过期时间（秒）：24小时
-		"/",     // cookie 路径
-		"",      // domain（留空表示当前域名）
-		true,    // 仅限 HTTPS
-		true,    // HTTP-only
+		"jwt",     // cookie 名称
+		token,     // cookie 值
+		3600*24*7, // 过期时间（秒）：24小时
+		"/",       // cookie 路径
+		"",        // domain（留空表示当前域名）
+		true,      // 仅限 HTTPS
+		true,      // HTTP-only
 	)
 
 	c.JSON(http.StatusOK, NewResponse(0, "登录成功", token))

@@ -16,13 +16,14 @@ import (
 //go:embed config-*.yaml
 var configFS embed.FS
 
+// Config 配置结构体
 type Config struct {
 	Server   ServerConfig   `mapstructure:"server"`
+	GRPC     GRPCConfig     `mapstructure:"grpc"`
 	Database DatabaseConfig `mapstructure:"database"`
 	Redis    RedisConfig    `mapstructure:"redis"`
 	Log      LogConfig      `mapstructure:"log"`
 	JWT      JWTConfig      `mapstructure:"jwt"`
-	GRPC     GRPCConfig     `mapstructure:"grpc"`
 }
 
 type ServerConfig struct {
@@ -61,12 +62,13 @@ type LogConfig struct {
 	Level string `mapstructure:"level"`
 }
 
+// JWTConfig JWT 配置
 type JWTConfig struct {
 	SecretKey string `mapstructure:"secret_key"`
 }
 
 type GRPCConfig struct {
-	Port string `mapstructure:"port"`
+	Port int `mapstructure:"port"`
 }
 
 var globalConfig *Config
@@ -147,6 +149,5 @@ func InitConfig() error {
 }
 
 func GetConfig() *Config {
-	InitConfig()
 	return globalConfig
 }

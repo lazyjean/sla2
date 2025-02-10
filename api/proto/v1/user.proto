@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+package api.v1;
+
+option go_package = "github.com/lazyjean/sla2/api/proto/v1;pb";
+
+// UserService 用户服务
+service UserService {
+  // Register 注册用户
+  rpc Register(RegisterRequest) returns (RegisterResponse) {}
+  // Login 用户登录
+  rpc Login(LoginRequest) returns (LoginResponse) {}
+  // GetUserInfo 获取用户信息
+  rpc GetUserInfo(GetUserInfoRequest) returns (GetUserInfoResponse) {}
+  // UpdateUserInfo 更新用户信息
+  rpc UpdateUserInfo(UpdateUserInfoRequest) returns (UpdateUserInfoResponse) {}
+  // ChangePassword 修改密码
+  rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse) {}
+  // ResetPassword 重置密码
+  rpc ResetPassword(ResetPasswordRequest) returns (ResetPasswordResponse) {}
+}
+
+// User 用户信息
+message User {
+  uint64 id = 1;
+  string username = 2;
+  string email = 3;
+  string nickname = 4;
+  string avatar = 5;
+  UserStatus status = 6;
+  int64 created_at = 7;
+  int64 updated_at = 8;
+}
+
+// UserStatus 用户状态
+enum UserStatus {
+  USER_STATUS_UNSPECIFIED = 0;
+  USER_STATUS_ACTIVE = 1;
+  USER_STATUS_INACTIVE = 2;
+  USER_STATUS_SUSPENDED = 3;
+}
+
+// RegisterRequest 注册请求
+message RegisterRequest {
+  string username = 1;
+  string password = 2;
+  string email = 3;
+  string nickname = 4;
+}
+
+// RegisterResponse 注册响应
+message RegisterResponse {
+  User user = 1;
+  string token = 2;
+}
+
+// LoginRequest 登录请求
+message LoginRequest {
+  string account = 1;
+  string password = 2;
+}
+
+// LoginResponse 登录响应
+message LoginResponse {
+  User user = 1;
+  string token = 2;
+}
+
+// GetUserInfoRequest 获取用户信息请求
+message GetUserInfoRequest {
+  uint64 user_id = 1;
+}
+
+// GetUserInfoResponse 获取用户信息响应
+message GetUserInfoResponse {
+  User user = 1;
+}
+
+// UpdateUserInfoRequest 更新用户信息请求
+message UpdateUserInfoRequest {
+  uint64 user_id = 1;
+  string nickname = 2;
+  string avatar = 3;
+}
+
+// UpdateUserInfoResponse 更新用户信息响应
+message UpdateUserInfoResponse {}
+
+// ChangePasswordRequest 修改密码请求
+message ChangePasswordRequest {
+  uint64 user_id = 1;
+  string old_password = 2;
+  string new_password = 3;
+}
+
+// ChangePasswordResponse 修改密码响应
+message ChangePasswordResponse {}
+
+// ResetPasswordRequest 重置密码请求
+message ResetPasswordRequest {
+  uint64 user_id = 1;
+}
+
+// ResetPasswordResponse 重置密码响应
+message ResetPasswordResponse {
+  string new_password = 1;
+} 

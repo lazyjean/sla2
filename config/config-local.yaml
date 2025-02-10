@@ -4,14 +4,15 @@ server:
   version: "v1.0.0"
 
 grpc:
-  port: "9001"
+  port: 9001
 
 database:
-  host: "localhost"
-  port: "5432"
-  user: "sla"
-  password: "sla1234"
-  dbname: "sla2"
+  host: localhost
+  port: 5432
+  user: sla
+  password: sla1234
+  dbname: sla2
+  sslmode: disable
   debug: false
   max_open_conns: 100
   max_idle_conns: 10
@@ -19,8 +20,8 @@ database:
   conn_max_idle_time: "10m"
 
 redis:
-  host: "localhost"
-  port: "6379"
+  host: localhost
+  port: 6379
   password: ""
   db: 0
   max_retries: 3
@@ -34,4 +35,4 @@ log:
   level: "info"
 
 jwt:
-  secret_key: "dj2m#9K$pL7&vX4@nR5*wQ8^hF3!tY6"
+  secret_key: "your-secret-key-here"
