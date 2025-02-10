@@ -9,13 +9,13 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/lazyjean/sla2/application/service"
 	"github.com/lazyjean/sla2/config"
 	_ "github.com/lazyjean/sla2/docs" // 导入 swagger docs
-	"github.com/lazyjean/sla2/infrastructure/cache/redis"
-	"github.com/lazyjean/sla2/infrastructure/persistence/postgres"
-	"github.com/lazyjean/sla2/interfaces/api/handler"
-	"github.com/lazyjean/sla2/interfaces/api/routes"
+	"github.com/lazyjean/sla2/internal/application/service"
+	"github.com/lazyjean/sla2/internal/infrastructure/cache/redis"
+	"github.com/lazyjean/sla2/internal/infrastructure/persistence/postgres"
+	"github.com/lazyjean/sla2/internal/interfaces/http/handler"
+	"github.com/lazyjean/sla2/internal/interfaces/http/routes"
 	"github.com/lazyjean/sla2/pkg/logger"
 	"github.com/lazyjean/sla2/pkg/swagger"
 	swaggerFiles "github.com/swaggo/files"
