@@ -162,7 +162,8 @@ func (s *UserService) UpdateUserInfo(ctx context.Context, req *pb.UpdateUserInfo
 }
 
 func (s *UserService) ChangePassword(ctx context.Context, req *pb.ChangePasswordRequest) (*pb.ChangePasswordResponse, error) {
-	user, err := s.userRepo.FindByID(ctx, uint(req.UserId))
+	userID, err := utils.GetUserIDFromContext(ctx)
+	user, err := s.userRepo.FindByID(ctx, user)
 	if err != nil {
 		return nil, status.Error(codes.NotFound, "user not found")
 	}
@@ -308,13 +309,18 @@ func (s *UserService) RefreshToken(ctx context.Context, req *pb.RefreshTokenRequ
 	}
 
 	// 生成新的令牌对
-	accessToken, refreshToken, err := s.authSvc.GenerateTokenPair(userID)
+	accessToken, err := s.authSvc.GenerateToken(userID)
 	if err != nil {
 		return nil, status.Error(codes.Internal, "生成token失败")
 	}
 
+	refreshToken, err := s.authSvc.GenerateRefreshToken(userID)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "生成refresh token失败")
+	}
+
 	return &pb.RefreshTokenResponse{
-		AccessToken:  accessToken,
+		Token:        accessToken,
 		RefreshToken: refreshToken,
 	}, nil
 }
