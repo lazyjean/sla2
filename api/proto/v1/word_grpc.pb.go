@@ -19,23 +19,20 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	WordService_GetWord_FullMethodName                = "/sla2.v1.WordService/GetWord"
-	WordService_ListWords_FullMethodName              = "/sla2.v1.WordService/ListWords"
-	WordService_UpdateLearningProgress_FullMethodName = "/sla2.v1.WordService/UpdateLearningProgress"
+	WordService_GetWord_FullMethodName   = "/sla2.v1.WordService/GetWord"
+	WordService_ListWords_FullMethodName = "/sla2.v1.WordService/ListWords"
 )
 
 // WordServiceClient is the client API for WordService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// WordService 提供单词学习相关的服务
+// WordService 提供单词相关的服务
 type WordServiceClient interface {
 	// GetWord 获取单词详情
 	GetWord(ctx context.Context, in *GetWordRequest, opts ...grpc.CallOption) (*GetWordResponse, error)
 	// ListWords 获取单词列表
 	ListWords(ctx context.Context, in *ListWordsRequest, opts ...grpc.CallOption) (*ListWordsResponse, error)
-	// UpdateLearningProgress 更新学习进度
-	UpdateLearningProgress(ctx context.Context, in *UpdateLearningProgressRequest, opts ...grpc.CallOption) (*UpdateLearningProgressResponse, error)
 }
 
 type wordServiceClient struct {
@@ -66,28 +63,16 @@ func (c *wordServiceClient) ListWords(ctx context.Context, in *ListWordsRequest,
 	return out, nil
 }
 
-func (c *wordServiceClient) UpdateLearningProgress(ctx context.Context, in *UpdateLearningProgressRequest, opts ...grpc.CallOption) (*UpdateLearningProgressResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpdateLearningProgressResponse)
-	err := c.cc.Invoke(ctx, WordService_UpdateLearningProgress_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // WordServiceServer is the server API for WordService service.
 // All implementations must embed UnimplementedWordServiceServer
 // for forward compatibility.
 //
-// WordService 提供单词学习相关的服务
+// WordService 提供单词相关的服务
 type WordServiceServer interface {
 	// GetWord 获取单词详情
 	GetWord(context.Context, *GetWordRequest) (*GetWordResponse, error)
 	// ListWords 获取单词列表
 	ListWords(context.Context, *ListWordsRequest) (*ListWordsResponse, error)
-	// UpdateLearningProgress 更新学习进度
-	UpdateLearningProgress(context.Context, *UpdateLearningProgressRequest) (*UpdateLearningProgressResponse, error)
 	mustEmbedUnimplementedWordServiceServer()
 }
 
@@ -103,9 +88,6 @@ func (UnimplementedWordServiceServer) GetWord(context.Context, *GetWordRequest) 
 }
 func (UnimplementedWordServiceServer) ListWords(context.Context, *ListWordsRequest) (*ListWordsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListWords not implemented")
-}
-func (UnimplementedWordServiceServer) UpdateLearningProgress(context.Context, *UpdateLearningProgressRequest) (*UpdateLearningProgressResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateLearningProgress not implemented")
 }
 func (UnimplementedWordServiceServer) mustEmbedUnimplementedWordServiceServer() {}
 func (UnimplementedWordServiceServer) testEmbeddedByValue()                     {}
@@ -164,24 +146,6 @@ func _WordService_ListWords_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _WordService_UpdateLearningProgress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateLearningProgressRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(WordServiceServer).UpdateLearningProgress(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: WordService_UpdateLearningProgress_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WordServiceServer).UpdateLearningProgress(ctx, req.(*UpdateLearningProgressRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // WordService_ServiceDesc is the grpc.ServiceDesc for WordService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -196,10 +160,6 @@ var WordService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListWords",
 			Handler:    _WordService_ListWords_Handler,
-		},
-		{
-			MethodName: "UpdateLearningProgress",
-			Handler:    _WordService_UpdateLearningProgress_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

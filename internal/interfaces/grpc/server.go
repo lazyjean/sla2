@@ -6,6 +6,7 @@ import (
 
 	pb "github.com/lazyjean/sla2/api/proto/v1"
 	"github.com/lazyjean/sla2/internal/domain/repository"
+	"github.com/lazyjean/sla2/internal/interfaces/grpc/learning"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/word"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -13,25 +14,28 @@ import (
 
 // Server gRPC 服务器
 type Server struct {
-	server           *grpc.Server
-	wordRepo         repository.WordRepository
-	wordLearningRepo repository.WordLearningRepository
+	server       *grpc.Server
+	wordRepo     repository.WordRepository
+	learningRepo repository.LearningRepository
 }
 
 // NewServer 创建 gRPC 服务器
-func NewServer(wordRepo repository.WordRepository, wordLearningRepo repository.WordLearningRepository) *Server {
+func NewServer(wordRepo repository.WordRepository, learningRepo repository.LearningRepository) *Server {
 	return &Server{
-		server:           grpc.NewServer(),
-		wordRepo:         wordRepo,
-		wordLearningRepo: wordLearningRepo,
+		server:       grpc.NewServer(),
+		wordRepo:     wordRepo,
+		learningRepo: learningRepo,
 	}
 }
 
 // Start 启动 gRPC 服务器
 func (s *Server) Start(port string) error {
 	// 注册服务
-	wordService := word.NewWordService(s.wordRepo, s.wordLearningRepo)
+	wordService := word.NewWordService(s.wordRepo)
 	pb.RegisterWordServiceServer(s.server, wordService)
+
+	learningService := learning.NewLearningService(s.learningRepo)
+	pb.RegisterLearningServiceServer(s.server, learningService)
 
 	// 启用反射服务
 	reflection.Register(s.server)

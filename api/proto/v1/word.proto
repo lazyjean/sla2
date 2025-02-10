@@ -6,14 +6,12 @@ option go_package = "github.com/liuzhen21/sla2/api/proto/v1;pb";
 
 import "google/protobuf/timestamp.proto";
 
-// WordService 提供单词学习相关的服务
+// WordService 提供单词相关的服务
 service WordService {
   // GetWord 获取单词详情
   rpc GetWord(GetWordRequest) returns (GetWordResponse) {}
   // ListWords 获取单词列表
   rpc ListWords(ListWordsRequest) returns (ListWordsResponse) {}
-  // UpdateLearningProgress 更新学习进度
-  rpc UpdateLearningProgress(UpdateLearningProgressRequest) returns (UpdateLearningProgressResponse) {}
 }
 
 message Word {
@@ -42,22 +40,4 @@ message ListWordsRequest {
 message ListWordsResponse {
   repeated Word words = 1;
   int32 total = 2;
-}
-
-message LearningProgress {
-  int64 user_id = 1;
-  int64 word_id = 2;
-  int32 familiarity = 3;
-  google.protobuf.Timestamp next_review_at = 4;
-  google.protobuf.Timestamp last_reviewed_at = 5;
-}
-
-message UpdateLearningProgressRequest {
-  int64 user_id = 1;
-  int64 word_id = 2;
-  int32 familiarity = 3;
-}
-
-message UpdateLearningProgressResponse {
-  LearningProgress progress = 1;
 } 

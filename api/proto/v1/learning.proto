@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+package sla2.v1;
+
+option go_package = "github.com/liuzhen21/sla2/api/proto/v1;pb";
+
+import "google/protobuf/timestamp.proto";
+import "api/proto/v1/word.proto";
+
+// LearningService 提供学习进度相关的服务
+service LearningService {
+  // UpdateLearningProgress 更新学习进度
+  rpc UpdateLearningProgress(UpdateLearningProgressRequest) returns (UpdateLearningProgressResponse) {}
+  // ListLearningProgress 获取用户的学习进度列表
+  rpc ListLearningProgress(ListLearningProgressRequest) returns (ListLearningProgressResponse) {}
+  // GetLearningStats 获取用户的学习统计信息
+  rpc GetLearningStats(GetLearningStatsRequest) returns (GetLearningStatsResponse) {}
+  // ListReviewWords 获取用户待复习的单词列表
+  rpc ListReviewWords(ListReviewWordsRequest) returns (ListReviewWordsResponse) {}
+}
+
+message LearningProgress {
+  int64 user_id = 1;
+  int64 word_id = 2;
+  int32 familiarity = 3;
+  google.protobuf.Timestamp next_review_at = 4;
+  google.protobuf.Timestamp last_reviewed_at = 5;
+}
+
+message UpdateLearningProgressRequest {
+  int64 user_id = 1;
+  int64 word_id = 2;
+  int32 familiarity = 3;
+}
+
+message UpdateLearningProgressResponse {
+  LearningProgress progress = 1;
+}
+
+message ListLearningProgressRequest {
+  int64 user_id = 1;
+  int32 page = 2;
+  int32 page_size = 3;
+}
+
+message ListLearningProgressResponse {
+  repeated LearningProgress progress_list = 1;
+  int32 total = 2;
+}
+
+message LearningStats {
+  int64 user_id = 1;
+  int32 total_words = 2;
+  int32 mastered_words = 3;
+  int32 learning_words = 4;
+  int32 review_due_count = 5;
+  google.protobuf.Timestamp last_study_time = 6;
+  int32 today_study_count = 7;
+  int32 continuous_days = 8;
+}
+
+message GetLearningStatsRequest {
+  int64 user_id = 1;
+}
+
+message GetLearningStatsResponse {
+  LearningStats stats = 1;
+}
+
+message ListReviewWordsRequest {
+  int64 user_id = 1;
+  int32 page = 2;
+  int32 page_size = 3;
+}
+
+message ListReviewWordsResponse {
+  repeated Word words = 1;
+  repeated LearningProgress progress_list = 2;
+  int32 total = 3;
+} 

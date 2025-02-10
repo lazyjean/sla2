@@ -102,7 +102,6 @@ func main() {
 	wordRepo := postgres.NewCachedWordRepository(baseWordRepo, redisCache)
 	learningRepo := postgres.NewLearningRepository(db)
 	userRepo := postgres.NewUserRepository(db)
-	wordLearningRepo := postgres.NewWordLearningRepository(db)
 
 	// 初始化应用服务
 	wordService := service.NewWordService(wordRepo)
@@ -134,7 +133,7 @@ func main() {
 	}
 
 	// 创建 gRPC 服务器
-	grpcSrv := grpcServer.NewServer(wordRepo, wordLearningRepo)
+	grpcSrv := grpcServer.NewServer(wordRepo, learningRepo)
 
 	// 优雅关闭
 	go func() {
