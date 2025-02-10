@@ -5,7 +5,6 @@ go 1.21.0
 toolchain go1.23.5
 
 require (
-	github.com/Timothylock/go-signin-with-apple v0.2.5
 	github.com/apolloconfig/agollo/v4 v4.4.0
 	github.com/fsnotify/fsnotify v1.8.0
 	github.com/gin-gonic/gin v1.9.1

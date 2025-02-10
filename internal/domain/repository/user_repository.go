@@ -20,7 +20,9 @@ type UserRepository interface {
 	FindByUsername(ctx context.Context, username string) (*entity.User, error)
 	// FindByEmail 根据邮箱查找用户
 	FindByEmail(ctx context.Context, email string) (*entity.User, error)
-	// FindByAppleID 根据苹果ID查找用户
+	// FindByPhone 根据手机号查找用户
+	FindByPhone(ctx context.Context, phone string) (*entity.User, error)
+	// FindByAppleID 根据苹果用户ID查找用户
 	FindByAppleID(ctx context.Context, appleID string) (*entity.User, error)
 	// ExistsByUsername 检查用户名是否存在
 	ExistsByUsername(ctx context.Context, username string) (bool, error)

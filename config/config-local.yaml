@@ -35,7 +35,8 @@ log:
   level: "info"
 
 jwt:
-  secret_key: "your-secret-key-here"
+  token_secret_key: "your-secret-key-here"
+  refresh_secret_key: "your-refresh-secret-key-here"
 
 apple:
   client_id: "your-apple-client-id-here"

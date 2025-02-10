@@ -18,12 +18,12 @@ type Server struct {
 	pb.UnimplementedUserServiceServer
 	server   *grpc.Server
 	userRepo repository.UserRepository
-	authSvc  *auth.JWTService
+	authSvc  auth.JWTServicer
 	userSvc  *service.UserService
 }
 
 // NewServer 创建 gRPC 服务器
-func NewServer(userRepo repository.UserRepository, authSvc *auth.JWTService) *Server {
+func NewServer(userRepo repository.UserRepository, authSvc auth.JWTServicer) *Server {
 	server := grpc.NewServer()
 
 	// 创建服务实例
@@ -107,7 +107,7 @@ func (s *Server) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResp
 }
 
 func (s *Server) GetUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
-	resp, err := s.userSvc.GetUserByID(ctx, uint(req.UserId))
+	resp, err := s.userSvc.GetUserByID(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -124,7 +124,7 @@ func (s *Server) GetUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*
 }
 
 func (s *Server) UpdateUserInfo(ctx context.Context, req *pb.UpdateUserInfoRequest) (*pb.UpdateUserInfoResponse, error) {
-	err := s.userSvc.UpdateUser(ctx, uint(req.UserId), &dto.UpdateUserRequest{
+	err := s.userSvc.UpdateUser(ctx, &dto.UpdateUserRequest{
 		Nickname: req.Nickname,
 		Avatar:   req.Avatar,
 	})
@@ -136,7 +136,7 @@ func (s *Server) UpdateUserInfo(ctx context.Context, req *pb.UpdateUserInfoReque
 }
 
 func (s *Server) ChangePassword(ctx context.Context, req *pb.ChangePasswordRequest) (*pb.ChangePasswordResponse, error) {
-	err := s.userSvc.ChangePassword(ctx, uint(req.UserId), &dto.ChangePasswordRequest{
+	err := s.userSvc.ChangePassword(ctx, &dto.ChangePasswordRequest{
 		OldPassword: req.OldPassword,
 		NewPassword: req.NewPassword,
 	})
@@ -148,12 +148,16 @@ func (s *Server) ChangePassword(ctx context.Context, req *pb.ChangePasswordReque
 }
 
 func (s *Server) ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest) (*pb.ResetPasswordResponse, error) {
-	newPassword, err := s.userSvc.ResetPassword(ctx, uint(req.UserId))
+	err := s.userSvc.ResetPassword(ctx, &dto.ResetPasswordRequest{
+		ResetType:        req.ResetType,
+		NewPassword:      req.NewPassword,
+		Phone:            req.Phone,
+		VerificationCode: req.VerificationCode,
+		AppleToken:       req.AppleToken,
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	return &pb.ResetPasswordResponse{
-		NewPassword: newPassword,
-	}, nil
+	return &pb.ResetPasswordResponse{}, nil
 }

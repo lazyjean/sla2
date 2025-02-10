@@ -18,6 +18,41 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/healthz": {
+            "get": {
+                "description": "获取服务运行状态",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "system"
+                ],
+                "summary": "服务健康状态",
+                "responses": {
+                    "200": {
+                        "description": "服务状态",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handler.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/learning/courses/{courseId}/progress": {
             "get": {
                 "security": [
@@ -1158,10 +1193,6 @@ const docTemplate = `{
         "dto.UserDTO": {
             "type": "object",
             "properties": {
-                "created_at": {
-                    "type": "string",
-                    "example": "2025-01-26 18:00:00"
-                },
                 "email": {
                     "type": "string",
                     "example": "john@example.com"

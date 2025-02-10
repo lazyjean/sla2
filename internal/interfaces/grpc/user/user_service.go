@@ -7,6 +7,7 @@ import (
 	"github.com/lazyjean/sla2/internal/domain/entity"
 	"github.com/lazyjean/sla2/internal/domain/repository"
 	"github.com/lazyjean/sla2/pkg/auth"
+	"github.com/lazyjean/sla2/pkg/utils"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -14,10 +15,10 @@ import (
 type UserService struct {
 	pb.UnimplementedUserServiceServer
 	userRepo repository.UserRepository
-	authSvc  *auth.JWTService
+	authSvc  auth.JWTServicer
 }
 
-func NewUserService(userRepo repository.UserRepository, authSvc *auth.JWTService) *UserService {
+func NewUserService(userRepo repository.UserRepository, authSvc auth.JWTServicer) *UserService {
 	return &UserService{
 		userRepo: userRepo,
 		authSvc:  authSvc,
@@ -59,40 +60,75 @@ func (s *UserService) Register(ctx context.Context, req *pb.RegisterRequest) (*p
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to generate token")
 	}
+	refreshToken, err := s.authSvc.GenerateRefreshToken(user.ID)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "failed to generate refresh token")
+	}
 
 	return &pb.RegisterResponse{
-		User:  convertUserToPb(user),
-		Token: token,
+		User:         convertUserToPb(user),
+		Token:        token,
+		RefreshToken: refreshToken,
 	}, nil
 }
 
 func (s *UserService) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResponse, error) {
-	// 获取用户信息
-	// todo: parse account to username tel or email
-	user, err := s.userRepo.FindByUsername(ctx, req.Account)
-	if err != nil {
-		return nil, status.Error(codes.NotFound, "user not found")
+	var user *entity.User
+	var err error
+
+	// 1. 尝试通过邮箱查找
+	if utils.IsValidEmail(req.Account) {
+		user, err = s.userRepo.FindByEmail(ctx, req.Account)
 	}
 
-	// 验证密码
+	// 2. 尝试通过手机号查找
+	if err != nil && utils.IsValidPhone(req.Account) {
+		user, err = s.userRepo.FindByPhone(ctx, req.Account)
+	}
+
+	// 3. 尝试通过用户名查找
+	if err != nil && utils.IsValidUsername(req.Account) {
+		user, err = s.userRepo.FindByUsername(ctx, req.Account)
+	}
+
+	if err != nil {
+		return nil, status.Error(codes.NotFound, "用户不存在")
+	}
+
+	if user.Password == "" {
+		return nil, status.Error(codes.Aborted, "用户未设置密码")
+	}
+
+	// validate password
 	if !s.authSvc.ComparePasswords(user.Password, req.Password) {
-		return nil, status.Error(codes.Unauthenticated, "invalid password")
+		return nil, status.Error(codes.Unauthenticated, "密码错误")
 	}
 
-	// 生成 token
-	token, err := s.authSvc.GenerateToken(user.ID)
+	// 生成 access token 和 refresh token
+	accessToken, err := s.authSvc.GenerateToken(user.ID)
 	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to generate token")
+		return nil, status.Error(codes.Internal, "生成token失败")
+	}
+
+	refreshToken, err := s.authSvc.GenerateRefreshToken(user.ID)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "生成refresh token失败")
 	}
 
 	return &pb.LoginResponse{
-		User:  convertUserToPb(user),
-		Token: token,
+		User:         convertUserToPb(user),
+		Token:        accessToken,
+		RefreshToken: refreshToken,
 	}, nil
 }
 
 func (s *UserService) GetUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
-	user, err := s.userRepo.FindByID(ctx, uint(req.UserId))
+	userID, err := utils.GetUserIDFromContext(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "user id not found")
+	}
+
+	user, err := s.userRepo.FindByID(ctx, uint(userID))
 	if err != nil {
 		return nil, status.Error(codes.NotFound, "user not found")
 	}
@@ -103,7 +139,12 @@ func (s *UserService) GetUserInfo(ctx context.Context, req *pb.GetUserInfoReques
 }
 
 func (s *UserService) UpdateUserInfo(ctx context.Context, req *pb.UpdateUserInfoRequest) (*pb.UpdateUserInfoResponse, error) {
-	user, err := s.userRepo.FindByID(ctx, uint(req.UserId))
+	userID, err := utils.GetUserIDFromContext(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "user id not found")
+	}
+
+	user, err := s.userRepo.FindByID(ctx, uint(userID))
 	if err != nil {
 		return nil, status.Error(codes.NotFound, "user not found")
 	}
@@ -147,28 +188,64 @@ func (s *UserService) ChangePassword(ctx context.Context, req *pb.ChangePassword
 }
 
 func (s *UserService) ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest) (*pb.ResetPasswordResponse, error) {
-	// 查找用户
-	user, err := s.userRepo.FindByID(ctx, uint(req.UserId))
-	if err != nil {
-		return nil, status.Error(codes.NotFound, "user not found")
+	var user *entity.User
+	var err error
+
+	// 验证请求参数
+	if req.NewPassword == "" {
+		return nil, status.Error(codes.InvalidArgument, "new password is required")
 	}
 
-	// 生成随机密码
-	newPassword := s.authSvc.GenerateRandomPassword()
-	hashedPassword, err := s.authSvc.HashPassword(newPassword)
+	switch req.ResetType {
+	case "phone":
+		// 验证手机号和验证码
+		if req.Phone == "" || req.VerificationCode == "" {
+			return nil, status.Error(codes.InvalidArgument, "phone and verification code are required")
+		}
+		// TODO: 验证验证码
+		// if !s.verifySvc.VerifyCode(ctx, req.Phone, req.VerificationCode) {
+		//     return nil, status.Error(codes.InvalidArgument, "invalid verification code")
+		// }
+
+		// 通过手机号查找用户
+		user, err = s.userRepo.FindByPhone(ctx, req.Phone)
+		if err != nil {
+			return nil, status.Error(codes.NotFound, "user not found")
+		}
+
+	case "apple":
+		// 验证苹果登录票据
+		if req.AppleToken == "" {
+			return nil, status.Error(codes.InvalidArgument, "apple token is required")
+		}
+
+		// 验证 Apple ID Token
+		appleIDToken, err := s.authSvc.VerifyAppleIDToken(ctx, req.AppleToken)
+		if err != nil {
+			return nil, status.Error(codes.InvalidArgument, "invalid apple token")
+		}
+
+		// 通过 Apple ID 查找用户
+		user, err = s.userRepo.FindByAppleID(ctx, appleIDToken.Subject)
+		if err != nil {
+			return nil, status.Error(codes.NotFound, "user not found")
+		}
+
+	default:
+		return nil, status.Error(codes.InvalidArgument, "unsupported reset type")
+	}
+
+	// 更新密码
+	hashedPassword, err := s.authSvc.HashPassword(req.NewPassword)
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to hash password")
 	}
 
-	// 更新密码
 	user.Password = hashedPassword
 	err = s.userRepo.Update(ctx, user)
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to update password")
 	}
-
-	// TODO: 发送重置密码邮件
-	// 这里需要实现发送邮件的逻辑
 
 	return &pb.ResetPasswordResponse{}, nil
 }
@@ -219,6 +296,26 @@ func (s *UserService) AppleLogin(ctx context.Context, req *pb.AppleLoginRequest)
 		User:      convertUserToPb(user),
 		Token:     token,
 		IsNewUser: true,
+	}, nil
+}
+
+// 添加刷新令牌接口
+func (s *UserService) RefreshToken(ctx context.Context, req *pb.RefreshTokenRequest) (*pb.RefreshTokenResponse, error) {
+	// 验证 refresh token
+	userID, err := s.authSvc.ValidateRefreshToken(req.RefreshToken)
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "无效的刷新令牌")
+	}
+
+	// 生成新的令牌对
+	accessToken, refreshToken, err := s.authSvc.GenerateTokenPair(userID)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "生成token失败")
+	}
+
+	return &pb.RefreshTokenResponse{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
 	}, nil
 }
 

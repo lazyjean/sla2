@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"crypto/rand"
 	"crypto/rsa"
 	"encoding/base64"
 	"encoding/json"
@@ -48,26 +47,28 @@ type JWTServicer interface {
 	HashPassword(password string) (string, error)
 	ComparePasswords(hashedPassword, password string) bool
 	GenerateToken(userID uint) (string, error)
+	GenerateRefreshToken(userID uint) (string, error)
 	ValidateToken(tokenString string) (uint, error)
-	GenerateRandomPassword() string
-	GenerateRandomString(length int) string
+	ValidateRefreshToken(tokenString string) (uint, error)
 	VerifyAppleIDToken(ctx context.Context, idToken string) (*AppleIDToken, error)
 }
 
 // JWTService 是 JWTServicer 接口的实现
 type JWTService struct {
-	secretKey     string
-	appleClientID string
-	appleKeys     map[string]*rsa.PublicKey
-	appleKeysMu   sync.RWMutex
-	httpClient    *http.Client
+	tokenSecretKey   string
+	refreshSecretKey string
+	appleClientID    string
+	appleKeys        map[string]*rsa.PublicKey
+	appleKeysMu      sync.RWMutex
+	httpClient       *http.Client
 }
 
-func NewJWTService(secretKey string, appleClientID string) *JWTService {
+func NewJWTService(tokenSecretKey string, refreshSecretKey string, appleClientID string) *JWTService {
 	return &JWTService{
-		secretKey:     secretKey,
-		appleClientID: appleClientID,
-		appleKeys:     make(map[string]*rsa.PublicKey),
+		tokenSecretKey:   tokenSecretKey,
+		refreshSecretKey: refreshSecretKey,
+		appleClientID:    appleClientID,
+		appleKeys:        make(map[string]*rsa.PublicKey),
 		httpClient: &http.Client{
 			Timeout: 10 * time.Second,
 		},
@@ -173,11 +174,25 @@ func (s *JWTService) GenerateToken(userID uint) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signedToken, err := token.SignedString([]byte(s.secretKey))
+	signedToken, err := token.SignedString([]byte(s.tokenSecretKey))
 	if err != nil {
 		return "", fmt.Errorf("failed to sign token: %v", err)
 	}
 
+	return signedToken, nil
+}
+
+func (s *JWTService) GenerateRefreshToken(userID uint) (string, error) {
+	claims := jwt.MapClaims{
+		"user_id": userID,
+		"exp":     time.Now().Add(30 * 24 * time.Hour).Unix(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	signedToken, err := token.SignedString([]byte(s.refreshSecretKey))
+	if err != nil {
+		return "", fmt.Errorf("failed to sign refresh token: %v", err)
+	}
 	return signedToken, nil
 }
 
@@ -186,7 +201,7 @@ func (s *JWTService) ValidateToken(tokenString string) (uint, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(s.secretKey), nil
+		return []byte(s.tokenSecretKey), nil
 	})
 
 	if err != nil {
@@ -210,33 +225,33 @@ func (s *JWTService) ValidateToken(tokenString string) (uint, error) {
 	return uint(userID), nil
 }
 
-func (s *JWTService) GenerateRandomPassword() string {
-	const length = 12
-	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*"
-	b := make([]byte, length)
-	_, err := rand.Read(b)
+func (s *JWTService) ValidateRefreshToken(tokenString string) (uint, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(s.refreshSecretKey), nil
+	})
+
 	if err != nil {
-		return base64.URLEncoding.EncodeToString([]byte(time.Now().String()))[:length]
+		return 0, fmt.Errorf("failed to parse refresh token: %v", err)
 	}
 
-	for i := range b {
-		b[i] = charset[int(b[i])%len(charset)]
-	}
-	return string(b)
-}
-
-func (s *JWTService) GenerateRandomString(length int) string {
-	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	b := make([]byte, length)
-	_, err := rand.Read(b)
-	if err != nil {
-		return base64.URLEncoding.EncodeToString([]byte(time.Now().String()))[:length]
+	if !token.Valid {
+		return 0, fmt.Errorf("invalid refresh token")
 	}
 
-	for i := range b {
-		b[i] = charset[int(b[i])%len(charset)]
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return 0, fmt.Errorf("invalid refresh token claims")
 	}
-	return string(b)
+
+	userID, ok := claims["user_id"].(float64)
+	if !ok {
+		return 0, fmt.Errorf("invalid user_id in refresh token")
+	}
+
+	return uint(userID), nil
 }
 
 func (s *JWTService) VerifyAppleIDToken(ctx context.Context, idToken string) (*AppleIDToken, error) {

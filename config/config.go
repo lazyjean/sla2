@@ -65,7 +65,8 @@ type LogConfig struct {
 
 // JWTConfig JWT 配置
 type JWTConfig struct {
-	SecretKey string `mapstructure:"secret_key"`
+	TokenSecretKey   string `mapstructure:"token_secret_key"`
+	RefreshSecretKey string `mapstructure:"refresh_secret_key"`
 }
 
 type GRPCConfig struct {

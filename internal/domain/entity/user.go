@@ -20,10 +20,11 @@ type User struct {
 	Username  string     `gorm:"type:varchar(50);not null;uniqueIndex"`
 	Password  string     `gorm:"type:varchar(100);not null"`
 	Email     string     `gorm:"type:varchar(100);not null;uniqueIndex"`
-	Nickname  string     `gorm:"type:varchar(50);not null"`
+	Nickname  string     `gorm:"type:varchar(50)"`
 	Avatar    string     `gorm:"type:varchar(255)"`
-	Status    UserStatus `gorm:"type:int;not null;default:1"`
-	AppleID   string     `gorm:"type:varchar(100);uniqueIndex"` // 苹果用户唯一标识
+	Phone     string     `gorm:"type:varchar(20);uniqueIndex"`  // 手机号
+	AppleID   string     `gorm:"type:varchar(100);uniqueIndex"` // 苹果用户ID
+	Status    UserStatus `gorm:"type:int;default:1"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

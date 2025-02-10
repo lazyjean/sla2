@@ -104,7 +104,7 @@ func main() {
 	userRepo := postgres.NewUserRepository(db)
 
 	// 初始化认证服务
-	authSvc := auth.NewJWTService(cfg.JWT.SecretKey, cfg.Apple.ClientID)
+	authSvc := auth.NewJWTService(cfg.JWT.TokenSecretKey, cfg.JWT.RefreshSecretKey, cfg.Apple.ClientID)
 
 	// 初始化应用服务
 	wordService := service.NewWordService(wordRepo)

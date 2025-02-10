@@ -20,6 +20,8 @@ service UserService {
   rpc ResetPassword(ResetPasswordRequest) returns (ResetPasswordResponse) {}
   // AppleLogin 苹果登录
   rpc AppleLogin(AppleLoginRequest) returns (AppleLoginResponse) {}
+  // RefreshToken 刷新token
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse) {}
 }
 
 // User 用户信息
@@ -54,6 +56,7 @@ message RegisterRequest {
 message RegisterResponse {
   User user = 1;
   string token = 2;
+  string refresh_token = 3;
 }
 
 // LoginRequest 登录请求
@@ -66,11 +69,12 @@ message LoginRequest {
 message LoginResponse {
   User user = 1;
   string token = 2;
+  string refresh_token = 3;
 }
 
 // GetUserInfoRequest 获取用户信息请求
 message GetUserInfoRequest {
-  uint64 user_id = 1;
+  // 已移除 user_id 字段，从上下文获取
 }
 
 // GetUserInfoResponse 获取用户信息响应
@@ -80,9 +84,9 @@ message GetUserInfoResponse {
 
 // UpdateUserInfoRequest 更新用户信息请求
 message UpdateUserInfoRequest {
-  uint64 user_id = 1;
-  string nickname = 2;
-  string avatar = 3;
+  // 已移除 user_id 字段，从上下文获取
+  string nickname = 1;
+  string avatar = 2;
 }
 
 // UpdateUserInfoResponse 更新用户信息响应
@@ -90,9 +94,9 @@ message UpdateUserInfoResponse {}
 
 // ChangePasswordRequest 修改密码请求
 message ChangePasswordRequest {
-  uint64 user_id = 1;
-  string old_password = 2;
-  string new_password = 3;
+  // 已移除 user_id 字段，从上下文获取
+  string old_password = 1;
+  string new_password = 2;
 }
 
 // ChangePasswordResponse 修改密码响应
@@ -100,13 +104,20 @@ message ChangePasswordResponse {}
 
 // ResetPasswordRequest 重置密码请求
 message ResetPasswordRequest {
-  uint64 user_id = 1;
+  // 重置方式：phone-手机号验证码，apple-苹果登录
+  string reset_type = 1;
+  // 新密码
+  string new_password = 2;
+  // 手机号（当reset_type为phone时必填）
+  string phone = 3;
+  // 验证码（当reset_type为phone时必填）
+  string verification_code = 4;
+  // 苹果登录票据（当reset_type为apple时必填）
+  string apple_token = 5;
 }
 
 // ResetPasswordResponse 重置密码响应
-message ResetPasswordResponse {
-  string new_password = 1;
-}
+message ResetPasswordResponse {}
 
 // AppleLoginRequest 苹果登录请求
 message AppleLoginRequest {
@@ -119,4 +130,15 @@ message AppleLoginResponse {
   User user = 1;        // 用户信息
   string token = 2;     // JWT token
   bool is_new_user = 3; // 是否为新用户
+}
+
+// RefreshTokenRequest 刷新token请求
+message RefreshTokenRequest {
+  string refresh_token = 1;
+}
+
+// RefreshTokenResponse 刷新token响应
+message RefreshTokenResponse {
+  string token = 1;
+  string refresh_token = 2;
 }

@@ -107,9 +107,6 @@ definitions:
     type: object
   dto.UserDTO:
     properties:
-      created_at:
-        example: "2025-01-26 18:00:00"
-        type: string
       email:
         example: john@example.com
         type: string
@@ -221,6 +218,26 @@ info:
   title: 生词本 API
   version: "1.0"
 paths:
+  /healthz:
+    get:
+      consumes:
+      - application/json
+      description: 获取服务运行状态
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 服务状态
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: 服务健康状态
+      tags:
+      - system
   /learning/courses/{courseId}/progress:
     get:
       parameters:
