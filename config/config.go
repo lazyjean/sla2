@@ -22,6 +22,7 @@ type Config struct {
 	Redis    RedisConfig    `mapstructure:"redis"`
 	Log      LogConfig      `mapstructure:"log"`
 	JWT      JWTConfig      `mapstructure:"jwt"`
+	GRPC     GRPCConfig     `mapstructure:"grpc"`
 }
 
 type ServerConfig struct {
@@ -62,6 +63,10 @@ type LogConfig struct {
 
 type JWTConfig struct {
 	SecretKey string `mapstructure:"secret_key"`
+}
+
+type GRPCConfig struct {
+	Port string `mapstructure:"port"`
 }
 
 var globalConfig *Config

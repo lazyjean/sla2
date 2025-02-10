@@ -14,6 +14,7 @@ import (
 	"github.com/lazyjean/sla2/internal/application/service"
 	"github.com/lazyjean/sla2/internal/infrastructure/cache/redis"
 	"github.com/lazyjean/sla2/internal/infrastructure/persistence/postgres"
+	grpcServer "github.com/lazyjean/sla2/internal/interfaces/grpc"
 	"github.com/lazyjean/sla2/internal/interfaces/http/handler"
 	"github.com/lazyjean/sla2/internal/interfaces/http/routes"
 	"github.com/lazyjean/sla2/pkg/logger"
@@ -101,6 +102,7 @@ func main() {
 	wordRepo := postgres.NewCachedWordRepository(baseWordRepo, redisCache)
 	learningRepo := postgres.NewLearningRepository(db)
 	userRepo := postgres.NewUserRepository(db)
+	wordLearningRepo := postgres.NewWordLearningRepository(db)
 
 	// 初始化应用服务
 	wordService := service.NewWordService(wordRepo)
@@ -125,11 +127,14 @@ func main() {
 	r.POST("/api/v1/register", authHandler.Register)
 	r.POST("/api/v1/login", authHandler.Login)
 
-	// 创建服务器
+	// 创建 HTTP 服务器
 	srv := &http.Server{
 		Addr:    ":" + cfg.Server.Port,
 		Handler: r,
 	}
+
+	// 创建 gRPC 服务器
+	grpcSrv := grpcServer.NewServer(wordRepo, wordLearningRepo)
 
 	// 优雅关闭
 	go func() {
@@ -138,22 +143,38 @@ func main() {
 		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 		<-quit
 
-		logger.Log.Info("Shutting down server...")
+		logger.Log.Info("Shutting down servers...")
 
 		// 创建一个5秒的上下文用于超时控制
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 
+		// 关闭 HTTP 服务器
 		if err := srv.Shutdown(ctx); err != nil {
-			logger.Log.Fatal("Server forced to shutdown: " + err.Error())
+			logger.Log.Fatal("HTTP server forced to shutdown: " + err.Error())
 		}
 
-		logger.Log.Info("Server exiting")
+		// 关闭 gRPC 服务器
+		grpcSrv.Stop()
+
+		logger.Log.Info("Servers exiting")
 	}()
 
-	// 启动服务器
-	logger.Log.Info("Server starting on port " + cfg.Server.Port)
-	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		logger.Log.Fatal("Failed to start server: " + err.Error())
+	// 启动 HTTP 服务器
+	go func() {
+		logger.Log.Info("HTTP server starting on port " + cfg.Server.Port)
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			logger.Log.Fatal("Failed to start HTTP server: " + err.Error())
+		}
+	}()
+
+	// 启动 gRPC 服务器
+	grpcPort := cfg.GRPC.Port
+	if grpcPort == "" {
+		grpcPort = "9090" // 默认端口
+	}
+	logger.Log.Info("gRPC server starting on port " + grpcPort)
+	if err := grpcSrv.Start(grpcPort); err != nil {
+		logger.Log.Fatal("Failed to start gRPC server: " + err.Error())
 	}
 }

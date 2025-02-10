@@ -44,7 +44,7 @@ docker-push:
 # 本地运行服务
 .PHONY: run
 run:
-	docker-compose up -d
+	ACTIVE_PROFILE=local go run ./...
 
 # 停止服务
 .PHONY: stop
@@ -60,6 +60,7 @@ logs:
 .PHONY: clean
 clean:
 	rm -f $(IMAGE_NAME)
+	rm -f api/proto/v1/*.pb.go
 	docker-compose down -v
 
 # 一键构建并推送
@@ -116,3 +117,10 @@ helm-lint:
 .PHONY: local-run
 local-run:
 	ACTIVE_PROFILE=local go run ./...
+
+# 生成 protobuf 代码
+.PHONY: proto
+proto:
+	protoc --go_out=. --go_opt=paths=source_relative \
+		--go-grpc_out=. --go-grpc_opt=paths=source_relative,require_unimplemented_servers=true \
+		api/proto/v1/*.proto

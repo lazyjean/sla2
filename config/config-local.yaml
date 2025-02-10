@@ -3,6 +3,9 @@ server:
   mode: "debug"
   version: "v1.0.0"
 
+grpc:
+  port: "9001"
+
 database:
   host: "localhost"
   port: "5432"
