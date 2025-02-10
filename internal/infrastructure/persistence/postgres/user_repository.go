@@ -108,3 +108,18 @@ func (r *userRepository) ExistsByEmail(ctx context.Context, email string) (bool,
 func (r *userRepository) Delete(ctx context.Context, id uint) error {
 	return r.db.WithContext(ctx).Delete(&entity.User{}, id).Error
 }
+
+func (r *userRepository) CreateWithAppleID(ctx context.Context, user *entity.User) error {
+	user.CreatedAt = time.Now()
+	user.UpdatedAt = time.Now()
+	return r.db.WithContext(ctx).Create(user).Error
+}
+
+func (r *userRepository) FindByAppleID(ctx context.Context, appleID string) (*entity.User, error) {
+	var user entity.User
+	err := r.db.WithContext(ctx).Where("apple_id = ?", appleID).First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}

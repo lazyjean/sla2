@@ -173,6 +173,55 @@ func (s *UserService) ResetPassword(ctx context.Context, req *pb.ResetPasswordRe
 	return &pb.ResetPasswordResponse{}, nil
 }
 
+func (s *UserService) AppleLogin(ctx context.Context, req *pb.AppleLoginRequest) (*pb.AppleLoginResponse, error) {
+	// 验证 Apple ID Token
+	appleIDToken, err := s.authSvc.VerifyAppleIDToken(ctx, req.IdToken)
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "invalid apple id token")
+	}
+
+	// 查找用户是否已存在
+	user, err := s.userRepo.FindByAppleID(ctx, appleIDToken.Subject)
+	if err == nil {
+		// 用户已存在，生成 token 并返回
+		token, err := s.authSvc.GenerateToken(user.ID)
+		if err != nil {
+			return nil, status.Error(codes.Internal, "failed to generate token")
+		}
+
+		return &pb.AppleLoginResponse{
+			User:      convertUserToPb(user),
+			Token:     token,
+			IsNewUser: false,
+		}, nil
+	}
+
+	// 创建用户
+	user = &entity.User{
+		Email:    appleIDToken.Email,
+		Nickname: appleIDToken.Name,
+		AppleID:  appleIDToken.Subject,
+		Status:   entity.UserStatusActive,
+	}
+
+	err = s.userRepo.CreateWithAppleID(ctx, user)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "failed to create user")
+	}
+
+	// 生成 token
+	token, err := s.authSvc.GenerateToken(user.ID)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "failed to generate token")
+	}
+
+	return &pb.AppleLoginResponse{
+		User:      convertUserToPb(user),
+		Token:     token,
+		IsNewUser: true,
+	}, nil
+}
+
 // 辅助函数：将 domain.User 转换为 pb.User
 func convertUserToPb(user *entity.User) *pb.User {
 	return &pb.User{

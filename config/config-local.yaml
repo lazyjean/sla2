@@ -36,3 +36,6 @@ log:
 
 jwt:
   secret_key: "your-secret-key-here"
+
+apple:
+  client_id: "your-apple-client-id-here"

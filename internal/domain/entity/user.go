@@ -23,6 +23,7 @@ type User struct {
 	Nickname  string     `gorm:"type:varchar(50);not null"`
 	Avatar    string     `gorm:"type:varchar(255)"`
 	Status    UserStatus `gorm:"type:int;not null;default:1"`
+	AppleID   string     `gorm:"type:varchar(100);uniqueIndex"` // 苹果用户唯一标识
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

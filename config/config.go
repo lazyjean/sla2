@@ -24,6 +24,7 @@ type Config struct {
 	Redis    RedisConfig    `mapstructure:"redis"`
 	Log      LogConfig      `mapstructure:"log"`
 	JWT      JWTConfig      `mapstructure:"jwt"`
+	Apple    AppleConfig    `mapstructure:"apple"`
 }
 
 type ServerConfig struct {
@@ -69,6 +70,11 @@ type JWTConfig struct {
 
 type GRPCConfig struct {
 	Port int `mapstructure:"port"`
+}
+
+// AppleConfig 苹果登录配置
+type AppleConfig struct {
+	ClientID string `mapstructure:"client_id"`
 }
 
 var globalConfig *Config

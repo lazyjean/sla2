@@ -25,6 +25,7 @@ const (
 	UserService_UpdateUserInfo_FullMethodName = "/api.v1.UserService/UpdateUserInfo"
 	UserService_ChangePassword_FullMethodName = "/api.v1.UserService/ChangePassword"
 	UserService_ResetPassword_FullMethodName  = "/api.v1.UserService/ResetPassword"
+	UserService_AppleLogin_FullMethodName     = "/api.v1.UserService/AppleLogin"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -45,6 +46,8 @@ type UserServiceClient interface {
 	ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*ChangePasswordResponse, error)
 	// ResetPassword 重置密码
 	ResetPassword(ctx context.Context, in *ResetPasswordRequest, opts ...grpc.CallOption) (*ResetPasswordResponse, error)
+	// AppleLogin 苹果登录
+	AppleLogin(ctx context.Context, in *AppleLoginRequest, opts ...grpc.CallOption) (*AppleLoginResponse, error)
 }
 
 type userServiceClient struct {
@@ -115,6 +118,16 @@ func (c *userServiceClient) ResetPassword(ctx context.Context, in *ResetPassword
 	return out, nil
 }
 
+func (c *userServiceClient) AppleLogin(ctx context.Context, in *AppleLoginRequest, opts ...grpc.CallOption) (*AppleLoginResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AppleLoginResponse)
+	err := c.cc.Invoke(ctx, UserService_AppleLogin_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -133,6 +146,8 @@ type UserServiceServer interface {
 	ChangePassword(context.Context, *ChangePasswordRequest) (*ChangePasswordResponse, error)
 	// ResetPassword 重置密码
 	ResetPassword(context.Context, *ResetPasswordRequest) (*ResetPasswordResponse, error)
+	// AppleLogin 苹果登录
+	AppleLogin(context.Context, *AppleLoginRequest) (*AppleLoginResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -160,6 +175,9 @@ func (UnimplementedUserServiceServer) ChangePassword(context.Context, *ChangePas
 }
 func (UnimplementedUserServiceServer) ResetPassword(context.Context, *ResetPasswordRequest) (*ResetPasswordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResetPassword not implemented")
+}
+func (UnimplementedUserServiceServer) AppleLogin(context.Context, *AppleLoginRequest) (*AppleLoginResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AppleLogin not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -290,6 +308,24 @@ func _UserService_ResetPassword_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_AppleLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AppleLoginRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).AppleLogin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_AppleLogin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).AppleLogin(ctx, req.(*AppleLoginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -320,6 +356,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ResetPassword",
 			Handler:    _UserService_ResetPassword_Handler,
+		},
+		{
+			MethodName: "AppleLogin",
+			Handler:    _UserService_AppleLogin_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

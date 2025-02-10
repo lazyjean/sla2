@@ -10,6 +10,8 @@ import (
 type UserRepository interface {
 	// Create 创建用户
 	Create(ctx context.Context, username, password, email, nickname string) (*entity.User, error)
+	// CreateWithAppleID 创建苹果登录用户
+	CreateWithAppleID(ctx context.Context, user *entity.User) error
 	// Update 更新用户信息
 	Update(ctx context.Context, user *entity.User) error
 	// FindByID 根据ID查找用户
@@ -18,6 +20,8 @@ type UserRepository interface {
 	FindByUsername(ctx context.Context, username string) (*entity.User, error)
 	// FindByEmail 根据邮箱查找用户
 	FindByEmail(ctx context.Context, email string) (*entity.User, error)
+	// FindByAppleID 根据苹果ID查找用户
+	FindByAppleID(ctx context.Context, appleID string) (*entity.User, error)
 	// ExistsByUsername 检查用户名是否存在
 	ExistsByUsername(ctx context.Context, username string) (bool, error)
 	// ExistsByEmail 检查邮箱是否存在
