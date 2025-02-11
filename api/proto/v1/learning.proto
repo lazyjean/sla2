@@ -5,76 +5,65 @@ package sla2.v1;
 option go_package = "github.com/liuzhen21/sla2/api/proto/v1;pb";
 
 import "google/protobuf/timestamp.proto";
-import "api/proto/v1/word.proto";
 
 // LearningService 提供学习进度相关的服务
 service LearningService {
-  // UpdateLearningProgress 更新学习进度
-  rpc UpdateLearningProgress(UpdateLearningProgressRequest) returns (UpdateLearningProgressResponse) {}
-  // ListLearningProgress 获取用户的学习进度列表
-  rpc ListLearningProgress(ListLearningProgressRequest) returns (ListLearningProgressResponse) {}
-  // GetLearningStats 获取用户的学习统计信息
-  rpc GetLearningStats(GetLearningStatsRequest) returns (GetLearningStatsResponse) {}
-  // ListReviewWords 获取用户待复习的单词列表
-  rpc ListReviewWords(ListReviewWordsRequest) returns (ListReviewWordsResponse) {}
+    // GetCourseProgress 获取课程学习进度
+    rpc GetCourseProgress(GetCourseProgressRequest) returns (GetCourseProgressResponse);
+    
+    // GetSectionProgress 获取章节学习进度
+    rpc GetSectionProgress(GetSectionProgressRequest) returns (GetSectionProgressResponse);
+    
+    // GetUnitProgress 获取单元学习进度
+    rpc GetUnitProgress(GetUnitProgressRequest) returns (GetUnitProgressResponse);
+    
+    // UpdateUnitProgress 更新单元学习进度
+    rpc UpdateUnitProgress(UpdateUnitProgressRequest) returns (UpdateUnitProgressResponse);
 }
 
-message LearningProgress {
-  int64 user_id = 1;
-  int64 word_id = 2;
-  int32 familiarity = 3;
-  google.protobuf.Timestamp next_review_at = 4;
-  google.protobuf.Timestamp last_reviewed_at = 5;
+// GetCourseProgressRequest 获取课程进度请求
+message GetCourseProgressRequest {
+    uint32 course_id = 1;
 }
 
-message UpdateLearningProgressRequest {
-  int64 user_id = 1;
-  int64 word_id = 2;
-  int32 familiarity = 3;
+// GetCourseProgressResponse 获取课程进度响应
+message GetCourseProgressResponse {
+    float progress = 1;  // 进度百分比 0-100
+    uint32 completed_section = 2;  // 已完成单元数
+    uint32 total_section = 3;      // 总单元数
 }
 
-message UpdateLearningProgressResponse {
-  LearningProgress progress = 1;
+// GetSectionProgressRequest 获取章节进度请求
+message GetSectionProgressRequest {
+    uint32 section_id = 1;
 }
 
-message ListLearningProgressRequest {
-  int64 user_id = 1;
-  int32 page = 2;
-  int32 page_size = 3;
+// GetSectionProgressResponse 获取章节进度响应
+message GetSectionProgressResponse {
+    float progress = 1;  // 进度百分比 0-100
+    uint32 completed_units = 2;  // 已完成单元数
+    uint32 total_units = 3;      // 总单元数
 }
 
-message ListLearningProgressResponse {
-  repeated LearningProgress progress_list = 1;
-  int32 total = 2;
+// GetUnitProgressRequest 获取单元进度请求
+message GetUnitProgressRequest {
+    uint32 unit_id = 1;
 }
 
-message LearningStats {
-  int64 user_id = 1;
-  int32 total_words = 2;
-  int32 mastered_words = 3;
-  int32 learning_words = 4;
-  int32 review_due_count = 5;
-  google.protobuf.Timestamp last_study_time = 6;
-  int32 today_study_count = 7;
-  int32 continuous_days = 8;
+// GetUnitProgressResponse 获取单元进度响应
+message GetUnitProgressResponse {
+    bool completed = 1;         // 是否完成
+    google.protobuf.Timestamp last_access_time = 2;  // 最后访问时间
+    uint32 study_duration = 3;   // 学习时长（秒）
 }
 
-message GetLearningStatsRequest {
-  int64 user_id = 1;
+// UpdateUnitProgressRequest 更新单元进度请求
+message UpdateUnitProgressRequest {
+    uint32 unit_id = 1;
+    bool completed = 2;         // 是否完成
+    uint32 study_duration = 3;   // 本次学习时长（秒）
 }
 
-message GetLearningStatsResponse {
-  LearningStats stats = 1;
+// UpdateUnitProgressResponse 更新单元进度响应
+message UpdateUnitProgressResponse {
 }
-
-message ListReviewWordsRequest {
-  int64 user_id = 1;
-  int32 page = 2;
-  int32 page_size = 3;
-}
-
-message ListReviewWordsResponse {
-  repeated Word words = 1;
-  repeated LearningProgress progress_list = 2;
-  int32 total = 3;
-} 

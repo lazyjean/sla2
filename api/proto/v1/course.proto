@@ -1,0 +1,123 @@
+syntax = "proto3";
+
+package sla2.v1;
+
+option go_package = "github.com/lazyjean/sla2/api/proto/v1;pb";
+
+import "google/protobuf/timestamp.proto";
+
+// CourseService 提供课程相关的服务
+service CourseService {
+    // CreateCourse 创建课程
+    rpc CreateCourse(CreateCourseRequest) returns (CreateCourseResponse);
+    
+    // UpdateCourse 更新课程
+    rpc UpdateCourse(UpdateCourseRequest) returns (UpdateCourseResponse);
+    
+    // GetCourse 获取课程详情
+    rpc GetCourse(GetCourseRequest) returns (GetCourseResponse);
+    
+    // ListCourses 获取课程列表
+    rpc ListCourses(ListCoursesRequest) returns (ListCoursesResponse);
+    
+    // DeleteCourse 删除课程
+    rpc DeleteCourse(DeleteCourseRequest) returns (DeleteCourseResponse);
+
+    // SearchCourse 搜索课程
+    rpc SearchCourse(SearchCourseRequest) returns (SearchCourseResponse);
+}
+
+// Course 课程信息
+message Course {
+    uint32 id = 1;                                    // 课程ID
+    string title = 2;                                 // 课程标题
+    string description = 3;                           // 课程描述
+    string cover_url = 4;                            // 封面图片URL
+    string level = 5;                                // 难度级别
+    uint32 duration = 6;                              // 课程时长（分钟）
+    repeated string tags = 7;                        // 课程标签
+    string status = 8;                               // 课程状态
+    google.protobuf.Timestamp created_at = 9;        // 创建时间
+    google.protobuf.Timestamp updated_at = 10;       // 更新时间
+}
+
+// CreateCourseRequest 创建课程请求
+message CreateCourseRequest {
+    string title = 1;                                // 课程标题
+    string description = 2;                          // 课程描述
+    string cover_url = 3;                           // 封面图片URL
+    string level = 4;                               // 难度级别
+    uint32 duration = 5;                             // 课程时长（分钟）
+    repeated string tags = 6;                       // 课程标签
+}
+
+// CreateCourseResponse 创建课程响应
+message CreateCourseResponse {
+    Course course = 1;                              // 创建的课程信息
+}
+
+// UpdateCourseRequest 更新课程请求
+message UpdateCourseRequest {
+    uint32 id = 1;                                  // 课程ID
+    string title = 2;                               // 课程标题
+    string description = 3;                         // 课程描述
+    string cover_url = 4;                          // 封面图片URL
+    string level = 5;                              // 难度级别
+    uint32 duration = 6;                            // 课程时长（分钟）
+    repeated string tags = 7;                      // 课程标签
+    string status = 8;                             // 课程状态
+}
+
+// UpdateCourseResponse 更新课程响应
+message UpdateCourseResponse {
+    Course course = 1;                             // 更新后的课程信息
+}
+
+// GetCourseRequest 获取课程详情请求
+message GetCourseRequest {
+    uint32 id = 1;                                 // 课程ID
+}
+
+// GetCourseResponse 获取课程详情响应
+message GetCourseResponse {
+    Course course = 1;                             // 课程信息
+}
+
+// ListCoursesRequest 获取课程列表请求
+message ListCoursesRequest {
+    uint32 page = 1;                               // 页码
+    uint32 page_size = 2;                          // 每页数量
+    uint32 level = 3;                             // 难度级别（可选）
+    string tag = 4;                               // 标签（可选）
+    string status = 5;                            // 状态（可选）
+}
+
+// ListCoursesResponse 获取课程列表响应
+message ListCoursesResponse {
+    repeated Course courses = 1;                   // 课程列表
+    uint32 total = 2;                              // 总数量
+}
+
+// DeleteCourseRequest 删除课程请求
+message DeleteCourseRequest {
+    uint32 id = 1;                                // 课程ID
+}
+
+// DeleteCourseResponse 删除课程响应
+message DeleteCourseResponse {
+}
+
+// searchCourseRequest 搜索课程请求
+message SearchCourseRequest {
+    string keyword = 1;                            // 关键词
+    uint32 level = 2;                              // 难度级别（可选）  
+    repeated string tags = 3;                       // 标签（可选）
+    uint32 page = 4;                               // 页码
+    uint32 page_size = 5;                          // 每页数量
+}
+
+// SearchCourseResponse 搜索课程响应
+message SearchCourseResponse {
+    repeated Course courses = 1;                   // 课程列表
+    uint32 total = 2;                              // 总数量
+}

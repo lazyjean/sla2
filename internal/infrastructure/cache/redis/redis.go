@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/lazyjean/sla2/config"
+	"github.com/lazyjean/sla2/internal/infrastructure/cache"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -13,7 +14,7 @@ type RedisCache struct {
 	client *redis.Client
 }
 
-func NewRedisCache(cfg *config.RedisConfig) (*RedisCache, error) {
+func NewRedisCache(cfg *config.RedisConfig) (cache.Cache, error) {
 	client := redis.NewClient(&redis.Options{
 		Addr:            fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
 		Password:        cfg.Password,

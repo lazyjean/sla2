@@ -15,7 +15,7 @@ type WordCreateDTO struct {
 
 // WordResponseDTO 单词响应的数据传输对象
 type WordResponseDTO struct {
-	ID          uint     `json:"id" example:"1"`
+	ID          uint32   `json:"id" example:"1"`
 	Text        string   `json:"text" example:"hello"`
 	Translation string   `json:"translation" example:"你好"`
 	Phonetic    string   `json:"phonetic" example:"həˈləʊ"`
@@ -28,7 +28,7 @@ type WordResponseDTO struct {
 // ToEntity 将DTO转换为领域实体
 func (dto *WordCreateDTO) ToEntity(userID uint) (*entity.Word, error) {
 	return entity.NewWord(
-		userID,
+		entity.UserID(userID),
 		dto.Text,
 		dto.Phonetic,
 		dto.Translation,
@@ -40,7 +40,7 @@ func (dto *WordCreateDTO) ToEntity(userID uint) (*entity.Word, error) {
 // FromEntity 从领域实体转换为DTO
 func WordResponseDTOFromEntity(word *entity.Word) *WordResponseDTO {
 	return &WordResponseDTO{
-		ID:          word.ID,
+		ID:          uint32(word.ID),
 		Text:        word.Text,
 		Translation: word.Translation,
 		Phonetic:    word.Phonetic,

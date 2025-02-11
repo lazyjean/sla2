@@ -15,6 +15,10 @@ type WordRepository struct {
 	db *gorm.DB
 }
 
+func NewWordRepository(db *gorm.DB) repository.WordRepository {
+	return &WordRepository{db: db}
+}
+
 // List implements repository.WordRepository.
 func (r *WordRepository) List(ctx context.Context, userID uint, offset int, limit int) ([]*entity.Word, int64, error) {
 	var words []*entity.Word
@@ -38,10 +42,6 @@ func (r *WordRepository) List(ctx context.Context, userID uint, offset int, limi
 	}
 
 	return words, total, nil
-}
-
-func NewWordRepository(db *gorm.DB) *WordRepository {
-	return &WordRepository{db: db}
 }
 
 // Save 保存单词

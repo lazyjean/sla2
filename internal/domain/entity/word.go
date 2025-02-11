@@ -6,12 +6,14 @@ import (
 	"github.com/lazyjean/sla2/internal/domain/errors"
 )
 
+type WordID uint32
+
 // Word 生词实体
 type Word struct {
 	// ID 单词唯一标识
-	ID uint `gorm:"primaryKey;autoIncrement"`
+	ID WordID `gorm:"primaryKey;autoIncrement"`
 	// UserID 用户ID
-	UserID uint `gorm:"not null;index;uniqueIndex:idx_user_text,priority:1"`
+	UserID UserID `gorm:"not null;index;uniqueIndex:idx_user_text,priority:1"`
 	// Text 单词文本
 	Text string `gorm:"type:varchar(100);not null;index;uniqueIndex:idx_user_text,priority:2"`
 	// Phonetic 音标
@@ -37,7 +39,7 @@ type Word struct {
 }
 
 // NewWord 创建新生词
-func NewWord(userID uint, text string, phonetic string, translation string, examples []string, tags []string) (*Word, error) {
+func NewWord(userID UserID, text string, phonetic string, translation string, examples []string, tags []string) (*Word, error) {
 	if userID == 0 {
 		return nil, errors.ErrInvalidUserID
 	}
@@ -64,7 +66,7 @@ func NewWord(userID uint, text string, phonetic string, translation string, exam
 	}
 
 	return &Word{
-		UserID:       userID,
+		UserID:       UserID(userID),
 		Text:         text,
 		Phonetic:     phonetic,
 		Translation:  translation,

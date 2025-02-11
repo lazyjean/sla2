@@ -3,7 +3,7 @@ package handler
 // Handlers 包含所有HTTP处理器
 type Handlers struct {
 	WordHandler     *WordHandler
-	AuthHandler     *AuthHandler
+	UserHandler     *UserHandler
 	LearningHandler *LearningHandler
 	HealthHandler   *HealthHandler
 }
@@ -11,13 +11,13 @@ type Handlers struct {
 // NewHandlers 创建新的Handlers实例
 func NewHandlers(
 	wordHandler *WordHandler,
-	authHandler *AuthHandler,
+	userHandler *UserHandler,
 	learningHandler *LearningHandler,
 	healthHandler *HealthHandler,
 ) *Handlers {
 	return &Handlers{
 		WordHandler:     wordHandler,
-		AuthHandler:     authHandler,
+		UserHandler:     userHandler,
 		LearningHandler: learningHandler,
 		HealthHandler:   healthHandler,
 	}

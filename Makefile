@@ -118,6 +118,11 @@ helm-lint:
 local-run:
 	ACTIVE_PROFILE=local go run ./...
 
+# 生成 wire 依赖注入代码
+.PHONY: generate
+generate:
+	go generate ./...
+
 # 生成 protobuf 代码
 .PHONY: proto
 proto:

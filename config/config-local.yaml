@@ -32,7 +32,7 @@ redis:
   max_conn_age: "30m"
 
 log:
-  level: "info"
+  level: "debug"
 
 jwt:
   token_secret_key: "your-secret-key-here"

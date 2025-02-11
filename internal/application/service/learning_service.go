@@ -3,11 +3,13 @@ package service
 import (
 	"context"
 
+	pb "github.com/lazyjean/sla2/api/proto/v1"
 	"github.com/lazyjean/sla2/internal/domain/entity"
 	"github.com/lazyjean/sla2/internal/domain/repository"
 )
 
 type LearningService struct {
+	pb.UnimplementedLearningServiceServer
 	learningRepo repository.LearningRepository
 }
 

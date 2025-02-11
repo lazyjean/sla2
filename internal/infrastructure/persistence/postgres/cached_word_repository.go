@@ -17,7 +17,7 @@ type CachedWordRepository struct {
 	cache cache.Cache
 }
 
-func NewCachedWordRepository(repo repository.WordRepository, cache cache.Cache) *CachedWordRepository {
+func NewCachedWordRepository(repo repository.WordRepository, cache cache.Cache) repository.CachedWordRepository {
 	return &CachedWordRepository{
 		repo:  repo,
 		cache: cache,
@@ -138,4 +138,4 @@ func (r *CachedWordRepository) Search(ctx context.Context, query *repository.Wor
 
 // 其他方法类似，实现缓存逻辑...
 
-var _ repository.WordRepository = (*CachedWordRepository)(nil)
+var _ repository.CachedWordRepository = (*CachedWordRepository)(nil)

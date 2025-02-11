@@ -9,7 +9,7 @@ import (
 // UserRepository 用户仓储接口
 type UserRepository interface {
 	// Create 创建用户
-	Create(ctx context.Context, username, password, email, nickname string) (*entity.User, error)
+	Create(ctx context.Context, username, email, password, nickname string) (*entity.User, error)
 	// CreateWithAppleID 创建苹果登录用户
 	CreateWithAppleID(ctx context.Context, user *entity.User) error
 	// Update 更新用户信息

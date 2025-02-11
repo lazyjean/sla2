@@ -129,7 +129,8 @@ message AppleLoginRequest {
 message AppleLoginResponse {
   User user = 1;        // 用户信息
   string token = 2;     // JWT token
-  bool is_new_user = 3; // 是否为新用户
+  string refresh_token = 3; // 刷新token
+  bool is_new_user = 4; // 是否为新用户
 }
 
 // RefreshTokenRequest 刷新token请求

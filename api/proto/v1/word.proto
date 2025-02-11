@@ -15,7 +15,7 @@ service WordService {
 }
 
 message Word {
-  int64 id = 1;
+  uint32 id = 1;
   string spelling = 2;
   string pronunciation = 3;
   repeated string definitions = 4;
@@ -25,7 +25,7 @@ message Word {
 }
 
 message GetWordRequest {
-  int64 word_id = 1;
+  uint32 word_id = 1;
 }
 
 message GetWordResponse {
@@ -33,11 +33,11 @@ message GetWordResponse {
 }
 
 message ListWordsRequest {
-  int32 page = 1;
-  int32 page_size = 2;
+  uint32 page = 1;
+  uint32 page_size = 2;
 }
 
 message ListWordsResponse {
   repeated Word words = 1;
-  int32 total = 2;
+  uint32 total = 2;
 } 

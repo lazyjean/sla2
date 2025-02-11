@@ -18,10 +18,10 @@ func SetupRoutes(r *gin.Engine, handlers *handler.Handlers) {
 	api := r.Group("/api/v1")
 
 	// 认证相关路由
-	public := api.Group("/auth")
+	public := api.Group("/user")
 	{
-		public.POST("/login", handlers.AuthHandler.Login)
-		public.POST("/register", handlers.AuthHandler.Register)
+		public.POST("/login", handlers.UserHandler.Login)
+		public.POST("/register", handlers.UserHandler.Register)
 	}
 
 	// 需要认证的路由

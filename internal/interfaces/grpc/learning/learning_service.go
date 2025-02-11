@@ -2,120 +2,118 @@ package learning
 
 import (
 	"context"
-	"time"
 
 	pb "github.com/lazyjean/sla2/api/proto/v1"
-	"github.com/lazyjean/sla2/internal/domain/repository"
+	"github.com/lazyjean/sla2/internal/application/service"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type LearningService struct {
 	pb.UnimplementedLearningServiceServer
-	learningRepo repository.LearningRepository
+	learningService *service.LearningService
 }
 
-func NewLearningService(learningRepo repository.LearningRepository) *LearningService {
+func NewLearningService(learningService *service.LearningService) *LearningService {
 	return &LearningService{
-		learningRepo: learningRepo,
+		learningService: learningService,
 	}
 }
 
-func (s *LearningService) UpdateLearningProgress(ctx context.Context, req *pb.UpdateLearningProgressRequest) (*pb.UpdateLearningProgressResponse, error) {
-	now := time.Now()
-	nextReviewAt := now.Add(24 * time.Hour) // 简单起见，固定24小时后复习
+// GetCourseProgress 获取课程学习进度
+func (s *LearningService) GetCourseProgress(ctx context.Context, req *pb.GetCourseProgressRequest) (*pb.GetCourseProgressResponse, error) {
+	courseID := req.CourseId
 
-	progress, err := s.learningRepo.UpdateProgress(ctx, uint(req.UserId), uint(req.WordId), int(req.Familiarity), nextReviewAt)
+	// TODO: 从上下文中获取用户ID
+	userID := uint(1)
+
+	// 获取章节总数
+	sections, err := s.learningService.ListSectionProgress(ctx, userID, uint(courseID))
 	if err != nil {
 		return nil, err
 	}
 
-	return &pb.UpdateLearningProgressResponse{
-		Progress: &pb.LearningProgress{
-			UserId:         int64(progress.UserID),
-			WordId:         int64(progress.WordID),
-			Familiarity:    int32(progress.Familiarity),
-			NextReviewAt:   timestamppb.New(progress.NextReviewAt),
-			LastReviewedAt: timestamppb.New(progress.LastReviewedAt),
-		},
+	completedSections := 0
+	for _, section := range sections {
+		if section.Status == "completed" {
+			completedSections++
+		}
+	}
+
+	return &pb.GetCourseProgressResponse{
+		Progress:         100.0, // 临时固定值，需要根据实际进度计算
+		CompletedSection: uint32(completedSections),
+		TotalSection:     uint32(len(sections)),
 	}, nil
 }
 
-func (s *LearningService) ListLearningProgress(ctx context.Context, req *pb.ListLearningProgressRequest) (*pb.ListLearningProgressResponse, error) {
-	progresses, total, err := s.learningRepo.ListByUserID(ctx, uint(req.UserId), int(req.Page), int(req.PageSize))
+// GetSectionProgress 获取章节学习进度
+func (s *LearningService) GetSectionProgress(ctx context.Context, req *pb.GetSectionProgressRequest) (*pb.GetSectionProgressResponse, error) {
+	sectionID := req.SectionId
+
+	// TODO: 从上下文中获取用户ID
+	userID := uint(1)
+
+	// 获取单元总数
+	units, err := s.learningService.ListUnitProgress(ctx, userID, uint(sectionID))
 	if err != nil {
 		return nil, err
 	}
 
-	var pbProgresses []*pb.LearningProgress
-	for _, progress := range progresses {
-		pbProgresses = append(pbProgresses, &pb.LearningProgress{
-			UserId:         int64(progress.UserID),
-			WordId:         int64(progress.WordID),
-			Familiarity:    int32(progress.Familiarity),
-			NextReviewAt:   timestamppb.New(progress.NextReviewAt),
-			LastReviewedAt: timestamppb.New(progress.LastReviewedAt),
-		})
+	completedUnits := 0
+	for _, unit := range units {
+		if unit.Status == "completed" {
+			completedUnits++
+		}
 	}
 
-	return &pb.ListLearningProgressResponse{
-		ProgressList: pbProgresses,
-		Total:        int32(total),
+	return &pb.GetSectionProgressResponse{
+		Progress:       float32(completedUnits) / float32(len(units)) * 100,
+		CompletedUnits: uint32(completedUnits),
+		TotalUnits:     uint32(len(units)),
 	}, nil
 }
 
-func (s *LearningService) GetLearningStats(ctx context.Context, req *pb.GetLearningStatsRequest) (*pb.GetLearningStatsResponse, error) {
-	stats, err := s.learningRepo.GetUserStats(ctx, uint(req.UserId))
+// GetUnitProgress 获取单元学习进度
+func (s *LearningService) GetUnitProgress(ctx context.Context, req *pb.GetUnitProgressRequest) (*pb.GetUnitProgressResponse, error) {
+	unitID := req.UnitId
+
+	// TODO: 从上下文中获取用户ID
+	userID := uint(1)
+
+	progress, err := s.learningService.GetUnitProgress(ctx, userID, uint(unitID))
 	if err != nil {
 		return nil, err
 	}
 
-	return &pb.GetLearningStatsResponse{
-		Stats: &pb.LearningStats{
-			UserId:          int64(stats.UserID),
-			TotalWords:      int32(stats.TotalWords),
-			MasteredWords:   int32(stats.MasteredWords),
-			LearningWords:   int32(stats.LearningWords),
-			ReviewDueCount:  int32(stats.ReviewDueCount),
-			LastStudyTime:   timestamppb.New(stats.LastStudyTime),
-			TodayStudyCount: int32(stats.TodayStudyCount),
-			ContinuousDays:  int32(stats.ContinuousDays),
-		},
+	return &pb.GetUnitProgressResponse{
+		Completed:      progress.Status == "completed",
+		LastAccessTime: timestamppb.New(progress.UpdatedAt),
+		StudyDuration:  0, // 临时固定值，需要根据实际学习时长计算
 	}, nil
 }
 
-func (s *LearningService) ListReviewWords(ctx context.Context, req *pb.ListReviewWordsRequest) (*pb.ListReviewWordsResponse, error) {
-	words, progresses, total, err := s.learningRepo.ListReviewWords(ctx, uint(req.UserId), int(req.Page), int(req.PageSize))
+// UpdateUnitProgress 更新单元学习进度
+func (s *LearningService) UpdateUnitProgress(ctx context.Context, req *pb.UpdateUnitProgressRequest) (*pb.UpdateUnitProgressResponse, error) {
+	unitID := req.UnitId
+
+	// TODO: 从上下文中获取用户ID
+	userID := uint(1)
+
+	status := "in_progress"
+	if req.Completed {
+		status = "completed"
+	}
+
+	// 获取当前单元所属的章节ID
+	currentProgress, err := s.learningService.GetUnitProgress(ctx, userID, uint(unitID))
 	if err != nil {
 		return nil, err
 	}
 
-	var pbWords []*pb.Word
-	for _, word := range words {
-		pbWords = append(pbWords, &pb.Word{
-			Id:            int64(word.ID),
-			Spelling:      word.Text,
-			Pronunciation: word.Phonetic,
-			Definitions:   []string{word.Translation},
-			Examples:      word.Examples,
-			CreatedAt:     timestamppb.New(word.CreatedAt),
-			UpdatedAt:     timestamppb.New(word.UpdatedAt),
-		})
+	_, err = s.learningService.SaveUnitProgress(ctx, userID, currentProgress.SectionID, uint(unitID), status, float64(req.StudyDuration), nil)
+	if err != nil {
+		return nil, err
 	}
 
-	var pbProgresses []*pb.LearningProgress
-	for _, progress := range progresses {
-		pbProgresses = append(pbProgresses, &pb.LearningProgress{
-			UserId:         int64(progress.UserID),
-			WordId:         int64(progress.WordID),
-			Familiarity:    int32(progress.Familiarity),
-			NextReviewAt:   timestamppb.New(progress.NextReviewAt),
-			LastReviewedAt: timestamppb.New(progress.LastReviewedAt),
-		})
-	}
-
-	return &pb.ListReviewWordsResponse{
-		Words:        pbWords,
-		ProgressList: pbProgresses,
-		Total:        int32(total),
-	}, nil
+	return &pb.UpdateUnitProgressResponse{}, nil
 }

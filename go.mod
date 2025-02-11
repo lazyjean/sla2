@@ -10,6 +10,7 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang-jwt/jwt/v5 v5.2.1
+	github.com/google/wire v0.6.0
 	github.com/redis/go-redis/v9 v9.3.0
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.10.0

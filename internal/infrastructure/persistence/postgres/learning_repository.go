@@ -6,21 +6,22 @@ import (
 
 	"github.com/lazyjean/sla2/internal/domain/entity"
 	domainErrors "github.com/lazyjean/sla2/internal/domain/errors"
+	"github.com/lazyjean/sla2/internal/domain/repository"
 	"gorm.io/gorm"
 )
 
-type learningRepository struct {
+type LearningRepository struct {
 	db *gorm.DB
 }
 
-func NewLearningRepository(db *gorm.DB) *learningRepository {
-	return &learningRepository{
+func NewLearningRepository(db *gorm.DB) repository.LearningRepository {
+	return &LearningRepository{
 		db: db,
 	}
 }
 
 // UpdateProgress 更新学习进度
-func (r *learningRepository) UpdateProgress(ctx context.Context, userID, wordID uint, familiarity int, nextReviewAt time.Time) (*entity.LearningProgress, error) {
+func (r *LearningRepository) UpdateProgress(ctx context.Context, userID, wordID uint, familiarity int, nextReviewAt time.Time) (*entity.LearningProgress, error) {
 	now := time.Now()
 	progress := &entity.LearningProgress{
 		UserID:         userID,
@@ -43,7 +44,7 @@ func (r *learningRepository) UpdateProgress(ctx context.Context, userID, wordID 
 }
 
 // ListByUserID 获取用户的学习进度列表
-func (r *learningRepository) ListByUserID(ctx context.Context, userID uint, page, pageSize int) ([]*entity.LearningProgress, int, error) {
+func (r *LearningRepository) ListByUserID(ctx context.Context, userID uint, page, pageSize int) ([]*entity.LearningProgress, int, error) {
 	var progresses []*entity.LearningProgress
 	var total int64
 
@@ -63,7 +64,7 @@ func (r *learningRepository) ListByUserID(ctx context.Context, userID uint, page
 }
 
 // GetUserStats 获取用户的学习统计信息
-func (r *learningRepository) GetUserStats(ctx context.Context, userID uint) (*entity.LearningStats, error) {
+func (r *LearningRepository) GetUserStats(ctx context.Context, userID uint) (*entity.LearningStats, error) {
 	var stats entity.LearningStats
 	stats.UserID = userID
 
@@ -129,7 +130,7 @@ func (r *learningRepository) GetUserStats(ctx context.Context, userID uint) (*en
 }
 
 // ListReviewWords 获取用户待复习的单词列表
-func (r *learningRepository) ListReviewWords(ctx context.Context, userID uint, page, pageSize int) ([]*entity.Word, []*entity.LearningProgress, int, error) {
+func (r *LearningRepository) ListReviewWords(ctx context.Context, userID uint, page, pageSize int) ([]*entity.Word, []*entity.LearningProgress, int, error) {
 	var progresses []*entity.LearningProgress
 	var total int64
 	now := time.Now()
@@ -169,7 +170,7 @@ func (r *learningRepository) ListReviewWords(ctx context.Context, userID uint, p
 }
 
 // calculateContinuousDays 计算连续学习天数
-func (r *learningRepository) calculateContinuousDays(ctx context.Context, userID uint) int64 {
+func (r *LearningRepository) calculateContinuousDays(ctx context.Context, userID uint) int64 {
 	var dates []time.Time
 	err := r.db.WithContext(ctx).Model(&entity.LearningProgress{}).
 		Select("DATE(last_reviewed_at) as date").
@@ -203,7 +204,7 @@ func (r *learningRepository) calculateContinuousDays(ctx context.Context, userID
 }
 
 // SaveCourseProgress 保存课程进度
-func (r *learningRepository) SaveCourseProgress(ctx context.Context, progress *entity.CourseLearningProgress) error {
+func (r *LearningRepository) SaveCourseProgress(ctx context.Context, progress *entity.CourseLearningProgress) error {
 	if err := r.db.WithContext(ctx).Save(progress).Error; err != nil {
 		return domainErrors.ErrFailedToSave
 	}
@@ -211,7 +212,7 @@ func (r *learningRepository) SaveCourseProgress(ctx context.Context, progress *e
 }
 
 // GetCourseProgress 获取课程进度
-func (r *learningRepository) GetCourseProgress(ctx context.Context, userID, courseID uint) (*entity.CourseLearningProgress, error) {
+func (r *LearningRepository) GetCourseProgress(ctx context.Context, userID, courseID uint) (*entity.CourseLearningProgress, error) {
 	var progress entity.CourseLearningProgress
 	err := r.db.WithContext(ctx).
 		Where("user_id = ? AND course_id = ?", userID, courseID).
@@ -227,7 +228,7 @@ func (r *learningRepository) GetCourseProgress(ctx context.Context, userID, cour
 }
 
 // ListCourseProgress 列出用户的课程进度
-func (r *learningRepository) ListCourseProgress(ctx context.Context, userID uint, offset, limit int) ([]*entity.CourseLearningProgress, int64, error) {
+func (r *LearningRepository) ListCourseProgress(ctx context.Context, userID uint, offset, limit int) ([]*entity.CourseLearningProgress, int64, error) {
 	var progresses []*entity.CourseLearningProgress
 	var total int64
 
@@ -252,7 +253,7 @@ func (r *learningRepository) ListCourseProgress(ctx context.Context, userID uint
 }
 
 // SaveSectionProgress 保存章节进度
-func (r *learningRepository) SaveSectionProgress(ctx context.Context, progress *entity.SectionProgress) error {
+func (r *LearningRepository) SaveSectionProgress(ctx context.Context, progress *entity.SectionProgress) error {
 	if err := r.db.WithContext(ctx).Save(progress).Error; err != nil {
 		return domainErrors.ErrFailedToSave
 	}
@@ -260,7 +261,7 @@ func (r *learningRepository) SaveSectionProgress(ctx context.Context, progress *
 }
 
 // GetSectionProgress 获取章节进度
-func (r *learningRepository) GetSectionProgress(ctx context.Context, userID, sectionID uint) (*entity.SectionProgress, error) {
+func (r *LearningRepository) GetSectionProgress(ctx context.Context, userID, sectionID uint) (*entity.SectionProgress, error) {
 	var progress entity.SectionProgress
 	err := r.db.WithContext(ctx).
 		Where("user_id = ? AND section_id = ?", userID, sectionID).
@@ -276,7 +277,7 @@ func (r *learningRepository) GetSectionProgress(ctx context.Context, userID, sec
 }
 
 // ListSectionProgress 列出章节进度
-func (r *learningRepository) ListSectionProgress(ctx context.Context, userID, courseID uint) ([]*entity.SectionProgress, error) {
+func (r *LearningRepository) ListSectionProgress(ctx context.Context, userID, courseID uint) ([]*entity.SectionProgress, error) {
 	var progresses []*entity.SectionProgress
 	err := r.db.WithContext(ctx).
 		Where("user_id = ? AND course_id = ?", userID, courseID).
@@ -289,7 +290,7 @@ func (r *learningRepository) ListSectionProgress(ctx context.Context, userID, co
 }
 
 // SaveUnitProgress 保存单元进度
-func (r *learningRepository) SaveUnitProgress(ctx context.Context, progress *entity.UnitProgress) error {
+func (r *LearningRepository) SaveUnitProgress(ctx context.Context, progress *entity.UnitProgress) error {
 	if err := r.db.WithContext(ctx).Save(progress).Error; err != nil {
 		return domainErrors.ErrFailedToSave
 	}
@@ -297,7 +298,7 @@ func (r *learningRepository) SaveUnitProgress(ctx context.Context, progress *ent
 }
 
 // GetUnitProgress 获取单元进度
-func (r *learningRepository) GetUnitProgress(ctx context.Context, userID, unitID uint) (*entity.UnitProgress, error) {
+func (r *LearningRepository) GetUnitProgress(ctx context.Context, userID, unitID uint) (*entity.UnitProgress, error) {
 	var progress entity.UnitProgress
 	err := r.db.WithContext(ctx).
 		Where("user_id = ? AND unit_id = ?", userID, unitID).
@@ -313,7 +314,7 @@ func (r *learningRepository) GetUnitProgress(ctx context.Context, userID, unitID
 }
 
 // ListUnitProgress 列出单元进度
-func (r *learningRepository) ListUnitProgress(ctx context.Context, userID, sectionID uint) ([]*entity.UnitProgress, error) {
+func (r *LearningRepository) ListUnitProgress(ctx context.Context, userID, sectionID uint) ([]*entity.UnitProgress, error) {
 	var progresses []*entity.UnitProgress
 	err := r.db.WithContext(ctx).
 		Where("user_id = ? AND section_id = ?", userID, sectionID).

@@ -13,12 +13,30 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
+	"github.com/lazyjean/sla2/config"
+	"github.com/lazyjean/sla2/internal/domain/entity"
 	"golang.org/x/crypto/bcrypt"
 )
 
 const (
 	appleJWKSURL = "https://appleid.apple.com/auth/keys"
 )
+
+// JWTConfig JWT 配置
+type JWTConfig struct {
+	TokenSecretKey   string
+	RefreshSecretKey string
+	AppleClientID    string
+}
+
+// NewJWTConfig 从配置创建 JWT 配置
+func NewJWTConfig(cfg *config.Config) *JWTConfig {
+	return &JWTConfig{
+		TokenSecretKey:   cfg.JWT.TokenSecretKey,
+		RefreshSecretKey: cfg.JWT.RefreshSecretKey,
+		AppleClientID:    cfg.Apple.ClientID,
+	}
+}
 
 // AppleIDToken Apple ID Token 信息
 type AppleIDToken struct {
@@ -46,10 +64,10 @@ type JWK struct {
 type JWTServicer interface {
 	HashPassword(password string) (string, error)
 	ComparePasswords(hashedPassword, password string) bool
-	GenerateToken(userID uint) (string, error)
-	GenerateRefreshToken(userID uint) (string, error)
-	ValidateToken(tokenString string) (uint, error)
-	ValidateRefreshToken(tokenString string) (uint, error)
+	GenerateToken(userID entity.UserID) (string, error)
+	GenerateRefreshToken(userID entity.UserID) (string, error)
+	ValidateToken(tokenString string) (entity.UserID, error)
+	ValidateRefreshToken(tokenString string) (entity.UserID, error)
 	VerifyAppleIDToken(ctx context.Context, idToken string) (*AppleIDToken, error)
 }
 
@@ -63,11 +81,11 @@ type JWTService struct {
 	httpClient       *http.Client
 }
 
-func NewJWTService(tokenSecretKey string, refreshSecretKey string, appleClientID string) *JWTService {
+func NewJWTService(cfg *JWTConfig) *JWTService {
 	return &JWTService{
-		tokenSecretKey:   tokenSecretKey,
-		refreshSecretKey: refreshSecretKey,
-		appleClientID:    appleClientID,
+		tokenSecretKey:   cfg.TokenSecretKey,
+		refreshSecretKey: cfg.RefreshSecretKey,
+		appleClientID:    cfg.AppleClientID,
 		appleKeys:        make(map[string]*rsa.PublicKey),
 		httpClient: &http.Client{
 			Timeout: 10 * time.Second,
@@ -167,7 +185,7 @@ func (s *JWTService) ComparePasswords(hashedPassword, password string) bool {
 	return err == nil
 }
 
-func (s *JWTService) GenerateToken(userID uint) (string, error) {
+func (s *JWTService) GenerateToken(userID entity.UserID) (string, error) {
 	claims := jwt.MapClaims{
 		"user_id": userID,
 		"exp":     time.Now().Add(7 * 24 * time.Hour).Unix(),
@@ -182,7 +200,7 @@ func (s *JWTService) GenerateToken(userID uint) (string, error) {
 	return signedToken, nil
 }
 
-func (s *JWTService) GenerateRefreshToken(userID uint) (string, error) {
+func (s *JWTService) GenerateRefreshToken(userID entity.UserID) (string, error) {
 	claims := jwt.MapClaims{
 		"user_id": userID,
 		"exp":     time.Now().Add(30 * 24 * time.Hour).Unix(),
@@ -196,7 +214,7 @@ func (s *JWTService) GenerateRefreshToken(userID uint) (string, error) {
 	return signedToken, nil
 }
 
-func (s *JWTService) ValidateToken(tokenString string) (uint, error) {
+func (s *JWTService) ValidateToken(tokenString string) (entity.UserID, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -222,10 +240,10 @@ func (s *JWTService) ValidateToken(tokenString string) (uint, error) {
 		return 0, fmt.Errorf("invalid user_id in token")
 	}
 
-	return uint(userID), nil
+	return entity.UserID(userID), nil
 }
 
-func (s *JWTService) ValidateRefreshToken(tokenString string) (uint, error) {
+func (s *JWTService) ValidateRefreshToken(tokenString string) (entity.UserID, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -251,7 +269,7 @@ func (s *JWTService) ValidateRefreshToken(tokenString string) (uint, error) {
 		return 0, fmt.Errorf("invalid user_id in refresh token")
 	}
 
-	return uint(userID), nil
+	return entity.UserID(userID), nil
 }
 
 func (s *JWTService) VerifyAppleIDToken(ctx context.Context, idToken string) (*AppleIDToken, error) {

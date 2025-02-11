@@ -231,5 +231,5 @@ func (h *WordHandler) SearchWords(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, NewListResponse(words, page, pageSize, total))
+	c.JSON(http.StatusOK, NewListResponse(words, page, pageSize, int64(total)))
 }

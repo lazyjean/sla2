@@ -18,6 +18,10 @@ type WordRepository interface {
 	Search(ctx context.Context, query *WordQuery) ([]*entity.Word, int64, error)
 }
 
+type CachedWordRepository interface {
+	WordRepository
+}
+
 // WordQuery 定义查询参数
 type WordQuery struct {
 	UserID        uint      // 用户ID
