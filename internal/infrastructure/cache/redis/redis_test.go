@@ -6,11 +6,12 @@ import (
 	"time"
 
 	"github.com/lazyjean/sla2/config"
+	"github.com/lazyjean/sla2/internal/infrastructure/cache"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func setupTestRedis(t *testing.T) *RedisCache {
+func setupTestRedis(t *testing.T) cache.Cache {
 	cfg := &config.RedisConfig{
 		Host:            "localhost",
 		Port:            "6379",

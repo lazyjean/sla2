@@ -57,12 +57,12 @@ func TestNewWord(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			word, err := NewWord(tt.userID, tt.text, tt.phonetic, tt.translation, tt.examples, tt.tags)
+			word, err := NewWord(UserID(tt.userID), tt.text, tt.phonetic, tt.translation, tt.examples, tt.tags)
 			assert.Equal(t, tt.wantErr, err)
 			if err == nil {
 				assert.NotEmpty(t, word.CreatedAt)
 				assert.NotEmpty(t, word.UpdatedAt)
-				assert.Equal(t, tt.userID, word.UserID)
+				assert.Equal(t, UserID(tt.userID), word.UserID)
 				assert.Equal(t, tt.text, word.Text)
 				assert.Equal(t, tt.translation, word.Translation)
 				assert.Equal(t, tt.examples, word.Examples)

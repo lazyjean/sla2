@@ -47,7 +47,7 @@ func TestLearningRepository_SectionProgress(t *testing.T) {
 	ctx := context.Background()
 
 	// 创建测试数据
-	progress := &entity.SectionProgress{
+	progress := &entity.CourseSectionProgress{
 		UserID:    1,
 		CourseID:  100,
 		SectionID: 1001,
@@ -77,7 +77,7 @@ func TestLearningRepository_UnitProgress(t *testing.T) {
 	ctx := context.Background()
 
 	// 创建测试数据
-	progress := &entity.UnitProgress{
+	progress := &entity.CourseSectionUnitProgress{
 		UserID:   1,
 		UnitID:   300,
 		Status:   "in_progress",
@@ -150,7 +150,7 @@ func TestSaveSectionProgress(t *testing.T) {
 	repo := NewLearningRepository(db)
 	ctx := context.Background()
 
-	progress := &entity.SectionProgress{
+	progress := &entity.CourseSectionProgress{
 		UserID:    1,
 		CourseID:  100,
 		SectionID: 1001,
@@ -168,7 +168,7 @@ func TestGetSectionProgress(t *testing.T) {
 	ctx := context.Background()
 
 	// 先保存数据
-	progress := &entity.SectionProgress{
+	progress := &entity.CourseSectionProgress{
 		UserID:    1,
 		CourseID:  100,
 		SectionID: 1001,
@@ -191,7 +191,7 @@ func TestListSectionProgress(t *testing.T) {
 	ctx := context.Background()
 
 	// 先保存数据
-	progress := &entity.SectionProgress{
+	progress := &entity.CourseSectionProgress{
 		UserID:    1,
 		CourseID:  100,
 		SectionID: 1001,
@@ -213,7 +213,7 @@ func TestLearningRepository_SaveUnitProgress(t *testing.T) {
 	ctx := context.Background()
 
 	// 创建测试数据
-	progress := &entity.UnitProgress{
+	progress := &entity.CourseSectionUnitProgress{
 		UserID:   1,
 		UnitID:   300,
 		Status:   "in_progress",

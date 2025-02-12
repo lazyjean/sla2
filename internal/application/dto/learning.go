@@ -55,7 +55,7 @@ func CourseProgressToDTO(progress *entity.CourseLearningProgress) *CourseProgres
 	}
 }
 
-func SectionProgressToDTO(progress *entity.SectionProgress) *SectionProgressDTO {
+func SectionProgressToDTO(progress *entity.CourseSectionProgress) *SectionProgressDTO {
 	dto := &SectionProgressDTO{
 		ID:        progress.ID,
 		SectionID: progress.SectionID,
@@ -71,7 +71,7 @@ func SectionProgressToDTO(progress *entity.SectionProgress) *SectionProgressDTO 
 	return dto
 }
 
-func UnitProgressToDTO(progress *entity.UnitProgress) *UnitProgressDTO {
+func UnitProgressToDTO(progress *entity.CourseSectionUnitProgress) *UnitProgressDTO {
 	dto := &UnitProgressDTO{
 		ID:        progress.ID,
 		UnitID:    progress.UnitID,

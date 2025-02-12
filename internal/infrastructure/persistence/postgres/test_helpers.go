@@ -30,8 +30,8 @@ func setupTestDB(t *testing.T) *gorm.DB {
 	err = db.AutoMigrate(
 		&entity.Word{},
 		&entity.CourseLearningProgress{},
-		&entity.SectionProgress{},
-		&entity.UnitProgress{},
+		&entity.CourseSectionProgress{},
+		&entity.CourseSectionUnitProgress{},
 	)
 	require.NoError(t, err)
 
@@ -53,8 +53,8 @@ func cleanTestData(t *testing.T, db *gorm.DB) {
 	tables := []string{
 		"words",
 		"course_learning_progresses",
-		"section_progresses",
-		"unit_progresses",
+		"course_section_progresses",
+		"course_section_unit_progresses",
 	}
 
 	for _, table := range tables {

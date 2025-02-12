@@ -51,8 +51,8 @@ func (s *LearningService) ListCourseProgress(ctx context.Context, userID uint, p
 }
 
 // SaveSectionProgress 保存章节学习进度
-func (s *LearningService) SaveSectionProgress(ctx context.Context, userID, courseID, sectionID uint, status string, progress float64) (*entity.SectionProgress, error) {
-	sectionProgress := &entity.SectionProgress{
+func (s *LearningService) SaveSectionProgress(ctx context.Context, userID, courseID, sectionID uint, status string, progress float64) (*entity.CourseSectionProgress, error) {
+	sectionProgress := &entity.CourseSectionProgress{
 		UserID:    userID,
 		CourseID:  courseID,
 		SectionID: sectionID,
@@ -72,24 +72,23 @@ func (s *LearningService) SaveSectionProgress(ctx context.Context, userID, cours
 }
 
 // GetSectionProgress 获取章节学习进度
-func (s *LearningService) GetSectionProgress(ctx context.Context, userID, sectionID uint) (*entity.SectionProgress, error) {
+func (s *LearningService) GetSectionProgress(ctx context.Context, userID, sectionID uint) (*entity.CourseSectionProgress, error) {
 	return s.learningRepo.GetSectionProgress(ctx, userID, sectionID)
 }
 
 // ListSectionProgress 获取课程的章节学习进度列表
-func (s *LearningService) ListSectionProgress(ctx context.Context, userID, courseID uint) ([]*entity.SectionProgress, error) {
+func (s *LearningService) ListSectionProgress(ctx context.Context, userID, courseID uint) ([]*entity.CourseSectionProgress, error) {
 	return s.learningRepo.ListSectionProgress(ctx, userID, courseID)
 }
 
 // SaveUnitProgress 保存单元学习进度
-func (s *LearningService) SaveUnitProgress(ctx context.Context, userID, sectionID, unitID uint, status string, progress float64, lastWordID *uint) (*entity.UnitProgress, error) {
-	unitProgress := &entity.UnitProgress{
-		UserID:     userID,
-		SectionID:  sectionID,
-		UnitID:     unitID,
-		Status:     status,
-		Progress:   progress,
-		LastWordID: lastWordID,
+func (s *LearningService) SaveUnitProgress(ctx context.Context, userID, sectionID, unitID uint, status string, progress float64, lastWordID *uint) (*entity.CourseSectionUnitProgress, error) {
+	unitProgress := &entity.CourseSectionUnitProgress{
+		UserID:    userID,
+		SectionID: sectionID,
+		UnitID:    unitID,
+		Status:    status,
+		Progress:  progress,
 	}
 
 	if status == "completed" {
@@ -104,11 +103,11 @@ func (s *LearningService) SaveUnitProgress(ctx context.Context, userID, sectionI
 }
 
 // GetUnitProgress 获取单元学习进度
-func (s *LearningService) GetUnitProgress(ctx context.Context, userID, unitID uint) (*entity.UnitProgress, error) {
+func (s *LearningService) GetUnitProgress(ctx context.Context, userID, unitID uint) (*entity.CourseSectionUnitProgress, error) {
 	return s.learningRepo.GetUnitProgress(ctx, userID, unitID)
 }
 
 // ListUnitProgress 获取章节的单元学习进度列表
-func (s *LearningService) ListUnitProgress(ctx context.Context, userID, sectionID uint) ([]*entity.UnitProgress, error) {
+func (s *LearningService) ListUnitProgress(ctx context.Context, userID, sectionID uint) ([]*entity.CourseSectionUnitProgress, error) {
 	return s.learningRepo.ListUnitProgress(ctx, userID, sectionID)
 }

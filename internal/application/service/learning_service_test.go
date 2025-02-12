@@ -34,72 +34,40 @@ func (m *MockLearningRepository) ListCourseProgress(ctx context.Context, userID 
 	return args.Get(0).([]*entity.CourseLearningProgress), args.Get(1).(int64), args.Error(2)
 }
 
-func (m *MockLearningRepository) SaveSectionProgress(ctx context.Context, progress *entity.SectionProgress) error {
+func (m *MockLearningRepository) SaveSectionProgress(ctx context.Context, progress *entity.CourseSectionProgress) error {
 	args := m.Called(ctx, progress)
 	return args.Error(0)
 }
 
-func (m *MockLearningRepository) GetSectionProgress(ctx context.Context, userID, sectionID uint) (*entity.SectionProgress, error) {
+func (m *MockLearningRepository) GetSectionProgress(ctx context.Context, userID, sectionID uint) (*entity.CourseSectionProgress, error) {
 	args := m.Called(ctx, userID, sectionID)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).(*entity.SectionProgress), args.Error(1)
+	return args.Get(0).(*entity.CourseSectionProgress), args.Error(1)
 }
 
-func (m *MockLearningRepository) ListSectionProgress(ctx context.Context, userID, courseID uint) ([]*entity.SectionProgress, error) {
+func (m *MockLearningRepository) ListSectionProgress(ctx context.Context, userID, courseID uint) ([]*entity.CourseSectionProgress, error) {
 	args := m.Called(ctx, userID, courseID)
-	return args.Get(0).([]*entity.SectionProgress), args.Error(1)
+	return args.Get(0).([]*entity.CourseSectionProgress), args.Error(1)
 }
 
-func (m *MockLearningRepository) SaveUnitProgress(ctx context.Context, progress *entity.UnitProgress) error {
+func (m *MockLearningRepository) SaveUnitProgress(ctx context.Context, progress *entity.CourseSectionUnitProgress) error {
 	args := m.Called(ctx, progress)
 	return args.Error(0)
 }
 
-func (m *MockLearningRepository) GetUnitProgress(ctx context.Context, userID, unitID uint) (*entity.UnitProgress, error) {
+func (m *MockLearningRepository) GetUnitProgress(ctx context.Context, userID, unitID uint) (*entity.CourseSectionUnitProgress, error) {
 	args := m.Called(ctx, userID, unitID)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).(*entity.UnitProgress), args.Error(1)
+	return args.Get(0).(*entity.CourseSectionUnitProgress), args.Error(1)
 }
 
-func (m *MockLearningRepository) ListUnitProgress(ctx context.Context, userID, sectionID uint) ([]*entity.UnitProgress, error) {
+func (m *MockLearningRepository) ListUnitProgress(ctx context.Context, userID, sectionID uint) ([]*entity.CourseSectionUnitProgress, error) {
 	args := m.Called(ctx, userID, sectionID)
-	return args.Get(0).([]*entity.UnitProgress), args.Error(1)
-}
-
-func (m *MockLearningRepository) GetUserStats(ctx context.Context, userID uint) (*entity.LearningStats, error) {
-	args := m.Called(ctx, userID)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(*entity.LearningStats), args.Error(1)
-}
-
-func (m *MockLearningRepository) ListByUserID(ctx context.Context, userID uint, page, pageSize int) ([]*entity.LearningProgress, int, error) {
-	args := m.Called(ctx, userID, page, pageSize)
-	if args.Get(0) == nil {
-		return nil, 0, args.Error(2)
-	}
-	return args.Get(0).([]*entity.LearningProgress), args.Get(1).(int), args.Error(2)
-}
-
-func (m *MockLearningRepository) ListReviewWords(ctx context.Context, userID uint, page, pageSize int) ([]*entity.Word, []*entity.LearningProgress, int, error) {
-	args := m.Called(ctx, userID, page, pageSize)
-	if args.Get(0) == nil {
-		return nil, nil, 0, args.Error(3)
-	}
-	return args.Get(0).([]*entity.Word), args.Get(1).([]*entity.LearningProgress), args.Get(2).(int), args.Error(3)
-}
-
-func (m *MockLearningRepository) UpdateProgress(ctx context.Context, userID, wordID uint, familiarity int, nextReviewAt time.Time) (*entity.LearningProgress, error) {
-	args := m.Called(ctx, userID, wordID, familiarity, nextReviewAt)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(*entity.LearningProgress), args.Error(1)
+	return args.Get(0).([]*entity.CourseSectionUnitProgress), args.Error(1)
 }
 
 func TestLearningService_SaveCourseProgress(t *testing.T) {
@@ -230,11 +198,3 @@ func TestLearningService_ListCourseProgress(t *testing.T) {
 		assert.Equal(t, uint(101), progresses[1].CourseID)
 	})
 }
-
-// 可以继续添加其他方法的测试用例，如:
-// - TestLearningService_SaveSectionProgress
-// - TestLearningService_GetSectionProgress
-// - TestLearningService_ListSectionProgress
-// - TestLearningService_SaveUnitProgress
-// - TestLearningService_GetUnitProgress
-// - TestLearningService_ListUnitProgress

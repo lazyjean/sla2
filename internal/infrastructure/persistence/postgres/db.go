@@ -70,9 +70,10 @@ func autoMigrate(db *gorm.DB) error {
 		if err := tx.AutoMigrate(
 			&entity.Word{},
 			&entity.CourseLearningProgress{},
-			&entity.SectionProgress{},
-			&entity.UnitProgress{},
+			&entity.CourseSectionProgress{},
+			&entity.CourseSectionUnitProgress{},
 			&entity.User{},
+			&entity.Course{},
 		); err != nil {
 			return err
 		}

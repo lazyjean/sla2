@@ -34,7 +34,7 @@ func TestWordRepository_Save(t *testing.T) {
 	require.NotEmpty(t, word.ID)
 
 	// 验证保存的数据
-	saved, err := repo.FindByID(ctx, word.ID)
+	saved, err := repo.FindByID(ctx, uint(word.ID))
 	require.NoError(t, err)
 	require.NotNil(t, saved)
 
@@ -66,7 +66,7 @@ func TestWordRepository_Save(t *testing.T) {
 	assert.Equal(t, int64(1), count)
 
 	// 验证原始数据保持不变
-	saved, err = repo.FindByID(ctx, word.ID)
+	saved, err = repo.FindByID(ctx, uint(word.ID))
 	require.NoError(t, err)
 	assert.Equal(t, "有弹性的；能快速恢复的；适应力强的", saved.Translation)
 	assert.Equal(t, []string{"adjective", "personality", "advanced"}, saved.Tags)

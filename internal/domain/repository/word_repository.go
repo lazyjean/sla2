@@ -24,16 +24,16 @@ type CachedWordRepository interface {
 
 // WordQuery 定义查询参数
 type WordQuery struct {
-	UserID        uint      // 用户ID
-	Text          string    // 单词文本
-	Tags          []string  // 标签列表
-	MinDifficulty int       // 最小难度
-	MaxDifficulty int       // 最大难度
-	MasteryLevel  *int      // 掌握程度
-	ReviewBefore  time.Time // 需要在此时间前复习
-	CreatedAfter  time.Time // 在此时间后创建
-	OrderBy       string    // 排序字段
-	OrderDesc     bool      // 是否降序
-	Offset        int       // 分页偏移
-	Limit         int       // 分页大小
+	UserID        entity.UserID // 用户ID
+	Text          string        // 单词文本
+	Tags          []string      // 标签列表
+	MinDifficulty int           // 最小难度
+	MaxDifficulty int           // 最大难度
+	MasteryLevel  *int          // 掌握程度
+	ReviewBefore  time.Time     // 需要在此时间前复习
+	CreatedAfter  time.Time     // 在此时间后创建
+	OrderBy       string        // 排序字段
+	OrderDesc     bool          // 是否降序
+	Offset        int           // 分页偏移
+	Limit         int           // 分页大小
 }
