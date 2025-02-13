@@ -9,7 +9,9 @@ import (
 	"github.com/lazyjean/sla2/internal/domain/errors"
 	"github.com/lazyjean/sla2/internal/domain/repository"
 	"github.com/lazyjean/sla2/pkg/auth"
+	"github.com/lazyjean/sla2/pkg/logger"
 	"github.com/lazyjean/sla2/pkg/utils"
+	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -79,23 +81,62 @@ func (s *UserService) Register(ctx context.Context, req *dto.RegisterRequest) (*
 func (s *UserService) Login(ctx context.Context, req *dto.LoginRequest) (*dto.LoginResponse, error) {
 	var user *entity.User
 	var err error
+	log := logger.GetLogger(ctx)
+	log.Info("登录请求",
+		zap.String("account", req.Account),
+	)
 
 	// 1. 尝试通过邮箱查找
 	if utils.IsValidEmail(req.Account) {
+		log.Debug("通过邮箱查找用户",
+			zap.String("email", req.Account),
+		)
 		user, err = s.userRepo.FindByEmail(ctx, req.Account)
-	}
-
-	// 2. 尝试通过手机号查找
-	if err != nil && utils.IsValidPhone(req.Account) {
+		if err != nil {
+			log.Error("通过邮箱查找用户失败",
+				zap.String("email", req.Account),
+				zap.Error(err),
+			)
+		}
+	} else if utils.IsValidPhone(req.Account) {
+		fmt.Println("通过手机号查找用户", req.Account)
+		// 2. 尝试通过手机号查找
+		log.Debug("通过手机号查找用户",
+			zap.String("phone", req.Account),
+		)
 		user, err = s.userRepo.FindByPhone(ctx, req.Account)
-	}
-
-	// 3. 尝试通过用户名查找
-	if err != nil && utils.IsValidUsername(req.Account) {
+		if err != nil {
+			log.Error("通过手机号查找用户失败",
+				zap.String("phone", req.Account),
+				zap.Error(err),
+			)
+		}
+	} else if utils.IsValidUsername(req.Account) {
+		// 3. 尝试通过用户名查找
+		log.Debug("通过用户名查找用户",
+			zap.String("username", req.Account),
+		)
 		user, err = s.userRepo.FindByUsername(ctx, req.Account)
+		if err != nil {
+			log.Error("通过用户名查找用户失败",
+				zap.String("username", req.Account),
+				zap.Error(err),
+			)
+		}
 	}
 
 	if err != nil {
+		log.Error("用户查找失败",
+			zap.String("account", req.Account),
+			zap.Error(err),
+		)
+		return nil, status.Error(codes.NotFound, "用户不存在")
+	}
+
+	if user == nil {
+		log.Error("用户对象为空",
+			zap.String("account", req.Account),
+		)
 		return nil, status.Error(codes.NotFound, "用户不存在")
 	}
 

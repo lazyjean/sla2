@@ -1,6 +1,8 @@
 package utils
 
-import "regexp"
+import (
+	"regexp"
+)
 
 // IsValidEmail 验证邮箱格式
 func IsValidEmail(email string) bool {

@@ -10,6 +10,7 @@ import (
 	"github.com/lazyjean/sla2/internal/interfaces/grpc"
 	"github.com/lazyjean/sla2/internal/interfaces/http/handler"
 	"github.com/lazyjean/sla2/internal/interfaces/http/routes"
+	"github.com/lazyjean/sla2/pkg/auth"
 	"github.com/lazyjean/sla2/pkg/logger"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -22,9 +23,8 @@ type App struct {
 	httpServer *http.Server
 }
 
-func NewApp(handlers *handler.Handlers, grpcServer *grpc.Server, cfg *config.Config) *App {
+func NewApp(handlers *handler.Handlers, grpcServer *grpc.Server, cfg *config.Config, jwtService *auth.JWTService) *App {
 	// 创建 gin router
-
 	// 设置 gin 的日志输出
 	gin.DefaultWriter = logger.NewGinLogger()
 	gin.DefaultErrorWriter = logger.NewGinLogger()
@@ -42,7 +42,7 @@ func NewApp(handlers *handler.Handlers, grpcServer *grpc.Server, cfg *config.Con
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// 注册业务路由
-	routes.SetupRoutes(r, handlers)
+	routes.SetupRoutes(r, handlers, jwtService)
 
 	// 注册用户路由
 	r.POST("/api/v1/register", handlers.UserHandler.Register)

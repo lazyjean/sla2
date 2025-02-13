@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -38,7 +39,11 @@ func main() {
 	cfg := config.GetConfig()
 
 	// 初始化日志
-	logger.InitLogger(&cfg.Log)
+	err = logger.InitLogger(&cfg.Log)
+	if err != nil {
+		fmt.Printf("Failed to initialize logger: %v\n", err)
+		os.Exit(1)
+	}
 	defer logger.Log.Sync()
 
 	// 初始化应用

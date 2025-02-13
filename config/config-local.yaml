@@ -13,7 +13,7 @@ database:
   password: sla1234
   dbname: sla2
   sslmode: disable
-  debug: false
+  debug: true
   max_open_conns: 100
   max_idle_conns: 10
   conn_max_lifetime: "30m"
@@ -33,10 +33,11 @@ redis:
 
 log:
   level: "debug"
+  file_path: "./logs/app.log"
 
 jwt:
-  token_secret_key: "your-secret-key-here"
-  refresh_secret_key: "your-refresh-secret-key-here"
+  token_secret_key: "dj2n8xK9pL5mQ7vR3fT1hG4wY6sB8cA0eU9nM2iP"
+  refresh_secret_key: "kL9mN5vX7pH2jR4wT8cA3fE6bY1iU0qS5nD8mK2p"
 
 apple:
   client_id: "your-apple-client-id-here"

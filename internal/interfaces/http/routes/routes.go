@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/lazyjean/sla2/internal/interfaces/http/handler"
 	"github.com/lazyjean/sla2/internal/interfaces/http/middleware"
+	"github.com/lazyjean/sla2/pkg/auth"
 )
 
 // @title SLA2 API
@@ -13,7 +14,10 @@ import (
 // @securityDefinitions.apikey Bearer
 // @in header
 // @name Authorization
-func SetupRoutes(r *gin.Engine, handlers *handler.Handlers) {
+func SetupRoutes(r *gin.Engine, handlers *handler.Handlers, jwtService *auth.JWTService) {
+	// 使用日志中间件
+	r.Use(middleware.LoggerMiddleware())
+
 	// API 路由组
 	api := r.Group("/api/v1")
 
@@ -26,7 +30,7 @@ func SetupRoutes(r *gin.Engine, handlers *handler.Handlers) {
 
 	// 需要认证的路由
 	protected := api.Group("")
-	protected.Use(middleware.AuthMiddleware())
+	protected.Use(middleware.AuthMiddleware(jwtService))
 	{
 		// 单词相关
 		protected.GET("/words", handlers.WordHandler.ListWords)

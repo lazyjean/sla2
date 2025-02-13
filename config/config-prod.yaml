@@ -3,12 +3,16 @@ server:
   mode: "release"
   version: "v1.0.0"
 
+grpc:
+  port: 9001
+
 database:
   host: "postgres-postgresql.default.svc.cluster.local"
   port: "5432"
   user: "sla"
   password: "sla1234"
   dbname: "sla2"
+  sslmode: disable
   debug: false
   max_open_conns: 100
   max_idle_conns: 10
@@ -29,6 +33,11 @@ redis:
 
 log:
   level: "info"
+  file_path: "./logs/app.log"
 
 jwt:
-  secret_key: "dj2m#9K$pL7&vX4@nR5*wQ8^hF3!tY6"
+  token_secret_key: "mX4nJ8pK2cL7vR9wT5hB3fA6yU1iE8qD0sN4mK9p"
+  refresh_secret_key: "bH7kL2mN9vX4pH6jR8wT1cA5fE3yU7iQ2sD8nK4p"
+
+apple:
+  client_id: "your-apple-client-id-here"

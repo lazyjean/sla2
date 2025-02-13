@@ -60,7 +60,8 @@ type RedisConfig struct {
 }
 
 type LogConfig struct {
-	Level string `mapstructure:"level"`
+	Level    string `mapstructure:"level"`
+	FilePath string `mapstructure:"file_path"`
 }
 
 // JWTConfig JWT 配置
