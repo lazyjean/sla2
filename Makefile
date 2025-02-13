@@ -10,9 +10,19 @@ BINARY_NAME := sla2
 .PHONY: all
 all: build
 
+# 生成 protobuf 代码
+.PHONY: proto
+proto:
+	@echo "生成 protobuf 代码..."
+	@cd sla2-proto && make generate-go
+	@mkdir -p api/proto/v1
+	@rm -f api/proto/v1/*.pb.go
+	@cp -r sla2-proto/gen/go/proto/v1/* api/proto/v1/
+	@echo "protobuf 代码生成完成"
+
 # 本地编译
 .PHONY: build
-build:
+build: proto
 	GOOS=linux GOARCH=amd64 go build -o bin/$(BINARY_NAME) .
 
 build-arm:
@@ -61,6 +71,7 @@ logs:
 clean:
 	rm -f $(IMAGE_NAME)
 	rm -f api/proto/v1/*.pb.go
+	@cd sla2-proto && make clean
 	docker-compose down -v
 
 # 一键构建并推送
@@ -122,10 +133,3 @@ local-run:
 .PHONY: generate
 generate:
 	go generate ./...
-
-# 生成 protobuf 代码
-.PHONY: proto
-proto:
-	protoc --go_out=. --go_opt=paths=source_relative \
-		--go-grpc_out=. --go-grpc_opt=paths=source_relative,require_unimplemented_servers=true \
-		api/proto/v1/*.proto

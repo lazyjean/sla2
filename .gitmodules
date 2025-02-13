@@ -1,0 +1,3 @@
+[submodule "sla2-proto"]
+	path = sla2-proto
+	url = ./sla2-proto
