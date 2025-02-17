@@ -44,7 +44,7 @@ func InitializeApp(cfg *config.Config) (*App, error) {
 	learningHandler := handler.NewLearningHandler(learningService)
 	healthHandler := handler.NewHealthHandler()
 	handlers := handler.NewHandlers(wordHandler, userHandler, learningHandler, healthHandler)
-	server := grpc.NewServer(userService, wordService, learningService, jwtService)
+	server := grpc.NewServer(userService, wordService, learningService, jwtService, cfg)
 	app := NewApp(handlers, server, cfg, jwtService)
 	return app, nil
 }

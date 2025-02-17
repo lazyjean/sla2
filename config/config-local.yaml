@@ -5,6 +5,7 @@ server:
 
 grpc:
   port: 9001
+  reflection: true # todo: 开发环境注册反射服务
 
 database:
   host: localhost

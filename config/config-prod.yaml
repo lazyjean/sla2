@@ -5,6 +5,7 @@ server:
 
 grpc:
   port: 9001
+  reflection: true # todo: 生产环境关闭反射服务
 
 database:
   host: "postgres-postgresql.default.svc.cluster.local"

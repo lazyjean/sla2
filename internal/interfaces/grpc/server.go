@@ -5,12 +5,14 @@ import (
 	"net"
 
 	pb "github.com/lazyjean/sla2/api/proto/v1"
+	"github.com/lazyjean/sla2/config"
 	"github.com/lazyjean/sla2/internal/application/service"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/learning"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/user"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/word"
 	"github.com/lazyjean/sla2/pkg/auth"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 // Server gRPC 服务器
@@ -22,7 +24,7 @@ type Server struct {
 }
 
 // NewServer 创建 gRPC 服务器
-func NewServer(userService *service.UserService, wordService *service.WordService, learningService *service.LearningService, authSvc auth.JWTServicer) *Server {
+func NewServer(userService *service.UserService, wordService *service.WordService, learningService *service.LearningService, authSvc auth.JWTServicer, cfg *config.Config) *Server {
 	server := grpc.NewServer()
 
 	s := &Server{
@@ -36,6 +38,12 @@ func NewServer(userService *service.UserService, wordService *service.WordServic
 	pb.RegisterUserServiceServer(server, s.userSvc)
 	pb.RegisterWordServiceServer(server, s.wordSvc)
 	pb.RegisterLearningServiceServer(server, s.learningSvc)
+
+	// todo: 开发环境注册反射服务
+	if cfg.GRPC.Reflection {
+		reflection.Register(server)
+	}
+
 	return s
 }
 
