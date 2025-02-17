@@ -107,12 +107,8 @@ func (s *UserService) ResetPassword(ctx context.Context, req *pb.ResetPasswordRe
 
 // AppleLogin 处理苹果登录请求
 func (s *UserService) AppleLogin(ctx context.Context, req *pb.AppleLoginRequest) (*pb.AppleLoginResponse, error) {
-	if req.IdToken == "" {
-		return nil, status.Error(codes.InvalidArgument, "Apple ID Token不能为空")
-	}
-
 	// 调用应用层服务处理苹果登录
-	resp, err := s.userService.AppleLogin(ctx, req.IdToken)
+	resp, err := s.userService.AppleLogin(ctx, req.AuthorizationCode)
 	if err != nil {
 		return nil, err
 	}

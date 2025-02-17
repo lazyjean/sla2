@@ -19,8 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	WordService_GetWord_FullMethodName   = "/sla2.v1.WordService/GetWord"
-	WordService_ListWords_FullMethodName = "/sla2.v1.WordService/ListWords"
+	WordService_Get_FullMethodName  = "/proto.v1.WordService/Get"
+	WordService_List_FullMethodName = "/proto.v1.WordService/List"
 )
 
 // WordServiceClient is the client API for WordService service.
@@ -29,10 +29,10 @@ const (
 //
 // WordService 提供单词相关的服务
 type WordServiceClient interface {
-	// GetWord 获取单词详情
-	GetWord(ctx context.Context, in *GetWordRequest, opts ...grpc.CallOption) (*GetWordResponse, error)
-	// ListWords 获取单词列表
-	ListWords(ctx context.Context, in *ListWordsRequest, opts ...grpc.CallOption) (*ListWordsResponse, error)
+	// Get 获取单词详情
+	Get(ctx context.Context, in *WordServiceGetRequest, opts ...grpc.CallOption) (*WordServiceGetResponse, error)
+	// List 获取单词列表
+	List(ctx context.Context, in *WordServiceListRequest, opts ...grpc.CallOption) (*WordServiceListResponse, error)
 }
 
 type wordServiceClient struct {
@@ -43,20 +43,20 @@ func NewWordServiceClient(cc grpc.ClientConnInterface) WordServiceClient {
 	return &wordServiceClient{cc}
 }
 
-func (c *wordServiceClient) GetWord(ctx context.Context, in *GetWordRequest, opts ...grpc.CallOption) (*GetWordResponse, error) {
+func (c *wordServiceClient) Get(ctx context.Context, in *WordServiceGetRequest, opts ...grpc.CallOption) (*WordServiceGetResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetWordResponse)
-	err := c.cc.Invoke(ctx, WordService_GetWord_FullMethodName, in, out, cOpts...)
+	out := new(WordServiceGetResponse)
+	err := c.cc.Invoke(ctx, WordService_Get_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *wordServiceClient) ListWords(ctx context.Context, in *ListWordsRequest, opts ...grpc.CallOption) (*ListWordsResponse, error) {
+func (c *wordServiceClient) List(ctx context.Context, in *WordServiceListRequest, opts ...grpc.CallOption) (*WordServiceListResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListWordsResponse)
-	err := c.cc.Invoke(ctx, WordService_ListWords_FullMethodName, in, out, cOpts...)
+	out := new(WordServiceListResponse)
+	err := c.cc.Invoke(ctx, WordService_List_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -69,10 +69,10 @@ func (c *wordServiceClient) ListWords(ctx context.Context, in *ListWordsRequest,
 //
 // WordService 提供单词相关的服务
 type WordServiceServer interface {
-	// GetWord 获取单词详情
-	GetWord(context.Context, *GetWordRequest) (*GetWordResponse, error)
-	// ListWords 获取单词列表
-	ListWords(context.Context, *ListWordsRequest) (*ListWordsResponse, error)
+	// Get 获取单词详情
+	Get(context.Context, *WordServiceGetRequest) (*WordServiceGetResponse, error)
+	// List 获取单词列表
+	List(context.Context, *WordServiceListRequest) (*WordServiceListResponse, error)
 	mustEmbedUnimplementedWordServiceServer()
 }
 
@@ -83,11 +83,11 @@ type WordServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedWordServiceServer struct{}
 
-func (UnimplementedWordServiceServer) GetWord(context.Context, *GetWordRequest) (*GetWordResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetWord not implemented")
+func (UnimplementedWordServiceServer) Get(context.Context, *WordServiceGetRequest) (*WordServiceGetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
-func (UnimplementedWordServiceServer) ListWords(context.Context, *ListWordsRequest) (*ListWordsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListWords not implemented")
+func (UnimplementedWordServiceServer) List(context.Context, *WordServiceListRequest) (*WordServiceListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
 }
 func (UnimplementedWordServiceServer) mustEmbedUnimplementedWordServiceServer() {}
 func (UnimplementedWordServiceServer) testEmbeddedByValue()                     {}
@@ -110,38 +110,38 @@ func RegisterWordServiceServer(s grpc.ServiceRegistrar, srv WordServiceServer) {
 	s.RegisterService(&WordService_ServiceDesc, srv)
 }
 
-func _WordService_GetWord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetWordRequest)
+func _WordService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WordServiceGetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(WordServiceServer).GetWord(ctx, in)
+		return srv.(WordServiceServer).Get(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: WordService_GetWord_FullMethodName,
+		FullMethod: WordService_Get_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WordServiceServer).GetWord(ctx, req.(*GetWordRequest))
+		return srv.(WordServiceServer).Get(ctx, req.(*WordServiceGetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _WordService_ListWords_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListWordsRequest)
+func _WordService_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WordServiceListRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(WordServiceServer).ListWords(ctx, in)
+		return srv.(WordServiceServer).List(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: WordService_ListWords_FullMethodName,
+		FullMethod: WordService_List_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WordServiceServer).ListWords(ctx, req.(*ListWordsRequest))
+		return srv.(WordServiceServer).List(ctx, req.(*WordServiceListRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -150,16 +150,16 @@ func _WordService_ListWords_Handler(srv interface{}, ctx context.Context, dec fu
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var WordService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "sla2.v1.WordService",
+	ServiceName: "proto.v1.WordService",
 	HandlerType: (*WordServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetWord",
-			Handler:    _WordService_GetWord_Handler,
+			MethodName: "Get",
+			Handler:    _WordService_Get_Handler,
 		},
 		{
-			MethodName: "ListWords",
-			Handler:    _WordService_ListWords_Handler,
+			MethodName: "List",
+			Handler:    _WordService_List_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

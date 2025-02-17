@@ -76,7 +76,10 @@ type GRPCConfig struct {
 
 // AppleConfig 苹果登录配置
 type AppleConfig struct {
-	ClientID string `mapstructure:"client_id"`
+	ClientID   string `mapstructure:"client_id"`
+	PrivateKey string `mapstructure:"private_key"`
+	KeyID      string `mapstructure:"key_id"`
+	TeamID     string `mapstructure:"team_id"`
 }
 
 var globalConfig *Config

@@ -40,4 +40,7 @@ jwt:
   refresh_secret_key: "kL9mN5vX7pH2jR4wT8cA3fE6bY1iU0qS5nD8mK2p"
 
 apple:
-  client_id: "your-apple-client-id-here"
+  client_id: "leeszi.SLA.xxxxx" # todo: 需要替换为实际的 bundle id & team id
+  private_key: "LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JR1RBZ0VBTUJNR0J5cUdTTTQ5QWdFR0NDcUdTTTQ5QXdFSEJIa3dkd0lCQVFRZ1ZzNHF3d0J5dEg5ZlZYQ1gKa1ZrQ3pPTTN2SUVSMFZvZzg3bFMyMDJFak42Z0NnWUlLb1pJemowREFRZWhSQU5DQUFSMFRLTlg2eHpocFY1TwpPSUVIV2dmbG9JcC9YcWZKVXpuYjcvbjN3M2VkKzg2bG9CZDUydG5UZmlpek1CZ3krd0tQYXFYS3cvRkkyWnE4Cmp4a3Rkc0F5Ci0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0="
+  key_id: "F854P88YB7"
+  team_id: "xxxx" # todo: 需要替换为实际的 team id

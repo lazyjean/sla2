@@ -19,14 +19,14 @@ func NewWordService(wordService *service.WordService) *WordService {
 	}
 }
 
-func (s *WordService) GetWord(ctx context.Context, req *pb.GetWordRequest) (*pb.GetWordResponse, error) {
+func (s *WordService) GetWord(ctx context.Context, req *pb.WordServiceGetRequest) (*pb.WordServiceGetResponse, error) {
 	word, err := s.wordService.GetWord(ctx, uint(req.WordId))
 	if err != nil {
 		return nil, err
 	}
 
-	return &pb.GetWordResponse{
-		Word: &pb.Word{
+	return &pb.WordServiceGetResponse{
+		Word: &pb.WordInfo{
 			Id:            uint32(word.ID),
 			Spelling:      word.Text,
 			Pronunciation: word.Phonetic,
@@ -38,15 +38,15 @@ func (s *WordService) GetWord(ctx context.Context, req *pb.GetWordRequest) (*pb.
 	}, nil
 }
 
-func (s *WordService) ListWords(ctx context.Context, req *pb.ListWordsRequest) (*pb.ListWordsResponse, error) {
+func (s *WordService) ListWords(ctx context.Context, req *pb.WordServiceListRequest) (*pb.WordServiceListResponse, error) {
 	words, total, err := s.wordService.ListWords(ctx, 0, int(req.Page)*int(req.PageSize), int(req.PageSize))
 	if err != nil {
 		return nil, err
 	}
 
-	var pbWords []*pb.Word
+	var pbWords []*pb.WordInfo
 	for _, word := range words {
-		pbWords = append(pbWords, &pb.Word{
+		pbWords = append(pbWords, &pb.WordInfo{
 			Id:            uint32(word.ID),
 			Spelling:      word.Text,
 			Pronunciation: word.Phonetic,
@@ -57,7 +57,7 @@ func (s *WordService) ListWords(ctx context.Context, req *pb.ListWordsRequest) (
 		})
 	}
 
-	return &pb.ListWordsResponse{
+	return &pb.WordServiceListResponse{
 		Words: pbWords,
 		Total: uint32(total),
 	}, nil

@@ -317,15 +317,15 @@ func (s *UserService) ResetPassword(ctx context.Context, req *dto.ResetPasswordR
 }
 
 // AppleLogin 处理苹果登录
-func (s *UserService) AppleLogin(ctx context.Context, idToken string) (*dto.LoginResponse, error) {
-	if idToken == "" {
-		return nil, errors.NewError(errors.CodeInvalidInput, "Apple ID Token不能为空")
+func (s *UserService) AppleLogin(ctx context.Context, authorizationCode string) (*dto.LoginResponse, error) {
+	if authorizationCode == "" {
+		return nil, errors.NewError(errors.CodeInvalidInput, "Apple Authorization Code不能为空")
 	}
 
-	// 验证 Apple ID Token
-	appleIDToken, err := s.authSvc.VerifyAppleIDToken(ctx, idToken)
+	// 验证 Apple Authorization Code
+	appleIDToken, err := s.authSvc.AuthCodeWithApple(ctx, authorizationCode)
 	if err != nil {
-		return nil, errors.NewError(errors.CodeInvalidCredentials, "Apple ID Token验证失败")
+		return nil, errors.NewError(errors.CodeInvalidCredentials, "Apple Authorization Code验证失败")
 	}
 
 	// 查找用户是否已存在

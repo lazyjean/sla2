@@ -19,14 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserService_Register_FullMethodName       = "/api.v1.UserService/Register"
-	UserService_Login_FullMethodName          = "/api.v1.UserService/Login"
-	UserService_GetUserInfo_FullMethodName    = "/api.v1.UserService/GetUserInfo"
-	UserService_UpdateUserInfo_FullMethodName = "/api.v1.UserService/UpdateUserInfo"
-	UserService_ChangePassword_FullMethodName = "/api.v1.UserService/ChangePassword"
-	UserService_ResetPassword_FullMethodName  = "/api.v1.UserService/ResetPassword"
-	UserService_AppleLogin_FullMethodName     = "/api.v1.UserService/AppleLogin"
-	UserService_RefreshToken_FullMethodName   = "/api.v1.UserService/RefreshToken"
+	UserService_Register_FullMethodName       = "/proto.v1.UserService/Register"
+	UserService_Login_FullMethodName          = "/proto.v1.UserService/Login"
+	UserService_GetUserInfo_FullMethodName    = "/proto.v1.UserService/GetUserInfo"
+	UserService_UpdateUserInfo_FullMethodName = "/proto.v1.UserService/UpdateUserInfo"
+	UserService_ChangePassword_FullMethodName = "/proto.v1.UserService/ChangePassword"
+	UserService_ResetPassword_FullMethodName  = "/proto.v1.UserService/ResetPassword"
+	UserService_AppleLogin_FullMethodName     = "/proto.v1.UserService/AppleLogin"
+	UserService_RefreshToken_FullMethodName   = "/proto.v1.UserService/RefreshToken"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -366,7 +366,7 @@ func _UserService_RefreshToken_Handler(srv interface{}, ctx context.Context, dec
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var UserService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "api.v1.UserService",
+	ServiceName: "proto.v1.UserService",
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

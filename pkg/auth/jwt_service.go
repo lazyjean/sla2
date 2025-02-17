@@ -9,6 +9,8 @@ import (
 	"io"
 	"math/big"
 	"net/http"
+	"net/url"
+	"strings"
 	"sync"
 	"time"
 
@@ -27,6 +29,9 @@ type JWTConfig struct {
 	TokenSecretKey   string
 	RefreshSecretKey string
 	AppleClientID    string
+	AppleTeamID      string
+	AppleKeyID       string
+	ApplePrivateKey  string
 }
 
 // NewJWTConfig 从配置创建 JWT 配置
@@ -35,6 +40,9 @@ func NewJWTConfig(cfg *config.Config) *JWTConfig {
 		TokenSecretKey:   cfg.JWT.TokenSecretKey,
 		RefreshSecretKey: cfg.JWT.RefreshSecretKey,
 		AppleClientID:    cfg.Apple.ClientID,
+		AppleTeamID:      cfg.Apple.TeamID,
+		AppleKeyID:       cfg.Apple.KeyID,
+		ApplePrivateKey:  cfg.Apple.PrivateKey,
 	}
 }
 
@@ -68,7 +76,7 @@ type JWTServicer interface {
 	GenerateRefreshToken(userID entity.UserID) (string, error)
 	ValidateToken(tokenString string) (entity.UserID, error)
 	ValidateRefreshToken(tokenString string) (entity.UserID, error)
-	VerifyAppleIDToken(ctx context.Context, idToken string) (*AppleIDToken, error)
+	AuthCodeWithApple(ctx context.Context, authorizationCode string) (*AppleIDToken, error)
 }
 
 // JWTService 是 JWTServicer 接口的实现
@@ -76,6 +84,9 @@ type JWTService struct {
 	tokenSecretKey   string
 	refreshSecretKey string
 	appleClientID    string
+	appleTeamID      string
+	appleKeyID       string
+	applePrivateKey  string
 	appleKeys        map[string]*rsa.PublicKey
 	appleKeysMu      sync.RWMutex
 	httpClient       *http.Client
@@ -86,6 +97,9 @@ func NewJWTService(cfg *JWTConfig) *JWTService {
 		tokenSecretKey:   cfg.TokenSecretKey,
 		refreshSecretKey: cfg.RefreshSecretKey,
 		appleClientID:    cfg.AppleClientID,
+		appleTeamID:      cfg.AppleTeamID,
+		appleKeyID:       cfg.AppleKeyID,
+		applePrivateKey:  cfg.ApplePrivateKey,
 		appleKeys:        make(map[string]*rsa.PublicKey),
 		httpClient: &http.Client{
 			Timeout: 10 * time.Second,
@@ -272,7 +286,45 @@ func (s *JWTService) ValidateRefreshToken(tokenString string) (entity.UserID, er
 	return entity.UserID(userID), nil
 }
 
-func (s *JWTService) VerifyAppleIDToken(ctx context.Context, idToken string) (*AppleIDToken, error) {
+// getAppleClientSecret 获取 Apple 的 client secret
+func (s *JWTService) getAppleClientSecret() (string, error) {
+	// 创建 JWT header
+	token := jwt.New(jwt.SigningMethodES256)
+	token.Header["kid"] = s.appleKeyID // Apple Key ID
+	token.Header["alg"] = "ES256"
+
+	// 设置 claims
+	now := time.Now()
+	claims := token.Claims.(jwt.MapClaims)
+	claims["iss"] = s.appleTeamID                  // 你的 Team ID
+	claims["iat"] = now.Unix()                     // 发布时间
+	claims["exp"] = now.Add(24 * time.Hour).Unix() // 过期时间（24小时）
+	claims["aud"] = "https://appleid.apple.com"    // 固定值
+	claims["sub"] = s.appleClientID                // 你的 Client ID (Bundle ID)
+
+	// 从配置的 Base64 字符串解码私钥
+	privateKeyBytes, err := base64.StdEncoding.DecodeString(s.applePrivateKey)
+	if err != nil {
+		return "", fmt.Errorf("解码私钥失败: %v", err)
+	}
+
+	// 解析私钥
+	privateKey, err := jwt.ParseECPrivateKeyFromPEM(privateKeyBytes)
+	if err != nil {
+		return "", fmt.Errorf("解析私钥失败: %v", err)
+	}
+
+	// 签名生成 token
+	tokenString, err := token.SignedString(privateKey)
+	if err != nil {
+		return "", fmt.Errorf("生成 client secret 失败: %v", err)
+	}
+
+	return tokenString, nil
+}
+
+// verifyIDToken 验证 Apple ID Token
+func (s *JWTService) verifyIDToken(ctx context.Context, idToken string) (*AppleIDToken, error) {
 	// 解析 ID Token
 	token, err := jwt.Parse(idToken, func(token *jwt.Token) (interface{}, error) {
 		// 验证签名算法
@@ -318,4 +370,52 @@ func (s *JWTService) VerifyAppleIDToken(ctx context.Context, idToken string) (*A
 		Email:   email,
 		Name:    "", // Apple 不会在 ID Token 中返回用户名，需要在前端获取
 	}, nil
+}
+
+// AuthCodeWithApple 使用 authorization code 获取 Apple ID Token
+func (s *JWTService) AuthCodeWithApple(ctx context.Context, authorizationCode string) (*AppleIDToken, error) {
+	// 1. 构建请求 Apple 的 token 请求
+	tokenURL := "https://appleid.apple.com/auth/token"
+	data := url.Values{}
+	data.Set("grant_type", "authorization_code")
+	data.Set("code", authorizationCode)
+	data.Set("client_id", s.appleClientID)
+	clientSecret, err := s.getAppleClientSecret()
+	if err != nil {
+		return nil, fmt.Errorf("获取 Apple 的 client secret 失败: %v", err)
+	}
+	data.Set("client_secret", clientSecret)
+
+	// 2. 发送请求获取 token
+	req, err := http.NewRequestWithContext(ctx, "POST", tokenURL, strings.NewReader(data.Encode()))
+	if err != nil {
+		return nil, fmt.Errorf("创建请求失败: %v", err)
+	}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := s.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("请求 Apple token 失败: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// 3. 解析响应
+	var tokenResp struct {
+		IDToken string `json:"id_token"`
+		Error   string `json:"error"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&tokenResp); err != nil {
+		return nil, fmt.Errorf("解析响应失败: %v", err)
+	}
+
+	if tokenResp.Error != "" {
+		return nil, fmt.Errorf("Apple 返回错误: %s", tokenResp.Error)
+	}
+
+	if tokenResp.IDToken == "" {
+		return nil, fmt.Errorf("未收到 ID Token")
+	}
+
+	// 4. 验证 ID Token
+	return s.verifyIDToken(ctx, tokenResp.IDToken)
 }
