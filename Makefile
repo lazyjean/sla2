@@ -133,3 +133,6 @@ local-run:
 .PHONY: generate
 generate:
 	go generate ./...
+
+.PHONY: ci
+ci: docker-build docker-push deploy
