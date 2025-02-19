@@ -1,9 +1,11 @@
 # 变量定义
 IMAGE_NAME := sla2
-IMAGE_TAG := $(shell git describe --tags --abbrev=0)
 DOCKER_REGISTRY := registry.leeszi.cn/leeszi
-FULL_IMAGE_NAME := $(DOCKER_REGISTRY)/$(IMAGE_NAME):$(IMAGE_TAG)
-LATEST_IMAGE_NAME := $(DOCKER_REGISTRY)/$(IMAGE_NAME):latest
+
+# 使用函数而不是直接赋值，确保每次使用时都重新获取最新的tag
+GET_LATEST_TAG = $(shell git tag -l | sort -V | tail -n1)
+GET_FULL_IMAGE = $(DOCKER_REGISTRY)/$(IMAGE_NAME):$(GET_LATEST_TAG)
+
 BINARY_NAME := sla2
 
 # 默认目标
@@ -31,14 +33,15 @@ build-arm:
 # 本地构建镜像
 .PHONY: docker-build-local
 docker-build-local: build
-	docker build -t $(FULL_IMAGE_NAME) -f Dockerfile.dev .
-	docker tag $(FULL_IMAGE_NAME) $(LATEST_IMAGE_NAME)
+	docker build -t $(GET_FULL_IMAGE) -f Dockerfile.dev .
+	docker tag $(GET_FULL_IMAGE) $(DOCKER_REGISTRY)/$(IMAGE_NAME):latest
 
 # 远程构建镜像（使用多阶段构建）
 .PHONY: docker-build
 docker-build:
-	docker build -t $(FULL_IMAGE_NAME) -f Dockerfile .
-	docker tag $(FULL_IMAGE_NAME) $(LATEST_IMAGE_NAME)
+	@echo "Building docker image: $(GET_FULL_IMAGE)"
+	docker build -t $(GET_FULL_IMAGE) .
+	docker tag $(GET_FULL_IMAGE) $(DOCKER_REGISTRY)/$(IMAGE_NAME):latest
 
 # 运行测试
 .PHONY: test
@@ -48,8 +51,8 @@ test:
 # 推送 Docker 镜像
 .PHONY: docker-push
 docker-push:
-	docker push $(FULL_IMAGE_NAME)
-	docker push $(LATEST_IMAGE_NAME)
+	docker push $(GET_FULL_IMAGE)
+	docker push $(DOCKER_REGISTRY)/$(IMAGE_NAME):latest
 
 # 本地运行服务
 .PHONY: run
@@ -81,7 +84,7 @@ release: test docker-build docker-push
 # 更新线上服务（需要配置 kubectl）
 .PHONY: deploy
 deploy:
-	kubectl set image deployment/$(IMAGE_NAME) $(IMAGE_NAME)=$(FULL_IMAGE_NAME) -n default
+	kubectl set image deployment/$(IMAGE_NAME) $(IMAGE_NAME)=$(GET_FULL_IMAGE) -n default
 
 # 帮助信息
 .PHONY: help
@@ -107,7 +110,7 @@ help:
 helm-install:
 	helm upgrade --install $(IMAGE_NAME) ./chart \
 		--set image.repository=$(DOCKER_REGISTRY)/$(IMAGE_NAME) \
-		--set image.tag=$(IMAGE_TAG) \
+		--set image.tag=$(GET_LATEST_TAG) \
 		-n default
 
 .PHONY: helm-uninstall
@@ -118,7 +121,7 @@ helm-uninstall:
 helm-template:
 	helm template $(IMAGE_NAME) ./chart \
 		--set image.repository=$(DOCKER_REGISTRY)/$(IMAGE_NAME) \
-		--set image.tag=$(IMAGE_TAG)
+		--set image.tag=$(GET_LATEST_TAG)
 
 .PHONY: helm-lint
 helm-lint:
@@ -140,15 +143,25 @@ bump-version:
 	@if [ -z "$$(git tag)" ]; then \
 		NEW_TAG="v1.0.0"; \
 	else \
-		LATEST_TAG=$$(git describe --tags `git rev-list --tags --max-count=1`); \
-		MAJOR=$$(echo $$LATEST_TAG | cut -d. -f1); \
+		LATEST_TAG=$$(git tag -l | sort -V | tail -n1); \
+		if [ "$$(git rev-parse $$LATEST_TAG)" = "$$(git rev-parse HEAD)" ]; then \
+			echo "Current commit already tagged as $$LATEST_TAG"; \
+			exit 0; \
+		fi; \
+		MAJOR=$$(echo $$LATEST_TAG | cut -d. -f1 | sed 's/v//'); \
 		MINOR=$$(echo $$LATEST_TAG | cut -d. -f2); \
 		PATCH=$$(echo $$LATEST_TAG | cut -d. -f3); \
 		NEW_PATCH=$$((PATCH + 1)); \
-		NEW_TAG="$$MAJOR.$$MINOR.$$NEW_PATCH"; \
+		NEW_TAG="v$$MAJOR.$$MINOR.$$NEW_PATCH"; \
 	fi; \
-	git tag $$NEW_TAG && \
-	git push origin $$NEW_TAG
+	if git rev-parse "$$NEW_TAG" >/dev/null 2>&1; then \
+		echo "Tag $$NEW_TAG already exists, skipping tag creation"; \
+		exit 0; \
+	else \
+		echo "Creating new tag: $$NEW_TAG"; \
+		git tag $$NEW_TAG && \
+		git push origin $$NEW_TAG; \
+	fi
 
 # 修改 ci target
 .PHONY: ci
