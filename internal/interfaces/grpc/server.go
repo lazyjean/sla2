@@ -7,6 +7,7 @@ import (
 	pb "github.com/lazyjean/sla2/api/proto/v1"
 	"github.com/lazyjean/sla2/config"
 	"github.com/lazyjean/sla2/internal/application/service"
+	"github.com/lazyjean/sla2/internal/interfaces/grpc/course"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/learning"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/user"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/word"
@@ -21,22 +22,25 @@ type Server struct {
 	userSvc     *user.UserService
 	wordSvc     *word.WordService
 	learningSvc *learning.LearningService
+	courseSvc   *course.CourseService
 }
 
 // NewServer 创建 gRPC 服务器
-func NewServer(userService *service.UserService, wordService *service.WordService, learningService *service.LearningService, authSvc auth.JWTServicer, cfg *config.Config) *Server {
+func NewServer(userService *service.UserService, wordService *service.WordService, learningService *service.LearningService, courseService *service.CourseService, authSvc auth.JWTServicer, cfg *config.Config) *Server {
 	server := grpc.NewServer()
 
 	s := &Server{
 		server:      server,
 		userSvc:     user.NewUserService(userService, authSvc),
 		wordSvc:     word.NewWordService(wordService),
+		courseSvc:   course.NewCourseService(courseService),
 		learningSvc: learning.NewLearningService(learningService),
 	}
 
 	// 注册服务
 	pb.RegisterUserServiceServer(server, s.userSvc)
 	pb.RegisterWordServiceServer(server, s.wordSvc)
+	pb.RegisterCourseServiceServer(server, s.courseSvc)
 	pb.RegisterLearningServiceServer(server, s.learningSvc)
 
 	// todo: 开发环境注册反射服务

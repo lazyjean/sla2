@@ -44,7 +44,9 @@ func InitializeApp(cfg *config.Config) (*App, error) {
 	learningHandler := handler.NewLearningHandler(learningService)
 	healthHandler := handler.NewHealthHandler()
 	handlers := handler.NewHandlers(wordHandler, userHandler, learningHandler, healthHandler)
-	server := grpc.NewServer(userService, wordService, learningService, jwtService, cfg)
+	courseRepository := postgres.NewCourseRepository(db)
+	courseService := service.NewCourseService(courseRepository)
+	server := grpc.NewServer(userService, wordService, learningService, courseService, jwtService, cfg)
 	app := NewApp(handlers, server, cfg, jwtService)
 	return app, nil
 }
@@ -61,10 +63,10 @@ var dbSet = wire.NewSet(postgres.NewDB)
 var cacheSet = wire.NewSet(redis.NewRedisCache)
 
 // 仓储集
-var repositorySet = wire.NewSet(postgres.NewWordRepository, postgres.NewCachedWordRepository, postgres.NewLearningRepository, postgres.NewUserRepository)
+var repositorySet = wire.NewSet(postgres.NewWordRepository, postgres.NewCachedWordRepository, postgres.NewLearningRepository, postgres.NewUserRepository, postgres.NewCourseRepository)
 
 // 服务集
-var serviceSet = wire.NewSet(service.NewWordService, service.NewLearningService, service.NewUserService)
+var serviceSet = wire.NewSet(service.NewWordService, service.NewLearningService, service.NewUserService, service.NewCourseService)
 
 // 处理器集
 var handlerSet = wire.NewSet(handler.NewWordHandler, handler.NewUserHandler, handler.NewLearningHandler, handler.NewHealthHandler, handler.NewHandlers)

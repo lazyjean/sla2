@@ -114,3 +114,5 @@ func (r *courseRepository) Search(ctx context.Context, keyword string, offset, l
 	err := query.Offset(offset).Limit(limit).Find(&courses).Error
 	return courses, total, err
 }
+
+var _ repository.CourseRepository = (*courseRepository)(nil)

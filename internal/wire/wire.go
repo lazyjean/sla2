@@ -35,6 +35,7 @@ var repositorySet = wire.NewSet(
 	postgres.NewCachedWordRepository,
 	postgres.NewLearningRepository,
 	postgres.NewUserRepository,
+	postgres.NewCourseRepository,
 )
 
 // 服务集
@@ -42,6 +43,7 @@ var serviceSet = wire.NewSet(
 	service.NewWordService,
 	service.NewLearningService,
 	service.NewUserService,
+	service.NewCourseService,
 )
 
 // 处理器集
