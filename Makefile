@@ -134,5 +134,22 @@ local-run:
 generate:
 	go generate ./...
 
+# 获取最新tag并自增版本号
+.PHONY: bump-version
+bump-version:
+	@if [ -z "$$(git tag)" ]; then \
+		NEW_TAG="v1.0.0"; \
+	else \
+		LATEST_TAG=$$(git describe --tags `git rev-list --tags --max-count=1`); \
+		MAJOR=$$(echo $$LATEST_TAG | cut -d. -f1); \
+		MINOR=$$(echo $$LATEST_TAG | cut -d. -f2); \
+		PATCH=$$(echo $$LATEST_TAG | cut -d. -f3); \
+		NEW_PATCH=$$((PATCH + 1)); \
+		NEW_TAG="$$MAJOR.$$MINOR.$$NEW_PATCH"; \
+	fi; \
+	git tag $$NEW_TAG && \
+	git push origin $$NEW_TAG
+
+# 修改 ci target
 .PHONY: ci
-ci: docker-build docker-push deploy
+ci: bump-version docker-build docker-push deploy
