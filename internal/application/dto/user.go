@@ -108,3 +108,21 @@ type UserDTO struct {
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
 }
+
+// AppleLoginRequest Apple 登录请求
+type AppleLoginRequest struct {
+	AuthorizationCode string `json:"authorization_code"` // Apple Authorization Code
+	UserIdentifier    string `json:"user_identifier"`    // Apple 用户唯一标识符
+}
+
+// AppleLoginResponse Apple 登录响应
+type AppleLoginResponse struct {
+	UserID       uint32 `json:"user_id"`
+	Username     string `json:"username"`
+	Email        string `json:"email"`
+	Nickname     string `json:"nickname,omitempty"`
+	Avatar       string `json:"avatar,omitempty"`
+	Token        string `json:"token,omitempty"`
+	RefreshToken string `json:"refresh_token,omitempty"`
+	IsNewUser    bool   `json:"is_new_user"`
+}

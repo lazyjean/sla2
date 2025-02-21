@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/lazyjean/sla2/internal/application/dto"
 	"github.com/lazyjean/sla2/internal/domain/entity"
@@ -29,26 +30,22 @@ func NewUserService(userRepo repository.UserRepository, authSvc auth.JWTServicer
 }
 
 func (s *UserService) Register(ctx context.Context, req *dto.RegisterRequest) (*dto.RegisterResponse, error) {
-	// 验证必填字段
-	if req.Password == "" || (req.Email == "" && req.Username == "") {
-		return nil, errors.NewError(errors.CodeInvalidArgument, "密码不能为空, 邮箱或用户名不能为空")
+	// 验证必填字段：至少需要用户名或邮箱
+	if req.Username == "" && req.Email == "" {
+		return nil, errors.NewError(
+			errors.CodeInvalidArgument,
+			"用户名或邮箱至少需要填写一个",
+		)
 	}
 
-	// 检查用户名是否已存在
-	var exists bool
-	var err error
-	if req.Username != "" {
-		exists, err = s.userRepo.ExistsByUsername(ctx, req.Username)
-	} else if req.Email != "" {
-		exists, err = s.userRepo.ExistsByEmail(ctx, req.Email)
+	// 密码不能为空
+	if req.Password == "" {
+		return nil, errors.NewError(
+			errors.CodeInvalidArgument,
+			"密码不能为空",
+		)
 	}
 
-	if err != nil && !errors.Is(err, errors.ErrUserNotFound) {
-		return nil, errors.NewError(errors.CodeInternalError, "检查用户名失败")
-	}
-	if exists {
-		return nil, errors.NewError(errors.CodeUserAlreadyExists, "用户名已存在")
-	}
 	// 加密密码
 	hashedPassword, err := s.authSvc.HashPassword(req.Password)
 	if err != nil {
@@ -56,7 +53,7 @@ func (s *UserService) Register(ctx context.Context, req *dto.RegisterRequest) (*
 	}
 
 	// 创建用户
-	user, err := s.userRepo.Create(ctx, req.Username, req.Email, hashedPassword, req.Nickname)
+	user, err := s.userRepo.Create(ctx, req.Username, req.Email, hashedPassword, req.Nickname, "", false)
 	if err != nil {
 		return nil, errors.NewError(errors.CodeInternalError, "创建用户失败")
 	}
@@ -178,7 +175,7 @@ func (s *UserService) GetLoginUser(ctx context.Context) (*dto.UserDTO, error) {
 		return nil, err
 	}
 
-	user, err := s.userRepo.FindByID(ctx, userID)
+	user, err := s.userRepo.FindByID(ctx, entity.UserID(userID))
 	if err != nil {
 		return nil, errors.NewError(errors.CodeUserNotFound, "用户不存在")
 	}
@@ -210,7 +207,7 @@ func (s *UserService) UpdateUser(ctx context.Context, req *dto.UpdateUserRequest
 	}
 
 	// 获取用户信息
-	user, err := s.userRepo.FindByID(ctx, userID)
+	user, err := s.userRepo.FindByID(ctx, entity.UserID(userID))
 	if err != nil {
 		return errors.NewError(errors.CodeUserNotFound, "用户不存在")
 	}
@@ -237,7 +234,7 @@ func (s *UserService) ChangePassword(ctx context.Context, req *dto.ChangePasswor
 	}
 
 	// 获取用户信息
-	user, err := s.userRepo.FindByID(ctx, userID)
+	user, err := s.userRepo.FindByID(ctx, entity.UserID(userID))
 	if err != nil {
 		return errors.NewError(errors.CodeUserNotFound, "用户不存在")
 	}
@@ -317,108 +314,77 @@ func (s *UserService) ResetPassword(ctx context.Context, req *dto.ResetPasswordR
 }
 
 // AppleLogin 处理苹果登录
-func (s *UserService) AppleLogin(ctx context.Context, authorizationCode string) (*dto.LoginResponse, error) {
-	if authorizationCode == "" {
-		return nil, errors.NewError(errors.CodeInvalidInput, "Apple Authorization Code不能为空")
-	}
-
+func (s *UserService) AppleLogin(ctx context.Context, req *dto.AppleLoginRequest) (*dto.AppleLoginResponse, error) {
 	// 验证 Apple Authorization Code
-	appleIDToken, err := s.authSvc.AuthCodeWithApple(ctx, authorizationCode)
-	if err != nil {
-		return nil, errors.NewError(errors.CodeInvalidCredentials, "Apple Authorization Code验证失败")
+	appleIDToken, err := s.authSvc.AuthCodeWithApple(ctx, req.AuthorizationCode)
+	if err != nil || appleIDToken.Subject != req.UserIdentifier {
+		return nil, errors.NewError(errors.CodeInvalidCredentials, "Apple Authorization Code 验证失败")
 	}
 
 	// 查找用户是否已存在
 	user, err := s.userRepo.FindByAppleID(ctx, appleIDToken.Subject)
-	if err == nil {
-		// 用户已存在，生成 token 并返回
-		accessToken, err := s.authSvc.GenerateToken(user.ID)
+	isNewUser := false
+
+	// 这里需要明确是用户不存在的错误还是其他错误，只有用户不存在时才创建用户
+	var domainErr *errors.Error
+	if err != nil && errors.As(err, &domainErr) && domainErr.Code == errors.CodeUserNotFound {
+		isNewUser = true
+
+		// 生成昵称
+		nickname := fmt.Sprintf("apple_%s", strings.Split(appleIDToken.Subject, ".")[0])
+
+		// 创建用户，用户名留空
+		emailVerified := appleIDToken.Email != ""
+		user, err = s.userRepo.Create(ctx, "", appleIDToken.Email, "", nickname, appleIDToken.Subject, emailVerified)
 		if err != nil {
-			return nil, errors.NewError(errors.CodeInternalError, "生成token失败")
+			return nil, errors.NewError(errors.CodeInternalError, "创建用户失败")
 		}
-
-		refreshToken, err := s.authSvc.GenerateRefreshToken(user.ID)
-		if err != nil {
-			return nil, errors.NewError(errors.CodeInternalError, "生成refresh token失败")
-		}
-
-		return &dto.LoginResponse{
-			UserID:        uint32(user.ID),
-			Username:      user.Username,
-			Email:         user.Email,
-			EmailVerified: user.EmailVerified,
-			Nickname:      user.Nickname,
-			Avatar:        user.Avatar,
-			Token:         accessToken,
-			RefreshToken:  refreshToken,
-			IsNewUser:     false,
-		}, nil
-	}
-
-	// 创建新用户
-	username := fmt.Sprintf("apple_%s", utils.GenerateRandomString(8))
-	user = &entity.User{
-		Username:      username,
-		Email:         appleIDToken.Email,
-		EmailVerified: true, // Apple 登录的邮箱默认已验证
-		Nickname:      appleIDToken.Name,
-		AppleID:       appleIDToken.Subject,
-		Status:        entity.UserStatusActive,
-	}
-
-	if err := s.userRepo.CreateWithAppleID(ctx, user); err != nil {
-		return nil, errors.NewError(errors.CodeInternalError, "创建用户失败")
 	}
 
 	// 生成 token
-	accessToken, err := s.authSvc.GenerateToken(user.ID)
+	token, err := s.authSvc.GenerateToken(user.ID)
 	if err != nil {
-		return nil, errors.NewError(errors.CodeInternalError, "生成token失败")
+		return nil, errors.NewError(errors.CodeInternalError, "生成 token 失败")
 	}
 
 	refreshToken, err := s.authSvc.GenerateRefreshToken(user.ID)
 	if err != nil {
-		return nil, errors.NewError(errors.CodeInternalError, "生成refresh token失败")
+		return nil, errors.NewError(errors.CodeInternalError, "生成 refresh token 失败")
 	}
 
-	return &dto.LoginResponse{
-		UserID:        uint32(user.ID),
-		Username:      user.Username,
-		Email:         user.Email,
-		EmailVerified: user.EmailVerified,
-		Nickname:      user.Nickname,
-		Avatar:        user.Avatar,
-		Token:         accessToken,
-		RefreshToken:  refreshToken,
-		IsNewUser:     true,
+	return &dto.AppleLoginResponse{
+		UserID:       uint32(user.ID),
+		Username:     user.Username,
+		Email:        user.Email,
+		Nickname:     user.Nickname,
+		Avatar:       user.Avatar,
+		Token:        token,
+		RefreshToken: refreshToken,
+		IsNewUser:    isNewUser,
 	}, nil
 }
 
-// RefreshToken 刷新token
+// RefreshToken 刷新 token
 func (s *UserService) RefreshToken(ctx context.Context, req *dto.RefreshTokenRequest) (*dto.RefreshTokenResponse, error) {
-	if req.RefreshToken == "" {
-		return nil, errors.NewError(errors.CodeInvalidInput, "refresh token不能为空")
-	}
-
-	// 验证refresh token
+	// 验证 refresh token
 	userID, err := s.authSvc.ValidateRefreshToken(req.RefreshToken)
 	if err != nil {
-		return nil, errors.NewError(errors.CodeInvalidCredentials, "无效的refresh token")
+		return nil, errors.NewError(errors.CodeInvalidCredentials, "refresh token 无效")
 	}
 
-	// 生成新的token
-	accessToken, err := s.authSvc.GenerateToken(userID)
+	// 生成新的 token
+	token, err := s.authSvc.GenerateToken(userID)
 	if err != nil {
-		return nil, errors.NewError(errors.CodeInternalError, "生成token失败")
+		return nil, errors.NewError(errors.CodeInternalError, "生成 token 失败")
 	}
 
 	refreshToken, err := s.authSvc.GenerateRefreshToken(userID)
 	if err != nil {
-		return nil, errors.NewError(errors.CodeInternalError, "生成refresh token失败")
+		return nil, errors.NewError(errors.CodeInternalError, "生成 refresh token 失败")
 	}
 
 	return &dto.RefreshTokenResponse{
-		AccessToken:  accessToken,
+		AccessToken:  token,
 		RefreshToken: refreshToken,
 	}, nil
 }
