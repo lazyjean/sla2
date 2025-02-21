@@ -13,7 +13,6 @@ type Course struct {
 	Description string    `gorm:"type:text"`
 	CoverURL    string    `gorm:"type:varchar(255)"`
 	Level       string    `gorm:"type:varchar(50);not null"`
-	Duration    int       `gorm:"not null"`
 	Tags        []string  `gorm:"type:text[]"`
 	Status      string    `gorm:"type:varchar(50);not null;default:'draft'"`
 	CreatedAt   time.Time `gorm:"not null"`

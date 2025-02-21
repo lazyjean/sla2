@@ -83,10 +83,9 @@ func (s *CourseService) Create(ctx context.Context, req *pb.CourseServiceCreateR
 	course, err := s.courseService.CreateCourse(
 		ctx,
 		req.Title,
-		req.Description,
+		req.Desc,
 		req.CoverUrl,
 		convertLevelToString(req.Level),
-		int(req.Duration),
 		req.Tags,
 	)
 	if err != nil {
@@ -94,7 +93,7 @@ func (s *CourseService) Create(ctx context.Context, req *pb.CourseServiceCreateR
 	}
 
 	return &pb.CourseServiceCreateResponse{
-		Course: convertToPbCourse(course),
+		Id: uint32(course.ID),
 	}, nil
 }
 
@@ -104,10 +103,9 @@ func (s *CourseService) Update(ctx context.Context, req *pb.CourseServiceUpdateR
 		ctx,
 		uint(req.Id),
 		req.Title,
-		req.Description,
+		req.Desc,
 		req.CoverUrl,
 		convertLevelToString(req.Level),
-		int(req.Duration),
 		req.Tags,
 		convertStatusToString(req.Status),
 	)
@@ -116,7 +114,7 @@ func (s *CourseService) Update(ctx context.Context, req *pb.CourseServiceUpdateR
 	}
 
 	return &pb.CourseServiceUpdateResponse{
-		Course: convertToPbCourse(course),
+		Id: uint32(course.ID),
 	}, nil
 }
 
@@ -139,16 +137,22 @@ func (s *CourseService) List(ctx context.Context, req *pb.CourseServiceListReque
 		int(req.Page),
 		int(req.PageSize),
 		uint(req.Level),
-		[]string{req.Tag},
+		req.Tags,
 		convertStatusToString(req.Status),
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	var pbCourses []*pb.Course
+	var pbCourses []*pb.SimpleCourse
 	for _, course := range courses {
-		pbCourses = append(pbCourses, convertToPbCourse(course))
+		pbCourses = append(pbCourses, &pb.SimpleCourse{
+			Id:       uint32(course.ID),
+			Title:    course.Title,
+			CoverUrl: course.CoverURL,
+			Level:    convertStringToLevel(course.Level),
+			Tags:     course.Tags,
+		})
 	}
 
 	return &pb.CourseServiceListResponse{
@@ -172,15 +176,15 @@ func (s *CourseService) Delete(ctx context.Context, req *pb.CourseServiceDeleteR
 // convertToPbCourse 将实体转换为 protobuf 消息
 func convertToPbCourse(course *entity.Course) *pb.Course {
 	return &pb.Course{
-		Id:          uint32(course.ID),
-		Title:       course.Title,
-		Description: course.Description,
-		CoverUrl:    course.CoverURL,
-		Level:       convertStringToLevel(course.Level),
-		Duration:    uint32(course.Duration),
-		Tags:        course.Tags,
-		Status:      convertStringToStatus(course.Status),
-		CreatedAt:   timestamppb.New(course.CreatedAt),
-		UpdatedAt:   timestamppb.New(course.UpdatedAt),
+		Id:        uint32(course.ID),
+		Title:     course.Title,
+		Desc:      course.Description,
+		CoverUrl:  course.CoverURL,
+		Level:     convertStringToLevel(course.Level),
+		Tags:      course.Tags,
+		Status:    convertStringToStatus(course.Status),
+		Version:   0, // 添加版本号字段
+		CreatedAt: timestamppb.New(course.CreatedAt),
+		UpdatedAt: timestamppb.New(course.UpdatedAt),
 	}
 }

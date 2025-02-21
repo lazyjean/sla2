@@ -19,32 +19,51 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	CourseService_Create_FullMethodName = "/proto.v1.CourseService/Create"
-	CourseService_Update_FullMethodName = "/proto.v1.CourseService/Update"
-	CourseService_Get_FullMethodName    = "/proto.v1.CourseService/Get"
-	CourseService_List_FullMethodName   = "/proto.v1.CourseService/List"
-	CourseService_Delete_FullMethodName = "/proto.v1.CourseService/Delete"
-	CourseService_Search_FullMethodName = "/proto.v1.CourseService/Search"
+	CourseService_Create_FullMethodName        = "/proto.v1.CourseService/Create"
+	CourseService_Update_FullMethodName        = "/proto.v1.CourseService/Update"
+	CourseService_Get_FullMethodName           = "/proto.v1.CourseService/Get"
+	CourseService_List_FullMethodName          = "/proto.v1.CourseService/List"
+	CourseService_Delete_FullMethodName        = "/proto.v1.CourseService/Delete"
+	CourseService_Search_FullMethodName        = "/proto.v1.CourseService/Search"
+	CourseService_CreateSection_FullMethodName = "/proto.v1.CourseService/CreateSection"
+	CourseService_UpdateSection_FullMethodName = "/proto.v1.CourseService/UpdateSection"
+	CourseService_DeleteSection_FullMethodName = "/proto.v1.CourseService/DeleteSection"
+	CourseService_CreateUnit_FullMethodName    = "/proto.v1.CourseService/CreateUnit"
+	CourseService_UpdateUnit_FullMethodName    = "/proto.v1.CourseService/UpdateUnit"
+	CourseService_DeleteUnit_FullMethodName    = "/proto.v1.CourseService/DeleteUnit"
 )
 
 // CourseServiceClient is the client API for CourseService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
+// 由于课程是相对比较固定的内容, 所以我们这里设计为一次获取课程所有结构数据, 没必要分多次获取
 // CourseService 提供课程相关的服务
 type CourseServiceClient interface {
-	// CreateCourse 创建课程
+	// Create 创建课程
 	Create(ctx context.Context, in *CourseServiceCreateRequest, opts ...grpc.CallOption) (*CourseServiceCreateResponse, error)
-	// UpdateCourse 更新课程
+	// Update 更新课程
 	Update(ctx context.Context, in *CourseServiceUpdateRequest, opts ...grpc.CallOption) (*CourseServiceUpdateResponse, error)
-	// GetCourse 获取课程详情
+	// Get 获取课程详情
 	Get(ctx context.Context, in *CourseServiceGetRequest, opts ...grpc.CallOption) (*CourseServiceGetResponse, error)
-	// ListCourses 获取课程列表
+	// List 获取课程列表
 	List(ctx context.Context, in *CourseServiceListRequest, opts ...grpc.CallOption) (*CourseServiceListResponse, error)
-	// DeleteCourse 删除课程
+	// Delete 删除课程
 	Delete(ctx context.Context, in *CourseServiceDeleteRequest, opts ...grpc.CallOption) (*CourseServiceDeleteResponse, error)
-	// SearchCourse 搜索课程
+	// Search 搜索课程
 	Search(ctx context.Context, in *CourseServiceSearchRequest, opts ...grpc.CallOption) (*CourseServiceSearchResponse, error)
+	// CreateSection 创建课程章节
+	CreateSection(ctx context.Context, in *CourseServiceCreateSectionRequest, opts ...grpc.CallOption) (*CourseServiceCreateSectionResponse, error)
+	// UpdateSection 更新课程章节
+	UpdateSection(ctx context.Context, in *CourseServiceUpdateSectionRequest, opts ...grpc.CallOption) (*CourseServiceUpdateSectionResponse, error)
+	// DeleteSection 删除课程章节
+	DeleteSection(ctx context.Context, in *CourseServiceDeleteSectionRequest, opts ...grpc.CallOption) (*CourseServiceDeleteSectionResponse, error)
+	// CreateUnit 创建章节单元
+	CreateUnit(ctx context.Context, in *CourseServiceCreateUnitRequest, opts ...grpc.CallOption) (*CourseServiceCreateUnitResponse, error)
+	// UpdateUnit 更新章节单元
+	UpdateUnit(ctx context.Context, in *CourseServiceUpdateUnitRequest, opts ...grpc.CallOption) (*CourseServiceUpdateUnitResponse, error)
+	// DeleteUnit 删除章节单元
+	DeleteUnit(ctx context.Context, in *CourseServiceDeleteUnitRequest, opts ...grpc.CallOption) (*CourseServiceDeleteUnitResponse, error)
 }
 
 type courseServiceClient struct {
@@ -115,24 +134,97 @@ func (c *courseServiceClient) Search(ctx context.Context, in *CourseServiceSearc
 	return out, nil
 }
 
+func (c *courseServiceClient) CreateSection(ctx context.Context, in *CourseServiceCreateSectionRequest, opts ...grpc.CallOption) (*CourseServiceCreateSectionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CourseServiceCreateSectionResponse)
+	err := c.cc.Invoke(ctx, CourseService_CreateSection_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *courseServiceClient) UpdateSection(ctx context.Context, in *CourseServiceUpdateSectionRequest, opts ...grpc.CallOption) (*CourseServiceUpdateSectionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CourseServiceUpdateSectionResponse)
+	err := c.cc.Invoke(ctx, CourseService_UpdateSection_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *courseServiceClient) DeleteSection(ctx context.Context, in *CourseServiceDeleteSectionRequest, opts ...grpc.CallOption) (*CourseServiceDeleteSectionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CourseServiceDeleteSectionResponse)
+	err := c.cc.Invoke(ctx, CourseService_DeleteSection_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *courseServiceClient) CreateUnit(ctx context.Context, in *CourseServiceCreateUnitRequest, opts ...grpc.CallOption) (*CourseServiceCreateUnitResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CourseServiceCreateUnitResponse)
+	err := c.cc.Invoke(ctx, CourseService_CreateUnit_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *courseServiceClient) UpdateUnit(ctx context.Context, in *CourseServiceUpdateUnitRequest, opts ...grpc.CallOption) (*CourseServiceUpdateUnitResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CourseServiceUpdateUnitResponse)
+	err := c.cc.Invoke(ctx, CourseService_UpdateUnit_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *courseServiceClient) DeleteUnit(ctx context.Context, in *CourseServiceDeleteUnitRequest, opts ...grpc.CallOption) (*CourseServiceDeleteUnitResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CourseServiceDeleteUnitResponse)
+	err := c.cc.Invoke(ctx, CourseService_DeleteUnit_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CourseServiceServer is the server API for CourseService service.
 // All implementations must embed UnimplementedCourseServiceServer
 // for forward compatibility.
 //
+// 由于课程是相对比较固定的内容, 所以我们这里设计为一次获取课程所有结构数据, 没必要分多次获取
 // CourseService 提供课程相关的服务
 type CourseServiceServer interface {
-	// CreateCourse 创建课程
+	// Create 创建课程
 	Create(context.Context, *CourseServiceCreateRequest) (*CourseServiceCreateResponse, error)
-	// UpdateCourse 更新课程
+	// Update 更新课程
 	Update(context.Context, *CourseServiceUpdateRequest) (*CourseServiceUpdateResponse, error)
-	// GetCourse 获取课程详情
+	// Get 获取课程详情
 	Get(context.Context, *CourseServiceGetRequest) (*CourseServiceGetResponse, error)
-	// ListCourses 获取课程列表
+	// List 获取课程列表
 	List(context.Context, *CourseServiceListRequest) (*CourseServiceListResponse, error)
-	// DeleteCourse 删除课程
+	// Delete 删除课程
 	Delete(context.Context, *CourseServiceDeleteRequest) (*CourseServiceDeleteResponse, error)
-	// SearchCourse 搜索课程
+	// Search 搜索课程
 	Search(context.Context, *CourseServiceSearchRequest) (*CourseServiceSearchResponse, error)
+	// CreateSection 创建课程章节
+	CreateSection(context.Context, *CourseServiceCreateSectionRequest) (*CourseServiceCreateSectionResponse, error)
+	// UpdateSection 更新课程章节
+	UpdateSection(context.Context, *CourseServiceUpdateSectionRequest) (*CourseServiceUpdateSectionResponse, error)
+	// DeleteSection 删除课程章节
+	DeleteSection(context.Context, *CourseServiceDeleteSectionRequest) (*CourseServiceDeleteSectionResponse, error)
+	// CreateUnit 创建章节单元
+	CreateUnit(context.Context, *CourseServiceCreateUnitRequest) (*CourseServiceCreateUnitResponse, error)
+	// UpdateUnit 更新章节单元
+	UpdateUnit(context.Context, *CourseServiceUpdateUnitRequest) (*CourseServiceUpdateUnitResponse, error)
+	// DeleteUnit 删除章节单元
+	DeleteUnit(context.Context, *CourseServiceDeleteUnitRequest) (*CourseServiceDeleteUnitResponse, error)
 	mustEmbedUnimplementedCourseServiceServer()
 }
 
@@ -160,6 +252,24 @@ func (UnimplementedCourseServiceServer) Delete(context.Context, *CourseServiceDe
 }
 func (UnimplementedCourseServiceServer) Search(context.Context, *CourseServiceSearchRequest) (*CourseServiceSearchResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Search not implemented")
+}
+func (UnimplementedCourseServiceServer) CreateSection(context.Context, *CourseServiceCreateSectionRequest) (*CourseServiceCreateSectionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateSection not implemented")
+}
+func (UnimplementedCourseServiceServer) UpdateSection(context.Context, *CourseServiceUpdateSectionRequest) (*CourseServiceUpdateSectionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateSection not implemented")
+}
+func (UnimplementedCourseServiceServer) DeleteSection(context.Context, *CourseServiceDeleteSectionRequest) (*CourseServiceDeleteSectionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteSection not implemented")
+}
+func (UnimplementedCourseServiceServer) CreateUnit(context.Context, *CourseServiceCreateUnitRequest) (*CourseServiceCreateUnitResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateUnit not implemented")
+}
+func (UnimplementedCourseServiceServer) UpdateUnit(context.Context, *CourseServiceUpdateUnitRequest) (*CourseServiceUpdateUnitResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUnit not implemented")
+}
+func (UnimplementedCourseServiceServer) DeleteUnit(context.Context, *CourseServiceDeleteUnitRequest) (*CourseServiceDeleteUnitResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteUnit not implemented")
 }
 func (UnimplementedCourseServiceServer) mustEmbedUnimplementedCourseServiceServer() {}
 func (UnimplementedCourseServiceServer) testEmbeddedByValue()                       {}
@@ -290,6 +400,114 @@ func _CourseService_Search_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CourseService_CreateSection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CourseServiceCreateSectionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CourseServiceServer).CreateSection(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CourseService_CreateSection_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CourseServiceServer).CreateSection(ctx, req.(*CourseServiceCreateSectionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CourseService_UpdateSection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CourseServiceUpdateSectionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CourseServiceServer).UpdateSection(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CourseService_UpdateSection_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CourseServiceServer).UpdateSection(ctx, req.(*CourseServiceUpdateSectionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CourseService_DeleteSection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CourseServiceDeleteSectionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CourseServiceServer).DeleteSection(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CourseService_DeleteSection_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CourseServiceServer).DeleteSection(ctx, req.(*CourseServiceDeleteSectionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CourseService_CreateUnit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CourseServiceCreateUnitRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CourseServiceServer).CreateUnit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CourseService_CreateUnit_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CourseServiceServer).CreateUnit(ctx, req.(*CourseServiceCreateUnitRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CourseService_UpdateUnit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CourseServiceUpdateUnitRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CourseServiceServer).UpdateUnit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CourseService_UpdateUnit_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CourseServiceServer).UpdateUnit(ctx, req.(*CourseServiceUpdateUnitRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CourseService_DeleteUnit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CourseServiceDeleteUnitRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CourseServiceServer).DeleteUnit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CourseService_DeleteUnit_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CourseServiceServer).DeleteUnit(ctx, req.(*CourseServiceDeleteUnitRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CourseService_ServiceDesc is the grpc.ServiceDesc for CourseService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -320,6 +538,30 @@ var CourseService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Search",
 			Handler:    _CourseService_Search_Handler,
+		},
+		{
+			MethodName: "CreateSection",
+			Handler:    _CourseService_CreateSection_Handler,
+		},
+		{
+			MethodName: "UpdateSection",
+			Handler:    _CourseService_UpdateSection_Handler,
+		},
+		{
+			MethodName: "DeleteSection",
+			Handler:    _CourseService_DeleteSection_Handler,
+		},
+		{
+			MethodName: "CreateUnit",
+			Handler:    _CourseService_CreateUnit_Handler,
+		},
+		{
+			MethodName: "UpdateUnit",
+			Handler:    _CourseService_UpdateUnit_Handler,
+		},
+		{
+			MethodName: "DeleteUnit",
+			Handler:    _CourseService_DeleteUnit_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

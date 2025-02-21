@@ -21,13 +21,12 @@ func NewCourseService(courseRepo repository.CourseRepository) *CourseService {
 }
 
 // CreateCourse 创建课程
-func (s *CourseService) CreateCourse(ctx context.Context, title, description, coverURL, level string, duration int, tags []string) (*entity.Course, error) {
+func (s *CourseService) CreateCourse(ctx context.Context, title, description, coverURL, level string, tags []string) (*entity.Course, error) {
 	course := &entity.Course{
 		Title:       title,
 		Description: description,
 		CoverURL:    coverURL,
 		Level:       level,
-		Duration:    duration,
 		Tags:        tags,
 		Status:      "draft",
 		CreatedAt:   time.Now(),
@@ -42,7 +41,7 @@ func (s *CourseService) CreateCourse(ctx context.Context, title, description, co
 }
 
 // UpdateCourse 更新课程
-func (s *CourseService) UpdateCourse(ctx context.Context, id uint, title, description, coverURL, level string, duration int, tags []string, status string) (*entity.Course, error) {
+func (s *CourseService) UpdateCourse(ctx context.Context, id uint, title, description, coverURL, level string, tags []string, status string) (*entity.Course, error) {
 	course, err := s.courseRepo.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -52,7 +51,6 @@ func (s *CourseService) UpdateCourse(ctx context.Context, id uint, title, descri
 	course.Description = description
 	course.CoverURL = coverURL
 	course.Level = level
-	course.Duration = duration
 	course.Tags = tags
 	course.Status = status
 	course.UpdatedAt = time.Now()
