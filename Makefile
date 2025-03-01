@@ -180,3 +180,9 @@ run-grpcui-remote:
 	@echo "Starting remote gRPC Web UI..."
 	@grpcui sla2-grpc.leeszi.cn:443
 	@echo "gRPC Web UI session ended"
+
+# 更新 proto 子模块
+.PHONY: update-proto
+update-proto:
+	git submodule update --remote --merge
+	git submodule foreach git checkout main

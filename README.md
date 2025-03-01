@@ -184,6 +184,11 @@ kill -SIGHUP $(pgrep sla2)
 1. 安装依赖
 
 ```bash
+# 初始化并更新子模块
+git submodule init
+git submodule update --remote
+
+# 下载 Go 依赖
 go mod download
 ```
 
@@ -309,6 +314,10 @@ Swagger 文档提供：
 2. 提交信息需要清晰描述改动内容
 3. 重要功能需要添加单元测试
 4. 接口需要添加文档注释
+5. Git 子模块管理
+   - sla2-proto 模块追踪 main 分支
+   - 更新子模块：`git submodule update --remote`
+   - 提交前确保子模块版本正确
 
 ## 环境搭建
 

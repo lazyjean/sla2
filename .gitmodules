@@ -1,3 +1,4 @@
 [submodule "sla2-proto"]
 	path = sla2-proto
 	url = git@github.com:lazyjean/sla2-proto.git
+	branch = main

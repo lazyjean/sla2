@@ -28,6 +28,7 @@ const (
 	UserService_AppleLogin_FullMethodName     = "/proto.v1.UserService/AppleLogin"
 	UserService_RefreshToken_FullMethodName   = "/proto.v1.UserService/RefreshToken"
 	UserService_Logout_FullMethodName         = "/proto.v1.UserService/Logout"
+	UserService_Practice_FullMethodName       = "/proto.v1.UserService/Practice"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -43,6 +44,7 @@ type UserServiceClient interface {
 	AppleLogin(ctx context.Context, in *AppleLoginRequest, opts ...grpc.CallOption) (*AppleLoginResponse, error)
 	RefreshToken(ctx context.Context, in *RefreshTokenRequest, opts ...grpc.CallOption) (*RefreshTokenResponse, error)
 	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error)
+	Practice(ctx context.Context, in *PracticeRequest, opts ...grpc.CallOption) (*PracticeResponse, error)
 }
 
 type userServiceClient struct {
@@ -143,6 +145,16 @@ func (c *userServiceClient) Logout(ctx context.Context, in *LogoutRequest, opts 
 	return out, nil
 }
 
+func (c *userServiceClient) Practice(ctx context.Context, in *PracticeRequest, opts ...grpc.CallOption) (*PracticeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PracticeResponse)
+	err := c.cc.Invoke(ctx, UserService_Practice_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -156,6 +168,7 @@ type UserServiceServer interface {
 	AppleLogin(context.Context, *AppleLoginRequest) (*AppleLoginResponse, error)
 	RefreshToken(context.Context, *RefreshTokenRequest) (*RefreshTokenResponse, error)
 	Logout(context.Context, *LogoutRequest) (*LogoutResponse, error)
+	Practice(context.Context, *PracticeRequest) (*PracticeResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -192,6 +205,9 @@ func (UnimplementedUserServiceServer) RefreshToken(context.Context, *RefreshToke
 }
 func (UnimplementedUserServiceServer) Logout(context.Context, *LogoutRequest) (*LogoutResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
+}
+func (UnimplementedUserServiceServer) Practice(context.Context, *PracticeRequest) (*PracticeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Practice not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -376,6 +392,24 @@ func _UserService_Logout_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_Practice_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PracticeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).Practice(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_Practice_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).Practice(ctx, req.(*PracticeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -418,6 +452,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Logout",
 			Handler:    _UserService_Logout_Handler,
+		},
+		{
+			MethodName: "Practice",
+			Handler:    _UserService_Practice_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
