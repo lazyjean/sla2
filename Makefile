@@ -104,6 +104,8 @@ help:
 	@echo "  make helm-uninstall - 卸载 Helm 应用"
 	@echo "  make helm-template - 生成 Helm 模板"
 	@echo "  make helm-lint     - 验证 Helm 模板"
+	@echo "  make run-grpcui-local - 本地gRPC Web UI调试"
+	@echo "  make run-grpcui-remote - 远程gRPC Web UI调试"
 
 # Helm 相关命令
 .PHONY: helm-install
@@ -166,3 +168,15 @@ bump-version:
 # 修改 ci target
 .PHONY: ci
 ci: bump-version docker-build docker-push deploy
+
+# gRPC 接口调试
+.PHONY: run-grpcui-local run-grpcui-remote
+run-grpcui-local:
+	@echo "Starting local gRPC Web UI..."
+	@grpcui -plaintext localhost:9000
+	@echo "gRPC Web UI session ended"
+
+run-grpcui-remote:
+	@echo "Starting remote gRPC Web UI..."
+	@grpcui sla2-grpc.leeszi.cn:443
+	@echo "gRPC Web UI session ended"
