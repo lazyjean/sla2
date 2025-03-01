@@ -25,11 +25,8 @@ type App struct {
 
 func NewApp(handlers *handler.Handlers, grpcServer *grpc.Server, cfg *config.Config, jwtService *auth.JWTService) *App {
 	// 创建 gin router
-	// 设置 gin 的日志输出
 	gin.DefaultWriter = logger.NewGinLogger()
 	gin.DefaultErrorWriter = logger.NewGinLogger()
-
-	// 设置gin模式
 	gin.SetMode(cfg.Server.Mode)
 
 	r := gin.New()
@@ -55,24 +52,24 @@ func NewApp(handlers *handler.Handlers, grpcServer *grpc.Server, cfg *config.Con
 	}
 }
 
-func (a *App) Start(httpPort string, grpcPort int) error {
-	// 创建 HTTP 服务器
+func (a *App) StartHTTPServer(port string) error {
 	a.httpServer = &http.Server{
-		Addr:    ":" + httpPort,
+		Addr:    ":" + port,
 		Handler: a.router,
 	}
 
-	// 启动 HTTP 服务器
-	go func() {
-		logger.Log.Info("HTTP server starting on port " + httpPort)
-		if err := a.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			logger.Log.Fatal("Failed to start HTTP server: " + err.Error())
-		}
-	}()
+	logger.Log.Info("HTTP server starting on port " + port)
+	return a.httpServer.ListenAndServe()
+}
 
-	// 启动 gRPC 服务器
-	logger.Log.Info("gRPC server starting on port " + strconv.Itoa(grpcPort))
-	return a.grpcServer.Start(grpcPort)
+func (a *App) StartGRPCServer(port int) error {
+	logger.Log.Info("gRPC server starting on port " + strconv.Itoa(port))
+	return a.grpcServer.Start(port)
+}
+
+func (a *App) StartGRPCGateway(gatewayPort int, grpcPort int) error {
+	logger.Log.Info("gRPC-Gateway server starting on port " + strconv.Itoa(gatewayPort))
+	return a.grpcServer.StartGateway(gatewayPort, grpcPort)
 }
 
 func (a *App) Stop(ctx context.Context) error {

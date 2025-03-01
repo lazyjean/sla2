@@ -73,8 +73,26 @@ func main() {
 		logger.Log.Info("Servers exiting")
 	}()
 
-	// 启动应用
-	if err := app.Start(cfg.Server.Port, cfg.GRPC.Port); err != nil {
-		logger.Log.Fatal("Failed to start server: " + err.Error())
-	}
+	// 启动 HTTP 和 gRPC 服务
+	go func() {
+		if err := app.StartHTTPServer(cfg.Server.Port); err != nil {
+			logger.Log.Fatal("Failed to start HTTP server: " + err.Error())
+		}
+	}()
+
+	go func() {
+		if err := app.StartGRPCServer(cfg.GRPC.Port); err != nil {
+			logger.Log.Fatal("Failed to start gRPC server: " + err.Error())
+		}
+	}()
+
+	// 启动 gRPC Gateway
+	go func() {
+		if err := app.StartGRPCGateway(cfg.GRPC.GatewayPort, cfg.GRPC.Port); err != nil {
+			logger.Log.Fatal("Failed to start gRPC gateway: " + err.Error())
+		}
+	}()
+
+	// 等待所有服务启动完成
+	select {}
 }

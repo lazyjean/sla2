@@ -16,9 +16,9 @@ all: build
 .PHONY: proto
 proto:
 	@echo "生成 protobuf 代码..."
-	@cd sla2-proto && make generate-go
+	@cd sla2-proto && buf generate
 	@mkdir -p api/proto/v1
-	@rm -f api/proto/v1/*.pb.go
+	@rm -f api/proto/v1/*.pb.go api/proto/v1/*.gw.go
 	@cp -r sla2-proto/gen/go/proto/v1/* api/proto/v1/
 	@echo "protobuf 代码生成完成"
 
@@ -73,8 +73,8 @@ logs:
 .PHONY: clean
 clean:
 	rm -f $(IMAGE_NAME)
-	rm -f api/proto/v1/*.pb.go
-	@cd sla2-proto && make clean
+	rm -f api/proto/v1/*.pb.go api/proto/v1/*.gw.go
+	@cd sla2-proto && rm -rf gen/
 	docker-compose down -v
 
 # 一键构建并推送

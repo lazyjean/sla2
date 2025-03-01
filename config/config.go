@@ -71,8 +71,9 @@ type JWTConfig struct {
 }
 
 type GRPCConfig struct {
-	Port       int  `mapstructure:"port"`
-	Reflection bool `mapstructure:"reflection"`
+	Port        int  `mapstructure:"port"`
+	GatewayPort int  `mapstructure:"gateway_port"`
+	Reflection  bool `mapstructure:"reflection"`
 }
 
 // AppleConfig 苹果登录配置
