@@ -25,8 +25,8 @@ const (
 	QuestionService_Create_FullMethodName  = "/proto.v1.QuestionService/Create"
 	QuestionService_Search_FullMethodName  = "/proto.v1.QuestionService/Search"
 	QuestionService_Update_FullMethodName  = "/proto.v1.QuestionService/Update"
-	QuestionService_Publish_FullMethodName = "/proto.v1.QuestionService/Publish"
 	QuestionService_Delete_FullMethodName  = "/proto.v1.QuestionService/Delete"
+	QuestionService_Publish_FullMethodName = "/proto.v1.QuestionService/Publish"
 )
 
 // QuestionServiceClient is the client API for QuestionService service.
@@ -37,8 +37,8 @@ type QuestionServiceClient interface {
 	Create(ctx context.Context, in *QuestionServiceCreateRequest, opts ...grpc.CallOption) (*QuestionServiceCreateResponse, error)
 	Search(ctx context.Context, in *QuestionServiceSearchRequest, opts ...grpc.CallOption) (*QuestionServiceSearchResponse, error)
 	Update(ctx context.Context, in *QuestionServiceUpdateRequest, opts ...grpc.CallOption) (*QuestionServiceUpdateResponse, error)
-	Publish(ctx context.Context, in *QuestionServicePublishRequest, opts ...grpc.CallOption) (*QuestionServicePublishResponse, error)
 	Delete(ctx context.Context, in *QuestionServiceDeleteRequest, opts ...grpc.CallOption) (*QuestionServiceDeleteResponse, error)
+	Publish(ctx context.Context, in *QuestionServicePublishRequest, opts ...grpc.CallOption) (*QuestionServicePublishResponse, error)
 }
 
 type questionServiceClient struct {
@@ -89,20 +89,20 @@ func (c *questionServiceClient) Update(ctx context.Context, in *QuestionServiceU
 	return out, nil
 }
 
-func (c *questionServiceClient) Publish(ctx context.Context, in *QuestionServicePublishRequest, opts ...grpc.CallOption) (*QuestionServicePublishResponse, error) {
+func (c *questionServiceClient) Delete(ctx context.Context, in *QuestionServiceDeleteRequest, opts ...grpc.CallOption) (*QuestionServiceDeleteResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(QuestionServicePublishResponse)
-	err := c.cc.Invoke(ctx, QuestionService_Publish_FullMethodName, in, out, cOpts...)
+	out := new(QuestionServiceDeleteResponse)
+	err := c.cc.Invoke(ctx, QuestionService_Delete_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *questionServiceClient) Delete(ctx context.Context, in *QuestionServiceDeleteRequest, opts ...grpc.CallOption) (*QuestionServiceDeleteResponse, error) {
+func (c *questionServiceClient) Publish(ctx context.Context, in *QuestionServicePublishRequest, opts ...grpc.CallOption) (*QuestionServicePublishResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(QuestionServiceDeleteResponse)
-	err := c.cc.Invoke(ctx, QuestionService_Delete_FullMethodName, in, out, cOpts...)
+	out := new(QuestionServicePublishResponse)
+	err := c.cc.Invoke(ctx, QuestionService_Publish_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -117,8 +117,8 @@ type QuestionServiceServer interface {
 	Create(context.Context, *QuestionServiceCreateRequest) (*QuestionServiceCreateResponse, error)
 	Search(context.Context, *QuestionServiceSearchRequest) (*QuestionServiceSearchResponse, error)
 	Update(context.Context, *QuestionServiceUpdateRequest) (*QuestionServiceUpdateResponse, error)
-	Publish(context.Context, *QuestionServicePublishRequest) (*QuestionServicePublishResponse, error)
 	Delete(context.Context, *QuestionServiceDeleteRequest) (*QuestionServiceDeleteResponse, error)
+	Publish(context.Context, *QuestionServicePublishRequest) (*QuestionServicePublishResponse, error)
 	mustEmbedUnimplementedQuestionServiceServer()
 }
 
@@ -141,11 +141,11 @@ func (UnimplementedQuestionServiceServer) Search(context.Context, *QuestionServi
 func (UnimplementedQuestionServiceServer) Update(context.Context, *QuestionServiceUpdateRequest) (*QuestionServiceUpdateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
-func (UnimplementedQuestionServiceServer) Publish(context.Context, *QuestionServicePublishRequest) (*QuestionServicePublishResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Publish not implemented")
-}
 func (UnimplementedQuestionServiceServer) Delete(context.Context, *QuestionServiceDeleteRequest) (*QuestionServiceDeleteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+func (UnimplementedQuestionServiceServer) Publish(context.Context, *QuestionServicePublishRequest) (*QuestionServicePublishResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Publish not implemented")
 }
 func (UnimplementedQuestionServiceServer) mustEmbedUnimplementedQuestionServiceServer() {}
 func (UnimplementedQuestionServiceServer) testEmbeddedByValue()                         {}
@@ -240,24 +240,6 @@ func _QuestionService_Update_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _QuestionService_Publish_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QuestionServicePublishRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QuestionServiceServer).Publish(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: QuestionService_Publish_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QuestionServiceServer).Publish(ctx, req.(*QuestionServicePublishRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _QuestionService_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QuestionServiceDeleteRequest)
 	if err := dec(in); err != nil {
@@ -272,6 +254,24 @@ func _QuestionService_Delete_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QuestionServiceServer).Delete(ctx, req.(*QuestionServiceDeleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _QuestionService_Publish_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuestionServicePublishRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QuestionServiceServer).Publish(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: QuestionService_Publish_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QuestionServiceServer).Publish(ctx, req.(*QuestionServicePublishRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -300,230 +300,12 @@ var QuestionService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _QuestionService_Update_Handler,
 		},
 		{
-			MethodName: "Publish",
-			Handler:    _QuestionService_Publish_Handler,
-		},
-		{
 			MethodName: "Delete",
 			Handler:    _QuestionService_Delete_Handler,
 		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/v1/question.proto",
-}
-
-const (
-	TagService_ListTag_FullMethodName   = "/proto.v1.TagService/ListTag"
-	TagService_CreateTag_FullMethodName = "/proto.v1.TagService/CreateTag"
-	TagService_UpdateTag_FullMethodName = "/proto.v1.TagService/UpdateTag"
-	TagService_DeleteTag_FullMethodName = "/proto.v1.TagService/DeleteTag"
-)
-
-// TagServiceClient is the client API for TagService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type TagServiceClient interface {
-	ListTag(ctx context.Context, in *ListTagRequest, opts ...grpc.CallOption) (*ListTagResponse, error)
-	CreateTag(ctx context.Context, in *CreateTagRequest, opts ...grpc.CallOption) (*CreateTagResponse, error)
-	UpdateTag(ctx context.Context, in *UpdateTagRequest, opts ...grpc.CallOption) (*UpdateTagResponse, error)
-	// delete tag for test
-	DeleteTag(ctx context.Context, in *DeleteTagRequest, opts ...grpc.CallOption) (*DeleteTagResponse, error)
-}
-
-type tagServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewTagServiceClient(cc grpc.ClientConnInterface) TagServiceClient {
-	return &tagServiceClient{cc}
-}
-
-func (c *tagServiceClient) ListTag(ctx context.Context, in *ListTagRequest, opts ...grpc.CallOption) (*ListTagResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListTagResponse)
-	err := c.cc.Invoke(ctx, TagService_ListTag_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *tagServiceClient) CreateTag(ctx context.Context, in *CreateTagRequest, opts ...grpc.CallOption) (*CreateTagResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateTagResponse)
-	err := c.cc.Invoke(ctx, TagService_CreateTag_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *tagServiceClient) UpdateTag(ctx context.Context, in *UpdateTagRequest, opts ...grpc.CallOption) (*UpdateTagResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpdateTagResponse)
-	err := c.cc.Invoke(ctx, TagService_UpdateTag_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *tagServiceClient) DeleteTag(ctx context.Context, in *DeleteTagRequest, opts ...grpc.CallOption) (*DeleteTagResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(DeleteTagResponse)
-	err := c.cc.Invoke(ctx, TagService_DeleteTag_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// TagServiceServer is the server API for TagService service.
-// All implementations must embed UnimplementedTagServiceServer
-// for forward compatibility.
-type TagServiceServer interface {
-	ListTag(context.Context, *ListTagRequest) (*ListTagResponse, error)
-	CreateTag(context.Context, *CreateTagRequest) (*CreateTagResponse, error)
-	UpdateTag(context.Context, *UpdateTagRequest) (*UpdateTagResponse, error)
-	// delete tag for test
-	DeleteTag(context.Context, *DeleteTagRequest) (*DeleteTagResponse, error)
-	mustEmbedUnimplementedTagServiceServer()
-}
-
-// UnimplementedTagServiceServer must be embedded to have
-// forward compatible implementations.
-//
-// NOTE: this should be embedded by value instead of pointer to avoid a nil
-// pointer dereference when methods are called.
-type UnimplementedTagServiceServer struct{}
-
-func (UnimplementedTagServiceServer) ListTag(context.Context, *ListTagRequest) (*ListTagResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListTag not implemented")
-}
-func (UnimplementedTagServiceServer) CreateTag(context.Context, *CreateTagRequest) (*CreateTagResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateTag not implemented")
-}
-func (UnimplementedTagServiceServer) UpdateTag(context.Context, *UpdateTagRequest) (*UpdateTagResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateTag not implemented")
-}
-func (UnimplementedTagServiceServer) DeleteTag(context.Context, *DeleteTagRequest) (*DeleteTagResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteTag not implemented")
-}
-func (UnimplementedTagServiceServer) mustEmbedUnimplementedTagServiceServer() {}
-func (UnimplementedTagServiceServer) testEmbeddedByValue()                    {}
-
-// UnsafeTagServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to TagServiceServer will
-// result in compilation errors.
-type UnsafeTagServiceServer interface {
-	mustEmbedUnimplementedTagServiceServer()
-}
-
-func RegisterTagServiceServer(s grpc.ServiceRegistrar, srv TagServiceServer) {
-	// If the following call pancis, it indicates UnimplementedTagServiceServer was
-	// embedded by pointer and is nil.  This will cause panics if an
-	// unimplemented method is ever invoked, so we test this at initialization
-	// time to prevent it from happening at runtime later due to I/O.
-	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
-		t.testEmbeddedByValue()
-	}
-	s.RegisterService(&TagService_ServiceDesc, srv)
-}
-
-func _TagService_ListTag_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListTagRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TagServiceServer).ListTag(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: TagService_ListTag_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TagServiceServer).ListTag(ctx, req.(*ListTagRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _TagService_CreateTag_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateTagRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TagServiceServer).CreateTag(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: TagService_CreateTag_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TagServiceServer).CreateTag(ctx, req.(*CreateTagRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _TagService_UpdateTag_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateTagRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TagServiceServer).UpdateTag(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: TagService_UpdateTag_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TagServiceServer).UpdateTag(ctx, req.(*UpdateTagRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _TagService_DeleteTag_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteTagRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TagServiceServer).DeleteTag(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: TagService_DeleteTag_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TagServiceServer).DeleteTag(ctx, req.(*DeleteTagRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-// TagService_ServiceDesc is the grpc.ServiceDesc for TagService service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var TagService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "proto.v1.TagService",
-	HandlerType: (*TagServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "ListTag",
-			Handler:    _TagService_ListTag_Handler,
-		},
-		{
-			MethodName: "CreateTag",
-			Handler:    _TagService_CreateTag_Handler,
-		},
-		{
-			MethodName: "UpdateTag",
-			Handler:    _TagService_UpdateTag_Handler,
-		},
-		{
-			MethodName: "DeleteTag",
-			Handler:    _TagService_DeleteTag_Handler,
+			MethodName: "Publish",
+			Handler:    _QuestionService_Publish_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

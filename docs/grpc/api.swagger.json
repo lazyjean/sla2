@@ -18,9 +18,6 @@
       "name": "QuestionService"
     },
     {
-      "name": "TagService"
-    },
-    {
       "name": "QuestionTagService"
     },
     {
@@ -181,9 +178,1562 @@
           "AdminService"
         ]
       }
+    },
+    "/api/v1/courses": {
+      "get": {
+        "summary": "List 获取课程列表",
+        "operationId": "CourseService_List",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CourseServiceListResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "description": "页码，从1开始",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "pageSize",
+            "description": "每页数量",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "status",
+            "description": "课程状态过滤",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "COURSE_STATUS_UNSPECIFIED",
+              "COURSE_STATUS_DRAFT",
+              "COURSE_STATUS_PUBLISHED",
+              "COURSE_STATUS_ARCHIVED"
+            ],
+            "default": "COURSE_STATUS_UNSPECIFIED"
+          },
+          {
+            "name": "level",
+            "description": "课程难度级别过滤",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "COURSE_LEVEL_UNSPECIFIED",
+              "COURSE_LEVEL_BEGINNER",
+              "COURSE_LEVEL_INTERMEDIATE",
+              "COURSE_LEVEL_ADVANCED"
+            ],
+            "default": "COURSE_LEVEL_UNSPECIFIED"
+          },
+          {
+            "name": "tags",
+            "description": "标签过滤",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          }
+        ],
+        "tags": [
+          "CourseService"
+        ]
+      },
+      "post": {
+        "summary": "Create 创建课程",
+        "operationId": "CourseService_Create",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CourseServiceCreateResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CourseServiceCreateRequest"
+            }
+          }
+        ],
+        "tags": [
+          "CourseService"
+        ]
+      }
+    },
+    "/api/v1/courses/search": {
+      "get": {
+        "summary": "Search 搜索课程",
+        "operationId": "CourseService_Search",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CourseServiceSearchResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "keyword",
+            "description": "关键词",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "level",
+            "description": "难度级别（可选）",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "COURSE_LEVEL_UNSPECIFIED",
+              "COURSE_LEVEL_BEGINNER",
+              "COURSE_LEVEL_INTERMEDIATE",
+              "COURSE_LEVEL_ADVANCED"
+            ],
+            "default": "COURSE_LEVEL_UNSPECIFIED"
+          },
+          {
+            "name": "tags",
+            "description": "标签（可选）",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "page",
+            "description": "页码",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "pageSize",
+            "description": "每页数量",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "CourseService"
+        ]
+      }
+    },
+    "/api/v1/courses/{courseId}/sections": {
+      "post": {
+        "summary": "CreateSection 创建课程章节",
+        "operationId": "CourseService_CreateSection",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CourseServiceCreateSectionResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "courseId",
+            "description": "所属课程ID",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CourseServiceCreateSectionBody"
+            }
+          }
+        ],
+        "tags": [
+          "CourseService"
+        ]
+      }
+    },
+    "/api/v1/courses/{id}": {
+      "get": {
+        "summary": "Get 获取课程详情",
+        "operationId": "CourseService_Get",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CourseServiceGetResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "课程ID",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "CourseService"
+        ]
+      },
+      "delete": {
+        "summary": "Delete 删除课程",
+        "operationId": "CourseService_Delete",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CourseServiceDeleteResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "课程ID",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "CourseService"
+        ]
+      },
+      "put": {
+        "summary": "Update 更新课程",
+        "operationId": "CourseService_Update",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CourseServiceUpdateResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "课程ID",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CourseServiceUpdateBody"
+            }
+          }
+        ],
+        "tags": [
+          "CourseService"
+        ]
+      }
+    },
+    "/api/v1/learning/courses/{courseId}/progress": {
+      "get": {
+        "summary": "GetCourseProgress 获取课程学习进度",
+        "operationId": "LearningService_GetCourseProgress",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1LearningServiceGetCourseProgressResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "courseId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "LearningService"
+        ]
+      }
+    },
+    "/api/v1/learning/sections/{sectionId}/progress": {
+      "get": {
+        "summary": "GetSectionProgress 获取章节学习进度",
+        "operationId": "LearningService_GetSectionProgress",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1LearningServiceGetSectionProgressResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "sectionId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "LearningService"
+        ]
+      }
+    },
+    "/api/v1/learning/units/{unitId}/progress": {
+      "get": {
+        "summary": "GetUnitProgress 获取单元学习进度",
+        "operationId": "LearningService_GetUnitProgress",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1LearningServiceGetUnitProgressResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "unitId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "LearningService"
+        ]
+      },
+      "put": {
+        "summary": "UpdateUnitProgress 更新单元学习进度",
+        "operationId": "LearningService_UpdateUnitProgress",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1LearningServiceUpdateUnitProgressResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "unitId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LearningServiceUpdateUnitProgressBody"
+            }
+          }
+        ],
+        "tags": [
+          "LearningService"
+        ]
+      }
+    },
+    "/api/v1/question-tags": {
+      "get": {
+        "operationId": "QuestionTagService_ListTag",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1QuestionTagServiceListTagResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "topN",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "QuestionTagService"
+        ]
+      },
+      "post": {
+        "operationId": "QuestionTagService_CreateTag",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1QuestionTagServiceCreateTagResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1QuestionTagServiceCreateTagRequest"
+            }
+          }
+        ],
+        "tags": [
+          "QuestionTagService"
+        ]
+      }
+    },
+    "/api/v1/question-tags/{name}": {
+      "delete": {
+        "operationId": "QuestionTagService_DeleteTag",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1QuestionTagServiceDeleteTagResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "QuestionTagService"
+        ]
+      },
+      "put": {
+        "operationId": "QuestionTagService_UpdateTag",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1QuestionTagServiceUpdateTagResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/QuestionTagServiceUpdateTagBody"
+            }
+          }
+        ],
+        "tags": [
+          "QuestionTagService"
+        ]
+      }
+    },
+    "/api/v1/questions": {
+      "post": {
+        "operationId": "QuestionService_Create",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1QuestionServiceCreateResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1QuestionServiceCreateRequest"
+            }
+          }
+        ],
+        "tags": [
+          "QuestionService"
+        ]
+      }
+    },
+    "/api/v1/questions/search": {
+      "get": {
+        "operationId": "QuestionService_Search",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1QuestionServiceSearchResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "keyword",
+            "description": "搜索关键词, 内容参考 domain 中的定义",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "questionType",
+            "description": "题目类型\n\n - QUESTION_TYPE_UNSPECIFIED: 未指定类型，用于处理未知的新题型，客户端应该显示为\"未知题型\"\n - QUESTION_TYPE_LISTEN_AND_SELECT: 听力选择题：听音频选择正确选项\n - QUESTION_TYPE_MULTIPLE_CHOICE: 多项选择题：从多个选项中选择正确答案\n - QUESTION_TYPE_FILL_IN_BLANK: 填空题：在句子或段落中填写适当的词语\n - QUESTION_TYPE_TRANSLATION: 翻译题：将一种语言翻译成另一种语言\n - QUESTION_TYPE_MATCHING: 匹配题：将相关的项目配对\n - QUESTION_TYPE_ORDERING: 排序题：句子或段落按正确顺序排列\n - QUESTION_TYPE_READING_COMPREHENSION: 阅读理解：阅读文章回答问题\n - QUESTION_TYPE_SPEAKING_TEST: 口语测试：录音回答问题\n - QUESTION_TYPE_WRITING_TEST: 写作测试：写作文或短文\n - QUESTION_TYPE_DICTATION: 听写题：听音频写出内容\n - QUESTION_TYPE_PICTURE_DESCRIPTION: 看图说话：描述图片内容\n - QUESTION_TYPE_CLOZE: 完形填空：选择合适的词填空\n - QUESTION_TYPE_ESSAY: 问答题：回答问题\n - QUESTION_TYPE_SINGLE_CHOICE: 单选题：从多个选项中选择正确答案\n - QUESTION_TYPE_TRUE_FALSE: 判断题：判断对错",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "QUESTION_TYPE_UNSPECIFIED",
+              "QUESTION_TYPE_LISTEN_AND_SELECT",
+              "QUESTION_TYPE_MULTIPLE_CHOICE",
+              "QUESTION_TYPE_FILL_IN_BLANK",
+              "QUESTION_TYPE_TRANSLATION",
+              "QUESTION_TYPE_MATCHING",
+              "QUESTION_TYPE_ORDERING",
+              "QUESTION_TYPE_READING_COMPREHENSION",
+              "QUESTION_TYPE_SPEAKING_TEST",
+              "QUESTION_TYPE_WRITING_TEST",
+              "QUESTION_TYPE_DICTATION",
+              "QUESTION_TYPE_PICTURE_DESCRIPTION",
+              "QUESTION_TYPE_CLOZE",
+              "QUESTION_TYPE_ESSAY",
+              "QUESTION_TYPE_SINGLE_CHOICE",
+              "QUESTION_TYPE_TRUE_FALSE"
+            ],
+            "default": "QUESTION_TYPE_UNSPECIFIED"
+          },
+          {
+            "name": "difficulty",
+            "description": "难度等级\n\n - QUESTION_DIFFICULTY_LEVEL_UNSPECIFIED: 未指定难度，用于处理未知的新难度级别，客户端应该显示为\"未知难度\"",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "QUESTION_DIFFICULTY_LEVEL_UNSPECIFIED",
+              "QUESTION_DIFFICULTY_LEVEL_EASY",
+              "QUESTION_DIFFICULTY_LEVEL_MEDIUM",
+              "QUESTION_DIFFICULTY_LEVEL_HARD"
+            ],
+            "default": "QUESTION_DIFFICULTY_LEVEL_UNSPECIFIED"
+          },
+          {
+            "name": "category",
+            "description": "题目分类\n\n - QUESTION_CATEGORY_UNSPECIFIED: 未指定分类，用于处理未知的新分类，客户端应该显示为\"未知分类\"",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "QUESTION_CATEGORY_UNSPECIFIED",
+              "QUESTION_CATEGORY_EXERCISE",
+              "QUESTION_CATEGORY_TEST",
+              "QUESTION_CATEGORY_GRAMMAR"
+            ],
+            "default": "QUESTION_CATEGORY_UNSPECIFIED"
+          },
+          {
+            "name": "page",
+            "description": "页码",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "pageSize",
+            "description": "每页数量",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "QuestionService"
+        ]
+      }
+    },
+    "/api/v1/questions/{ids}": {
+      "get": {
+        "operationId": "QuestionService_Get",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1QuestionServiceGetResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "ids",
+            "description": "题目ID",
+            "in": "path",
+            "required": true,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "collectionFormat": "csv",
+            "minItems": 1
+          }
+        ],
+        "tags": [
+          "QuestionService"
+        ]
+      }
+    },
+    "/api/v1/questions/{id}": {
+      "delete": {
+        "operationId": "QuestionService_Delete",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1QuestionServiceDeleteResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "题目ID",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "QuestionService"
+        ]
+      },
+      "put": {
+        "operationId": "QuestionService_Update",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1QuestionServiceUpdateResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "题目ID",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1QuestionServiceUpdateBody"
+            }
+          }
+        ],
+        "tags": [
+          "QuestionService"
+        ]
+      }
+    },
+    "/api/v1/questions/{id}/publish": {
+      "post": {
+        "operationId": "QuestionService_Publish",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1QuestionServicePublishResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "题目ID",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "status",
+            "description": "题目状态\n\n - QUESTION_STATUS_UNSPECIFIED: 未指定状态，用于处理未知的新状态，客户端应该显示为\"未知状态\"",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "QUESTION_STATUS_UNSPECIFIED",
+              "QUESTION_STATUS_DRAFT",
+              "QUESTION_STATUS_REVIEWING",
+              "QUESTION_STATUS_PUBLISHED"
+            ],
+            "default": "QUESTION_STATUS_UNSPECIFIED"
+          }
+        ],
+        "tags": [
+          "QuestionService"
+        ]
+      }
+    },
+    "/api/v1/sections/{id}": {
+      "delete": {
+        "summary": "DeleteSection 删除课程章节",
+        "operationId": "CourseService_DeleteSection",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CourseServiceDeleteSectionResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "章节ID",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "CourseService"
+        ]
+      },
+      "put": {
+        "summary": "UpdateSection 更新课程章节",
+        "operationId": "CourseService_UpdateSection",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CourseServiceUpdateSectionResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "章节ID",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CourseServiceUpdateSectionBody"
+            }
+          }
+        ],
+        "tags": [
+          "CourseService"
+        ]
+      }
+    },
+    "/api/v1/sections/{sectionId}/units": {
+      "post": {
+        "summary": "CreateUnit 创建章节单元",
+        "operationId": "CourseService_CreateUnit",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CourseServiceCreateUnitResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "sectionId",
+            "description": "所属章节ID",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CourseServiceCreateUnitBody"
+            }
+          }
+        ],
+        "tags": [
+          "CourseService"
+        ]
+      }
+    },
+    "/api/v1/units/{id}": {
+      "delete": {
+        "summary": "DeleteUnit 删除章节单元",
+        "operationId": "CourseService_DeleteUnit",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CourseServiceDeleteUnitResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "单元ID",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "CourseService"
+        ]
+      },
+      "put": {
+        "summary": "UpdateUnit 更新章节单元",
+        "operationId": "CourseService_UpdateUnit",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CourseServiceUpdateUnitResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "单元ID",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CourseServiceUpdateUnitBody"
+            }
+          }
+        ],
+        "tags": [
+          "CourseService"
+        ]
+      }
+    },
+    "/api/v1/users/info": {
+      "get": {
+        "operationId": "UserService_GetUserInfo",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetUserInfoResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "UserService"
+        ]
+      },
+      "put": {
+        "operationId": "UserService_UpdateUserInfo",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdateUserInfoResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1UpdateUserInfoRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/api/v1/users/login": {
+      "post": {
+        "operationId": "UserService_Login",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1LoginResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1LoginRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/api/v1/users/login/apple": {
+      "post": {
+        "operationId": "UserService_AppleLogin",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1AppleLoginResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1AppleLoginRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/api/v1/users/logout": {
+      "post": {
+        "operationId": "UserService_Logout",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1LogoutResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/api/v1/users/password": {
+      "put": {
+        "operationId": "UserService_ChangePassword",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ChangePasswordResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1ChangePasswordRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/api/v1/users/password/reset": {
+      "post": {
+        "operationId": "UserService_ResetPassword",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ResetPasswordResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1ResetPasswordRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/api/v1/users/practice": {
+      "post": {
+        "operationId": "UserService_Practice",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1PracticeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1PracticeRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/api/v1/users/register": {
+      "post": {
+        "operationId": "UserService_Register",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1RegisterResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1RegisterRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/api/v1/users/token/refresh": {
+      "post": {
+        "operationId": "UserService_RefreshToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1RefreshTokenResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1RefreshTokenRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/api/v1/words": {
+      "get": {
+        "summary": "List 获取单词列表",
+        "operationId": "WordService_List",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1WordServiceListResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "WordService"
+        ]
+      }
+    },
+    "/api/v1/words/{wordId}": {
+      "get": {
+        "summary": "Get 获取单词详情",
+        "operationId": "WordService_Get",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1WordServiceGetResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "wordId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "WordService"
+        ]
+      }
     }
   },
   "definitions": {
+    "CourseServiceCreateSectionBody": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "title": "章节标题"
+        },
+        "desc": {
+          "type": "string",
+          "title": "章节描述"
+        },
+        "orderIndex": {
+          "type": "integer",
+          "format": "int32",
+          "title": "显示顺序"
+        }
+      },
+      "title": "Section 相关请求响应消息"
+    },
+    "CourseServiceCreateUnitBody": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "title": "单元标题"
+        },
+        "desc": {
+          "type": "string",
+          "title": "单元内容"
+        },
+        "questionIds": {
+          "type": "string",
+          "title": "问题ID列表"
+        },
+        "orderIndex": {
+          "type": "integer",
+          "format": "int32",
+          "title": "显示顺序"
+        },
+        "tags": {
+          "type": "string",
+          "title": "标签"
+        }
+      },
+      "title": "Unit 相关请求响应消息"
+    },
+    "CourseServiceUpdateSectionBody": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "title": "章节标题"
+        },
+        "desc": {
+          "type": "string",
+          "title": "章节描述"
+        },
+        "orderIndex": {
+          "type": "integer",
+          "format": "int32",
+          "title": "显示顺序"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "title": "状态：0-禁用，1-启用"
+        }
+      }
+    },
+    "CourseServiceUpdateUnitBody": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "title": "单元标题"
+        },
+        "desc": {
+          "type": "string",
+          "title": "单元内容"
+        },
+        "questionIds": {
+          "type": "string",
+          "title": "问题ID列表"
+        },
+        "orderIndex": {
+          "type": "integer",
+          "format": "int32",
+          "title": "显示顺序"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "title": "状态：0-禁用，1-启用"
+        },
+        "tags": {
+          "type": "string",
+          "title": "标签"
+        }
+      }
+    },
+    "LearningServiceUpdateUnitProgressBody": {
+      "type": "object",
+      "properties": {
+        "completed": {
+          "type": "boolean",
+          "title": "是否完成"
+        },
+        "studyDuration": {
+          "type": "integer",
+          "format": "int64",
+          "title": "本次学习时长（秒）"
+        }
+      },
+      "title": "UpdateLearningUnitProgressRequest 更新单元进度请求"
+    },
+    "QuestionTagServiceUpdateTagBody": {
+      "type": "object",
+      "properties": {
+        "weight": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -344,6 +1894,20 @@
       },
       "title": "刷新令牌响应"
     },
+    "v1AppleLoginRequest": {
+      "type": "object",
+      "properties": {
+        "authorizationCode": {
+          "type": "string",
+          "title": "Apple Authorization Code"
+        },
+        "userIdentifier": {
+          "type": "string",
+          "title": "Apple用户唯一标识符"
+        }
+      },
+      "title": "AppleLoginRequest 苹果登录请求"
+    },
     "v1AppleLoginResponse": {
       "type": "object",
       "properties": {
@@ -365,6 +1929,18 @@
         }
       },
       "title": "AppleLoginResponse 苹果登录响应"
+    },
+    "v1ChangePasswordRequest": {
+      "type": "object",
+      "properties": {
+        "oldPassword": {
+          "type": "string"
+        },
+        "newPassword": {
+          "type": "string"
+        }
+      },
+      "title": "ChangePasswordRequest 修改密码请求"
     },
     "v1ChangePasswordResponse": {
       "type": "object",
@@ -536,6 +2112,35 @@
       },
       "title": "CourseSectionUnit 课程章节单元信息"
     },
+    "v1CourseServiceCreateRequest": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "title": "课程标题"
+        },
+        "desc": {
+          "type": "string",
+          "title": "课程描述"
+        },
+        "coverUrl": {
+          "type": "string",
+          "title": "封面图片URL"
+        },
+        "level": {
+          "$ref": "#/definitions/v1CourseLevel",
+          "title": "难度级别"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "课程标签"
+        }
+      },
+      "title": "CreateCourseRequest 创建课程请求"
+    },
     "v1CourseServiceCreateResponse": {
       "type": "object",
       "properties": {
@@ -625,6 +2230,39 @@
       },
       "title": "SearchCourseResponse 搜索课程响应"
     },
+    "v1CourseServiceUpdateBody": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "title": "课程标题"
+        },
+        "desc": {
+          "type": "string",
+          "title": "课程描述"
+        },
+        "coverUrl": {
+          "type": "string",
+          "title": "封面图片URL"
+        },
+        "level": {
+          "$ref": "#/definitions/v1CourseLevel",
+          "title": "难度级别"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "课程标签"
+        },
+        "status": {
+          "$ref": "#/definitions/v1CourseStatus",
+          "title": "课程状态"
+        }
+      },
+      "title": "UpdateCourseRequest 更新课程请求"
+    },
     "v1CourseServiceUpdateResponse": {
       "type": "object",
       "properties": {
@@ -666,12 +2304,6 @@
       ],
       "default": "COURSE_STATUS_UNSPECIFIED",
       "title": "CourseStatus 课程状态"
-    },
-    "v1CreateTagResponse": {
-      "type": "object"
-    },
-    "v1DeleteTagResponse": {
-      "type": "object"
     },
     "v1GetUserInfoResponse": {
       "type": "object",
@@ -789,17 +2421,17 @@
       },
       "title": "LearningUnitStatus 学习单元状态"
     },
-    "v1ListTagResponse": {
+    "v1LoginRequest": {
       "type": "object",
       "properties": {
-        "tags": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/v1Tag"
-          }
+        "account": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
         }
-      }
+      },
+      "title": "LoginRequest 登录请求"
     },
     "v1LoginResponse": {
       "type": "object",
@@ -819,6 +2451,16 @@
     "v1LogoutResponse": {
       "type": "object",
       "title": "LogoutResponse 登出响应"
+    },
+    "v1PracticeRequest": {
+      "type": "object",
+      "properties": {
+        "courseSectionUnitId": {
+          "type": "string",
+          "format": "uint64"
+        }
+      },
+      "title": "PracticeRequest 练习请求"
     },
     "v1PracticeResponse": {
       "type": "object",
@@ -999,6 +2641,93 @@
       "description": "- QUESTION_OPTION_TYPE_UNSPECIFIED: 未指定类型，用于处理未知的新类型，客户端应该拒绝处理该类型的选项\n - QUESTION_OPTION_TYPE_TEXT: 文本类型\n - QUESTION_OPTION_TYPE_IMAGE: 图片类型\n - QUESTION_OPTION_TYPE_AUDIO: 音频类型",
       "title": "QuestionOptionType 选项类型"
     },
+    "v1QuestionServiceCreateRequest": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "title": "题目标题"
+        },
+        "questionType": {
+          "$ref": "#/definitions/v1QuestionType",
+          "title": "题目类型"
+        },
+        "content": {
+          "$ref": "#/definitions/v1HyperTextTag",
+          "title": "题目内容"
+        },
+        "simpleQuestion": {
+          "type": "string",
+          "title": "题目内容"
+        },
+        "subQuestions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1SubQuestion"
+          },
+          "title": "子问题"
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1QuestionOption"
+          },
+          "title": "选项列表"
+        },
+        "optionTuples": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1QuestionOptionTuple"
+          },
+          "title": "选项双元组列表"
+        },
+        "answers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "答案列表"
+        },
+        "difficulty": {
+          "$ref": "#/definitions/v1QuestionDifficultyLevel",
+          "title": "难度等级"
+        },
+        "status": {
+          "$ref": "#/definitions/v1QuestionStatus",
+          "title": "题目状态"
+        },
+        "category": {
+          "$ref": "#/definitions/v1QuestionCategory",
+          "title": "题目分类"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "标签列表"
+        },
+        "explanation": {
+          "type": "string",
+          "title": "题目解析"
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "附件列表"
+        },
+        "timeLimit": {
+          "type": "integer",
+          "format": "int64",
+          "title": "时间限制, 单位秒"
+        }
+      }
+    },
     "v1QuestionServiceCreateResponse": {
       "type": "object",
       "properties": {
@@ -1045,6 +2774,81 @@
         }
       }
     },
+    "v1QuestionServiceUpdateBody": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "title": "题目标题"
+        },
+        "content": {
+          "$ref": "#/definitions/v1HyperTextTag",
+          "title": "题目内容"
+        },
+        "simpleQuestion": {
+          "type": "string",
+          "title": "题目内容"
+        },
+        "subQuestions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1SubQuestion"
+          },
+          "title": "子问题"
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1QuestionOption"
+          },
+          "title": "选项列表"
+        },
+        "optionTuples": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1QuestionOptionTuple"
+          },
+          "title": "选项双元组列表"
+        },
+        "answers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "答案列表"
+        },
+        "difficulty": {
+          "$ref": "#/definitions/v1QuestionDifficultyLevel",
+          "title": "难度等级"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "标签列表"
+        },
+        "explanation": {
+          "type": "string",
+          "title": "题目解析"
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "附件列表"
+        },
+        "timeLimit": {
+          "type": "integer",
+          "format": "int64",
+          "title": "时间限制, 单位秒"
+        }
+      }
+    },
     "v1QuestionServiceUpdateResponse": {
       "type": "object"
     },
@@ -1068,6 +2872,14 @@
         "weight": {
           "type": "integer",
           "format": "int64"
+        }
+      }
+    },
+    "v1QuestionTagServiceCreateTagRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
         }
       }
     },
@@ -1115,6 +2927,15 @@
       "default": "QUESTION_TYPE_UNSPECIFIED",
       "title": "- QUESTION_TYPE_UNSPECIFIED: 未指定类型，用于处理未知的新题型，客户端应该显示为\"未知题型\"\n - QUESTION_TYPE_LISTEN_AND_SELECT: 听力选择题：听音频选择正确选项\n - QUESTION_TYPE_MULTIPLE_CHOICE: 多项选择题：从多个选项中选择正确答案\n - QUESTION_TYPE_FILL_IN_BLANK: 填空题：在句子或段落中填写适当的词语\n - QUESTION_TYPE_TRANSLATION: 翻译题：将一种语言翻译成另一种语言\n - QUESTION_TYPE_MATCHING: 匹配题：将相关的项目配对\n - QUESTION_TYPE_ORDERING: 排序题：句子或段落按正确顺序排列\n - QUESTION_TYPE_READING_COMPREHENSION: 阅读理解：阅读文章回答问题\n - QUESTION_TYPE_SPEAKING_TEST: 口语测试：录音回答问题\n - QUESTION_TYPE_WRITING_TEST: 写作测试：写作文或短文\n - QUESTION_TYPE_DICTATION: 听写题：听音频写出内容\n - QUESTION_TYPE_PICTURE_DESCRIPTION: 看图说话：描述图片内容\n - QUESTION_TYPE_CLOZE: 完形填空：选择合适的词填空\n - QUESTION_TYPE_ESSAY: 问答题：回答问题\n - QUESTION_TYPE_SINGLE_CHOICE: 单选题：从多个选项中选择正确答案\n - QUESTION_TYPE_TRUE_FALSE: 判断题：判断对错"
     },
+    "v1RefreshTokenRequest": {
+      "type": "object",
+      "properties": {
+        "refreshToken": {
+          "type": "string"
+        }
+      },
+      "title": "RefreshTokenRequest 刷新token请求"
+    },
     "v1RefreshTokenResponse": {
       "type": "object",
       "properties": {
@@ -1126,6 +2947,24 @@
         }
       },
       "title": "RefreshTokenResponse 刷新token响应"
+    },
+    "v1RegisterRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "nickname": {
+          "type": "string"
+        }
+      },
+      "title": "RegisterRequest 注册请求"
     },
     "v1RegisterResponse": {
       "type": "object",
@@ -1141,6 +2980,36 @@
         }
       },
       "title": "RegisterResponse 注册响应"
+    },
+    "v1ResetPasswordRequest": {
+      "type": "object",
+      "properties": {
+        "resetType": {
+          "type": "string",
+          "title": "重置方式：phone-手机号验证码，email-邮箱验证码，apple-苹果登录"
+        },
+        "newPassword": {
+          "type": "string",
+          "title": "新密码"
+        },
+        "phone": {
+          "type": "string",
+          "title": "手机号（当reset_type为phone时必填）"
+        },
+        "verificationCode": {
+          "type": "string",
+          "title": "验证码（当reset_type为phone或email时必填）"
+        },
+        "appleToken": {
+          "type": "string",
+          "title": "苹果登录票据（当reset_type为apple时必填）"
+        },
+        "email": {
+          "type": "string",
+          "title": "邮箱地址（当reset_type为email时必填）"
+        }
+      },
+      "title": "ResetPasswordRequest 重置密码请求"
     },
     "v1ResetPasswordResponse": {
       "type": "object",
@@ -1219,20 +3088,17 @@
       "description": "- SUB_QUESTION_TYPE_UNSPECIFIED: 未指定\n - SUB_QUESTION_TYPE_SINGLE_CHOICE: 单选题",
       "title": "SubQuestionType 子问题类型"
     },
-    "v1Tag": {
+    "v1UpdateUserInfoRequest": {
       "type": "object",
       "properties": {
-        "name": {
+        "nickname": {
           "type": "string"
         },
-        "weight": {
-          "type": "integer",
-          "format": "int64"
+        "avatar": {
+          "type": "string"
         }
-      }
-    },
-    "v1UpdateTagResponse": {
-      "type": "object"
+      },
+      "title": "UpdateUserInfoRequest 更新用户信息请求"
     },
     "v1UpdateUserInfoResponse": {
       "type": "object",

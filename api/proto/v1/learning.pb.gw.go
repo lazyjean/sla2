@@ -39,9 +39,15 @@ func request_LearningService_GetCourseProgress_0(ctx context.Context, marshaler 
 	var (
 		protoReq LearningServiceGetCourseProgressRequest
 		metadata runtime.ServerMetadata
+		err      error
 	)
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	val, ok := pathParams["course_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "course_id")
+	}
+	protoReq.CourseId, err = runtime.Uint32(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "course_id", err)
 	}
 	msg, err := client.GetCourseProgress(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
@@ -51,9 +57,15 @@ func local_request_LearningService_GetCourseProgress_0(ctx context.Context, mars
 	var (
 		protoReq LearningServiceGetCourseProgressRequest
 		metadata runtime.ServerMetadata
+		err      error
 	)
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	val, ok := pathParams["course_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "course_id")
+	}
+	protoReq.CourseId, err = runtime.Uint32(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "course_id", err)
 	}
 	msg, err := server.GetCourseProgress(ctx, &protoReq)
 	return msg, metadata, err
@@ -63,9 +75,15 @@ func request_LearningService_GetSectionProgress_0(ctx context.Context, marshaler
 	var (
 		protoReq LearningServiceGetSectionProgressRequest
 		metadata runtime.ServerMetadata
+		err      error
 	)
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	val, ok := pathParams["section_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "section_id")
+	}
+	protoReq.SectionId, err = runtime.Uint32(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "section_id", err)
 	}
 	msg, err := client.GetSectionProgress(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
@@ -75,9 +93,15 @@ func local_request_LearningService_GetSectionProgress_0(ctx context.Context, mar
 	var (
 		protoReq LearningServiceGetSectionProgressRequest
 		metadata runtime.ServerMetadata
+		err      error
 	)
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	val, ok := pathParams["section_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "section_id")
+	}
+	protoReq.SectionId, err = runtime.Uint32(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "section_id", err)
 	}
 	msg, err := server.GetSectionProgress(ctx, &protoReq)
 	return msg, metadata, err
@@ -87,9 +111,15 @@ func request_LearningService_GetUnitProgress_0(ctx context.Context, marshaler ru
 	var (
 		protoReq LearningServiceGetUnitProgressRequest
 		metadata runtime.ServerMetadata
+		err      error
 	)
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	val, ok := pathParams["unit_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "unit_id")
+	}
+	protoReq.UnitId, err = runtime.Uint32(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "unit_id", err)
 	}
 	msg, err := client.GetUnitProgress(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
@@ -99,9 +129,15 @@ func local_request_LearningService_GetUnitProgress_0(ctx context.Context, marsha
 	var (
 		protoReq LearningServiceGetUnitProgressRequest
 		metadata runtime.ServerMetadata
+		err      error
 	)
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	val, ok := pathParams["unit_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "unit_id")
+	}
+	protoReq.UnitId, err = runtime.Uint32(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "unit_id", err)
 	}
 	msg, err := server.GetUnitProgress(ctx, &protoReq)
 	return msg, metadata, err
@@ -111,9 +147,18 @@ func request_LearningService_UpdateUnitProgress_0(ctx context.Context, marshaler
 	var (
 		protoReq LearningServiceUpdateUnitProgressRequest
 		metadata runtime.ServerMetadata
+		err      error
 	)
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	val, ok := pathParams["unit_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "unit_id")
+	}
+	protoReq.UnitId, err = runtime.Uint32(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "unit_id", err)
 	}
 	msg, err := client.UpdateUnitProgress(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
@@ -123,9 +168,18 @@ func local_request_LearningService_UpdateUnitProgress_0(ctx context.Context, mar
 	var (
 		protoReq LearningServiceUpdateUnitProgressRequest
 		metadata runtime.ServerMetadata
+		err      error
 	)
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	val, ok := pathParams["unit_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "unit_id")
+	}
+	protoReq.UnitId, err = runtime.Uint32(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "unit_id", err)
 	}
 	msg, err := server.UpdateUnitProgress(ctx, &protoReq)
 	return msg, metadata, err
@@ -137,13 +191,13 @@ func local_request_LearningService_UpdateUnitProgress_0(ctx context.Context, mar
 // Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterLearningServiceHandlerFromEndpoint instead.
 // GRPC interceptors will not work for this type of registration. To use interceptors, you must use the "runtime.WithMiddlewares" option in the "runtime.NewServeMux" call.
 func RegisterLearningServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server LearningServiceServer) error {
-	mux.Handle(http.MethodPost, pattern_LearningService_GetCourseProgress_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_LearningService_GetCourseProgress_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.LearningService/GetCourseProgress", runtime.WithHTTPPathPattern("/proto.v1.LearningService/GetCourseProgress"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.LearningService/GetCourseProgress", runtime.WithHTTPPathPattern("/api/v1/learning/courses/{course_id}/progress"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -157,13 +211,13 @@ func RegisterLearningServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		}
 		forward_LearningService_GetCourseProgress_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodPost, pattern_LearningService_GetSectionProgress_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_LearningService_GetSectionProgress_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.LearningService/GetSectionProgress", runtime.WithHTTPPathPattern("/proto.v1.LearningService/GetSectionProgress"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.LearningService/GetSectionProgress", runtime.WithHTTPPathPattern("/api/v1/learning/sections/{section_id}/progress"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -177,13 +231,13 @@ func RegisterLearningServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		}
 		forward_LearningService_GetSectionProgress_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodPost, pattern_LearningService_GetUnitProgress_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_LearningService_GetUnitProgress_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.LearningService/GetUnitProgress", runtime.WithHTTPPathPattern("/proto.v1.LearningService/GetUnitProgress"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.LearningService/GetUnitProgress", runtime.WithHTTPPathPattern("/api/v1/learning/units/{unit_id}/progress"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -197,13 +251,13 @@ func RegisterLearningServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		}
 		forward_LearningService_GetUnitProgress_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodPost, pattern_LearningService_UpdateUnitProgress_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodPut, pattern_LearningService_UpdateUnitProgress_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.LearningService/UpdateUnitProgress", runtime.WithHTTPPathPattern("/proto.v1.LearningService/UpdateUnitProgress"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.LearningService/UpdateUnitProgress", runtime.WithHTTPPathPattern("/api/v1/learning/units/{unit_id}/progress"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -257,11 +311,11 @@ func RegisterLearningServiceHandler(ctx context.Context, mux *runtime.ServeMux, 
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
 // "LearningServiceClient" to call the correct interceptors. This client ignores the HTTP middlewares.
 func RegisterLearningServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client LearningServiceClient) error {
-	mux.Handle(http.MethodPost, pattern_LearningService_GetCourseProgress_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_LearningService_GetCourseProgress_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.LearningService/GetCourseProgress", runtime.WithHTTPPathPattern("/proto.v1.LearningService/GetCourseProgress"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.LearningService/GetCourseProgress", runtime.WithHTTPPathPattern("/api/v1/learning/courses/{course_id}/progress"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -274,11 +328,11 @@ func RegisterLearningServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		}
 		forward_LearningService_GetCourseProgress_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodPost, pattern_LearningService_GetSectionProgress_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_LearningService_GetSectionProgress_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.LearningService/GetSectionProgress", runtime.WithHTTPPathPattern("/proto.v1.LearningService/GetSectionProgress"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.LearningService/GetSectionProgress", runtime.WithHTTPPathPattern("/api/v1/learning/sections/{section_id}/progress"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -291,11 +345,11 @@ func RegisterLearningServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		}
 		forward_LearningService_GetSectionProgress_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodPost, pattern_LearningService_GetUnitProgress_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_LearningService_GetUnitProgress_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.LearningService/GetUnitProgress", runtime.WithHTTPPathPattern("/proto.v1.LearningService/GetUnitProgress"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.LearningService/GetUnitProgress", runtime.WithHTTPPathPattern("/api/v1/learning/units/{unit_id}/progress"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -308,11 +362,11 @@ func RegisterLearningServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		}
 		forward_LearningService_GetUnitProgress_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodPost, pattern_LearningService_UpdateUnitProgress_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodPut, pattern_LearningService_UpdateUnitProgress_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.LearningService/UpdateUnitProgress", runtime.WithHTTPPathPattern("/proto.v1.LearningService/UpdateUnitProgress"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.LearningService/UpdateUnitProgress", runtime.WithHTTPPathPattern("/api/v1/learning/units/{unit_id}/progress"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -329,10 +383,10 @@ func RegisterLearningServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 }
 
 var (
-	pattern_LearningService_GetCourseProgress_0  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"proto.v1.LearningService", "GetCourseProgress"}, ""))
-	pattern_LearningService_GetSectionProgress_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"proto.v1.LearningService", "GetSectionProgress"}, ""))
-	pattern_LearningService_GetUnitProgress_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"proto.v1.LearningService", "GetUnitProgress"}, ""))
-	pattern_LearningService_UpdateUnitProgress_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"proto.v1.LearningService", "UpdateUnitProgress"}, ""))
+	pattern_LearningService_GetCourseProgress_0  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"api", "v1", "learning", "courses", "course_id", "progress"}, ""))
+	pattern_LearningService_GetSectionProgress_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"api", "v1", "learning", "sections", "section_id", "progress"}, ""))
+	pattern_LearningService_GetUnitProgress_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"api", "v1", "learning", "units", "unit_id", "progress"}, ""))
+	pattern_LearningService_UpdateUnitProgress_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"api", "v1", "learning", "units", "unit_id", "progress"}, ""))
 )
 
 var (
