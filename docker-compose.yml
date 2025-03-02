@@ -41,6 +41,15 @@ services:
       - "6379:6379"
     restart: unless-stopped
 
+  adminer:
+    image: adminer:latest
+    container_name: sla2-adminer
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   redis_data: 
