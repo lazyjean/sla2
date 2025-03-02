@@ -1,0 +1,1359 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "proto/v1/admin.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "AdminService"
+    },
+    {
+      "name": "CourseService"
+    },
+    {
+      "name": "LearningService"
+    },
+    {
+      "name": "QuestionService"
+    },
+    {
+      "name": "TagService"
+    },
+    {
+      "name": "QuestionTagService"
+    },
+    {
+      "name": "UserService"
+    },
+    {
+      "name": "WordService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/admin/initialize": {
+      "post": {
+        "summary": "系统初始化（创建首个管理员）",
+        "operationId": "AdminService_InitializeSystem",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1AdminServiceInitializeSystemResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1AdminServiceInitializeSystemRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AdminService"
+        ]
+      }
+    },
+    "/api/v1/admin/login": {
+      "post": {
+        "summary": "管理员登录",
+        "operationId": "AdminService_AdminLogin",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1AdminServiceAdminLoginResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1AdminServiceAdminLoginRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AdminService"
+        ]
+      }
+    },
+    "/api/v1/admin/me": {
+      "get": {
+        "summary": "获取当前管理员信息",
+        "operationId": "AdminService_GetCurrentAdminInfo",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1AdminServiceGetCurrentAdminInfoResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "AdminService"
+        ]
+      }
+    },
+    "/api/v1/admin/refresh-token": {
+      "post": {
+        "summary": "刷新访问令牌",
+        "operationId": "AdminService_RefreshToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1AdminServiceRefreshTokenResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1AdminServiceRefreshTokenRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AdminService"
+        ]
+      }
+    },
+    "/api/v1/admin/system-status": {
+      "get": {
+        "summary": "检查系统状态",
+        "operationId": "AdminService_CheckSystemStatus",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1AdminServiceCheckSystemStatusResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "AdminService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1AdminInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "nickname": {
+          "type": "string"
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "int64"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "int64"
+        }
+      },
+      "title": "管理员信息"
+    },
+    "v1AdminServiceAdminLoginRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "title": "管理员登录请求"
+    },
+    "v1AdminServiceAdminLoginResponse": {
+      "type": "object",
+      "properties": {
+        "accessToken": {
+          "type": "string"
+        },
+        "refreshToken": {
+          "type": "string"
+        },
+        "admin": {
+          "$ref": "#/definitions/v1AdminInfo"
+        }
+      },
+      "title": "管理员登录响应"
+    },
+    "v1AdminServiceCheckSystemStatusResponse": {
+      "type": "object",
+      "properties": {
+        "initialized": {
+          "type": "boolean",
+          "title": "系统是否已初始化"
+        }
+      },
+      "title": "系统状态响应"
+    },
+    "v1AdminServiceGetCurrentAdminInfoResponse": {
+      "type": "object",
+      "properties": {
+        "admin": {
+          "$ref": "#/definitions/v1AdminInfo"
+        }
+      },
+      "title": "获取当前管理员响应"
+    },
+    "v1AdminServiceInitializeSystemRequest": {
+      "type": "object",
+      "properties": {
+        "adminUsername": {
+          "type": "string",
+          "title": "管理员用户名"
+        },
+        "adminPassword": {
+          "type": "string",
+          "title": "管理员密码"
+        },
+        "adminNickname": {
+          "type": "string",
+          "title": "管理员昵称"
+        }
+      },
+      "title": "系统初始化请求"
+    },
+    "v1AdminServiceInitializeSystemResponse": {
+      "type": "object",
+      "properties": {
+        "admin": {
+          "$ref": "#/definitions/v1AdminInfo",
+          "title": "创建的管理员信息"
+        },
+        "accessToken": {
+          "type": "string",
+          "title": "访问令牌"
+        },
+        "refreshToken": {
+          "type": "string",
+          "title": "刷新令牌"
+        }
+      },
+      "title": "系统初始化响应"
+    },
+    "v1AdminServiceRefreshTokenRequest": {
+      "type": "object",
+      "properties": {
+        "refreshToken": {
+          "type": "string"
+        }
+      },
+      "title": "刷新令牌请求"
+    },
+    "v1AdminServiceRefreshTokenResponse": {
+      "type": "object",
+      "properties": {
+        "accessToken": {
+          "type": "string"
+        },
+        "refreshToken": {
+          "type": "string"
+        }
+      },
+      "title": "刷新令牌响应"
+    },
+    "v1AppleLoginResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/v1User",
+          "title": "用户信息"
+        },
+        "token": {
+          "type": "string",
+          "title": "JWT token"
+        },
+        "refreshToken": {
+          "type": "string",
+          "title": "刷新token"
+        },
+        "isNewUser": {
+          "type": "boolean",
+          "title": "是否为新用户"
+        }
+      },
+      "title": "AppleLoginResponse 苹果登录响应"
+    },
+    "v1ChangePasswordResponse": {
+      "type": "object",
+      "title": "ChangePasswordResponse 修改密码响应"
+    },
+    "v1Course": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "title": "课程ID"
+        },
+        "title": {
+          "type": "string",
+          "title": "课程标题"
+        },
+        "desc": {
+          "type": "string",
+          "title": "课程描述"
+        },
+        "coverUrl": {
+          "type": "string",
+          "title": "封面图片URL"
+        },
+        "level": {
+          "$ref": "#/definitions/v1CourseLevel",
+          "title": "难度级别"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "课程标签"
+        },
+        "status": {
+          "$ref": "#/definitions/v1CourseStatus",
+          "title": "课程状态"
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1CourseSection"
+          },
+          "title": "课程章节列表"
+        },
+        "version": {
+          "type": "integer",
+          "format": "int64",
+          "title": "版本号，当课程内容有更新时，版本号+1"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "title": "创建时间"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "title": "更新时间"
+        }
+      },
+      "title": "Course 课程信息"
+    },
+    "v1CourseLevel": {
+      "type": "string",
+      "enum": [
+        "COURSE_LEVEL_UNSPECIFIED",
+        "COURSE_LEVEL_BEGINNER",
+        "COURSE_LEVEL_INTERMEDIATE",
+        "COURSE_LEVEL_ADVANCED"
+      ],
+      "default": "COURSE_LEVEL_UNSPECIFIED",
+      "title": "CourseLevel 课程难度级别"
+    },
+    "v1CourseSection": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64",
+          "title": "章节唯一标识"
+        },
+        "title": {
+          "type": "string",
+          "title": "章节标题"
+        },
+        "desc": {
+          "type": "string",
+          "title": "章节描述"
+        },
+        "orderIndex": {
+          "type": "integer",
+          "format": "int32",
+          "title": "章节的显示顺序"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "title": "章节状态：0-禁用，1-启用"
+        },
+        "units": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1CourseSectionUnit"
+          },
+          "title": "章节单元列表"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "title": "记录创建时间"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "title": "记录更新时间"
+        }
+      },
+      "title": "CourseSection 课程章节信息"
+    },
+    "v1CourseSectionUnit": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64",
+          "title": "单元唯一标识"
+        },
+        "title": {
+          "type": "string",
+          "title": "单元标题"
+        },
+        "desc": {
+          "type": "string",
+          "title": "单元内容"
+        },
+        "questionIds": {
+          "type": "string",
+          "title": "问题ID列表，存储关联题目的ID数组"
+        },
+        "orderIndex": {
+          "type": "integer",
+          "format": "int32",
+          "title": "单元的显示顺序"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "title": "单元状态：0-禁用，1-启用"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "title": "记录创建时间"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "title": "记录更新时间"
+        },
+        "tags": {
+          "type": "string",
+          "title": "标签，多个标签用逗号分隔"
+        }
+      },
+      "title": "CourseSectionUnit 课程章节单元信息"
+    },
+    "v1CourseServiceCreateResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "title": "创建的课程信息"
+        }
+      },
+      "title": "CreateCourseResponse 创建课程响应"
+    },
+    "v1CourseServiceCreateSectionResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64",
+          "title": "创建的章节ID"
+        }
+      }
+    },
+    "v1CourseServiceCreateUnitResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64",
+          "title": "创建的单元ID"
+        }
+      }
+    },
+    "v1CourseServiceDeleteResponse": {
+      "type": "object",
+      "title": "DeleteCourseResponse 删除课程响应"
+    },
+    "v1CourseServiceDeleteSectionResponse": {
+      "type": "object"
+    },
+    "v1CourseServiceDeleteUnitResponse": {
+      "type": "object"
+    },
+    "v1CourseServiceGetResponse": {
+      "type": "object",
+      "properties": {
+        "course": {
+          "$ref": "#/definitions/v1Course",
+          "title": "课程信息"
+        }
+      },
+      "title": "GetCourseResponse 获取课程详情响应"
+    },
+    "v1CourseServiceListResponse": {
+      "type": "object",
+      "properties": {
+        "courses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1SimpleCourse"
+          },
+          "title": "课程列表"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64",
+          "title": "总数量"
+        }
+      },
+      "title": "CourseServiceListResponse 获取课程列表响应"
+    },
+    "v1CourseServiceSearchResponse": {
+      "type": "object",
+      "properties": {
+        "courses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1SimpleCourse"
+          },
+          "title": "课程列表"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64",
+          "title": "总数量"
+        }
+      },
+      "title": "SearchCourseResponse 搜索课程响应"
+    },
+    "v1CourseServiceUpdateResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "title": "更新后的课程ID"
+        }
+      },
+      "title": "UpdateCourseResponse 更新课程响应"
+    },
+    "v1CourseServiceUpdateSectionResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64",
+          "title": "更新的章节ID"
+        }
+      }
+    },
+    "v1CourseServiceUpdateUnitResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64",
+          "title": "更新的单元ID"
+        }
+      }
+    },
+    "v1CourseStatus": {
+      "type": "string",
+      "enum": [
+        "COURSE_STATUS_UNSPECIFIED",
+        "COURSE_STATUS_DRAFT",
+        "COURSE_STATUS_PUBLISHED",
+        "COURSE_STATUS_ARCHIVED"
+      ],
+      "default": "COURSE_STATUS_UNSPECIFIED",
+      "title": "CourseStatus 课程状态"
+    },
+    "v1CreateTagResponse": {
+      "type": "object"
+    },
+    "v1DeleteTagResponse": {
+      "type": "object"
+    },
+    "v1GetUserInfoResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/v1User"
+        }
+      },
+      "title": "GetUserInfoResponse 获取用户信息响应"
+    },
+    "v1HyperTextTag": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/v1HyperTextTagType"
+        },
+        "value": {
+          "type": "string"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1HyperTextTag"
+          }
+        }
+      },
+      "title": "HyperTextTag 定义超文本标签结构"
+    },
+    "v1HyperTextTagType": {
+      "type": "string",
+      "enum": [
+        "HYPER_TEXT_TAG_TYPE_UNSPECIFIED",
+        "HYPER_TEXT_TAG_TYPE_IMAGE",
+        "HYPER_TEXT_TAG_TYPE_AUDIO",
+        "HYPER_TEXT_TAG_TYPE_URL",
+        "HYPER_TEXT_TAG_TYPE_TEXT",
+        "HYPER_TEXT_TAG_TYPE_ANIMATION",
+        "HYPER_TEXT_TAG_TYPE_V_STACK",
+        "HYPER_TEXT_TAG_TYPE_H_STACK"
+      ],
+      "default": "HYPER_TEXT_TAG_TYPE_UNSPECIFIED",
+      "description": "- HYPER_TEXT_TAG_TYPE_V_STACK: 垂直布局容器\n - HYPER_TEXT_TAG_TYPE_H_STACK: 水平布局容器",
+      "title": "HyperTextTagType 定义超文本标签类型"
+    },
+    "v1LearningProgress": {
+      "type": "object",
+      "properties": {
+        "progress": {
+          "type": "number",
+          "format": "float",
+          "title": "进度百分比 0-100"
+        },
+        "completedItems": {
+          "type": "integer",
+          "format": "int64",
+          "title": "已完成项目数"
+        },
+        "totalItems": {
+          "type": "integer",
+          "format": "int64",
+          "title": "总项目数"
+        }
+      },
+      "title": "LearningProgress 学习进度基础信息"
+    },
+    "v1LearningServiceGetCourseProgressResponse": {
+      "type": "object",
+      "properties": {
+        "progress": {
+          "$ref": "#/definitions/v1LearningProgress"
+        }
+      },
+      "title": "GetLearningCourseProgressResponse 获取课程进度响应"
+    },
+    "v1LearningServiceGetSectionProgressResponse": {
+      "type": "object",
+      "properties": {
+        "progress": {
+          "$ref": "#/definitions/v1LearningProgress"
+        }
+      },
+      "title": "GetLearningSectionProgressResponse 获取章节进度响应"
+    },
+    "v1LearningServiceGetUnitProgressResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "$ref": "#/definitions/v1LearningUnitStatus"
+        }
+      },
+      "title": "GetLearningUnitProgressResponse 获取单元进度响应"
+    },
+    "v1LearningServiceUpdateUnitProgressResponse": {
+      "type": "object",
+      "title": "UpdateLearningUnitProgressResponse 更新单元进度响应"
+    },
+    "v1LearningUnitStatus": {
+      "type": "object",
+      "properties": {
+        "completed": {
+          "type": "boolean",
+          "title": "是否完成"
+        },
+        "lastAccessTime": {
+          "type": "string",
+          "format": "date-time",
+          "title": "最后访问时间"
+        },
+        "studyDuration": {
+          "type": "integer",
+          "format": "int64",
+          "title": "学习时长（秒）"
+        }
+      },
+      "title": "LearningUnitStatus 学习单元状态"
+    },
+    "v1ListTagResponse": {
+      "type": "object",
+      "properties": {
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Tag"
+          }
+        }
+      }
+    },
+    "v1LoginResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/v1User"
+        },
+        "token": {
+          "type": "string"
+        },
+        "refreshToken": {
+          "type": "string"
+        }
+      },
+      "title": "LoginResponse 登录响应"
+    },
+    "v1LogoutResponse": {
+      "type": "object",
+      "title": "LogoutResponse 登出响应"
+    },
+    "v1PracticeResponse": {
+      "type": "object",
+      "properties": {
+        "questionIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uint64"
+          }
+        }
+      },
+      "title": "PracticeResponse 练习响应"
+    },
+    "v1Question": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "title": "题目ID"
+        },
+        "title": {
+          "type": "string",
+          "title": "题目标题"
+        },
+        "questionType": {
+          "$ref": "#/definitions/v1QuestionType",
+          "title": "题目类型"
+        },
+        "content": {
+          "$ref": "#/definitions/v1HyperTextTag",
+          "title": "题目内容"
+        },
+        "simpleQuestion": {
+          "type": "string",
+          "title": "题目内容"
+        },
+        "subQuestions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1SubQuestion"
+          },
+          "title": "子问题"
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1QuestionOption"
+          },
+          "title": "选项列表"
+        },
+        "optionTuples": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1QuestionOptionTuple"
+          },
+          "title": "选项双元组列表"
+        },
+        "answers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "答案列表"
+        },
+        "difficulty": {
+          "$ref": "#/definitions/v1QuestionDifficultyLevel",
+          "title": "难度等级"
+        },
+        "status": {
+          "$ref": "#/definitions/v1QuestionStatus",
+          "title": "题目状态"
+        },
+        "category": {
+          "$ref": "#/definitions/v1QuestionCategory",
+          "title": "题目分类"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "标签列表"
+        },
+        "explanation": {
+          "type": "string",
+          "title": "题目解析"
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "附件列表"
+        },
+        "correctRate": {
+          "type": "number",
+          "format": "double",
+          "title": "正确率"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "uint64",
+          "title": "创建时间"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "uint64",
+          "title": "更新时间"
+        },
+        "timeLimit": {
+          "type": "integer",
+          "format": "int64",
+          "title": "时间限制, 单位秒"
+        }
+      },
+      "title": "用法:\n 1. 听声音选图片类型, 前端可自动打乱选项顺序, 然后播放音频, 用户选择图片, 这里不再依赖答案字段\n 2. 普通选择题的选项, 题目的答案在 answers 字段, 一般是选项在返回数组中的索引, 这里的选项既可以来源于数据库, 也可以是后端动态生成给前端的\n 3. 匹配题的选项, 这里应该存在多种用法, \n   a. 本身选项都是正确, 前端自行打乱顺序, 生成两组选项供用户匹配, 这时不依赖 answers 字段\n 4. 排序题的选项, 题目的答案在 answers 字段, 答案是正确的顺序\n 5. 听写题的选项, 每一个选项是一个听写单元, 不信赖 answer 字段"
+    },
+    "v1QuestionCategory": {
+      "type": "string",
+      "enum": [
+        "QUESTION_CATEGORY_UNSPECIFIED",
+        "QUESTION_CATEGORY_EXERCISE",
+        "QUESTION_CATEGORY_TEST",
+        "QUESTION_CATEGORY_GRAMMAR"
+      ],
+      "default": "QUESTION_CATEGORY_UNSPECIFIED",
+      "title": "- QUESTION_CATEGORY_UNSPECIFIED: 未指定分类，用于处理未知的新分类，客户端应该显示为\"未知分类\""
+    },
+    "v1QuestionDifficultyLevel": {
+      "type": "string",
+      "enum": [
+        "QUESTION_DIFFICULTY_LEVEL_UNSPECIFIED",
+        "QUESTION_DIFFICULTY_LEVEL_EASY",
+        "QUESTION_DIFFICULTY_LEVEL_MEDIUM",
+        "QUESTION_DIFFICULTY_LEVEL_HARD"
+      ],
+      "default": "QUESTION_DIFFICULTY_LEVEL_UNSPECIFIED",
+      "title": "- QUESTION_DIFFICULTY_LEVEL_UNSPECIFIED: 未指定难度，用于处理未知的新难度级别，客户端应该显示为\"未知难度\""
+    },
+    "v1QuestionOption": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/v1QuestionOptionType"
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "title": "QuestionOption 题目选项"
+    },
+    "v1QuestionOptionTuple": {
+      "type": "object",
+      "properties": {
+        "option1": {
+          "$ref": "#/definitions/v1QuestionOption"
+        },
+        "option2": {
+          "$ref": "#/definitions/v1QuestionOption"
+        }
+      },
+      "title": "QuestionOptionTuple 题目选项双元组, 用于匹配题, 排序题等, 一个源选项, 一个答案选项, 客户端需要打乱顺序, 由用户完成匹配"
+    },
+    "v1QuestionOptionType": {
+      "type": "string",
+      "enum": [
+        "QUESTION_OPTION_TYPE_UNSPECIFIED",
+        "QUESTION_OPTION_TYPE_TEXT",
+        "QUESTION_OPTION_TYPE_IMAGE",
+        "QUESTION_OPTION_TYPE_AUDIO"
+      ],
+      "default": "QUESTION_OPTION_TYPE_UNSPECIFIED",
+      "description": "- QUESTION_OPTION_TYPE_UNSPECIFIED: 未指定类型，用于处理未知的新类型，客户端应该拒绝处理该类型的选项\n - QUESTION_OPTION_TYPE_TEXT: 文本类型\n - QUESTION_OPTION_TYPE_IMAGE: 图片类型\n - QUESTION_OPTION_TYPE_AUDIO: 音频类型",
+      "title": "QuestionOptionType 选项类型"
+    },
+    "v1QuestionServiceCreateResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "title": "创建成功后返回题目ID"
+        }
+      }
+    },
+    "v1QuestionServiceDeleteResponse": {
+      "type": "object"
+    },
+    "v1QuestionServiceGetResponse": {
+      "type": "object",
+      "properties": {
+        "questions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Question"
+          }
+        }
+      }
+    },
+    "v1QuestionServicePublishResponse": {
+      "type": "object"
+    },
+    "v1QuestionServiceSearchResponse": {
+      "type": "object",
+      "properties": {
+        "questions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Question"
+          },
+          "title": "题目列表"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64",
+          "title": "总数"
+        }
+      }
+    },
+    "v1QuestionServiceUpdateResponse": {
+      "type": "object"
+    },
+    "v1QuestionStatus": {
+      "type": "string",
+      "enum": [
+        "QUESTION_STATUS_UNSPECIFIED",
+        "QUESTION_STATUS_DRAFT",
+        "QUESTION_STATUS_REVIEWING",
+        "QUESTION_STATUS_PUBLISHED"
+      ],
+      "default": "QUESTION_STATUS_UNSPECIFIED",
+      "title": "- QUESTION_STATUS_UNSPECIFIED: 未指定状态，用于处理未知的新状态，客户端应该显示为\"未知状态\""
+    },
+    "v1QuestionTag": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "weight": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "v1QuestionTagServiceCreateTagResponse": {
+      "type": "object"
+    },
+    "v1QuestionTagServiceDeleteTagResponse": {
+      "type": "object"
+    },
+    "v1QuestionTagServiceListTagResponse": {
+      "type": "object",
+      "properties": {
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1QuestionTag"
+          }
+        }
+      }
+    },
+    "v1QuestionTagServiceUpdateTagResponse": {
+      "type": "object"
+    },
+    "v1QuestionType": {
+      "type": "string",
+      "enum": [
+        "QUESTION_TYPE_UNSPECIFIED",
+        "QUESTION_TYPE_LISTEN_AND_SELECT",
+        "QUESTION_TYPE_MULTIPLE_CHOICE",
+        "QUESTION_TYPE_FILL_IN_BLANK",
+        "QUESTION_TYPE_TRANSLATION",
+        "QUESTION_TYPE_MATCHING",
+        "QUESTION_TYPE_ORDERING",
+        "QUESTION_TYPE_READING_COMPREHENSION",
+        "QUESTION_TYPE_SPEAKING_TEST",
+        "QUESTION_TYPE_WRITING_TEST",
+        "QUESTION_TYPE_DICTATION",
+        "QUESTION_TYPE_PICTURE_DESCRIPTION",
+        "QUESTION_TYPE_CLOZE",
+        "QUESTION_TYPE_ESSAY",
+        "QUESTION_TYPE_SINGLE_CHOICE",
+        "QUESTION_TYPE_TRUE_FALSE"
+      ],
+      "default": "QUESTION_TYPE_UNSPECIFIED",
+      "title": "- QUESTION_TYPE_UNSPECIFIED: 未指定类型，用于处理未知的新题型，客户端应该显示为\"未知题型\"\n - QUESTION_TYPE_LISTEN_AND_SELECT: 听力选择题：听音频选择正确选项\n - QUESTION_TYPE_MULTIPLE_CHOICE: 多项选择题：从多个选项中选择正确答案\n - QUESTION_TYPE_FILL_IN_BLANK: 填空题：在句子或段落中填写适当的词语\n - QUESTION_TYPE_TRANSLATION: 翻译题：将一种语言翻译成另一种语言\n - QUESTION_TYPE_MATCHING: 匹配题：将相关的项目配对\n - QUESTION_TYPE_ORDERING: 排序题：句子或段落按正确顺序排列\n - QUESTION_TYPE_READING_COMPREHENSION: 阅读理解：阅读文章回答问题\n - QUESTION_TYPE_SPEAKING_TEST: 口语测试：录音回答问题\n - QUESTION_TYPE_WRITING_TEST: 写作测试：写作文或短文\n - QUESTION_TYPE_DICTATION: 听写题：听音频写出内容\n - QUESTION_TYPE_PICTURE_DESCRIPTION: 看图说话：描述图片内容\n - QUESTION_TYPE_CLOZE: 完形填空：选择合适的词填空\n - QUESTION_TYPE_ESSAY: 问答题：回答问题\n - QUESTION_TYPE_SINGLE_CHOICE: 单选题：从多个选项中选择正确答案\n - QUESTION_TYPE_TRUE_FALSE: 判断题：判断对错"
+    },
+    "v1RefreshTokenResponse": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        },
+        "refreshToken": {
+          "type": "string"
+        }
+      },
+      "title": "RefreshTokenResponse 刷新token响应"
+    },
+    "v1RegisterResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/v1User"
+        },
+        "token": {
+          "type": "string"
+        },
+        "refreshToken": {
+          "type": "string"
+        }
+      },
+      "title": "RegisterResponse 注册响应"
+    },
+    "v1ResetPasswordResponse": {
+      "type": "object",
+      "title": "ResetPasswordResponse 重置密码响应"
+    },
+    "v1SimpleCourse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "title": "课程ID"
+        },
+        "title": {
+          "type": "string",
+          "title": "课程标题"
+        },
+        "desc": {
+          "type": "string",
+          "title": "课程描述"
+        },
+        "coverUrl": {
+          "type": "string",
+          "title": "封面图片URL"
+        },
+        "level": {
+          "$ref": "#/definitions/v1CourseLevel",
+          "title": "难度级别"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "课程标签"
+        }
+      },
+      "title": "SimpleCourse 简化的课程信息，用于列表展示"
+    },
+    "v1SubQuestion": {
+      "type": "object",
+      "properties": {
+        "q": {
+          "type": "string",
+          "title": "问题内容"
+        },
+        "questionType": {
+          "$ref": "#/definitions/v1SubQuestionType",
+          "title": "问题类型"
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1QuestionOption"
+          },
+          "title": "选项列表"
+        },
+        "answers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "答案列表"
+        }
+      },
+      "title": "SubQuestion 子问题"
+    },
+    "v1SubQuestionType": {
+      "type": "string",
+      "enum": [
+        "SUB_QUESTION_TYPE_UNSPECIFIED",
+        "SUB_QUESTION_TYPE_SINGLE_CHOICE"
+      ],
+      "default": "SUB_QUESTION_TYPE_UNSPECIFIED",
+      "description": "- SUB_QUESTION_TYPE_UNSPECIFIED: 未指定\n - SUB_QUESTION_TYPE_SINGLE_CHOICE: 单选题",
+      "title": "SubQuestionType 子问题类型"
+    },
+    "v1Tag": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "weight": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "v1UpdateTagResponse": {
+      "type": "object"
+    },
+    "v1UpdateUserInfoResponse": {
+      "type": "object",
+      "title": "UpdateUserInfoResponse 更新用户信息响应"
+    },
+    "v1User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "nickname": {
+          "type": "string"
+        },
+        "avatar": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/v1UserStatus"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "int64"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "int64"
+        },
+        "addedCourseIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uint64"
+          },
+          "title": "用户添加的课程ID列表"
+        },
+        "currentLearningId": {
+          "type": "string",
+          "format": "uint64",
+          "title": "用户当前课程ID"
+        }
+      },
+      "title": "User 用户信息"
+    },
+    "v1UserStatus": {
+      "type": "string",
+      "enum": [
+        "USER_STATUS_UNSPECIFIED",
+        "USER_STATUS_ACTIVE",
+        "USER_STATUS_INACTIVE",
+        "USER_STATUS_SUSPENDED"
+      ],
+      "default": "USER_STATUS_UNSPECIFIED",
+      "title": "UserStatus 用户状态"
+    },
+    "v1WordInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "spelling": {
+          "type": "string"
+        },
+        "pronunciation": {
+          "type": "string"
+        },
+        "definitions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "examples": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "title": "WordInfo 单词信息"
+    },
+    "v1WordServiceGetResponse": {
+      "type": "object",
+      "properties": {
+        "word": {
+          "$ref": "#/definitions/v1WordInfo"
+        }
+      }
+    },
+    "v1WordServiceListResponse": {
+      "type": "object",
+      "properties": {
+        "words": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1WordInfo"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    }
+  }
+}

@@ -186,3 +186,13 @@ run-grpcui-remote:
 update-proto:
 	git submodule update --remote --merge
 	git submodule foreach git checkout main
+
+# 生成代码
+.PHONY: docs
+docs:
+	@echo "生成 protobuf 和 swagger 文档..."
+	@cd sla2-proto && buf generate
+	@mkdir -p docs/grpc
+	@cp -r sla2-proto/gen/openapiv2/*.swagger.json docs/grpc/
+	@swag init -g internal/interfaces/http/routes/routes.go -o docs/gin
+	@echo "代码生成完成"

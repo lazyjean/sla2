@@ -35,8 +35,15 @@ func NewApp(handlers *handler.Handlers, grpcServer *grpc.Server, cfg *config.Con
 	}))
 	r.Use(gin.Recovery())
 
-	// 注册 Swagger 路由
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	// 注册 Gin Swagger 路由
+	r.GET("/swagger/gin/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	// 提供 swagger json 文件的静态文件服务
+	r.Static("/docs", "./docs")
+
+	// 注册 gRPC Swagger 路由
+	r.GET("/swagger/grpc/*any", ginSwagger.WrapHandler(swaggerFiles.Handler,
+		ginSwagger.URL("/docs/grpc/api.swagger.json")))
 
 	// 注册业务路由
 	routes.SetupRoutes(r, handlers, jwtService)

@@ -1,18 +1,11 @@
 {
-    "schemes": [
-        "http"
-    ],
     "swagger": "2.0",
     "info": {
-        "description": "生词本服务 API 文档",
-        "title": "生词本 API",
-        "contact": {
-            "name": "LazyJean",
-            "email": "lazyjean@foxmail.com"
-        },
+        "description": "SLA2 单词学习助手 API 服务",
+        "title": "SLA2 API",
+        "contact": {},
         "version": "1.0"
     },
-    "host": "localhost:9000",
     "basePath": "/api/v1",
     "paths": {
         "/healthz": {
@@ -541,6 +534,41 @@
                 }
             }
         },
+        "/logout": {
+            "post": {
+                "description": "登出当前用户",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "用户登出",
+                "responses": {
+                    "200": {
+                        "description": "登出成功",
+                        "schema": {
+                            "$ref": "#/definitions/handler.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "$ref": "#/definitions/handler.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/handler.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/register": {
             "post": {
                 "description": "创建新用户账号",
@@ -577,7 +605,7 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.UserDTO"
+                                            "$ref": "#/definitions/dto.TokenDTO"
                                         }
                                     }
                                 }
@@ -1069,42 +1097,34 @@
             ],
             "properties": {
                 "account": {
-                    "description": "支持用户名/邮箱/手机号登录",
-                    "type": "string",
-                    "example": "johndoe"
+                    "description": "账号（用户名或邮箱）",
+                    "type": "string"
                 },
                 "password": {
-                    "type": "string",
-                    "example": "password123"
+                    "description": "密码",
+                    "type": "string"
                 }
             }
         },
         "dto.RegisterDTO": {
             "type": "object",
             "required": [
+                "email",
                 "password",
                 "username"
             ],
             "properties": {
                 "email": {
-                    "type": "string",
-                    "example": "john@example.com"
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
                 },
                 "password": {
-                    "type": "string",
-                    "maxLength": 50,
-                    "minLength": 6,
-                    "example": "password123"
-                },
-                "phone": {
-                    "type": "string",
-                    "example": "13800138000"
+                    "type": "string"
                 },
                 "username": {
-                    "type": "string",
-                    "maxLength": 50,
-                    "minLength": 3,
-                    "example": "johndoe"
+                    "type": "string"
                 }
             }
         },
@@ -1140,18 +1160,11 @@
         "dto.TokenDTO": {
             "type": "object",
             "properties": {
-                "access_token": {
-                    "type": "string",
-                    "example": "eyJhbGciOiJIUzI1NiIs..."
+                "refresh_token": {
+                    "type": "string"
                 },
-                "expires_in": {
-                    "description": "过期时间(秒)",
-                    "type": "integer",
-                    "example": 3600
-                },
-                "token_type": {
-                    "type": "string",
-                    "example": "Bearer"
+                "token": {
+                    "type": "string"
                 }
             }
         },
@@ -1184,27 +1197,6 @@
                 },
                 "updated_at": {
                     "type": "string"
-                }
-            }
-        },
-        "dto.UserDTO": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string",
-                    "example": "john@example.com"
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "phone": {
-                    "type": "string",
-                    "example": "13800138000"
-                },
-                "username": {
-                    "type": "string",
-                    "example": "johndoe"
                 }
             }
         },
@@ -1337,7 +1329,6 @@
     },
     "securityDefinitions": {
         "Bearer": {
-            "description": "Bearer token for authentication",
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"

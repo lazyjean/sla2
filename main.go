@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/lazyjean/sla2/config"
-	_ "github.com/lazyjean/sla2/docs" // 导入 swagger docs
+	_ "github.com/lazyjean/sla2/docs/gin" // 导入 swagger docs
 	"github.com/lazyjean/sla2/internal/wire"
 	"github.com/lazyjean/sla2/pkg/logger"
 )
@@ -34,7 +34,8 @@ func main() {
 	// 加载配置
 	err := config.InitConfig()
 	if err != nil {
-		logger.Log.Fatal("Failed to load config: " + err.Error())
+		fmt.Printf("Failed to load config: %v\n", err)
+		os.Exit(1)
 	}
 	cfg := config.GetConfig()
 

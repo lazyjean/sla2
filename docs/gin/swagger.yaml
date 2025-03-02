@@ -20,11 +20,10 @@ definitions:
   dto.LoginDTO:
     properties:
       account:
-        description: 支持用户名/邮箱/手机号登录
-        example: johndoe
+        description: 账号（用户名或邮箱）
         type: string
       password:
-        example: password123
+        description: 密码
         type: string
     required:
     - account
@@ -33,22 +32,15 @@ definitions:
   dto.RegisterDTO:
     properties:
       email:
-        example: john@example.com
+        type: string
+      nickname:
         type: string
       password:
-        example: password123
-        maxLength: 50
-        minLength: 6
-        type: string
-      phone:
-        example: "13800138000"
         type: string
       username:
-        example: johndoe
-        maxLength: 50
-        minLength: 3
         type: string
     required:
+    - email
     - password
     - username
     type: object
@@ -73,15 +65,9 @@ definitions:
     type: object
   dto.TokenDTO:
     properties:
-      access_token:
-        example: eyJhbGciOiJIUzI1NiIs...
+      refresh_token:
         type: string
-      expires_in:
-        description: 过期时间(秒)
-        example: 3600
-        type: integer
-      token_type:
-        example: Bearer
+      token:
         type: string
     type: object
   dto.UnitProgressDTO:
@@ -103,21 +89,6 @@ definitions:
       unit_id:
         type: integer
       updated_at:
-        type: string
-    type: object
-  dto.UserDTO:
-    properties:
-      email:
-        example: john@example.com
-        type: string
-      id:
-        example: 1
-        type: integer
-      phone:
-        example: "13800138000"
-        type: string
-      username:
-        example: johndoe
         type: string
     type: object
   dto.WordCreateDTO:
@@ -209,13 +180,10 @@ definitions:
         description: 响应消息
         type: string
     type: object
-host: localhost:9000
 info:
-  contact:
-    email: lazyjean@foxmail.com
-    name: LazyJean
-  description: 生词本服务 API 文档
-  title: 生词本 API
+  contact: {}
+  description: SLA2 单词学习助手 API 服务
+  title: SLA2 API
   version: "1.0"
 paths:
   /healthz:
@@ -529,6 +497,29 @@ paths:
       summary: 用户登录
       tags:
       - auth
+  /logout:
+    post:
+      consumes:
+      - application/json
+      description: 登出当前用户
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 登出成功
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/handler.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/handler.Response'
+      summary: 用户登出
+      tags:
+      - auth
   /register:
     post:
       consumes:
@@ -551,7 +542,7 @@ paths:
             - $ref: '#/definitions/handler.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/dto.UserDTO'
+                  $ref: '#/definitions/dto.TokenDTO'
               type: object
         "400":
           description: 请求参数错误
@@ -830,11 +821,8 @@ paths:
       summary: 搜索单词
       tags:
       - words
-schemes:
-- http
 securityDefinitions:
   Bearer:
-    description: Bearer token for authentication
     in: header
     name: Authorization
     type: apiKey
