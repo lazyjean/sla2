@@ -5,7 +5,7 @@ import "time"
 // CourseLearningProgress 课程学习进度
 type CourseLearningProgress struct {
 	ID        uint      `gorm:"primaryKey"`
-	UserID    uint      `gorm:"not null;index"`
+	UserID    UID       `gorm:"not null;index"`
 	CourseID  uint      `gorm:"not null"`
 	Status    string    `gorm:"type:varchar(20);not null;default:'not_started'"` // not_started, in_progress, completed
 	Score     int       `gorm:"not null;default:0"`                              // 习题得分

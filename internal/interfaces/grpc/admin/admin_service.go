@@ -36,8 +36,8 @@ func (s *AdminService) CheckSystemStatus(ctx context.Context, req *pb.AdminServi
 // InitializeSystem 初始化系统
 func (s *AdminService) InitializeSystem(ctx context.Context, req *pb.AdminServiceInitializeSystemRequest) (*pb.AdminServiceInitializeSystemResponse, error) {
 	resp, err := s.adminService.InitializeSystem(ctx, &dto.InitializeSystemRequest{
-		Username: req.AdminUsername,
-		Password: req.AdminPassword,
+		Username: req.Username,
+		Password: req.Password,
 	})
 	if err != nil {
 		return nil, err
@@ -45,10 +45,12 @@ func (s *AdminService) InitializeSystem(ctx context.Context, req *pb.AdminServic
 
 	return &pb.AdminServiceInitializeSystemResponse{
 		Admin: &pb.AdminInfo{
-			Id:          resp.Admin.ID,
-			Username:    resp.Admin.Username,
-			Nickname:    resp.Admin.Nickname,
-			Permissions: resp.Admin.Permissions,
+			Id:        uint64(resp.Admin.ID),
+			Username:  resp.Admin.Username,
+			Nickname:  resp.Admin.Nickname,
+			Roles:     resp.Admin.Roles,
+			CreatedAt: resp.Admin.CreatedAt.Unix(),
+			UpdatedAt: resp.Admin.UpdatedAt.Unix(),
 		},
 		AccessToken:  resp.AccessToken,
 		RefreshToken: resp.RefreshToken,
@@ -66,14 +68,16 @@ func (s *AdminService) AdminLogin(ctx context.Context, req *pb.AdminServiceAdmin
 	}
 
 	return &pb.AdminServiceAdminLoginResponse{
+		Admin: &pb.AdminInfo{
+			Id:        uint64(resp.Admin.ID),
+			Username:  resp.Admin.Username,
+			Nickname:  resp.Admin.Nickname,
+			Roles:     resp.Admin.Roles,
+			CreatedAt: resp.Admin.CreatedAt.Unix(),
+			UpdatedAt: resp.Admin.UpdatedAt.Unix(),
+		},
 		AccessToken:  resp.AccessToken,
 		RefreshToken: resp.RefreshToken,
-		Admin: &pb.AdminInfo{
-			Id:          resp.Admin.ID,
-			Username:    resp.Admin.Username,
-			Nickname:    resp.Admin.Nickname,
-			Permissions: resp.Admin.Permissions,
-		},
 	}, nil
 }
 
@@ -101,10 +105,10 @@ func (s *AdminService) GetCurrentAdminInfo(ctx context.Context, req *pb.AdminSer
 
 	return &pb.AdminServiceGetCurrentAdminInfoResponse{
 		Admin: &pb.AdminInfo{
-			Id:          resp.ID,
-			Username:    resp.Username,
-			Nickname:    resp.Nickname,
-			Permissions: resp.Permissions,
+			Id:       uint64(resp.ID),
+			Username: resp.Username,
+			Nickname: resp.Nickname,
+			Roles:    resp.Roles,
 		},
 	}, nil
 }

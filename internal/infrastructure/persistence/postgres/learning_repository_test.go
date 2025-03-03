@@ -17,7 +17,7 @@ func TestLearningRepository_CourseProgress(t *testing.T) {
 
 	// 创建测试数据
 	progress := &entity.CourseLearningProgress{
-		UserID:   1,
+		UserID:   entity.UID(1),
 		CourseID: 100,
 		Status:   "in_progress",
 		Score:    80,
@@ -29,13 +29,13 @@ func TestLearningRepository_CourseProgress(t *testing.T) {
 	assert.NotZero(t, progress.ID)
 
 	// 测试查询
-	found, err := repo.GetCourseProgress(ctx, progress.UserID, progress.CourseID)
+	found, err := repo.GetCourseProgress(ctx, uint(progress.UserID), progress.CourseID)
 	require.NoError(t, err)
 	assert.Equal(t, progress.Status, found.Status)
 	assert.Equal(t, progress.Score, found.Score)
 
 	// 测试列表
-	list, total, err := repo.ListCourseProgress(ctx, progress.UserID, 0, 10)
+	list, total, err := repo.ListCourseProgress(ctx, uint(progress.UserID), 0, 10)
 	require.NoError(t, err)
 	assert.Equal(t, int64(1), total)
 	assert.Len(t, list, 1)
@@ -108,7 +108,7 @@ func TestLearningRepository_SaveCourseProgress(t *testing.T) {
 
 	// 创建测试数据
 	progress := &entity.CourseLearningProgress{
-		UserID:   1,
+		UserID:   entity.UID(1),
 		CourseID: 100,
 		Status:   "in_progress",
 		Score:    80,
@@ -120,7 +120,7 @@ func TestLearningRepository_SaveCourseProgress(t *testing.T) {
 	assert.NotZero(t, progress.ID)
 
 	// 测试查询
-	found, err := repo.GetCourseProgress(ctx, progress.UserID, progress.CourseID)
+	found, err := repo.GetCourseProgress(ctx, uint(progress.UserID), progress.CourseID)
 	require.NoError(t, err)
 
 	// 添加时间校验前的等待
@@ -132,14 +132,14 @@ func TestLearningRepository_SaveCourseProgress(t *testing.T) {
 	require.NoError(t, err)
 
 	// 重新获取更新后的记录
-	updated, err := repo.GetCourseProgress(ctx, progress.UserID, progress.CourseID)
+	updated, err := repo.GetCourseProgress(ctx, uint(progress.UserID), progress.CourseID)
 	require.NoError(t, err)
 
 	// 验证更新时间变化
 	assert.True(t, updated.UpdatedAt.After(found.UpdatedAt))
 
 	// 测试列表
-	list, total, err := repo.ListCourseProgress(ctx, progress.UserID, 0, 10)
+	list, total, err := repo.ListCourseProgress(ctx, uint(progress.UserID), 0, 10)
 	require.NoError(t, err)
 	assert.Equal(t, int64(1), total)
 	assert.Len(t, list, 1)

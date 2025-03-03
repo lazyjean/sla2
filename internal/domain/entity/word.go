@@ -13,7 +13,7 @@ type Word struct {
 	// ID 单词唯一标识
 	ID WordID `gorm:"primaryKey;autoIncrement"`
 	// UserID 用户ID
-	UserID UserID `gorm:"not null;index;uniqueIndex:idx_user_text,priority:1"`
+	UserID UID `gorm:"not null;index;uniqueIndex:idx_user_text,priority:1"`
 	// Text 单词文本
 	Text string `gorm:"type:varchar(100);not null;index;uniqueIndex:idx_user_text,priority:2"`
 	// Phonetic 音标
@@ -39,7 +39,7 @@ type Word struct {
 }
 
 // NewWord 创建新生词
-func NewWord(userID UserID, text string, phonetic string, translation string, examples []string, tags []string) (*Word, error) {
+func NewWord(userID UID, text string, phonetic string, translation string, examples []string, tags []string) (*Word, error) {
 	if userID == 0 {
 		return nil, errors.ErrInvalidUserID
 	}
@@ -66,7 +66,7 @@ func NewWord(userID UserID, text string, phonetic string, translation string, ex
 	}
 
 	return &Word{
-		UserID:       UserID(userID),
+		UserID:       userID,
 		Text:         text,
 		Phonetic:     phonetic,
 		Translation:  translation,

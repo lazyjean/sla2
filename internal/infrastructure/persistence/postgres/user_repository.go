@@ -47,7 +47,7 @@ func (r *UserRepository) Update(ctx context.Context, user *entity.User) error {
 	return r.db.WithContext(ctx).Save(user).Error
 }
 
-func (r *UserRepository) FindByID(ctx context.Context, id entity.UserID) (*entity.User, error) {
+func (r *UserRepository) FindByID(ctx context.Context, id entity.UID) (*entity.User, error) {
 	var user entity.User
 	if err := r.db.WithContext(ctx).First(&user, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -125,7 +125,7 @@ func (r *UserRepository) ExistsByPhone(ctx context.Context, phone string) (bool,
 	return count > 0, nil
 }
 
-func (r *UserRepository) Delete(ctx context.Context, id entity.UserID) error {
+func (r *UserRepository) Delete(ctx context.Context, id entity.UID) error {
 	if err := r.db.WithContext(ctx).Delete(&entity.User{}, id).Error; err != nil {
 		return errors.NewError(errors.CodeInternalError, "删除用户失败")
 	}

@@ -1,6 +1,10 @@
 package dto
 
-import "time"
+import (
+	"time"
+
+	"github.com/lazyjean/sla2/internal/domain/entity"
+)
 
 // SystemStatusResponse 系统状态响应
 type SystemStatusResponse struct {
@@ -41,18 +45,18 @@ type AdminRefreshTokenResponse struct {
 
 // AdminInfoResponse 管理员信息响应
 type AdminInfoResponse struct {
-	ID          string   `json:"id"`
-	Username    string   `json:"username"`
-	Nickname    string   `json:"nickname"`
-	Permissions []string `json:"permissions"`
+	ID       entity.UID `json:"id"`
+	Username string     `json:"username"`
+	Nickname string     `json:"nickname"`
+	Roles    []string   `json:"permissions"`
 }
 
 // AdminInfo 管理员信息
 type AdminInfo struct {
-	ID          string
-	Username    string
-	Nickname    string
-	Permissions []string
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	ID        entity.UID `json:"id"`
+	Username  string     `json:"username"`
+	Nickname  string     `json:"nickname"`
+	Roles     []string   `json:"roles"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
 }

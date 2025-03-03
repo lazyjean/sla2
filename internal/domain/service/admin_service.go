@@ -15,8 +15,8 @@ type AdminService interface {
 	InitializeSystem(ctx context.Context, admin *entity.Admin) error
 
 	// GetAdminByID 根据ID获取管理员信息
-	GetAdminByID(ctx context.Context, adminID string) (*entity.Admin, error)
+	GetAdminByID(ctx context.Context, adminID entity.UID) (*entity.Admin, error)
 
 	// GetAdminByUsername 根据用户名获取管理员信息
 	GetAdminByUsername(ctx context.Context, username string) (*entity.Admin, error)
-} 
+}

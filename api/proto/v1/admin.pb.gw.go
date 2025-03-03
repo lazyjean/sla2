@@ -155,7 +155,7 @@ func RegisterAdminServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.AdminService/CheckSystemStatus", runtime.WithHTTPPathPattern("/api/v1/admin/system-status"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.AdminService/CheckSystemStatus", runtime.WithHTTPPathPattern("/api/v1/admin/system/status"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -175,7 +175,7 @@ func RegisterAdminServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.AdminService/InitializeSystem", runtime.WithHTTPPathPattern("/api/v1/admin/initialize"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.AdminService/InitializeSystem", runtime.WithHTTPPathPattern("/api/v1/admin/system/initialize"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -293,7 +293,7 @@ func RegisterAdminServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.AdminService/CheckSystemStatus", runtime.WithHTTPPathPattern("/api/v1/admin/system-status"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.AdminService/CheckSystemStatus", runtime.WithHTTPPathPattern("/api/v1/admin/system/status"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -310,7 +310,7 @@ func RegisterAdminServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.AdminService/InitializeSystem", runtime.WithHTTPPathPattern("/api/v1/admin/initialize"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.AdminService/InitializeSystem", runtime.WithHTTPPathPattern("/api/v1/admin/system/initialize"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -378,8 +378,8 @@ func RegisterAdminServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 }
 
 var (
-	pattern_AdminService_CheckSystemStatus_0   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "admin", "system-status"}, ""))
-	pattern_AdminService_InitializeSystem_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "admin", "initialize"}, ""))
+	pattern_AdminService_CheckSystemStatus_0   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "v1", "admin", "system", "status"}, ""))
+	pattern_AdminService_InitializeSystem_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "v1", "admin", "system", "initialize"}, ""))
 	pattern_AdminService_AdminLogin_0          = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "admin", "login"}, ""))
 	pattern_AdminService_RefreshToken_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "admin", "refresh-token"}, ""))
 	pattern_AdminService_GetCurrentAdminInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "admin", "me"}, ""))

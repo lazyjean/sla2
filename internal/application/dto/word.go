@@ -26,9 +26,9 @@ type WordResponseDTO struct {
 }
 
 // ToEntity 将DTO转换为领域实体
-func (dto *WordCreateDTO) ToEntity(userID uint) (*entity.Word, error) {
+func (dto *WordCreateDTO) ToEntity(userID entity.UID) (*entity.Word, error) {
 	return entity.NewWord(
-		entity.UserID(userID),
+		userID,
 		dto.Text,
 		dto.Phonetic,
 		dto.Translation,

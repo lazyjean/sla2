@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/lazyjean/sla2/config"
+	"github.com/lazyjean/sla2/internal/domain/entity"
 	"github.com/lazyjean/sla2/internal/domain/security"
 )
 
@@ -43,7 +44,7 @@ func NewJWTTokenService(cfg *config.Config) security.TokenService {
 }
 
 // GenerateToken 生成访问令牌
-func (s *JWTTokenService) GenerateToken(userID string, roles []string) (string, error) {
+func (s *JWTTokenService) GenerateToken(userID entity.UID, roles []string) (string, error) {
 	now := time.Now()
 	claims := jwt.MapClaims{
 		"sub":   userID,
@@ -63,7 +64,7 @@ func (s *JWTTokenService) GenerateToken(userID string, roles []string) (string, 
 }
 
 // ValidateToken 验证访问令牌
-func (s *JWTTokenService) ValidateToken(tokenString string) (string, []string, error) {
+func (s *JWTTokenService) ValidateToken(tokenString string) (entity.UID, []string, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, &TokenError{Message: fmt.Sprintf("unexpected signing method: %v", token.Header["alg"])}
@@ -72,23 +73,24 @@ func (s *JWTTokenService) ValidateToken(tokenString string) (string, []string, e
 	})
 
 	if err != nil {
-		return "", nil, &TokenError{Message: "failed to parse token", Err: err}
+		return 0, nil, &TokenError{Message: "failed to parse token", Err: err}
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok || !token.Valid {
-		return "", nil, &TokenError{Message: "invalid token"}
+		return 0, nil, &TokenError{Message: "invalid token"}
 	}
 
 	// 验证 token 类型
 	if typ, ok := claims["typ"].(string); !ok || typ != "access" {
-		return "", nil, &TokenError{Message: "invalid token type"}
+		return 0, nil, &TokenError{Message: "invalid token type"}
 	}
 
-	sub, ok := claims["sub"].(string)
+	sub, ok := claims["sub"].(float64)
 	if !ok {
-		return "", nil, &TokenError{Message: "invalid subject claim"}
+		return 0, nil, &TokenError{Message: "invalid subject claim"}
 	}
+	userID := entity.UID(sub)
 
 	// 获取角色信息
 	roles := make([]string, 0)
@@ -102,11 +104,11 @@ func (s *JWTTokenService) ValidateToken(tokenString string) (string, []string, e
 		}
 	}
 
-	return sub, roles, nil
+	return userID, roles, nil
 }
 
 // GenerateRefreshToken 生成刷新令牌
-func (s *JWTTokenService) GenerateRefreshToken(userID string, roles []string) (string, error) {
+func (s *JWTTokenService) GenerateRefreshToken(userID entity.UID, roles []string) (string, error) {
 	now := time.Now()
 	claims := jwt.MapClaims{
 		"sub":   userID,
@@ -126,7 +128,7 @@ func (s *JWTTokenService) GenerateRefreshToken(userID string, roles []string) (s
 }
 
 // ValidateRefreshToken 验证刷新令牌
-func (s *JWTTokenService) ValidateRefreshToken(refreshToken string) (string, []string, error) {
+func (s *JWTTokenService) ValidateRefreshToken(refreshToken string) (entity.UID, []string, error) {
 	token, err := jwt.Parse(refreshToken, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, &TokenError{Message: fmt.Sprintf("unexpected signing method: %v", token.Header["alg"])}
@@ -135,22 +137,22 @@ func (s *JWTTokenService) ValidateRefreshToken(refreshToken string) (string, []s
 	})
 
 	if err != nil {
-		return "", nil, &TokenError{Message: "failed to parse refresh token", Err: err}
+		return 0, nil, &TokenError{Message: "failed to parse refresh token", Err: err}
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok || !token.Valid {
-		return "", nil, &TokenError{Message: "invalid refresh token"}
+		return 0, nil, &TokenError{Message: "invalid refresh token"}
 	}
 
 	// 验证 token 类型
 	if typ, ok := claims["typ"].(string); !ok || typ != "refresh" {
-		return "", nil, &TokenError{Message: "invalid token type"}
+		return 0, nil, &TokenError{Message: "invalid token type"}
 	}
 
-	sub, ok := claims["sub"].(string)
+	sub, ok := claims["sub"].(float64)
 	if !ok {
-		return "", nil, &TokenError{Message: "invalid subject claim"}
+		return 0, nil, &TokenError{Message: "invalid subject claim"}
 	}
 
 	// 获取角色信息
@@ -165,7 +167,7 @@ func (s *JWTTokenService) ValidateRefreshToken(refreshToken string) (string, []s
 		}
 	}
 
-	return sub, roles, nil
+	return entity.UID(sub), roles, nil
 }
 
 var _ security.TokenService = (*JWTTokenService)(nil)

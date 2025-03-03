@@ -6,7 +6,6 @@ import (
 
 // UserStatus 用户状态
 type UserStatus int
-type UserID uint32
 
 const (
 	UserStatusUnspecified UserStatus = iota
@@ -17,7 +16,7 @@ const (
 
 // User 用户实体
 type User struct {
-	ID            UserID     `gorm:"primaryKey"`
+	ID            UID        `gorm:"primaryKey;autoIncrement"`
 	Username      string     `gorm:"type:varchar(50);uniqueIndex"`
 	Password      string     `gorm:"type:varchar(100)"`
 	Email         string     `gorm:"type:varchar(100);uniqueIndex"`

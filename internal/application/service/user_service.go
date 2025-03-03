@@ -68,19 +68,19 @@ func (s *UserService) Register(ctx context.Context, req *dto.RegisterRequest) (*
 		return nil, errors.NewError(errors.CodeInternalError, "创建用户失败")
 	}
 
-	// 生成 token，目前用户没有角色，传空数组
-	token, err := s.tokenService.GenerateToken(string(user.ID), []string{})
+	// 生成 token，用户统一使用 "user" 角色
+	accessToken, err := s.tokenService.GenerateToken(user.ID, []string{"user"})
 	if err != nil {
 		return nil, errors.NewError(errors.CodeInternalError, "生成token失败")
 	}
-	refreshToken, err := s.tokenService.GenerateRefreshToken(string(user.ID), []string{})
+	refreshToken, err := s.tokenService.GenerateRefreshToken(user.ID, []string{"user"})
 	if err != nil {
 		return nil, errors.NewError(errors.CodeInternalError, "生成refresh token失败")
 	}
 
 	return &dto.RegisterResponse{
-		UserID:       uint32(user.ID),
-		Token:        token,
+		UserID:       user.ID,
+		Token:        accessToken,
 		RefreshToken: refreshToken,
 	}, nil
 }
@@ -106,7 +106,6 @@ func (s *UserService) Login(ctx context.Context, req *dto.LoginRequest) (*dto.Lo
 			)
 		}
 	} else if utils.IsValidPhone(req.Account) {
-		fmt.Println("通过手机号查找用户", req.Account)
 		// 2. 尝试通过手机号查找
 		log.Debug("通过手机号查找用户",
 			zap.String("phone", req.Account),
@@ -156,19 +155,19 @@ func (s *UserService) Login(ctx context.Context, req *dto.LoginRequest) (*dto.Lo
 		return nil, status.Error(codes.Unauthenticated, "密码错误")
 	}
 
-	// 生成 token，目前用户没有角色，传空数组
-	accessToken, err := s.tokenService.GenerateToken(string(user.ID), []string{})
+	// 生成 token，用户统一使用 "user" 角色
+	accessToken, err := s.tokenService.GenerateToken(user.ID, []string{"user"})
 	if err != nil {
 		return nil, status.Error(codes.Internal, "生成token失败")
 	}
 
-	refreshToken, err := s.tokenService.GenerateRefreshToken(string(user.ID), []string{})
+	refreshToken, err := s.tokenService.GenerateRefreshToken(user.ID, []string{"user"})
 	if err != nil {
 		return nil, status.Error(codes.Internal, "生成refresh token失败")
 	}
 
 	return &dto.LoginResponse{
-		UserID:        uint32(user.ID),
+		UserID:        user.ID,
 		Username:      user.Username,
 		Email:         user.Email,
 		EmailVerified: user.EmailVerified,
@@ -176,6 +175,7 @@ func (s *UserService) Login(ctx context.Context, req *dto.LoginRequest) (*dto.Lo
 		Avatar:        user.Avatar,
 		Token:         accessToken,
 		RefreshToken:  refreshToken,
+		IsNewUser:     false,
 	}, nil
 }
 
@@ -185,7 +185,7 @@ func (s *UserService) GetLoginUser(ctx context.Context) (*dto.UserDTO, error) {
 		return nil, err
 	}
 
-	user, err := s.userRepo.FindByID(ctx, entity.UserID(userID))
+	user, err := s.userRepo.FindByID(ctx, userID)
 	if err != nil {
 		return nil, errors.NewError(errors.CodeUserNotFound, "用户不存在")
 	}
@@ -199,7 +199,7 @@ func (s *UserService) GetLoginUser(ctx context.Context) (*dto.UserDTO, error) {
 	}
 
 	return &dto.UserDTO{
-		ID:        uint32(user.ID),
+		ID:        user.ID,
 		Username:  user.Username,
 		Email:     user.Email,
 		Nickname:  user.Nickname,
@@ -217,7 +217,7 @@ func (s *UserService) UpdateUser(ctx context.Context, req *dto.UpdateUserRequest
 	}
 
 	// 获取用户信息
-	user, err := s.userRepo.FindByID(ctx, entity.UserID(userID))
+	user, err := s.userRepo.FindByID(ctx, userID)
 	if err != nil {
 		return errors.NewError(errors.CodeUserNotFound, "用户不存在")
 	}
@@ -244,7 +244,7 @@ func (s *UserService) ChangePassword(ctx context.Context, req *dto.ChangePasswor
 	}
 
 	// 获取用户信息
-	user, err := s.userRepo.FindByID(ctx, entity.UserID(userID))
+	user, err := s.userRepo.FindByID(ctx, userID)
 	if err != nil {
 		return errors.NewError(errors.CodeUserNotFound, "用户不存在")
 	}
@@ -351,19 +351,19 @@ func (s *UserService) AppleLogin(ctx context.Context, req *dto.AppleLoginRequest
 		}
 	}
 
-	// 生成 token
-	token, err := s.tokenService.GenerateToken(string(user.ID), []string{})
+	// 生成 token，用户统一使用 "user" 角色
+	token, err := s.tokenService.GenerateToken(user.ID, []string{"user"})
 	if err != nil {
 		return nil, errors.NewError(errors.CodeInternalError, "生成 token 失败")
 	}
 
-	refreshToken, err := s.tokenService.GenerateRefreshToken(string(user.ID), []string{})
+	refreshToken, err := s.tokenService.GenerateRefreshToken(user.ID, []string{"user"})
 	if err != nil {
 		return nil, errors.NewError(errors.CodeInternalError, "生成 refresh token 失败")
 	}
 
 	return &dto.AppleLoginResponse{
-		UserID:       uint32(user.ID),
+		UserID:       user.ID,
 		Username:     user.Username,
 		Email:        user.Email,
 		Nickname:     user.Nickname,
@@ -397,4 +397,46 @@ func (s *UserService) RefreshToken(ctx context.Context, req *dto.RefreshTokenReq
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	}, nil
+}
+
+func (s *UserService) LoginWithApple(ctx context.Context, appleToken string) (string, string, error) {
+	// 验证 Apple token
+	appleUserID, err := s.appleAuth.AuthCodeWithApple(ctx, appleToken)
+	if err != nil {
+		return "", "", err
+	}
+
+	// 查找或创建用户
+	user, err := s.userRepo.FindByAppleID(ctx, appleUserID.Subject)
+	if err != nil {
+		// 检查是否是用户不存在的错误
+		exists, err := s.userRepo.ExistsByAppleID(ctx, appleUserID.Subject)
+		if err != nil {
+			return "", "", err
+		}
+		if !exists {
+			// 创建新用户
+			username := fmt.Sprintf("apple_%s", appleUserID.Subject)
+			nickname := fmt.Sprintf("Apple User %s", appleUserID.Subject)
+			user, err = s.userRepo.Create(ctx, username, appleUserID.Email, "", nickname, appleUserID.Subject, true)
+			if err != nil {
+				return "", "", err
+			}
+		} else {
+			return "", "", err
+		}
+	}
+
+	// 生成 token，用户统一使用 "user" 角色
+	token, err := s.tokenService.GenerateToken(user.ID, []string{"user"})
+	if err != nil {
+		return "", "", err
+	}
+
+	refreshToken, err := s.tokenService.GenerateRefreshToken(user.ID, []string{"user"})
+	if err != nil {
+		return "", "", err
+	}
+
+	return token, refreshToken, nil
 }

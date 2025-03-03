@@ -56,9 +56,6 @@ func (s *adminService) InitializeSystem(ctx context.Context, admin *entity.Admin
 		return ErrSystemAlreadyInitialized
 	}
 
-	// 确保初始管理员拥有所有权限
-	admin.AddPermission("*")
-
 	// 保存管理员（注意：这里应该在仓储层使用事务）
 	if err := s.adminRepo.Create(ctx, admin); err != nil {
 		return err
@@ -71,7 +68,7 @@ func (s *adminService) InitializeSystem(ctx context.Context, admin *entity.Admin
 }
 
 // GetAdminByID 根据ID获取管理员信息
-func (s *adminService) GetAdminByID(ctx context.Context, adminID string) (*entity.Admin, error) {
+func (s *adminService) GetAdminByID(ctx context.Context, adminID entity.UID) (*entity.Admin, error) {
 	admin, err := s.adminRepo.FindByID(ctx, adminID)
 	if err != nil {
 		return nil, err
@@ -97,8 +94,8 @@ func (s *adminService) GetAdminByUsername(ctx context.Context, username string) 
 // 错误定义
 var (
 	ErrSystemAlreadyInitialized = NewDomainError("system already initialized")
-	ErrInvalidCredentials      = NewDomainError("invalid credentials")
-	ErrAdminNotFound          = NewDomainError("admin not found")
+	ErrInvalidCredentials       = NewDomainError("invalid credentials")
+	ErrAdminNotFound            = NewDomainError("admin not found")
 )
 
 // DomainError 领域错误
@@ -116,4 +113,4 @@ func NewDomainError(message string) *DomainError {
 // Error 实现 error 接口
 func (e *DomainError) Error() string {
 	return e.Message
-} 
+}

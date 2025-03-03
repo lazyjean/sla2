@@ -13,6 +13,6 @@ type AdminRepository interface {
 
 	// 管理员操作
 	Create(ctx context.Context, admin *entity.Admin) error
-	FindByID(ctx context.Context, adminID string) (*entity.Admin, error)
+	FindByID(ctx context.Context, adminID entity.UID) (*entity.Admin, error)
 	FindByUsername(ctx context.Context, username string) (*entity.Admin, error)
 }

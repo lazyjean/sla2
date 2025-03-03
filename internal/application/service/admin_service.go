@@ -64,7 +64,7 @@ func (s *AdminService) InitializeSystem(ctx context.Context, req *dto.Initialize
 	// 创建管理员
 	admin := entity.NewAdmin(req.Username, hashedPassword, req.Username)
 	// 设置管理员权限
-	admin.AddPermission("admin")
+	admin.Roles = []string{"admin"}
 
 	// 调用领域服务初始化系统
 	err = s.adminService.InitializeSystem(ctx, admin)
@@ -85,12 +85,12 @@ func (s *AdminService) InitializeSystem(ctx context.Context, req *dto.Initialize
 
 	return &dto.InitializeSystemResponse{
 		Admin: &dto.AdminInfo{
-			ID:          admin.ID,
-			Username:    admin.Username,
-			Nickname:    admin.Nickname,
-			Permissions: admin.Permissions,
-			CreatedAt:   admin.CreatedAt,
-			UpdatedAt:   admin.UpdatedAt,
+			ID:        admin.ID,
+			Username:  admin.Username,
+			Nickname:  admin.Nickname,
+			Roles:     admin.Roles,
+			CreatedAt: admin.CreatedAt,
+			UpdatedAt: admin.UpdatedAt,
 		},
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
@@ -111,24 +111,24 @@ func (s *AdminService) Login(ctx context.Context, req *dto.AdminLoginRequest) (*
 	}
 
 	// 生成令牌（应用层职责）
-	accessToken, err := s.tokenService.GenerateToken(admin.ID, admin.Permissions)
+	accessToken, err := s.tokenService.GenerateToken(admin.ID, admin.Roles)
 	if err != nil {
 		return nil, err
 	}
 
-	refreshToken, err := s.tokenService.GenerateRefreshToken(admin.ID, admin.Permissions)
+	refreshToken, err := s.tokenService.GenerateRefreshToken(admin.ID, admin.Roles)
 	if err != nil {
 		return nil, err
 	}
 
 	return &dto.AdminLoginResponse{
 		Admin: &dto.AdminInfo{
-			ID:          admin.ID,
-			Username:    admin.Username,
-			Nickname:    admin.Nickname,
-			Permissions: admin.Permissions,
-			CreatedAt:   admin.CreatedAt,
-			UpdatedAt:   admin.UpdatedAt,
+			ID:        admin.ID,
+			Username:  admin.Username,
+			Nickname:  admin.Nickname,
+			Roles:     admin.Roles,
+			CreatedAt: admin.CreatedAt,
+			UpdatedAt: admin.UpdatedAt,
 		},
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
@@ -181,10 +181,10 @@ func (s *AdminService) GetCurrentAdminInfo(ctx context.Context) (*dto.AdminInfoR
 	}
 
 	return &dto.AdminInfoResponse{
-		ID:          admin.ID,
-		Username:    admin.Username,
-		Nickname:    admin.Nickname,
-		Permissions: admin.Permissions,
+		ID:       admin.ID,
+		Username: admin.Username,
+		Nickname: admin.Nickname,
+		Roles:    admin.Roles,
 	}, nil
 }
 
@@ -197,10 +197,10 @@ var (
 )
 
 // GetAdminIDFromContext 从上下文中获取管理员ID
-func GetAdminIDFromContext(ctx context.Context) (string, error) {
-	adminID, ok := ctx.Value(appContext.AdminIDKey).(string)
-	if !ok || adminID == "" {
-		return "", ErrUnauthorized
+func GetAdminIDFromContext(ctx context.Context) (entity.UID, error) {
+	adminID, ok := ctx.Value(appContext.AdminIDKey).(entity.UID)
+	if !ok || adminID == 0 {
+		return 0, ErrUnauthorized
 	}
 	return adminID, nil
 }

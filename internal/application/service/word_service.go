@@ -21,7 +21,7 @@ func NewWordService(wordRepo repository.CachedWordRepository) *WordService {
 }
 
 // CreateWord 创建生词
-func (s *WordService) CreateWord(ctx context.Context, createDTO *dto.WordCreateDTO, userID uint) (*entity.Word, error) {
+func (s *WordService) CreateWord(ctx context.Context, createDTO *dto.WordCreateDTO, userID entity.UID) (*entity.Word, error) {
 	word, err := createDTO.ToEntity(userID)
 	if err != nil {
 		return nil, err

@@ -2,6 +2,8 @@ package dto
 
 import (
 	"time"
+
+	"github.com/lazyjean/sla2/internal/domain/entity"
 )
 
 // ResetPasswordRequest 重置密码请求
@@ -27,9 +29,9 @@ type RegisterRequest struct {
 }
 
 type RegisterResponse struct {
-	UserID       uint32 `json:"user_id"`
-	Token        string `json:"token,omitempty"`
-	RefreshToken string `json:"refresh_token,omitempty"`
+	UserID       entity.UID `json:"user_id"`
+	Token        string     `json:"token,omitempty"`
+	RefreshToken string     `json:"refresh_token,omitempty"`
 }
 
 // LoginRequest 登录请求
@@ -40,15 +42,15 @@ type LoginRequest struct {
 
 // AuthResponse 认证响应
 type LoginResponse struct {
-	UserID        uint32 `json:"user_id"`
-	Username      string `json:"username"`
-	Email         string `json:"email"`
-	EmailVerified bool   `json:"email_verified"`
-	Nickname      string `json:"nickname,omitempty"`
-	Avatar        string `json:"avatar,omitempty"`
-	Token         string `json:"token,omitempty"`
-	RefreshToken  string `json:"refresh_token,omitempty"`
-	IsNewUser     bool   `json:"is_new_user"`
+	UserID        entity.UID `json:"user_id"`
+	Username      string     `json:"username"`
+	Email         string     `json:"email"`
+	EmailVerified bool       `json:"email_verified"`
+	Nickname      string     `json:"nickname,omitempty"`
+	Avatar        string     `json:"avatar,omitempty"`
+	Token         string     `json:"token,omitempty"`
+	RefreshToken  string     `json:"refresh_token,omitempty"`
+	IsNewUser     bool       `json:"is_new_user"`
 }
 
 // UpdateUserRequest 更新用户信息请求
@@ -93,12 +95,12 @@ type UserRefreshTokenResponse struct {
 
 // UserDTO 用户数据传输对象
 type UserDTO struct {
-	ID            uint32    `json:"id"`
-	Username      string    `json:"username"`
-	Email         string    `json:"email"`
-	EmailVerified bool      `json:"email_verified"`
-	Nickname      string    `json:"nickname,omitempty"`
-	Avatar        string    `json:"avatar,omitempty"`
+	ID            entity.UID `json:"id"`
+	Username      string     `json:"username"`
+	Email         string     `json:"email"`
+	EmailVerified bool       `json:"email_verified"`
+	Nickname      string     `json:"nickname,omitempty"`
+	Avatar        string     `json:"avatar,omitempty"`
 	Status        string    `json:"status"`
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
@@ -112,12 +114,12 @@ type AppleLoginRequest struct {
 
 // AppleLoginResponse Apple 登录响应
 type AppleLoginResponse struct {
-	UserID       uint32 `json:"user_id"`
-	Username     string `json:"username"`
-	Email        string `json:"email"`
-	Nickname     string `json:"nickname,omitempty"`
-	Avatar       string `json:"avatar,omitempty"`
-	Token        string `json:"token,omitempty"`
+	UserID       entity.UID `json:"user_id"`
+	Username     string     `json:"username"`
+	Email        string     `json:"email"`
+	Nickname     string     `json:"nickname,omitempty"`
+	Avatar       string     `json:"avatar,omitempty"`
+	Token        string     `json:"token,omitempty"`
 	RefreshToken string `json:"refresh_token,omitempty"`
 	IsNewUser    bool   `json:"is_new_user"`
 }

@@ -20,7 +20,7 @@ func NewLearningService(learningRepo repository.LearningRepository) *LearningSer
 }
 
 // SaveCourseProgress 保存课程学习进度
-func (s *LearningService) SaveCourseProgress(ctx context.Context, userID, courseID uint, status string, score int) (*entity.CourseLearningProgress, error) {
+func (s *LearningService) SaveCourseProgress(ctx context.Context, userID entity.UID, courseID uint, status string, score int) (*entity.CourseLearningProgress, error) {
 	progress := &entity.CourseLearningProgress{
 		UserID:   userID,
 		CourseID: courseID,

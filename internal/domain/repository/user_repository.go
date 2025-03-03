@@ -13,7 +13,7 @@ type UserRepository interface {
 	// Update 更新用户信息
 	Update(ctx context.Context, user *entity.User) error
 	// FindByID 根据ID查找用户
-	FindByID(ctx context.Context, id entity.UserID) (*entity.User, error)
+	FindByID(ctx context.Context, id entity.UID) (*entity.User, error)
 	// FindByUsername 根据用户名查找用户
 	FindByUsername(ctx context.Context, username string) (*entity.User, error)
 	// FindByEmail 根据邮箱查找用户
@@ -31,5 +31,5 @@ type UserRepository interface {
 	// ExistsByAppleID 检查苹果用户ID是否存在
 	ExistsByAppleID(ctx context.Context, appleID string) (bool, error)
 	// Delete 删除用户
-	Delete(ctx context.Context, id entity.UserID) error
+	Delete(ctx context.Context, id entity.UID) error
 }

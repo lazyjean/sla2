@@ -1,5 +1,7 @@
 package security
 
+import "github.com/lazyjean/sla2/internal/domain/entity"
+
 // TokenService 令牌服务接口
 /*
 TokenService 目前处理用户认证和基本的角色权限管理。
@@ -34,11 +36,11 @@ TokenService 目前处理用户认证和基本的角色权限管理。
 */
 type TokenService interface {
 	// GenerateToken 生成访问令牌
-	GenerateToken(userID string, roles []string) (string, error)
+	GenerateToken(userID entity.UID, roles []string) (string, error)
 	// ValidateToken 验证访问令牌
-	ValidateToken(token string) (string, []string, error)
+	ValidateToken(tokenString string) (entity.UID, []string, error)
 	// GenerateRefreshToken 生成刷新令牌
-	GenerateRefreshToken(userID string, roles []string) (string, error)
+	GenerateRefreshToken(userID entity.UID, roles []string) (string, error)
 	// ValidateRefreshToken 验证刷新令牌
-	ValidateRefreshToken(token string) (string, []string, error)
+	ValidateRefreshToken(token string) (entity.UID, []string, error)
 }

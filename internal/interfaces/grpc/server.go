@@ -88,20 +88,22 @@ func NewServer(
 
 // 不需要鉴权的方法列表
 var noAuthMethods = map[string]bool{
-	"/api.v1.AdminService/CheckSystemStatus": true,
-	"/api.v1.AdminService/InitializeSystem":  true,
-	"/api.v1.AdminService/Login":             true,
-	"/api.v1.AdminService/RefreshToken":      true,
-	"/api.v1.UserService/Login":              true,
-	"/api.v1.UserService/Register":           true,
-	"/api.v1.UserService/RefreshToken":       true,
-	"/api.v1.UserService/LoginWithApple":     true,
+	"/proto.v1.AdminService/CheckSystemStatus": true,
+	"/proto.v1.AdminService/InitializeSystem":  true,
+	"/proto.v1.AdminService/AdminLogin":        true,
+	"/proto.v1.AdminService/RefreshToken":      true,
+	"/proto.v1.UserService/UserLogin":          true,
+	"/proto.v1.UserService/UserRegister":       true,
+	"/proto.v1.UserService/RefreshToken":       true,
+	"/proto.v1.UserService/LoginWithApple":     true,
 }
 
 // authInterceptor 创建鉴权拦截器
 func (s *Server) authInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		// 检查是否需要鉴权
+		log := logger.GetLogger(ctx)
+		log.Info("authInterceptor", zap.String("method", info.FullMethod))
 		if noAuthMethods[info.FullMethod] {
 			return handler(ctx, req)
 		}
