@@ -192,7 +192,6 @@ update-proto:
 docs:
 	@echo "生成 protobuf 和 swagger 文档..."
 	@cd sla2-proto && buf generate
-	@mkdir -p docs/grpc
-	@cp -r sla2-proto/gen/openapiv2/*.swagger.json docs/grpc/
-	@swag init -g internal/interfaces/http/routes/routes.go -o docs/gin
-	@echo "代码生成完成"
+	@mkdir -p api/swagger
+	@cp -r sla2-proto/gen/openapiv2/api.swagger.json api/swagger/swagger.json
+	@echo "文档生成完成"

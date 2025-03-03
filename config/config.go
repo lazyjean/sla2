@@ -25,6 +25,7 @@ type Config struct {
 	Log      LogConfig      `mapstructure:"log"`
 	JWT      JWTConfig      `mapstructure:"jwt"`
 	Apple    AppleConfig    `mapstructure:"apple"`
+	Swagger  SwaggerConfig  `mapstructure:"swagger"`
 }
 
 type ServerConfig struct {
@@ -66,8 +67,10 @@ type LogConfig struct {
 
 // JWTConfig JWT 配置
 type JWTConfig struct {
-	TokenSecretKey   string `mapstructure:"token_secret_key"`
-	RefreshSecretKey string `mapstructure:"refresh_secret_key"`
+	TokenSecretKey    string `mapstructure:"token_secret_key"`
+	RefreshSecretKey  string `mapstructure:"refresh_secret_key"`
+	TokenExpiration   int    `mapstructure:"token_expiration"`   // hour
+	RefreshExpiration int    `mapstructure:"refresh_expiration"` // hour
 }
 
 type GRPCConfig struct {
@@ -82,6 +85,11 @@ type AppleConfig struct {
 	PrivateKey string `mapstructure:"private_key"`
 	KeyID      string `mapstructure:"key_id"`
 	TeamID     string `mapstructure:"team_id"`
+}
+
+type SwaggerConfig struct {
+	Username string `mapstructure:"username"`
+	Password string `mapstructure:"password"`
 }
 
 var globalConfig *Config

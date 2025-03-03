@@ -19,3 +19,14 @@ type TokenDTO struct {
 	Token        string `json:"token"`
 	RefreshToken string `json:"refresh_token"`
 }
+
+// RefreshTokenRequest 刷新令牌请求
+type RefreshTokenRequest struct {
+	RefreshToken string `json:"refresh_token" binding:"required"`
+}
+
+// RefreshTokenResponse 刷新令牌响应
+type RefreshTokenResponse struct {
+	Token        string `json:"token"`
+	RefreshToken string `json:"refresh_token"`
+}

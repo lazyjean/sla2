@@ -16,6 +16,9 @@ RUN go mod download
 # 复制源代码
 COPY . .
 
+# 生成 swagger 文档
+RUN make docs
+
 # 构建应用
 RUN CGO_ENABLED=0 GOOS=linux go build -o sla2 .
 
@@ -28,9 +31,10 @@ WORKDIR /app
 RUN apk add --no-cache tzdata
 ENV TZ=Asia/Shanghai
 
-# 从构建阶段复制二进制文件
+# 从构建阶段复制二进制文件和 swagger 文件
 COPY --from=builder /app/sla2 .
+COPY --from=builder /app/api/swagger /app/api/swagger
 
-EXPOSE 9000
+EXPOSE 9000 8080
 
 CMD ["./sla2"]

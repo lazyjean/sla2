@@ -11,10 +11,10 @@ import (
 	"github.com/lazyjean/sla2/config"
 	"github.com/lazyjean/sla2/internal/application/service"
 	"github.com/lazyjean/sla2/internal/infrastructure/cache/redis"
+	"github.com/lazyjean/sla2/internal/infrastructure/oauth"
 	"github.com/lazyjean/sla2/internal/infrastructure/persistence/postgres"
+	"github.com/lazyjean/sla2/internal/infrastructure/security"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc"
-	"github.com/lazyjean/sla2/internal/interfaces/http/handler"
-	"github.com/lazyjean/sla2/pkg/auth"
 )
 
 // Injectors from wire.go:
@@ -25,6 +25,14 @@ func InitializeApp(cfg *config.Config) (*App, error) {
 	if err != nil {
 		return nil, err
 	}
+	adminRepository := postgres.NewAdminRepository(db)
+	passwordService := security.NewBCryptPasswordService()
+	tokenService := security.NewJWTTokenService(cfg)
+	adminService := service.NewAdminService(adminRepository, passwordService, tokenService)
+	userRepository := postgres.NewUserRepository(db)
+	appleConfig := oauth.NewAppleConfig(cfg)
+	appleAuthService := oauth.NewAppleAuthService(appleConfig)
+	userService := service.NewUserService(userRepository, tokenService, passwordService, appleAuthService)
 	wordRepository := postgres.NewWordRepository(db)
 	redisConfig := &cfg.Redis
 	cache, err := redis.NewRedisCache(redisConfig)
@@ -33,21 +41,12 @@ func InitializeApp(cfg *config.Config) (*App, error) {
 	}
 	cachedWordRepository := postgres.NewCachedWordRepository(wordRepository, cache)
 	wordService := service.NewWordService(cachedWordRepository)
-	wordHandler := handler.NewWordHandler(wordService)
-	userRepository := postgres.NewUserRepository(db)
-	jwtConfig := auth.NewJWTConfig(cfg)
-	jwtService := auth.NewJWTService(jwtConfig)
-	userService := service.NewUserService(userRepository, jwtService)
-	userHandler := handler.NewUserHandler(userService)
 	learningRepository := postgres.NewLearningRepository(db)
 	learningService := service.NewLearningService(learningRepository)
-	learningHandler := handler.NewLearningHandler(learningService)
-	healthHandler := handler.NewHealthHandler()
-	handlers := handler.NewHandlers(wordHandler, userHandler, learningHandler, healthHandler)
 	courseRepository := postgres.NewCourseRepository(db)
 	courseService := service.NewCourseService(courseRepository)
-	server := grpc.NewServer(userService, wordService, learningService, courseService, jwtService, cfg)
-	app := NewApp(handlers, server, cfg, jwtService)
+	server := grpc.NewServer(adminService, userService, wordService, learningService, courseService, tokenService, cfg)
+	app := NewApp(server, cfg, tokenService, appleAuthService)
 	return app, nil
 }
 
@@ -63,13 +62,13 @@ var dbSet = wire.NewSet(postgres.NewDB)
 var cacheSet = wire.NewSet(redis.NewRedisCache)
 
 // 仓储集
-var repositorySet = wire.NewSet(postgres.NewWordRepository, postgres.NewCachedWordRepository, postgres.NewLearningRepository, postgres.NewUserRepository, postgres.NewCourseRepository)
+var repositorySet = wire.NewSet(postgres.NewWordRepository, postgres.NewCachedWordRepository, postgres.NewLearningRepository, postgres.NewUserRepository, postgres.NewCourseRepository, postgres.NewAdminRepository)
 
 // 服务集
-var serviceSet = wire.NewSet(service.NewWordService, service.NewLearningService, service.NewUserService, service.NewCourseService)
-
-// 处理器集
-var handlerSet = wire.NewSet(handler.NewWordHandler, handler.NewUserHandler, handler.NewLearningHandler, handler.NewHealthHandler, handler.NewHandlers)
+var serviceSet = wire.NewSet(service.NewWordService, service.NewLearningService, service.NewUserService, service.NewCourseService, service.NewAdminService)
 
 // 认证集
-var authSet = wire.NewSet(auth.NewJWTConfig, auth.NewJWTService, wire.Bind(new(auth.JWTServicer), new(*auth.JWTService)))
+var authSet = wire.NewSet(oauth.NewAppleConfig, oauth.NewAppleAuthService)
+
+// 安全服务集
+var securitySet = wire.NewSet(security.NewBCryptPasswordService, security.NewJWTTokenService)

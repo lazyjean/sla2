@@ -9,7 +9,8 @@ import (
 	"github.com/lazyjean/sla2/internal/domain/entity"
 	"github.com/lazyjean/sla2/internal/domain/errors"
 	"github.com/lazyjean/sla2/internal/domain/repository"
-	"github.com/lazyjean/sla2/pkg/auth"
+	"github.com/lazyjean/sla2/internal/domain/security"
+	"github.com/lazyjean/sla2/internal/infrastructure/oauth"
 	"github.com/lazyjean/sla2/pkg/logger"
 	"github.com/lazyjean/sla2/pkg/utils"
 	"go.uber.org/zap"
@@ -18,14 +19,23 @@ import (
 )
 
 type UserService struct {
-	userRepo repository.UserRepository
-	authSvc  auth.JWTServicer
+	userRepo        repository.UserRepository
+	tokenService    security.TokenService
+	passwordService security.PasswordService
+	appleAuth       *oauth.AppleAuthService
 }
 
-func NewUserService(userRepo repository.UserRepository, authSvc auth.JWTServicer) *UserService {
+func NewUserService(
+	userRepo repository.UserRepository,
+	tokenService security.TokenService,
+	passwordService security.PasswordService,
+	appleAuth *oauth.AppleAuthService,
+) *UserService {
 	return &UserService{
-		userRepo: userRepo,
-		authSvc:  authSvc,
+		userRepo:        userRepo,
+		tokenService:    tokenService,
+		passwordService: passwordService,
+		appleAuth:       appleAuth,
 	}
 }
 
@@ -47,7 +57,7 @@ func (s *UserService) Register(ctx context.Context, req *dto.RegisterRequest) (*
 	}
 
 	// 加密密码
-	hashedPassword, err := s.authSvc.HashPassword(req.Password)
+	hashedPassword, err := s.passwordService.HashPassword(req.Password)
 	if err != nil {
 		return nil, errors.NewError(errors.CodeInternalError, "密码加密失败")
 	}
@@ -58,12 +68,12 @@ func (s *UserService) Register(ctx context.Context, req *dto.RegisterRequest) (*
 		return nil, errors.NewError(errors.CodeInternalError, "创建用户失败")
 	}
 
-	// 生成 token
-	token, err := s.authSvc.GenerateToken(user.ID)
+	// 生成 token，目前用户没有角色，传空数组
+	token, err := s.tokenService.GenerateToken(string(user.ID), []string{})
 	if err != nil {
 		return nil, errors.NewError(errors.CodeInternalError, "生成token失败")
 	}
-	refreshToken, err := s.authSvc.GenerateRefreshToken(user.ID)
+	refreshToken, err := s.tokenService.GenerateRefreshToken(string(user.ID), []string{})
 	if err != nil {
 		return nil, errors.NewError(errors.CodeInternalError, "生成refresh token失败")
 	}
@@ -141,18 +151,18 @@ func (s *UserService) Login(ctx context.Context, req *dto.LoginRequest) (*dto.Lo
 		return nil, status.Error(codes.Aborted, "用户未设置密码")
 	}
 
-	// validate password
-	if !s.authSvc.ComparePasswords(user.Password, req.Password) {
+	// 验证密码
+	if !s.passwordService.VerifyPassword(req.Password, user.Password) {
 		return nil, status.Error(codes.Unauthenticated, "密码错误")
 	}
 
-	// 生成 access token 和 refresh token
-	accessToken, err := s.authSvc.GenerateToken(user.ID)
+	// 生成 token，目前用户没有角色，传空数组
+	accessToken, err := s.tokenService.GenerateToken(string(user.ID), []string{})
 	if err != nil {
 		return nil, status.Error(codes.Internal, "生成token失败")
 	}
 
-	refreshToken, err := s.authSvc.GenerateRefreshToken(user.ID)
+	refreshToken, err := s.tokenService.GenerateRefreshToken(string(user.ID), []string{})
 	if err != nil {
 		return nil, status.Error(codes.Internal, "生成refresh token失败")
 	}
@@ -240,12 +250,12 @@ func (s *UserService) ChangePassword(ctx context.Context, req *dto.ChangePasswor
 	}
 
 	// 验证旧密码
-	if !s.authSvc.ComparePasswords(user.Password, req.OldPassword) {
+	if !s.passwordService.VerifyPassword(req.OldPassword, user.Password) {
 		return errors.NewError(errors.CodeInvalidCredentials, "旧密码错误")
 	}
 
 	// 加密新密码
-	hashedPassword, err := s.authSvc.HashPassword(req.NewPassword)
+	hashedPassword, err := s.passwordService.HashPassword(req.NewPassword)
 	if err != nil {
 		return errors.NewError(errors.CodeInternalError, "密码加密失败")
 	}
@@ -299,7 +309,7 @@ func (s *UserService) ResetPassword(ctx context.Context, req *dto.ResetPasswordR
 	}
 
 	// 加密新密码
-	hashedPassword, err := s.authSvc.HashPassword(req.NewPassword)
+	hashedPassword, err := s.passwordService.HashPassword(req.NewPassword)
 	if err != nil {
 		return errors.NewError(errors.CodeInternalError, "密码加密失败")
 	}
@@ -316,7 +326,7 @@ func (s *UserService) ResetPassword(ctx context.Context, req *dto.ResetPasswordR
 // AppleLogin 处理苹果登录
 func (s *UserService) AppleLogin(ctx context.Context, req *dto.AppleLoginRequest) (*dto.AppleLoginResponse, error) {
 	// 验证 Apple Authorization Code
-	appleIDToken, err := s.authSvc.AuthCodeWithApple(ctx, req.AuthorizationCode)
+	appleIDToken, err := s.appleAuth.AuthCodeWithApple(ctx, req.AuthorizationCode)
 	if err != nil || appleIDToken.Subject != req.UserIdentifier {
 		return nil, errors.NewError(errors.CodeInvalidCredentials, "Apple Authorization Code 验证失败")
 	}
@@ -342,12 +352,12 @@ func (s *UserService) AppleLogin(ctx context.Context, req *dto.AppleLoginRequest
 	}
 
 	// 生成 token
-	token, err := s.authSvc.GenerateToken(user.ID)
+	token, err := s.tokenService.GenerateToken(string(user.ID), []string{})
 	if err != nil {
 		return nil, errors.NewError(errors.CodeInternalError, "生成 token 失败")
 	}
 
-	refreshToken, err := s.authSvc.GenerateRefreshToken(user.ID)
+	refreshToken, err := s.tokenService.GenerateRefreshToken(string(user.ID), []string{})
 	if err != nil {
 		return nil, errors.NewError(errors.CodeInternalError, "生成 refresh token 失败")
 	}
@@ -364,27 +374,27 @@ func (s *UserService) AppleLogin(ctx context.Context, req *dto.AppleLoginRequest
 	}, nil
 }
 
-// RefreshToken 刷新 token
-func (s *UserService) RefreshToken(ctx context.Context, req *dto.RefreshTokenRequest) (*dto.RefreshTokenResponse, error) {
-	// 验证 refresh token
-	userID, err := s.authSvc.ValidateRefreshToken(req.RefreshToken)
+// RefreshToken 刷新访问令牌
+func (s *UserService) RefreshToken(ctx context.Context, req *dto.RefreshTokenRequest) (*dto.UserRefreshTokenResponse, error) {
+	// 验证刷新令牌
+	userID, roles, err := s.tokenService.ValidateRefreshToken(req.RefreshToken)
 	if err != nil {
-		return nil, errors.NewError(errors.CodeInvalidCredentials, "refresh token 无效")
+		return nil, err
 	}
 
-	// 生成新的 token
-	token, err := s.authSvc.GenerateToken(userID)
+	// 生成新的令牌，使用相同的角色信息
+	accessToken, err := s.tokenService.GenerateToken(userID, roles)
 	if err != nil {
 		return nil, errors.NewError(errors.CodeInternalError, "生成 token 失败")
 	}
 
-	refreshToken, err := s.authSvc.GenerateRefreshToken(userID)
+	refreshToken, err := s.tokenService.GenerateRefreshToken(userID, roles)
 	if err != nil {
 		return nil, errors.NewError(errors.CodeInternalError, "生成 refresh token 失败")
 	}
 
-	return &dto.RefreshTokenResponse{
-		AccessToken:  token,
+	return &dto.UserRefreshTokenResponse{
+		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	}, nil
 }

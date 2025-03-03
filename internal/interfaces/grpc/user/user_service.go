@@ -6,7 +6,6 @@ import (
 	pb "github.com/lazyjean/sla2/api/proto/v1"
 	"github.com/lazyjean/sla2/internal/application/dto"
 	"github.com/lazyjean/sla2/internal/application/service"
-	"github.com/lazyjean/sla2/pkg/auth"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -14,13 +13,11 @@ import (
 type UserService struct {
 	pb.UnimplementedUserServiceServer
 	userService *service.UserService
-	authSvc     auth.JWTServicer
 }
 
-func NewUserService(userService *service.UserService, authSvc auth.JWTServicer) *UserService {
+func NewUserService(userService *service.UserService) *UserService {
 	return &UserService{
 		userService: userService,
-		authSvc:     authSvc,
 	}
 }
 

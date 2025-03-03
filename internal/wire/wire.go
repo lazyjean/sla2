@@ -9,9 +9,9 @@ import (
 	"github.com/lazyjean/sla2/internal/application/service"
 	"github.com/lazyjean/sla2/internal/infrastructure/cache/redis"
 	"github.com/lazyjean/sla2/internal/infrastructure/persistence/postgres"
+	"github.com/lazyjean/sla2/internal/infrastructure/security"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc"
-	"github.com/lazyjean/sla2/internal/interfaces/http/handler"
-	"github.com/lazyjean/sla2/pkg/auth"
+	"github.com/lazyjean/sla2/internal/infrastructure/oauth"
 )
 
 // 配置集
@@ -36,6 +36,7 @@ var repositorySet = wire.NewSet(
 	postgres.NewLearningRepository,
 	postgres.NewUserRepository,
 	postgres.NewCourseRepository,
+	postgres.NewAdminRepository,
 )
 
 // 服务集
@@ -44,22 +45,22 @@ var serviceSet = wire.NewSet(
 	service.NewLearningService,
 	service.NewUserService,
 	service.NewCourseService,
-)
-
-// 处理器集
-var handlerSet = wire.NewSet(
-	handler.NewWordHandler,
-	handler.NewUserHandler,
-	handler.NewLearningHandler,
-	handler.NewHealthHandler,
-	handler.NewHandlers,
+	service.NewAdminService,
 )
 
 // 认证集
 var authSet = wire.NewSet(
-	auth.NewJWTConfig,
-	auth.NewJWTService,
-	wire.Bind(new(auth.JWTServicer), new(*auth.JWTService)),
+	oauth.NewAppleConfig,
+	oauth.NewAppleAuthService,
+)
+
+// 安全服务集
+var securitySet = wire.NewSet(
+	// 密码服务
+	security.NewBCryptPasswordService,
+
+	// 令牌服务
+	security.NewJWTTokenService,
 )
 
 func InitializeApp(cfg *config.Config) (*App, error) {
@@ -69,9 +70,9 @@ func InitializeApp(cfg *config.Config) (*App, error) {
 		dbSet,
 		repositorySet,
 		serviceSet,
-		handlerSet,
 		authSet,
 		cacheSet,
+		securitySet,
 		grpc.NewServer,
 	)
 	return nil, nil

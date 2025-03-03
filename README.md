@@ -51,10 +51,17 @@
 
 ## 技术栈
 
-- Gin: Web 框架
-- Redis: 缓存服务
-- MySQL: 数据存储
-- Zap: 日志记录
+- Go 1.24.0：主要开发语言
+- Gin v1.9.1：Web框架
+- PostgreSQL 16：主数据库
+- Redis 7：缓存服务
+- gRPC：微服务通信
+- JWT：用户认证
+- Swagger：API文档
+- Zap：日志记录
+- Wire：依赖注入
+- Apollo：配置中心
+- Docker & Kubernetes：容器化部署
 
 ## 主要功能
 
@@ -158,206 +165,12 @@ apple:
 
 - 使用大写字母
 - 使用下划线连接
-- 添加 `APP_` 前缀（注意：不是之前文档中提到的 `SLA2_` 前缀）
-
-例如：
-
-```bash
-export APP_SERVER_PORT=9000
-export APP_DATABASE_HOST=db.example.com
-export APP_REDIS_PASSWORD=secret
-```
-
-### 配置热重载
-
-服务支持配置热重载，可以在不重启服务的情况下更新配置：
-
-1. 修改配置文件
-2. 发送 SIGHUP 信号给服务进程
-
-```bash
-kill -SIGHUP $(pgrep sla2)
-```
-
-## 开发环境设置
-
-1. 安装依赖
-
-```bash
-# 初始化并更新子模块
-git submodule init
-git submodule update --remote
-
-# 下载 Go 依赖
-go mod download
-```
-
-2. 构建和运行
-
-```bash
-# 构建二进制文件
-make build
-
-# 本地运行服务
-make run
-
-# 停止服务
-make stop
-
-# 查看服务日志
-make logs
-```
-
-## 构建和部署
-
-### Docker 镜像构建
-
-镜像版本号自动从 Git tag 获取，请确保在构建前已创建相应的 Git tag：
-
-```bash
-# 创建 Git tag（例如：v1.0.0）
-git tag v1.0.0
-git push origin v1.0.0
-
-# 本地构建镜像(需要先构建二进制文件)
-make docker-build-local
-
-# 远程构建镜像(使用多阶段构建)
-make docker-build
-```
-
-### 版本管理规范
-
-镜像版本号遵循语义化版本规范 (Semantic Versioning)，通过 Git tag 进行管理：
-
-- 主版本号：不兼容的 API 修改（MAJOR）
-- 次版本号：向下兼容的功能性新增（MINOR）
-- 修订号：向下兼容的问题修正（PATCH）
-
-示例：v1.2.3
-
-- v1：主版本号
-- 2：次版本号
-- 3：修订号
-
-### 镜像发布
-
-```bash
-# 推送镜像到仓库
-make docker-push
-
-# 一键构建并推送
-make release
-```
-
-### Kubernetes 部署
-
-项目支持使用 Helm 在 Kubernetes 集群中部署:
-
-```bash
-# 安装/更新 Helm 应用
-make helm-install
-
-# 卸载 Helm 应用
-make helm-uninstall
-
-# 生成 Helm 模板
-make helm-template
-
-# 验证 Helm 模板
-make helm-lint
-
-# 更新已部署的服务
-make deploy
-```
-
-## API 文档
-
-### Swagger 文档
-
-项目集成了 Swagger 文档，可通过以下方式访问：
-
-```bash
-# 本地开发环境
-http://localhost:9000/swagger/index.html
-
-# 生产环境
-https://sla2.leeszi.cn/swagger/index.html
-```
-
-Swagger 文档提供：
-
-- API 接口列表
-- 请求/响应参数说明
-- 在线接口测试功能
-- OpenAPI 规范文档下载
-
-## 部署
-
-项目支持 Docker 部署，使用 K8s 进行容器编排。
-
-## 日志
-
-服务使用结构化日志，以 JSON 格式输出到标准输出（stdout），方便在 K8s 环境中收集和分析。
-
-日志字段说明：
-
-- time: 时间戳
-- level: 日志级别
-- caller: 调用位置
-- msg: 日志消息
-- 其他字段: 根据具体日志内容添加
-
-## 开发规范
-
-1. 代码风格遵循 Go 标准规范
-2. 提交信息需要清晰描述改动内容
-3. 重要功能需要添加单元测试
-4. 接口需要添加文档注释
-5. Git 子模块管理
-   - sla2-proto 模块追踪 main 分支
-   - 更新子模块：`git submodule update --remote`
-   - 提交前确保子模块版本正确
-
-## 环境搭建
-
-### microk8s 安装
-
-```bash
-sudo snap install microk8s --classic
-```
-
-### 组件安装 (cert-manager, ingress, registry)
-
-```bash
-microk8s enable cert-manager ingress registry
-```
-
-### 配置远程访问集群
-
-todo
-
-### 配置代理，解决镜像拉取问题
-
-编辑 `/var/snap/microk8s/current/args/containerd-env` 文件，添加以下内容：
-
-```bash
-HTTP_PROXY=http://your-proxy-server:port
-HTTPS_PROXY=http://your-proxy-server:port
-NO_PROXY=localhost,127.0.0.1
-```
-
-然后重启 MicroK8s：
-
-```bash
-sudo systemctl restart snap.microk8s.daemon-containerd
-```
-
-### 备案域名
-
-### cert-manager 使用
-
-```bash
-microk8s kubectl get cert # 查看证书
-microk8s kubectl delete cert <xxx> # 重新生成证书
-```
+- 添加 `APP_` 前缀（注意：不是之前文档中提到的 `
+
+## 开发环境要求
+
+- Go 1.24.0 或更高版本
+- Docker & Docker Compose
+- PostgreSQL 16
+- Redis 7
+- Make

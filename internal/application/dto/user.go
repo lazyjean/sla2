@@ -85,13 +85,8 @@ type GetUserInfoResponse struct {
 	Avatar        string `json:"avatar,omitempty"`
 }
 
-// RefreshTokenRequest 刷新token请求
-type RefreshTokenRequest struct {
-	RefreshToken string `json:"refresh_token" binding:"required"`
-}
-
-// RefreshTokenResponse 刷新token响应
-type RefreshTokenResponse struct {
+// UserRefreshTokenResponse 用户刷新token响应
+type UserRefreshTokenResponse struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 }
