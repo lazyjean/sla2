@@ -250,7 +250,7 @@ func request_CourseService_CreateSection_0(ctx context.Context, marshaler runtim
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "course_id")
 	}
-	protoReq.CourseId, err = runtime.Int64(val)
+	protoReq.CourseId, err = runtime.Uint32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "course_id", err)
 	}
@@ -271,7 +271,7 @@ func local_request_CourseService_CreateSection_0(ctx context.Context, marshaler 
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "course_id")
 	}
-	protoReq.CourseId, err = runtime.Int64(val)
+	protoReq.CourseId, err = runtime.Uint32(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "course_id", err)
 	}

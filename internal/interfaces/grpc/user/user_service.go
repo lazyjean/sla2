@@ -104,7 +104,6 @@ func (s *UserService) ResetPassword(ctx context.Context, req *pb.ResetPasswordRe
 
 // AppleLogin 处理苹果登录请求
 func (s *UserService) AppleLogin(ctx context.Context, req *pb.AppleLoginRequest) (*pb.AppleLoginResponse, error) {
-	// 调用应用层服务处理苹果登录
 	resp, err := s.userService.AppleLogin(ctx, &dto.AppleLoginRequest{
 		AuthorizationCode: req.AuthorizationCode,
 		UserIdentifier:    req.UserIdentifier,
@@ -148,7 +147,6 @@ func (s *UserService) RefreshToken(ctx context.Context, req *pb.RefreshTokenRequ
 
 // Logout 登出
 func (s *UserService) Logout(ctx context.Context, req *pb.LogoutRequest) (*pb.LogoutResponse, error) {
-	// 登出操作可以在客户端完成，服务端不需要特殊处理
 	return &pb.LogoutResponse{}, nil
 }
 

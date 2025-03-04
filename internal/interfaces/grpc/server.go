@@ -16,6 +16,7 @@ import (
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/admin"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/course"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/learning"
+	"github.com/lazyjean/sla2/internal/interfaces/grpc/middleware"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/user"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/word"
 	"github.com/lazyjean/sla2/pkg/logger"
@@ -60,8 +61,12 @@ func NewServer(
 	// 创建带有拦截器的 gRPC 服务器
 	s.grpcServer = grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
+			middleware.ValidatorInterceptor(),
 			s.loggingInterceptor(),
 			s.authInterceptor(),
+		),
+		grpc.ChainStreamInterceptor(
+			middleware.StreamValidatorInterceptor(),
 		),
 	)
 

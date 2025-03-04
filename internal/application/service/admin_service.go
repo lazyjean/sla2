@@ -62,7 +62,7 @@ func (s *AdminService) InitializeSystem(ctx context.Context, req *dto.Initialize
 	}
 
 	// 创建管理员
-	admin := entity.NewAdmin(req.Username, hashedPassword, req.Username)
+	admin := entity.NewAdmin(req.Username, hashedPassword, req.Nickname)
 	// 设置管理员权限
 	admin.Roles = []string{"admin"}
 

@@ -37,6 +37,7 @@ func (s *AdminService) CheckSystemStatus(ctx context.Context, req *pb.AdminServi
 func (s *AdminService) InitializeSystem(ctx context.Context, req *pb.AdminServiceInitializeSystemRequest) (*pb.AdminServiceInitializeSystemResponse, error) {
 	resp, err := s.adminService.InitializeSystem(ctx, &dto.InitializeSystemRequest{
 		Username: req.Username,
+		Nickname: req.Nickname,
 		Password: req.Password,
 	})
 	if err != nil {

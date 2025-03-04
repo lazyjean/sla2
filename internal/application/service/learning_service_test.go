@@ -116,7 +116,7 @@ func TestLearningService_SaveCourseProgress(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.mockSetup()
-			progress, err := service.SaveCourseProgress(ctx, tt.userID, tt.courseID, tt.status, tt.score)
+			progress, err := service.SaveCourseProgress(ctx, entity.UID(tt.userID), tt.courseID, tt.status, tt.score)
 			if tt.wantErr {
 				assert.Error(t, err)
 				return

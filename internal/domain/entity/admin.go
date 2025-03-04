@@ -43,6 +43,10 @@ func (a *Admin) Scan(value interface{}) error {
 // NewAdmin 创建新的管理员实体
 func NewAdmin(username, password, nickname string) *Admin {
 	now := time.Now()
+	// 如果没有提供昵称，则使用用户名作为默认昵称
+	if nickname == "" {
+		nickname = username
+	}
 	return &Admin{
 		Username:  username,
 		Password:  password,

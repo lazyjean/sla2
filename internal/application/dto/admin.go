@@ -14,6 +14,7 @@ type SystemStatusResponse struct {
 // InitializeSystemRequest 初始化系统请求
 type InitializeSystemRequest struct {
 	Username string `json:"username" binding:"required"`
+	Nickname string `json:"nickname" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
 

@@ -6,6 +6,7 @@ toolchain go1.24.0
 
 require (
 	github.com/apolloconfig/agollo/v4 v4.4.0
+	github.com/envoyproxy/protoc-gen-validate v1.1.0
 	github.com/fsnotify/fsnotify v1.8.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang-jwt/jwt/v5 v5.2.1

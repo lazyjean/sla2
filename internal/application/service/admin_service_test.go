@@ -153,7 +153,7 @@ func TestAdminService_Login(t *testing.T) {
 
 	// 创建测试用的管理员实体
 	admin := &entity.Admin{
-		ID:        "1",
+		ID:        entity.UID(1),
 		Username:  "admin",
 		Password:  "hashed_password",
 		Nickname:  "Admin",
@@ -201,7 +201,7 @@ func TestAdminService_RefreshToken(t *testing.T) {
 
 	// 创建测试用的管理员实体
 	admin := &entity.Admin{
-		ID:        "1",
+		ID:        entity.UID(1),
 		Username:  "admin",
 		Password:  "hashed_password",
 		Nickname:  "Admin",
@@ -244,7 +244,7 @@ func TestAdminService_GetCurrentAdminInfo(t *testing.T) {
 
 	// 创建测试用的管理员实体
 	admin := &entity.Admin{
-		ID:        "1",
+		ID:        entity.UID(1),
 		Username:  "admin",
 		Password:  "hashed_password",
 		Nickname:  "Admin",

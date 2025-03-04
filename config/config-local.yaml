@@ -15,7 +15,7 @@ database:
   password: sla1234
   dbname: sla2
   sslmode: disable
-  debug: true
+  debug: false
   max_open_conns: 100
   max_idle_conns: 10
   conn_max_lifetime: "30m"
