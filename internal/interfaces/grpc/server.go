@@ -120,7 +120,8 @@ func (s *Server) authInterceptor() grpc.UnaryServerInterceptor {
 		}
 
 		// Admin 服务统一使用 admin 的验证方法
-		if strings.HasPrefix(info.FullMethod, "/api.v1.AdminService/") {
+		if strings.HasPrefix(info.FullMethod, "/proto.v1.AdminService/") {
+			log.Debug("check token ", zap.String("token", token))
 			userID, roles, err := s.tokenService.ValidateToken(token)
 			if err != nil {
 				return nil, status.Error(codes.Unauthenticated, "invalid admin token")
@@ -137,6 +138,7 @@ func (s *Server) authInterceptor() grpc.UnaryServerInterceptor {
 				return nil, status.Error(codes.PermissionDenied, "requires admin role")
 			}
 			newCtx := context.WithValue(ctx, service.AdminIDKey, userID)
+			newCtx = context.WithValue(newCtx, service.UserRolesKey, roles)
 			return handler(newCtx, req)
 		}
 

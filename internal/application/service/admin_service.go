@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 
-	appContext "github.com/lazyjean/sla2/internal/application/context"
 	"github.com/lazyjean/sla2/internal/application/dto"
 	"github.com/lazyjean/sla2/internal/domain/entity"
 	"github.com/lazyjean/sla2/internal/domain/repository"
@@ -198,7 +197,7 @@ var (
 
 // GetAdminIDFromContext 从上下文中获取管理员ID
 func GetAdminIDFromContext(ctx context.Context) (entity.UID, error) {
-	adminID, ok := ctx.Value(appContext.AdminIDKey).(entity.UID)
+	adminID, ok := ctx.Value(AdminIDKey).(entity.UID)
 	if !ok || adminID == 0 {
 		return 0, ErrUnauthorized
 	}
