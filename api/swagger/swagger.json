@@ -384,10 +384,10 @@
         "parameters": [
           {
             "name": "courseId",
-            "description": "所属课程ID",
+            "description": "课程ID",
             "in": "path",
             "required": true,
-            "type": "string",
+            "type": "integer",
             "format": "int64"
           },
           {
@@ -1620,11 +1620,6 @@
         "desc": {
           "type": "string",
           "title": "章节描述"
-        },
-        "orderIndex": {
-          "type": "integer",
-          "format": "int32",
-          "title": "显示顺序"
         }
       },
       "title": "Section 相关请求响应消息"
@@ -1938,6 +1933,9 @@
           "type": "string"
         },
         "newPassword": {
+          "type": "string"
+        },
+        "confirmPassword": {
           "type": "string"
         }
       },
