@@ -4,6 +4,8 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"time"
+
+	pg "github.com/lib/pq"
 )
 
 // Admin 管理员实体
