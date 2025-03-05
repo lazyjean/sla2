@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	appContext "github.com/lazyjean/sla2/internal/application/context"
 	"github.com/lazyjean/sla2/internal/application/dto"
 	"github.com/lazyjean/sla2/internal/domain/entity"
 	"github.com/stretchr/testify/assert"
@@ -235,7 +234,7 @@ func TestAdminService_RefreshToken(t *testing.T) {
 
 func TestAdminService_GetCurrentAdminInfo(t *testing.T) {
 	// 准备测试数据
-	ctx := context.WithValue(context.Background(), appContext.AdminIDKey, "1")
+	ctx := context.WithValue(context.Background(), AdminIDKey, "1")
 
 	// 创建模拟对象
 	mockRepo := new(MockAdminRepository)

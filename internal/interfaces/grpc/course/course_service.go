@@ -152,6 +152,7 @@ func (s *CourseService) List(ctx context.Context, req *pb.CourseServiceListReque
 			CoverUrl: course.CoverURL,
 			Level:    convertStringToLevel(course.Level),
 			Tags:     course.Tags,
+			Desc:     course.Description,
 		})
 	}
 

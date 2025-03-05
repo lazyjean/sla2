@@ -63,9 +63,9 @@ func (r *courseRepository) List(ctx context.Context, offset, limit int, filters 
 			if v, ok := value.(string); ok && v != "" {
 				query = query.Where("status = ?", v)
 			}
-		case "tag":
+		case "tags":
 			if v, ok := value.(string); ok && v != "" {
-				query = query.Where("? = ANY(tags)", v)
+				query = query.Where("tags @> ARRAY[?]::varchar(50)[]", v)
 			}
 		}
 	}
@@ -77,7 +77,7 @@ func (r *courseRepository) List(ctx context.Context, offset, limit int, filters 
 	}
 
 	// 获取分页数据
-	err = query.Offset(offset).Limit(limit).Find(&courses).Error
+	err = query.Session(&gorm.Session{PrepareStmt: true}).Offset(offset).Limit(limit).Find(&courses).Error
 	if err != nil {
 		return nil, 0, err
 	}
@@ -102,7 +102,7 @@ func (r *courseRepository) Search(ctx context.Context, keyword string, offset, l
 			}
 		case "tag":
 			if v, ok := value.(string); ok && v != "" {
-				query = query.Where("? = ANY(tags)", v)
+				query = query.Where("tags @> ARRAY[?]::varchar(50)[]", v)
 			}
 		}
 	}
@@ -111,7 +111,7 @@ func (r *courseRepository) Search(ctx context.Context, keyword string, offset, l
 		return nil, 0, err
 	}
 
-	err := query.Offset(offset).Limit(limit).Find(&courses).Error
+	err := query.Session(&gorm.Session{PrepareStmt: true}).Offset(offset).Limit(limit).Find(&courses).Error
 	return courses, total, err
 }
 

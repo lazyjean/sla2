@@ -107,8 +107,6 @@ var noAuthMethods = map[string]bool{
 func (s *Server) authInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		// 检查是否需要鉴权
-		log := logger.GetLogger(ctx)
-		log.Info("authInterceptor", zap.String("method", info.FullMethod))
 		if noAuthMethods[info.FullMethod] {
 			return handler(ctx, req)
 		}
@@ -121,7 +119,6 @@ func (s *Server) authInterceptor() grpc.UnaryServerInterceptor {
 
 		// Admin 服务统一使用 admin 的验证方法
 		if strings.HasPrefix(info.FullMethod, "/proto.v1.AdminService/") {
-			log.Debug("check token ", zap.String("token", token))
 			userID, roles, err := s.tokenService.ValidateToken(token)
 			if err != nil {
 				return nil, status.Error(codes.Unauthenticated, "invalid admin token")
@@ -298,7 +295,7 @@ func (s *Server) validateSwaggerAuth(username, password string) bool {
 // customHeaderMatcher 自定义请求头匹配器
 func customHeaderMatcher(key string) (string, bool) {
 	switch strings.ToLower(key) {
-	case "authorization":
+	case "authorization", "set-cookie":
 		return key, true
 	default:
 		return runtime.DefaultHeaderMatcher(key)

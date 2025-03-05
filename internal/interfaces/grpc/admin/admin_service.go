@@ -2,10 +2,13 @@ package admin
 
 import (
 	"context"
+	"fmt"
 
 	pb "github.com/lazyjean/sla2/api/proto/v1"
 	"github.com/lazyjean/sla2/internal/application/dto"
 	"github.com/lazyjean/sla2/internal/application/service"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 // AdminService 管理员 gRPC 服务
@@ -67,6 +70,13 @@ func (s *AdminService) AdminLogin(ctx context.Context, req *pb.AdminServiceAdmin
 	if err != nil {
 		return nil, err
 	}
+
+	// 设置cookie到metadata（使用首字母大写的头名称） note: 测试环境使用 cookie, 正式环境需要考虑安全性
+	md := metadata.Pairs(
+		"Set-Cookie", fmt.Sprintf("access_token=%s; Path=/; HttpOnly; SameSite=Strict", resp.AccessToken),
+	)
+	// 仅设置Header，避免Trailer覆盖
+	grpc.SetHeader(ctx, md)
 
 	return &pb.AdminServiceAdminLoginResponse{
 		Admin: &pb.AdminInfo{
