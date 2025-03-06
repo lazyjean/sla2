@@ -123,7 +123,7 @@ func TestLearningService_SaveCourseProgress(t *testing.T) {
 			}
 			require.NoError(t, err)
 			assert.NotNil(t, progress)
-			assert.Equal(t, tt.userID, progress.UserID)
+			assert.Equal(t, entity.UID(tt.userID), progress.UserID)
 			assert.Equal(t, tt.courseID, progress.CourseID)
 			assert.Equal(t, tt.status, progress.Status)
 			assert.Equal(t, tt.score, progress.Score)

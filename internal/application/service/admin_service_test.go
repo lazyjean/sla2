@@ -234,7 +234,7 @@ func TestAdminService_RefreshToken(t *testing.T) {
 
 func TestAdminService_GetCurrentAdminInfo(t *testing.T) {
 	// 准备测试数据
-	ctx := context.WithValue(context.Background(), AdminIDKey, "1")
+	ctx := context.WithValue(context.Background(), AdminIDKey, entity.UID(1))
 
 	// 创建模拟对象
 	mockRepo := new(MockAdminRepository)
