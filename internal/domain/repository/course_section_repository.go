@@ -22,4 +22,19 @@ type CourseSectionRepository interface {
 
 	// ListByCourseID 获取课程的所有章节
 	ListByCourseID(ctx context.Context, courseID entity.CourseID) ([]*entity.CourseSection, error)
+
+	// CreateUnit 创建单元
+	CreateUnit(ctx context.Context, unit *entity.CourseSectionUnit) error
+
+	// UpdateUnit 更新单元
+	UpdateUnit(ctx context.Context, unit *entity.CourseSectionUnit) error
+
+	// DeleteUnit 删除单元
+	DeleteUnit(ctx context.Context, id entity.CourseSectionUnitID) error
+
+	// GetUnitByID 根据ID获取单元
+	GetUnitByID(ctx context.Context, id entity.CourseSectionUnitID) (*entity.CourseSectionUnit, error)
+
+	// ListUnitsBySectionID 获取章节的所有单元
+	ListUnitsBySectionID(ctx context.Context, sectionID entity.CourseSectionID) ([]*entity.CourseSectionUnit, error)
 }

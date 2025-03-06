@@ -69,7 +69,29 @@ func (s *CourseService) UpdateCourse(ctx context.Context, id uint, title, descri
 
 // GetCourse 获取课程详情
 func (s *CourseService) GetCourse(ctx context.Context, id uint) (*entity.Course, error) {
-	return s.courseRepository.GetByID(ctx, uint(id))
+	// 获取课程基本信息
+	course, err := s.courseRepository.GetByID(ctx, uint(id))
+	if err != nil {
+		return nil, err
+	}
+
+	// 获取课程章节
+	sections, err := s.courseSectionRepository.ListByCourseID(ctx, course.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	// 获取每个章节的单元信息
+	for _, section := range sections {
+		units, err := s.courseSectionRepository.ListUnitsBySectionID(ctx, section.ID)
+		if err != nil {
+			return nil, err
+		}
+		section.Units = units
+	}
+
+	course.Sections = sections
+	return course, nil
 }
 
 // ListCourses 获取课程列表

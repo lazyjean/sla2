@@ -209,9 +209,55 @@ func convertToPbCourse(course *entity.Course) *pb.Course {
 		Tags:      course.Tags,
 		Status:    convertStringToStatus(course.Status),
 		Version:   0, // 添加版本号字段
+		Sections:  convertToPbCourseSections(course.Sections),
 		CreatedAt: timestamppb.New(course.CreatedAt),
 		UpdatedAt: timestamppb.New(course.UpdatedAt),
 	}
+}
+
+// convertToPbCourseSections 将课程章节实体转换为 protobuf 消息
+func convertToPbCourseSections(sections []*entity.CourseSection) []*pb.CourseSection {
+	if sections == nil {
+		return nil
+	}
+
+	pbSections := make([]*pb.CourseSection, len(sections))
+	for i, section := range sections {
+		pbSections[i] = &pb.CourseSection{
+			Id:         int64(section.ID),
+			Title:      section.Title,
+			Desc:       section.Desc,
+			OrderIndex: section.OrderIndex,
+			Status:     convertStringToSectionStatus(section.Status),
+			Units:      convertToPbCourseSectionUnits(section.Units),
+			CreatedAt:  timestamppb.New(section.CreatedAt),
+			UpdatedAt:  timestamppb.New(section.UpdatedAt),
+		}
+	}
+	return pbSections
+}
+
+// convertToPbCourseSectionUnits 将课程章节单元实体转换为 protobuf 消息
+func convertToPbCourseSectionUnits(units []*entity.CourseSectionUnit) []*pb.CourseSectionUnit {
+	if units == nil {
+		return nil
+	}
+
+	pbUnits := make([]*pb.CourseSectionUnit, len(units))
+	for i, unit := range units {
+		pbUnits[i] = &pb.CourseSectionUnit{
+			Id:          int64(unit.ID),
+			Title:       unit.Title,
+			Desc:        unit.Desc,
+			QuestionIds: unit.QuestionIds,
+			OrderIndex:  unit.OrderIndex,
+			Status:      int32(unit.Status),
+			Tags:        unit.Tags,
+			CreatedAt:   timestamppb.New(unit.CreatedAt),
+			UpdatedAt:   timestamppb.New(unit.UpdatedAt),
+		}
+	}
+	return pbUnits
 }
 
 // CreateSection 创建课程章节
