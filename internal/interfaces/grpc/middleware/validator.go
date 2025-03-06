@@ -7,6 +7,7 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
@@ -20,6 +21,11 @@ type Validator interface {
 // ValidatorInterceptor 创建一个验证拦截器
 func ValidatorInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+		// Preserve incoming metadata
+		md, _ := metadata.FromIncomingContext(ctx)
+		if md != nil {
+			ctx = metadata.NewIncomingContext(ctx, md)
+		}
 		log := logger.GetLogger(ctx)
 		// 检查请求是否实现了Validator接口
 		if v, ok := req.(Validator); ok {

@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/lazyjean/sla2/internal/domain/entity"
@@ -201,4 +203,79 @@ func (s *CourseService) GetSection(ctx context.Context, id entity.CourseSectionI
 // ListSections 获取课程的所有章节
 func (s *CourseService) ListSections(ctx context.Context, courseID entity.CourseID) ([]*entity.CourseSection, error) {
 	return s.courseSectionRepository.ListByCourseID(ctx, courseID)
+}
+
+// CreateUnit 创建课程单元
+func (s *CourseService) CreateUnit(ctx context.Context, sectionID entity.CourseSectionID, title, desc string, questionIds []uint32, tags []string) (*entity.CourseSectionUnit, error) {
+	// 将uint32数组转换为字符串数组
+	questionIdStrs := make([]string, len(questionIds))
+	for i, id := range questionIds {
+		questionIdStrs[i] = strconv.FormatUint(uint64(id), 10)
+	}
+
+	unit := &entity.CourseSectionUnit{
+		SectionID:   sectionID,
+		Title:       title,
+		Desc:        desc,
+		QuestionIds: strings.Join(questionIdStrs, ","),
+		Tags:        strings.Join(tags, ","),
+		OrderIndex:  0, // 需要计算
+		Status:      1, // 默认启用
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+	}
+
+	// 获取当前章节的单元列表
+	units, err := s.courseSectionRepository.ListUnitsBySectionID(ctx, sectionID)
+	if err != nil {
+		return nil, err
+	}
+
+	// 计算新单元的顺序
+	if len(units) > 0 {
+		unit.OrderIndex = units[len(units)-1].OrderIndex + 1
+	}
+
+	if err := s.courseSectionRepository.CreateUnit(ctx, unit); err != nil {
+		return nil, err
+	}
+
+	return unit, nil
+}
+
+// UpdateUnit 更新课程单元
+func (s *CourseService) UpdateUnit(ctx context.Context, id entity.CourseSectionUnitID, title, desc string, questionIds []uint32, tags []string, status int32) (*entity.CourseSectionUnit, error) {
+	// 将uint32数组转换为字符串数组
+	questionIdStrs := make([]string, len(questionIds))
+	for i, id := range questionIds {
+		questionIdStrs[i] = strconv.FormatUint(uint64(id), 10)
+	}
+
+	unit, err := s.courseSectionRepository.GetUnitByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	unit.Title = title
+	unit.Desc = desc
+	unit.QuestionIds = strings.Join(questionIdStrs, ",")
+	unit.Tags = strings.Join(tags, ",")
+	unit.Status = status
+	unit.UpdatedAt = time.Now()
+
+	if err := s.courseSectionRepository.UpdateUnit(ctx, unit); err != nil {
+		return nil, err
+	}
+
+	return unit, nil
+}
+
+// DeleteUnit 删除课程单元
+func (s *CourseService) DeleteUnit(ctx context.Context, id entity.CourseSectionUnitID) error {
+	return s.courseSectionRepository.DeleteUnit(ctx, id)
+}
+
+// GetUnit 获取课程单元详情
+func (s *CourseService) GetUnit(ctx context.Context, id entity.CourseSectionUnitID) (*entity.CourseSectionUnit, error) {
+	return s.courseSectionRepository.GetUnitByID(ctx, id)
 }
