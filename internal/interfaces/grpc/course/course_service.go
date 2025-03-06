@@ -78,6 +78,30 @@ func convertStringToStatus(status string) pb.CourseStatus {
 	}
 }
 
+// convertSectionStatusToString 将 protobuf 枚举类型转换为字符串
+func convertSectionStatusToString(status pb.CourseSectionStatus) string {
+	switch status {
+	case pb.CourseSectionStatus_COURSE_SECTION_STATUS_ENABLED:
+		return "enabled"
+	case pb.CourseSectionStatus_COURSE_SECTION_STATUS_DISABLED:
+		return "disabled"
+	default:
+		return "enabled"
+	}
+}
+
+// convertStringToSectionStatus 将字符串转换为 protobuf 枚举类型
+func convertStringToSectionStatus(status string) pb.CourseSectionStatus {
+	switch status {
+	case "enabled":
+		return pb.CourseSectionStatus_COURSE_SECTION_STATUS_ENABLED
+	case "disabled":
+		return pb.CourseSectionStatus_COURSE_SECTION_STATUS_DISABLED
+	default:
+		return pb.CourseSectionStatus_COURSE_SECTION_STATUS_UNSPECIFIED
+	}
+}
+
 // CreateCourse 创建课程
 func (s *CourseService) Create(ctx context.Context, req *pb.CourseServiceCreateRequest) (*pb.CourseServiceCreateResponse, error) {
 	course, err := s.courseService.CreateCourse(
@@ -188,4 +212,38 @@ func convertToPbCourse(course *entity.Course) *pb.Course {
 		CreatedAt: timestamppb.New(course.CreatedAt),
 		UpdatedAt: timestamppb.New(course.UpdatedAt),
 	}
+}
+
+// CreateSection 创建课程章节
+func (s *CourseService) CreateSection(ctx context.Context, req *pb.CourseServiceCreateSectionRequest) (*pb.CourseServiceCreateSectionResponse, error) {
+	section, err := s.courseService.CreateSection(ctx, uint(req.CourseId), req.Title, req.Desc)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.CourseServiceCreateSectionResponse{
+		Id: int64(section.ID),
+	}, nil
+}
+
+// UpdateSection 更新课程章节
+func (s *CourseService) UpdateSection(ctx context.Context, req *pb.CourseServiceUpdateSectionRequest) (*pb.CourseServiceUpdateSectionResponse, error) {
+	section, err := s.courseService.UpdateSection(ctx, entity.CourseSectionID(req.Id), req.Title, req.Desc, req.OrderIndex, convertSectionStatusToString(req.Status))
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.CourseServiceUpdateSectionResponse{
+		Id: int64(section.ID),
+	}, nil
+}
+
+// DeleteSection 删除课程章节
+func (s *CourseService) DeleteSection(ctx context.Context, req *pb.CourseServiceDeleteSectionRequest) (*pb.CourseServiceDeleteSectionResponse, error) {
+	err := s.courseService.DeleteSection(ctx, entity.CourseSectionID(req.Id))
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.CourseServiceDeleteSectionResponse{}, nil
 }

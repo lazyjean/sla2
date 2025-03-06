@@ -8,10 +8,10 @@ import (
 	"github.com/lazyjean/sla2/config"
 	"github.com/lazyjean/sla2/internal/application/service"
 	"github.com/lazyjean/sla2/internal/infrastructure/cache/redis"
+	"github.com/lazyjean/sla2/internal/infrastructure/oauth"
 	"github.com/lazyjean/sla2/internal/infrastructure/persistence/postgres"
 	"github.com/lazyjean/sla2/internal/infrastructure/security"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc"
-	"github.com/lazyjean/sla2/internal/infrastructure/oauth"
 )
 
 // 配置集
@@ -36,6 +36,7 @@ var repositorySet = wire.NewSet(
 	postgres.NewLearningRepository,
 	postgres.NewUserRepository,
 	postgres.NewCourseRepository,
+	postgres.NewCourseSectionRepository,
 	postgres.NewAdminRepository,
 )
 

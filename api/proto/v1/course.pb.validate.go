@@ -381,10 +381,10 @@ func (m *CourseServiceCreateRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if l := utf8.RuneCountInString(m.GetTitle()); l < 2 || l > 100 {
+	if l := utf8.RuneCountInString(m.GetTitle()); l < 2 || l > 50 {
 		err := CourseServiceCreateRequestValidationError{
 			field:  "Title",
-			reason: "value length must be between 2 and 100 runes, inclusive",
+			reason: "value length must be between 2 and 50 runes, inclusive",
 		}
 		if !all {
 			return err
@@ -435,10 +435,10 @@ func (m *CourseServiceCreateRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if len(m.GetTags()) > 10 {
+	if len(m.GetTags()) > 20 {
 		err := CourseServiceCreateRequestValidationError{
 			field:  "Tags",
-			reason: "value must contain no more than 10 item(s)",
+			reason: "value must contain no more than 20 item(s)",
 		}
 		if !all {
 			return err
@@ -2345,15 +2345,51 @@ func (m *CourseServiceUpdateSectionRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
+	if m.GetId() <= 0 {
+		err := CourseServiceUpdateSectionRequestValidationError{
+			field:  "Id",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for Title
+	if l := utf8.RuneCountInString(m.GetTitle()); l < 1 || l > 100 {
+		err := CourseServiceUpdateSectionRequestValidationError{
+			field:  "Title",
+			reason: "value length must be between 1 and 100 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for Desc
+	if utf8.RuneCountInString(m.GetDesc()) > 500 {
+		err := CourseServiceUpdateSectionRequestValidationError{
+			field:  "Desc",
+			reason: "value length must be at most 500 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	// no validation rules for OrderIndex
 
-	// no validation rules for Status
+	if _, ok := _CourseServiceUpdateSectionRequest_Status_NotInLookup[m.GetStatus()]; ok {
+		err := CourseServiceUpdateSectionRequestValidationError{
+			field:  "Status",
+			reason: "value must not be in list [COURSE_SECTION_STATUS_UNSPECIFIED]",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if len(errors) > 0 {
 		return CourseServiceUpdateSectionRequestMultiError(errors)
@@ -2436,6 +2472,10 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = CourseServiceUpdateSectionRequestValidationError{}
+
+var _CourseServiceUpdateSectionRequest_Status_NotInLookup = map[CourseSectionStatus]struct{}{
+	0: {},
+}
 
 // Validate checks the field values on CourseServiceUpdateSectionResponse with
 // the rules defined in the proto definition for this message. If any rules

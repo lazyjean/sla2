@@ -44,7 +44,8 @@ func InitializeApp(cfg *config.Config) (*App, error) {
 	learningRepository := postgres.NewLearningRepository(db)
 	learningService := service.NewLearningService(learningRepository)
 	courseRepository := postgres.NewCourseRepository(db)
-	courseService := service.NewCourseService(courseRepository)
+	courseSectionRepository := postgres.NewCourseSectionRepository(db)
+	courseService := service.NewCourseService(courseRepository, courseSectionRepository)
 	server := grpc.NewServer(adminService, userService, wordService, learningService, courseService, tokenService, cfg)
 	app := NewApp(server, cfg, tokenService, appleAuthService)
 	return app, nil
@@ -62,7 +63,7 @@ var dbSet = wire.NewSet(postgres.NewDB)
 var cacheSet = wire.NewSet(redis.NewRedisCache)
 
 // 仓储集
-var repositorySet = wire.NewSet(postgres.NewWordRepository, postgres.NewCachedWordRepository, postgres.NewLearningRepository, postgres.NewUserRepository, postgres.NewCourseRepository, postgres.NewAdminRepository)
+var repositorySet = wire.NewSet(postgres.NewWordRepository, postgres.NewCachedWordRepository, postgres.NewLearningRepository, postgres.NewUserRepository, postgres.NewCourseRepository, postgres.NewAdminRepository, postgres.NewCourseSectionRepository)
 
 // 服务集
 var serviceSet = wire.NewSet(service.NewWordService, service.NewLearningService, service.NewUserService, service.NewCourseService, service.NewAdminService)
