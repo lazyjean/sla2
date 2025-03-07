@@ -4,8 +4,8 @@ server:
   version: "v1.0.0"
 
 grpc:
-  port: 9001
-  gateway_port: 9002
+  port: 9101
+  gateway_port: 9102
   reflection: true # todo: 开发环境注册反射服务
 
 database:
@@ -52,3 +52,11 @@ apple:
 swagger:
   username: "admin"
   password: "swagger"
+
+deepseek:
+  api_key: "sk-fd2767d50cac4d0fa5c40d1b111825f8"
+  base_url: "https://api.deepseek.com/v1"
+  timeout: 30
+  max_retries: 3
+  temperature: 0.7
+  max_tokens: 1000

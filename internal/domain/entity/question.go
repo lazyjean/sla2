@@ -2,6 +2,8 @@ package entity
 
 import (
 	"time"
+
+	pb "github.com/lazyjean/sla2/api/proto/v1"
 )
 
 type QuestionID uint32
@@ -58,4 +60,20 @@ func (q *Question) Update(title, content string, tags []string) {
 func (q *Question) Delete() {
 	q.Status = "deleted"
 	q.UpdatedAt = time.Now()
+}
+
+// ToProto 将Question实体转换为protobuf消息
+func (q *Question) ToProto() *pb.Question {
+	return &pb.Question{
+		Id:             uint32(q.ID),
+		Title:          q.Title,
+		SimpleQuestion: q.Content,
+		QuestionType:   pb.QuestionType_QUESTION_TYPE_UNSPECIFIED, // 这里需要根据实际类型转换
+		Tags:           q.Tags,
+		Difficulty:     pb.QuestionDifficultyLevel_QUESTION_DIFFICULTY_LEVEL_MEDIUM, // 默认难度中等，可以根据实际值调整
+		Status:         pb.QuestionStatus_QUESTION_STATUS_PUBLISHED,                 // 默认已发布，可以根据实际值调整
+		Explanation:    q.Explanation,
+		CreatedAt:      uint64(q.CreatedAt.Unix()),
+		UpdatedAt:      uint64(q.UpdatedAt.Unix()),
+	}
 }

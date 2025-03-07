@@ -38,6 +38,8 @@ var repositorySet = wire.NewSet(
 	postgres.NewCourseRepository,
 	postgres.NewCourseSectionRepository,
 	postgres.NewAdminRepository,
+	postgres.NewQuestionTagRepository,
+	postgres.NewQuestionRepository,
 )
 
 // 服务集
@@ -47,6 +49,8 @@ var serviceSet = wire.NewSet(
 	service.NewUserService,
 	service.NewCourseService,
 	service.NewAdminService,
+	service.NewQuestionService,
+	service.NewQuestionTagService,
 )
 
 // 认证集

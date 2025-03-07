@@ -3,84 +3,60 @@ package service
 import (
 	"context"
 
-	"github.com/google/wire"
-	"go.uber.org/zap"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-
 	"github.com/lazyjean/sla2/internal/domain/entity"
 	"github.com/lazyjean/sla2/internal/domain/repository"
-	"github.com/lazyjean/sla2/internal/domain/service"
+	"github.com/lazyjean/sla2/pkg/logger"
+	"go.uber.org/zap"
 )
 
-var QuestionTagServiceSet = wire.NewSet(
-	wire.Struct(new(QuestionTagService), "*"),
-)
-
+// QuestionTagService 提供问题标签相关的应用层服务
 type QuestionTagService struct {
-	logger *zap.Logger
-	repo   repository.QuestionTagRepository
-	domain service.QuestionTagService
+	tagRepo repository.QuestionTagRepository
 }
 
-func NewQuestionTagService(
-	logger *zap.Logger,
-	repo repository.QuestionTagRepository,
-	domain service.QuestionTagService,
-) *QuestionTagService {
+// NewQuestionTagService 创建问题标签服务
+func NewQuestionTagService(tagRepo repository.QuestionTagRepository) *QuestionTagService {
 	return &QuestionTagService{
-		logger: logger,
-		repo:   repo,
-		domain: domain,
+		tagRepo: tagRepo,
 	}
 }
 
-func (s *QuestionTagService) CreateQuestionTag(ctx context.Context, req *entity.QuestionTag) (*entity.QuestionTag, error) {
-	if err := s.domain.ValidateQuestionTag(ctx, req); err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
-	}
-
-	tag, err := s.repo.Create(ctx, req)
-	if err != nil {
-		s.logger.Error("failed to create question tag", zap.Error(err))
-		return nil, status.Error(codes.Internal, "failed to create question tag")
-	}
-
-	return tag, nil
+// FindAll 查询所有标签，限制返回数量
+func (s *QuestionTagService) FindAll(ctx context.Context, limit int) ([]*entity.QuestionTag, error) {
+	log := logger.GetLogger(ctx)
+	log.Debug("查询所有标签", zap.Int("limit", limit))
+	return s.tagRepo.FindAll(ctx, limit)
 }
 
-func (s *QuestionTagService) GetQuestionTag(ctx context.Context, id string) (*entity.QuestionTag, error) {
-	tag, err := s.repo.Get(ctx, id)
-	if err != nil {
-		if err == repository.ErrNotFound {
-			return nil, status.Error(codes.NotFound, "question tag not found")
-		}
-		s.logger.Error("failed to get question tag", zap.Error(err))
-		return nil, status.Error(codes.Internal, "failed to get question tag")
+// Create 创建标签
+func (s *QuestionTagService) Create(ctx context.Context, name string) (*entity.QuestionTag, error) {
+	log := logger.GetLogger(ctx)
+	log.Debug("创建标签", zap.String("name", name))
+
+	tag := &entity.QuestionTag{
+		Name: name,
 	}
 
-	return tag, nil
+	return s.tagRepo.Create(ctx, tag)
 }
 
-func (s *QuestionTagService) UpdateQuestionTag(ctx context.Context, req *entity.QuestionTag) (*entity.QuestionTag, error) {
-	if err := s.domain.ValidateQuestionTag(ctx, req); err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+// Update 更新标签
+func (s *QuestionTagService) Update(ctx context.Context, id string, name string) (*entity.QuestionTag, error) {
+	log := logger.GetLogger(ctx)
+	log.Debug("更新标签", zap.String("id", id), zap.String("name", name))
+
+	tag := &entity.QuestionTag{
+		ID:   id,
+		Name: name,
 	}
 
-	tag, err := s.repo.Update(ctx, req)
-	if err != nil {
-		s.logger.Error("failed to update question tag", zap.Error(err))
-		return nil, status.Error(codes.Internal, "failed to update question tag")
-	}
-
-	return tag, nil
+	return s.tagRepo.Update(ctx, tag)
 }
 
-func (s *QuestionTagService) DeleteQuestionTag(ctx context.Context, id string) error {
-	if err := s.repo.Delete(ctx, id); err != nil {
-		s.logger.Error("failed to delete question tag", zap.Error(err))
-		return status.Error(codes.Internal, "failed to delete question tag")
-	}
+// Delete 删除标签
+func (s *QuestionTagService) Delete(ctx context.Context, id string) error {
+	log := logger.GetLogger(ctx)
+	log.Debug("删除标签", zap.String("id", id))
 
-	return nil
+	return s.tagRepo.Delete(ctx, id)
 }

@@ -167,8 +167,8 @@ func (s *AdminService) RefreshToken(ctx context.Context, req *dto.RefreshTokenRe
 
 // GetCurrentAdminInfo 获取当前管理员信息
 func (s *AdminService) GetCurrentAdminInfo(ctx context.Context) (*dto.AdminInfoResponse, error) {
-	// 从上下文中获取当前管理员ID
-	adminID, err := GetAdminIDFromContext(ctx)
+	// 从令牌中获取当前管理员ID
+	adminID, _, err := s.tokenService.ValidateTokenFromContext(ctx)
 	if err != nil {
 		return nil, ErrUnauthorized
 	}

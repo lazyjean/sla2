@@ -17,6 +17,7 @@ import (
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/course"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/learning"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/middleware"
+	"github.com/lazyjean/sla2/internal/interfaces/grpc/question"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/user"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/word"
 	"github.com/lazyjean/sla2/pkg/logger"
@@ -30,16 +31,18 @@ import (
 
 // Server gRPC 服务器
 type Server struct {
-	grpcServer   *grpc.Server
-	httpServer   *http.Server
-	adminSvc     *admin.AdminService
-	userSvc      *user.UserService
-	wordSvc      *word.WordService
-	learningSvc  *learning.LearningService
-	courseSvc    *course.CourseService
-	tokenService security.TokenService
-	config       *config.Config
-	stopCh       chan struct{} // 用于通知所有 goroutine 停止
+	grpcServer     *grpc.Server
+	httpServer     *http.Server
+	adminSvc       *admin.AdminService
+	userSvc        *user.UserService
+	wordSvc        *word.WordService
+	learningSvc    *learning.LearningService
+	courseSvc      *course.CourseService
+	questionSvc    *question.QuestionService
+	questionTagSvc *question.QuestionTagServiceGRPC
+	tokenService   security.TokenService
+	config         *config.Config
+	stopCh         chan struct{} // 用于通知所有 goroutine 停止
 }
 
 // NewServer 创建 gRPC 服务器
@@ -49,6 +52,8 @@ func NewServer(
 	wordService *service.WordService,
 	learningService *service.LearningService,
 	courseService *service.CourseService,
+	questionService *service.QuestionService,
+	questionTagService *service.QuestionTagService,
 	tokenService security.TokenService,
 	cfg *config.Config,
 ) *Server {
@@ -75,6 +80,8 @@ func NewServer(
 	s.wordSvc = word.NewWordService(wordService)
 	s.courseSvc = course.NewCourseService(courseService)
 	s.learningSvc = learning.NewLearningService(learningService)
+	s.questionSvc = question.NewQuestionService(questionService)
+	s.questionTagSvc = question.NewQuestionTagServiceGRPC(questionTagService)
 
 	// 注册服务
 	pb.RegisterAdminServiceServer(s.grpcServer, s.adminSvc)
@@ -82,6 +89,8 @@ func NewServer(
 	pb.RegisterWordServiceServer(s.grpcServer, s.wordSvc)
 	pb.RegisterCourseServiceServer(s.grpcServer, s.courseSvc)
 	pb.RegisterLearningServiceServer(s.grpcServer, s.learningSvc)
+	pb.RegisterQuestionServiceServer(s.grpcServer, s.questionSvc)
+	pb.RegisterQuestionTagServiceServer(s.grpcServer, s.questionTagSvc)
 
 	// 开发环境注册反射服务
 	if cfg.GRPC.Reflection {
@@ -247,18 +256,25 @@ func (s *Server) StartGateway(gatewayPort int, grpcPort int) error {
 	if err := pb.RegisterLearningServiceHandlerFromEndpoint(ctx, mux, fmt.Sprintf("localhost:%d", grpcPort), opts); err != nil {
 		return fmt.Errorf("failed to register learning service gateway: %v", err)
 	}
+	if err := pb.RegisterQuestionServiceHandlerFromEndpoint(ctx, mux, fmt.Sprintf("localhost:%d", grpcPort), opts); err != nil {
+		return fmt.Errorf("failed to register question service gateway: %v", err)
+	}
+	if err := pb.RegisterQuestionTagServiceHandlerFromEndpoint(ctx, mux, fmt.Sprintf("localhost:%d", grpcPort), opts); err != nil {
+		return fmt.Errorf("failed to register question tag service gateway: %v", err)
+	}
 
 	// 创建一个新的 http.ServeMux 来处理所有请求
 	rootMux := http.NewServeMux()
 
 	// 注册 API 文档，添加基本认证
 	rootMux.HandleFunc("/swagger/", func(w http.ResponseWriter, r *http.Request) {
-		username, password, ok := r.BasicAuth()
-		if !ok || !s.validateSwaggerAuth(username, password) {
-			w.Header().Set("WWW-Authenticate", `Basic realm="Swagger API Documentation"`)
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			return
-		}
+		// todo: disable basic auth tempory
+		// username, password, ok := r.BasicAuth()
+		// if !ok || !s.validateSwaggerAuth(username, password) {
+		// 	w.Header().Set("WWW-Authenticate", `Basic realm="Swagger API Documentation"`)
+		// 	http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		// 	return
+		// }
 		http.StripPrefix("/swagger/", http.FileServer(http.Dir("./api/swagger"))).ServeHTTP(w, r)
 	})
 

@@ -1,11 +1,14 @@
 package security
 
 import (
+	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"google.golang.org/grpc/metadata"
 
 	"github.com/lazyjean/sla2/config"
 	"github.com/lazyjean/sla2/internal/domain/entity"
@@ -105,6 +108,27 @@ func (s *JWTTokenService) ValidateToken(tokenString string) (entity.UID, []strin
 	}
 
 	return userID, roles, nil
+}
+
+// ValidateTokenFromContext 从上下文中验证令牌
+func (s *JWTTokenService) ValidateTokenFromContext(ctx context.Context) (entity.UID, []string, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return 0, nil, &TokenError{Message: "missing metadata"}
+	}
+
+	values := md.Get("authorization")
+	if len(values) == 0 {
+		return 0, nil, &TokenError{Message: "missing authorization header"}
+	}
+
+	auth := values[0]
+	if !strings.HasPrefix(auth, "Bearer ") {
+		return 0, nil, &TokenError{Message: "invalid authorization format"}
+	}
+
+	token := strings.TrimPrefix(auth, "Bearer ")
+	return s.ValidateToken(token)
 }
 
 // GenerateRefreshToken 生成刷新令牌

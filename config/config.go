@@ -26,6 +26,16 @@ type Config struct {
 	JWT      JWTConfig      `mapstructure:"jwt"`
 	Apple    AppleConfig    `mapstructure:"apple"`
 	Swagger  SwaggerConfig  `mapstructure:"swagger"`
+	DeepSeek DeepSeekConfig `mapstructure:"deepseek"`
+}
+
+type DeepSeekConfig struct {
+	APIKey      string  `mapstructure:"api_key"`
+	BaseURL     string  `mapstructure:"base_url"`
+	Timeout     int     `mapstructure:"timeout"`
+	MaxRetries  int     `mapstructure:"max_retries"`
+	Temperature float64 `mapstructure:"temperature"`
+	MaxTokens   int     `mapstructure:"max_tokens"`
 }
 
 type ServerConfig struct {
@@ -102,7 +112,7 @@ func InitConfig() error {
 	env := os.Getenv("ACTIVE_PROFILE")
 	var fileName string
 	if env == "" {
-		fileName = "config"
+		fileName = "config-local"
 	} else {
 		fileName = fmt.Sprintf("config-%s", env)
 	}
@@ -117,7 +127,8 @@ func InitConfig() error {
 	} else {
 		// 2. 如果嵌入文件不存在，尝试从本地文件系统读取
 		v.SetConfigName(fileName)
-		v.AddConfigPath(".") // 当前目录
+		v.AddConfigPath(".")      // 当前目录
+		v.AddConfigPath("config") // 添加 config 目录
 		if err := v.ReadInConfig(); err != nil {
 			return fmt.Errorf("failed to read config from file system: %w", err)
 		}

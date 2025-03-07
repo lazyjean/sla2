@@ -16,4 +16,5 @@ type QuestionTagRepository interface {
 	Get(ctx context.Context, id string) (*entity.QuestionTag, error)
 	Update(ctx context.Context, tag *entity.QuestionTag) (*entity.QuestionTag, error)
 	Delete(ctx context.Context, id string) error
+	FindAll(ctx context.Context, limit int) ([]*entity.QuestionTag, error)
 }

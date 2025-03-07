@@ -1,6 +1,10 @@
 package security
 
-import "github.com/lazyjean/sla2/internal/domain/entity"
+import (
+	"context"
+
+	"github.com/lazyjean/sla2/internal/domain/entity"
+)
 
 // TokenService 令牌服务接口
 /*
@@ -39,6 +43,8 @@ type TokenService interface {
 	GenerateToken(userID entity.UID, roles []string) (string, error)
 	// ValidateToken 验证访问令牌
 	ValidateToken(tokenString string) (entity.UID, []string, error)
+	// ValidateTokenFromContext 从上下文中验证令牌
+	ValidateTokenFromContext(ctx context.Context) (entity.UID, []string, error)
 	// GenerateRefreshToken 生成刷新令牌
 	GenerateRefreshToken(userID entity.UID, roles []string) (string, error)
 	// ValidateRefreshToken 验证刷新令牌

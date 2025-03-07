@@ -46,7 +46,11 @@ func InitializeApp(cfg *config.Config) (*App, error) {
 	courseRepository := postgres.NewCourseRepository(db)
 	courseSectionRepository := postgres.NewCourseSectionRepository(db)
 	courseService := service.NewCourseService(courseRepository, courseSectionRepository)
-	server := grpc.NewServer(adminService, userService, wordService, learningService, courseService, tokenService, cfg)
+	questionRepository := postgres.NewQuestionRepository(db)
+	questionService := service.NewQuestionService(questionRepository)
+	questionTagRepository := postgres.NewQuestionTagRepository(db)
+	questionTagService := service.NewQuestionTagService(questionTagRepository)
+	server := grpc.NewServer(adminService, userService, wordService, learningService, courseService, questionService, questionTagService, tokenService, cfg)
 	app := NewApp(server, cfg, tokenService, appleAuthService)
 	return app, nil
 }
@@ -63,10 +67,10 @@ var dbSet = wire.NewSet(postgres.NewDB)
 var cacheSet = wire.NewSet(redis.NewRedisCache)
 
 // 仓储集
-var repositorySet = wire.NewSet(postgres.NewWordRepository, postgres.NewCachedWordRepository, postgres.NewLearningRepository, postgres.NewUserRepository, postgres.NewCourseRepository, postgres.NewAdminRepository, postgres.NewCourseSectionRepository)
+var repositorySet = wire.NewSet(postgres.NewWordRepository, postgres.NewCachedWordRepository, postgres.NewLearningRepository, postgres.NewUserRepository, postgres.NewCourseRepository, postgres.NewCourseSectionRepository, postgres.NewAdminRepository, postgres.NewQuestionTagRepository, postgres.NewQuestionRepository)
 
 // 服务集
-var serviceSet = wire.NewSet(service.NewWordService, service.NewLearningService, service.NewUserService, service.NewCourseService, service.NewAdminService)
+var serviceSet = wire.NewSet(service.NewWordService, service.NewLearningService, service.NewUserService, service.NewCourseService, service.NewAdminService, service.NewQuestionService, service.NewQuestionTagService)
 
 // 认证集
 var authSet = wire.NewSet(oauth.NewAppleConfig, oauth.NewAppleAuthService)

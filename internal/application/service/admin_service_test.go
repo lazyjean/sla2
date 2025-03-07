@@ -92,6 +92,11 @@ func (m *MockTokenService) ValidateToken(token string) (entity.UID, []string, er
 	return args.Get(0).(entity.UID), args.Get(1).([]string), args.Error(2)
 }
 
+func (m *MockTokenService) ValidateTokenFromContext(ctx context.Context) (entity.UID, []string, error) {
+	args := m.Called(ctx)
+	return args.Get(0).(entity.UID), args.Get(1).([]string), args.Error(2)
+}
+
 func TestAdminService_InitializeSystem(t *testing.T) {
 	// 准备测试数据
 	ctx := context.Background()
@@ -234,7 +239,7 @@ func TestAdminService_RefreshToken(t *testing.T) {
 
 func TestAdminService_GetCurrentAdminInfo(t *testing.T) {
 	// 准备测试数据
-	ctx := context.WithValue(context.Background(), AdminIDKey, entity.UID(1))
+	ctx := context.Background()
 
 	// 创建模拟对象
 	mockRepo := new(MockAdminRepository)
@@ -253,6 +258,7 @@ func TestAdminService_GetCurrentAdminInfo(t *testing.T) {
 	}
 
 	// 设置模拟行为
+	mockTokenService.On("ValidateTokenFromContext", ctx).Return(admin.ID, admin.Roles, nil)
 	mockRepo.On("FindByID", ctx, admin.ID).Return(admin, nil)
 
 	// 创建服务实例
@@ -271,4 +277,5 @@ func TestAdminService_GetCurrentAdminInfo(t *testing.T) {
 
 	// 验证模拟对象是否按预期被调用
 	mockRepo.AssertExpectations(t)
+	mockTokenService.AssertExpectations(t)
 }
