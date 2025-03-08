@@ -106,7 +106,7 @@ var noAuthMethods = map[string]bool{
 	"/proto.v1.AdminService/InitializeSystem":  true,
 	"/proto.v1.AdminService/AdminLogin":        true,
 	"/proto.v1.AdminService/RefreshToken":      true,
-	"/proto.v1.UserService/UserLogin":          true,
+	"/proto.v1.UserService/Login":              true,
 	"/proto.v1.UserService/UserRegister":       true,
 	"/proto.v1.UserService/RefreshToken":       true,
 	"/proto.v1.UserService/LoginWithApple":     true,
