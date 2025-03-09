@@ -14,21 +14,24 @@ import (
 	"go.uber.org/zap"
 )
 
-// @title        生词本 API
+// @title        SLA2 API
 // @version      1.0
-// @description  生词本服务 API 文档 (gRPC-Gateway)
+// @description  SLA2 API Documentation
 
 // @contact.name   LazyJean
 // @contact.email  lazyjean@foxmail.com
 
-// @host      localhost:8080
-// @BasePath  /api/v1
+// @host      localhost:9102
+// @BasePath  /v1
 // @schemes   http https
 
 // @securityDefinitions.apikey  Bearer
 // @in                         header
 // @name                       Authorization
 // @description               Bearer token for authentication
+
+// @securityDefinitions.basic  BasicAuth
+// @description               Basic authentication for Swagger UI
 
 func main() {
 	// 加载配置
@@ -53,28 +56,9 @@ func main() {
 		logger.Log.Fatal("Failed to initialize app: " + err.Error())
 	}
 
-	// 创建一个通道用于等待服务启动完成
-	started := make(chan struct{})
-
-	// 启动 gRPC 服务
-	go func() {
-		if err := app.StartGRPCServer(cfg.GRPC.Port); err != nil {
-			logger.Log.Fatal("Failed to start gRPC server: " + err.Error())
-		}
-		started <- struct{}{}
-	}()
-
-	// 启动 gRPC Gateway
-	go func() {
-		if err := app.StartGRPCGateway(cfg.GRPC.GatewayPort, cfg.GRPC.Port); err != nil {
-			logger.Log.Fatal("Failed to start gRPC gateway: " + err.Error())
-		}
-		started <- struct{}{}
-	}()
-
-	// 等待所有服务启动完成
-	for i := 0; i < 2; i++ {
-		<-started
+	// 启动服务器
+	if err := app.StartGRPCServer(); err != nil {
+		logger.Log.Fatal("Failed to start servers: " + err.Error())
 	}
 
 	logger.Log.Info("All servers started successfully")

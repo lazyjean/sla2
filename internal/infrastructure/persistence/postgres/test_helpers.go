@@ -11,7 +11,7 @@ import (
 	"github.com/lazyjean/sla2/internal/domain/entity"
 )
 
-func setupTestDB(t *testing.T) *gorm.DB {
+func setupTestDB(t *testing.T) (*gorm.DB, func()) {
 	// 从环境变量获取测试数据库配置
 	cfg := &config.DatabaseConfig{
 		Host:     getEnvOrDefault("TEST_DB_HOST", "localhost"),
@@ -32,13 +32,20 @@ func setupTestDB(t *testing.T) *gorm.DB {
 		&entity.CourseLearningProgress{},
 		&entity.CourseSectionProgress{},
 		&entity.CourseSectionUnitProgress{},
+		&ChatHistoryRecordPG{}, // 添加聊天历史记录表
+		&ChatSessionPG{},       // 添加聊天会话表
 	)
 	require.NoError(t, err)
 
 	// 清理测试数据
 	cleanTestData(t, db)
 
-	return db
+	// 返回清理函数
+	cleanup := func() {
+		cleanTestData(t, db)
+	}
+
+	return db, cleanup
 }
 
 func getEnvOrDefault(key, defaultValue string) string {
@@ -55,6 +62,8 @@ func cleanTestData(t *testing.T, db *gorm.DB) {
 		"course_learning_progresses",
 		"course_section_progresses",
 		"course_section_unit_progresses",
+		"chat_histories", // 添加聊天历史表
+		"chat_sessions",  // 添加聊天会话表
 	}
 
 	for _, table := range tables {

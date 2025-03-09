@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -19,16 +20,21 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AIChatService_Chat_FullMethodName       = "/v1.AIChatService/Chat"
-	AIChatService_StreamChat_FullMethodName = "/v1.AIChatService/StreamChat"
+	AIChatService_CreateSession_FullMethodName = "/proto.v1.AIChatService/CreateSession"
+	AIChatService_ListSessions_FullMethodName  = "/proto.v1.AIChatService/ListSessions"
+	AIChatService_GetSession_FullMethodName    = "/proto.v1.AIChatService/GetSession"
+	AIChatService_DeleteSession_FullMethodName = "/proto.v1.AIChatService/DeleteSession"
 )
 
 // AIChatServiceClient is the client API for AIChatService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AIChatServiceClient interface {
-	Chat(ctx context.Context, in *ChatRequest, opts ...grpc.CallOption) (*ChatResponse, error)
-	StreamChat(ctx context.Context, in *StreamChatRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ChatResponse], error)
+	// Session Management APIs
+	CreateSession(ctx context.Context, in *CreateSessionRequest, opts ...grpc.CallOption) (*SessionResponse, error)
+	ListSessions(ctx context.Context, in *ListSessionsRequest, opts ...grpc.CallOption) (*ListSessionsResponse, error)
+	GetSession(ctx context.Context, in *GetSessionRequest, opts ...grpc.CallOption) (*SessionResponse, error)
+	DeleteSession(ctx context.Context, in *DeleteSessionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type aIChatServiceClient struct {
@@ -39,41 +45,55 @@ func NewAIChatServiceClient(cc grpc.ClientConnInterface) AIChatServiceClient {
 	return &aIChatServiceClient{cc}
 }
 
-func (c *aIChatServiceClient) Chat(ctx context.Context, in *ChatRequest, opts ...grpc.CallOption) (*ChatResponse, error) {
+func (c *aIChatServiceClient) CreateSession(ctx context.Context, in *CreateSessionRequest, opts ...grpc.CallOption) (*SessionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ChatResponse)
-	err := c.cc.Invoke(ctx, AIChatService_Chat_FullMethodName, in, out, cOpts...)
+	out := new(SessionResponse)
+	err := c.cc.Invoke(ctx, AIChatService_CreateSession_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *aIChatServiceClient) StreamChat(ctx context.Context, in *StreamChatRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ChatResponse], error) {
+func (c *aIChatServiceClient) ListSessions(ctx context.Context, in *ListSessionsRequest, opts ...grpc.CallOption) (*ListSessionsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &AIChatService_ServiceDesc.Streams[0], AIChatService_StreamChat_FullMethodName, cOpts...)
+	out := new(ListSessionsResponse)
+	err := c.cc.Invoke(ctx, AIChatService_ListSessions_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &grpc.GenericClientStream[StreamChatRequest, ChatResponse]{ClientStream: stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
+	return out, nil
 }
 
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type AIChatService_StreamChatClient = grpc.ServerStreamingClient[ChatResponse]
+func (c *aIChatServiceClient) GetSession(ctx context.Context, in *GetSessionRequest, opts ...grpc.CallOption) (*SessionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SessionResponse)
+	err := c.cc.Invoke(ctx, AIChatService_GetSession_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aIChatServiceClient) DeleteSession(ctx context.Context, in *DeleteSessionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, AIChatService_DeleteSession_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
 
 // AIChatServiceServer is the server API for AIChatService service.
 // All implementations must embed UnimplementedAIChatServiceServer
 // for forward compatibility.
 type AIChatServiceServer interface {
-	Chat(context.Context, *ChatRequest) (*ChatResponse, error)
-	StreamChat(*StreamChatRequest, grpc.ServerStreamingServer[ChatResponse]) error
+	// Session Management APIs
+	CreateSession(context.Context, *CreateSessionRequest) (*SessionResponse, error)
+	ListSessions(context.Context, *ListSessionsRequest) (*ListSessionsResponse, error)
+	GetSession(context.Context, *GetSessionRequest) (*SessionResponse, error)
+	DeleteSession(context.Context, *DeleteSessionRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedAIChatServiceServer()
 }
 
@@ -84,11 +104,17 @@ type AIChatServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedAIChatServiceServer struct{}
 
-func (UnimplementedAIChatServiceServer) Chat(context.Context, *ChatRequest) (*ChatResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Chat not implemented")
+func (UnimplementedAIChatServiceServer) CreateSession(context.Context, *CreateSessionRequest) (*SessionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateSession not implemented")
 }
-func (UnimplementedAIChatServiceServer) StreamChat(*StreamChatRequest, grpc.ServerStreamingServer[ChatResponse]) error {
-	return status.Errorf(codes.Unimplemented, "method StreamChat not implemented")
+func (UnimplementedAIChatServiceServer) ListSessions(context.Context, *ListSessionsRequest) (*ListSessionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListSessions not implemented")
+}
+func (UnimplementedAIChatServiceServer) GetSession(context.Context, *GetSessionRequest) (*SessionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSession not implemented")
+}
+func (UnimplementedAIChatServiceServer) DeleteSession(context.Context, *DeleteSessionRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteSession not implemented")
 }
 func (UnimplementedAIChatServiceServer) mustEmbedUnimplementedAIChatServiceServer() {}
 func (UnimplementedAIChatServiceServer) testEmbeddedByValue()                       {}
@@ -111,53 +137,102 @@ func RegisterAIChatServiceServer(s grpc.ServiceRegistrar, srv AIChatServiceServe
 	s.RegisterService(&AIChatService_ServiceDesc, srv)
 }
 
-func _AIChatService_Chat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ChatRequest)
+func _AIChatService_CreateSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateSessionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AIChatServiceServer).Chat(ctx, in)
+		return srv.(AIChatServiceServer).CreateSession(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AIChatService_Chat_FullMethodName,
+		FullMethod: AIChatService_CreateSession_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AIChatServiceServer).Chat(ctx, req.(*ChatRequest))
+		return srv.(AIChatServiceServer).CreateSession(ctx, req.(*CreateSessionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AIChatService_StreamChat_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(StreamChatRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
+func _AIChatService_ListSessions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListSessionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
 	}
-	return srv.(AIChatServiceServer).StreamChat(m, &grpc.GenericServerStream[StreamChatRequest, ChatResponse]{ServerStream: stream})
+	if interceptor == nil {
+		return srv.(AIChatServiceServer).ListSessions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AIChatService_ListSessions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AIChatServiceServer).ListSessions(ctx, req.(*ListSessionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type AIChatService_StreamChatServer = grpc.ServerStreamingServer[ChatResponse]
+func _AIChatService_GetSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSessionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AIChatServiceServer).GetSession(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AIChatService_GetSession_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AIChatServiceServer).GetSession(ctx, req.(*GetSessionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AIChatService_DeleteSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteSessionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AIChatServiceServer).DeleteSession(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AIChatService_DeleteSession_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AIChatServiceServer).DeleteSession(ctx, req.(*DeleteSessionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
 
 // AIChatService_ServiceDesc is the grpc.ServiceDesc for AIChatService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var AIChatService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "v1.AIChatService",
+	ServiceName: "proto.v1.AIChatService",
 	HandlerType: (*AIChatServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Chat",
-			Handler:    _AIChatService_Chat_Handler,
+			MethodName: "CreateSession",
+			Handler:    _AIChatService_CreateSession_Handler,
 		},
-	},
-	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "StreamChat",
-			Handler:       _AIChatService_StreamChat_Handler,
-			ServerStreams: true,
+			MethodName: "ListSessions",
+			Handler:    _AIChatService_ListSessions_Handler,
+		},
+		{
+			MethodName: "GetSession",
+			Handler:    _AIChatService_GetSession_Handler,
+		},
+		{
+			MethodName: "DeleteSession",
+			Handler:    _AIChatService_DeleteSession_Handler,
 		},
 	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "proto/v1/ai_chat.proto",
 }

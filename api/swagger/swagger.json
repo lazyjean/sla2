@@ -1,10 +1,18 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "proto/v1/admin.proto",
-    "version": "version not set"
+    "title": "SLA2 API",
+    "description": "SLA2 API Documentation",
+    "version": "1.0",
+    "contact": {
+      "name": "LazyJean",
+      "email": "lazyjean@foxmail.com"
+    }
   },
   "tags": [
+    {
+      "name": "AIChatService"
+    },
     {
       "name": "AdminService"
     },
@@ -26,6 +34,12 @@
     {
       "name": "WordService"
     }
+  ],
+  "host": "localhost:9102",
+  "basePath": "/v1",
+  "schemes": [
+    "http",
+    "https"
   ],
   "consumes": [
     "application/json"
@@ -1607,6 +1621,224 @@
           "WordService"
         ]
       }
+    },
+    "/v1/chat/sessions": {
+      "get": {
+        "summary": "List Chat Sessions",
+        "description": "Get a list of all chat sessions for the user",
+        "operationId": "AIChatService_ListSessions",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved session list",
+            "schema": {
+              "$ref": "#/definitions/proto.v1.ListSessionsResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "page",
+            "description": "Page number, starting from 1",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64",
+            "default": "1"
+          },
+          {
+            "name": "pageSize",
+            "description": "Number of items per page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64",
+            "default": "10"
+          }
+        ],
+        "tags": [
+          "AIChatService"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create Chat Session",
+        "description": "Create a new chat session",
+        "operationId": "AIChatService_CreateSession",
+        "responses": {
+          "200": {
+            "description": "Successfully created session",
+            "schema": {
+              "$ref": "#/definitions/proto.v1.SessionResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters",
+            "schema": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "Request parameters for creating a new chat session",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateSessionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AIChatService"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/v1/chat/sessions/{sessionId}": {
+      "get": {
+        "summary": "Get Chat Session",
+        "description": "Get detailed information about a specific chat session",
+        "operationId": "AIChatService_GetSession",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved session details",
+            "schema": {
+              "$ref": "#/definitions/proto.v1.SessionResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters",
+            "schema": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {}
+          },
+          "404": {
+            "description": "Session not found",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "sessionId",
+            "description": "Session ID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "AIChatService"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete Chat Session",
+        "description": "Delete a specific chat session",
+        "operationId": "AIChatService_DeleteSession",
+        "responses": {
+          "200": {
+            "description": "Successfully deleted session",
+            "schema": {
+              "$ref": "#/definitions/google.protobuf.Empty"
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters",
+            "schema": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {}
+          },
+          "404": {
+            "description": "Session not found",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "sessionId",
+            "description": "Session ID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "AIChatService"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
     }
   },
   "definitions": {
@@ -1668,11 +1900,11 @@
           "title": "显示顺序"
         },
         "status": {
-          "type": "integer",
-          "format": "int32",
-          "title": "状态：0-禁用，1-启用"
+          "$ref": "#/definitions/v1CourseSectionStatus",
+          "title": "章节状态"
         }
-      }
+      },
+      "title": "UpdateSectionRequest 更新章节请求"
     },
     "CourseServiceUpdateUnitBody": {
       "type": "object",
@@ -2036,12 +2268,11 @@
         "orderIndex": {
           "type": "integer",
           "format": "int32",
-          "title": "章节的显示顺序"
+          "title": "显示顺序"
         },
         "status": {
-          "type": "integer",
-          "format": "int32",
-          "title": "章节状态：0-禁用，1-启用"
+          "$ref": "#/definitions/v1CourseSectionStatus",
+          "title": "章节状态"
         },
         "units": {
           "type": "array",
@@ -2054,15 +2285,26 @@
         "createdAt": {
           "type": "string",
           "format": "date-time",
-          "title": "记录创建时间"
+          "title": "创建时间"
         },
         "updatedAt": {
           "type": "string",
           "format": "date-time",
-          "title": "记录更新时间"
+          "title": "更新时间"
         }
       },
       "title": "CourseSection 课程章节信息"
+    },
+    "v1CourseSectionStatus": {
+      "type": "string",
+      "enum": [
+        "COURSE_SECTION_STATUS_UNSPECIFIED",
+        "COURSE_SECTION_STATUS_ENABLED",
+        "COURSE_SECTION_STATUS_DISABLED"
+      ],
+      "default": "COURSE_SECTION_STATUS_UNSPECIFIED",
+      "description": "- COURSE_SECTION_STATUS_UNSPECIFIED: 未指定\n - COURSE_SECTION_STATUS_ENABLED: 启用\n - COURSE_SECTION_STATUS_DISABLED: 禁用",
+      "title": "CourseSectionStatus 课程章节状态"
     },
     "v1CourseSectionUnit": {
       "type": "object",
@@ -2304,6 +2546,34 @@
       "default": "COURSE_STATUS_UNSPECIFIED",
       "title": "CourseStatus 课程状态"
     },
+    "v1CreateSessionRequest": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "title": {
+          "type": "string",
+          "example": {
+            "value": "New Chat Session"
+          },
+          "description": "Session title"
+        },
+        "description": {
+          "type": "string",
+          "example": {
+            "value": "This is a new chat session"
+          },
+          "description": "Session description"
+        }
+      },
+      "description": "Request parameters for creating a new chat session",
+      "title": "Create Session Request",
+      "required": [
+        "title"
+      ]
+    },
     "v1GetUserInfoResponse": {
       "type": "object",
       "properties": {
@@ -2419,6 +2689,36 @@
         }
       },
       "title": "LearningUnitStatus 学习单元状态"
+    },
+    "v1ListSessionsResponse": {
+      "type": "object",
+      "properties": {
+        "sessions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1SessionResponse"
+          },
+          "description": "List of sessions"
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Total number of records"
+        },
+        "page": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Current page number"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Number of items per page"
+        }
+      },
+      "description": "Response data for chat session list",
+      "title": "Session List Response"
     },
     "v1LoginRequest": {
       "type": "object",
@@ -3014,6 +3314,40 @@
       "type": "object",
       "title": "ResetPasswordResponse 重置密码响应"
     },
+    "v1SessionResponse": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "type": "string",
+          "description": "Session ID"
+        },
+        "title": {
+          "type": "string",
+          "description": "Session title"
+        },
+        "description": {
+          "type": "string",
+          "description": "Session description"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update time"
+        },
+        "messageCount": {
+          "type": "string",
+          "format": "uint64",
+          "description": "Number of messages"
+        }
+      },
+      "description": "Detailed information about a chat session",
+      "title": "Session Information"
+    },
     "v1SimpleCourse": {
       "type": "object",
       "properties": {
@@ -3219,6 +3553,18 @@
           "format": "int64"
         }
       }
+    }
+  },
+  "securityDefinitions": {
+    "BasicAuth": {
+      "type": "basic",
+      "description": "Basic authentication for Swagger UI"
+    },
+    "Bearer": {
+      "type": "apiKey",
+      "description": "Bearer token for authentication",
+      "name": "Authorization",
+      "in": "header"
     }
   }
 }
