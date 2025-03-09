@@ -3,6 +3,7 @@ package security
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"strings"
 	"time"
 
@@ -192,6 +193,32 @@ func (s *JWTTokenService) ValidateRefreshToken(refreshToken string) (entity.UID,
 	}
 
 	return entity.UID(sub), roles, nil
+}
+
+// ValidateTokenFromRequest 从HTTP请求中验证令牌
+func (s *JWTTokenService) ValidateTokenFromRequest(r *http.Request) (entity.UID, []string, error) {
+	var token string
+
+	// 优先从请求头获取令牌
+	auth := r.Header.Get("Authorization")
+	if auth != "" {
+		// 验证头部格式
+		if !strings.HasPrefix(auth, "Bearer ") {
+			return 0, nil, &TokenError{Message: "invalid authorization format"}
+		}
+
+		// 提取令牌
+		token = strings.TrimPrefix(auth, "Bearer ")
+	} else {
+		// 如果请求头中没有令牌，尝试从URL查询参数获取
+		token = r.URL.Query().Get("token")
+		if token == "" {
+			return 0, nil, &TokenError{Message: "token not found in header or query parameters"}
+		}
+	}
+
+	// 验证令牌
+	return s.ValidateToken(token)
 }
 
 var _ security.TokenService = (*JWTTokenService)(nil)

@@ -2,6 +2,7 @@ package security
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/lazyjean/sla2/internal/domain/entity"
 )
@@ -45,6 +46,8 @@ type TokenService interface {
 	ValidateToken(tokenString string) (entity.UID, []string, error)
 	// ValidateTokenFromContext 从上下文中验证令牌
 	ValidateTokenFromContext(ctx context.Context) (entity.UID, []string, error)
+	// ValidateTokenFromRequest 从HTTP请求中验证令牌
+	ValidateTokenFromRequest(r *http.Request) (entity.UID, []string, error)
 	// GenerateRefreshToken 生成刷新令牌
 	GenerateRefreshToken(userID entity.UID, roles []string) (string, error)
 	// ValidateRefreshToken 验证刷新令牌

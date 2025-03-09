@@ -18,6 +18,11 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+// StopStreamRequest 定义停止流请求结构体
+type StopStreamRequest struct {
+	StreamId string `json:"stream_id"` // Stream ID to be stopped
+}
+
 // AIServiceInterface 定义 AIService 接口，方便测试
 type AIServiceInterface interface {
 	Chat(ctx context.Context, userID string, message string, chatContext *service.ChatContext) (*service.ChatResponse, error)
@@ -26,15 +31,16 @@ type AIServiceInterface interface {
 
 // TokenServiceInterface 定义 TokenService 接口，方便测试
 type TokenServiceInterface interface {
-	ValidateTokenFromContext(ctx context.Context) (entity.UID, []string, error)
+	ValidateTokenFromRequest(r *http.Request) (entity.UID, []string, error)
 }
 
 // UnifiedChatHandler 统一的 WebSocket 聊天处理器
 type UnifiedChatHandler struct {
-	aiService    AIServiceInterface
-	tokenService TokenServiceInterface
-	upgrader     websocket.Upgrader
-	connections  sync.Map // 存储所有活跃连接
+	aiService     AIServiceInterface
+	tokenService  TokenServiceInterface
+	upgrader      websocket.Upgrader
+	connections   sync.Map // 存储所有活跃连接
+	activeStreams sync.Map // 存储活跃的流ID和对应的取消函数
 }
 
 // NewUnifiedChatHandler 创建新的统一聊天处理器
@@ -55,7 +61,7 @@ func (h *UnifiedChatHandler) HandleWebSocket(w http.ResponseWriter, r *http.Requ
 	log := logger.GetLogger(r.Context())
 
 	// 验证用户身份
-	userID, _, err := h.tokenService.ValidateTokenFromContext(r.Context())
+	userID, _, err := h.tokenService.ValidateTokenFromRequest(r)
 	if err != nil {
 		log.Error("无效的令牌", zap.Error(err))
 		w.WriteHeader(http.StatusUnauthorized)
@@ -106,6 +112,56 @@ func (h *UnifiedChatHandler) handleConnection(ctx context.Context, conn *websock
 		if err := json.Unmarshal(message, &chatMsg); err != nil {
 			log.Error("解析消息失败", zap.Error(err))
 			h.sendErrorMessage(conn, "消息格式错误")
+			continue
+		}
+
+		// 检查是否是流终止消息
+		if chatMsg.Type == "stream" && chatMsg.Action == "stop" && chatMsg.StreamID != "" {
+			if h.cancelStream(chatMsg.StreamID) {
+				log.Info("流已终止", zap.String("streamId", chatMsg.StreamID))
+				// 发送终止确认消息
+				endMsg := ChatMessage{
+					Type:      "stream",
+					Action:    "end",
+					SessionID: chatMsg.SessionID,
+					StreamID:  chatMsg.StreamID,
+					Timestamp: time.Now().Unix(),
+					IsFinal:   true,
+					Message:   "Stream terminated by client request",
+				}
+				if err := conn.WriteJSON(endMsg); err != nil {
+					log.Error("发送终止确认消息失败", zap.Error(err))
+				}
+			} else {
+				log.Warn("尝试终止不存在的流", zap.String("streamId", chatMsg.StreamID))
+				h.sendErrorMessage(conn, "找不到指定的流ID")
+			}
+			continue
+		}
+
+		// 检查是否是protobuf格式的终止消息
+		var stopReq StopStreamRequest
+		if err := json.Unmarshal(message, &stopReq); err == nil && stopReq.StreamId != "" {
+			if h.cancelStream(stopReq.StreamId) {
+				log.Info("流已终止(protobuf)", zap.String("streamId", stopReq.StreamId))
+				// 发送终止确认消息
+				conn.WriteJSON(&pb.ChatResponse{
+					StreamId:  stopReq.StreamId,
+					IsFinal:   true,
+					Message:   "Stream terminated by client request",
+					Code:      pb.StatusCode_STATUS_OK,
+					CreatedAt: timestamppb.New(time.Now()),
+				})
+			} else {
+				log.Warn("尝试终止不存在的流(protobuf)", zap.String("streamId", stopReq.StreamId))
+				conn.WriteJSON(&pb.ChatResponse{
+					StreamId:  stopReq.StreamId,
+					IsFinal:   true,
+					Message:   "Stream not found",
+					Code:      pb.StatusCode_STREAM_ERROR,
+					CreatedAt: timestamppb.New(time.Now()),
+				})
+			}
 			continue
 		}
 
@@ -247,4 +303,26 @@ func (h *UnifiedChatHandler) Broadcast(message string) {
 		}
 		return true
 	})
+}
+
+// registerStream 注册一个新的流
+func (h *UnifiedChatHandler) registerStream(streamID string, cancelFunc context.CancelFunc) {
+	h.activeStreams.Store(streamID, cancelFunc)
+}
+
+// unregisterStream 注销一个流
+func (h *UnifiedChatHandler) unregisterStream(streamID string) {
+	h.activeStreams.Delete(streamID)
+}
+
+// cancelStream 取消一个流
+func (h *UnifiedChatHandler) cancelStream(streamID string) bool {
+	if value, ok := h.activeStreams.Load(streamID); ok {
+		if cancelFunc, ok := value.(context.CancelFunc); ok {
+			cancelFunc()
+			h.unregisterStream(streamID)
+			return true
+		}
+	}
+	return false
 }

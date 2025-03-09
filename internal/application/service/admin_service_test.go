@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"net/http"
 	"testing"
 	"time"
 
@@ -94,6 +95,11 @@ func (m *MockTokenService) ValidateToken(token string) (entity.UID, []string, er
 
 func (m *MockTokenService) ValidateTokenFromContext(ctx context.Context) (entity.UID, []string, error) {
 	args := m.Called(ctx)
+	return args.Get(0).(entity.UID), args.Get(1).([]string), args.Error(2)
+}
+
+func (m *MockTokenService) ValidateTokenFromRequest(r *http.Request) (entity.UID, []string, error) {
+	args := m.Called(r)
 	return args.Get(0).(entity.UID), args.Get(1).([]string), args.Error(2)
 }
 

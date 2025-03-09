@@ -54,6 +54,10 @@ func (m *MockTokenService) ValidateTokenFromContext(ctx context.Context) (entity
 	return entity.UID(m.UserID), m.Roles, m.Error
 }
 
+func (m *MockTokenService) ValidateTokenFromRequest(r *http.Request) (entity.UID, []string, error) {
+	return entity.UID(m.UserID), m.Roles, m.Error
+}
+
 type MockAIService struct {
 	ChatResponse    *service.ChatResponse
 	ChatError       error
