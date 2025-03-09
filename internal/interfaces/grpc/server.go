@@ -45,8 +45,8 @@ type Server struct {
 	aiSvc             *ai.AIService
 	tokenService      security.TokenService
 	config            *config.Config
-	stopCh            chan struct{}          // 用于通知所有 goroutine 停止
-	chatHandler       *websocket.ChatHandler // WebSocket 聊天处理器
+	stopCh            chan struct{}                 // 用于通知所有 goroutine 停止
+	chatHandler       *websocket.UnifiedChatHandler // 统一的 WebSocket 聊天处理器
 	unaryInterceptor  grpc.UnaryServerInterceptor
 	streamInterceptor grpc.StreamServerInterceptor
 }
@@ -74,8 +74,8 @@ func NewServer(
 		grpc.StreamInterceptor(streamInterceptor),
 	)
 
-	// 创建 WebSocket 聊天处理器
-	chatHandler := websocket.NewChatHandler(aiService, tokenService)
+	// 创建统一的 WebSocket 聊天处理器
+	chatHandler := websocket.NewUnifiedChatHandler(aiService, tokenService)
 
 	// 创建服务器实例
 	server := &Server{

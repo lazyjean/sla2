@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 	"golang.org/x/time/rate"
 )
 
@@ -19,7 +19,7 @@ type DeepSeekService struct {
 	client    *http.Client
 	rateLimit *rate.Limiter
 	config    *DeepSeekConfig
-	logger    *logrus.Logger
+	logger    *zap.Logger
 }
 
 type DeepSeekConfig struct {
@@ -31,7 +31,7 @@ type DeepSeekConfig struct {
 	MaxTokens   int
 }
 
-func NewDeepSeekService(config *DeepSeekConfig, logger *logrus.Logger) *DeepSeekService {
+func NewDeepSeekService(config *DeepSeekConfig, logger *zap.Logger) *DeepSeekService {
 	client := &http.Client{
 		Timeout: time.Duration(config.Timeout) * time.Second,
 	}
@@ -143,7 +143,7 @@ func (s *DeepSeekService) StreamChatCompletion(ctx context.Context, messages []C
 			line, err := reader.ReadString('\n')
 			if err != nil {
 				if err != io.EOF {
-					s.logger.WithError(err).Error("读取流式响应失败")
+					s.logger.Error("读取流式响应失败", zap.Error(err))
 				}
 				break
 			}
@@ -165,7 +165,7 @@ func (s *DeepSeekService) StreamChatCompletion(ctx context.Context, messages []C
 
 			var chunk ChatCompletionChunk
 			if err := json.Unmarshal([]byte(data), &chunk); err != nil {
-				s.logger.WithError(err).Error("解析流式响应失败")
+				s.logger.Error("解析流式响应失败", zap.Error(err))
 				continue
 			}
 

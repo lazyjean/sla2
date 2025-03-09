@@ -16,7 +16,8 @@ import (
 	"github.com/lazyjean/sla2/internal/infrastructure/persistence/postgres"
 	"github.com/lazyjean/sla2/internal/infrastructure/security"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc"
-	"github.com/sirupsen/logrus"
+	"github.com/lazyjean/sla2/pkg/logger"
+	"go.uber.org/zap"
 )
 
 // Injectors from wire.go:
@@ -65,8 +66,9 @@ func InitializeApp(cfg *config.Config) (*App, error) {
 // wire.go:
 
 // 提供 Logger 实例
-func ProvideLogger() *logrus.Logger {
-	return logrus.New()
+func ProvideLogger() *zap.Logger {
+
+	return logger.Log
 }
 
 // 提供 DeepSeekConfig 配置
@@ -94,7 +96,7 @@ var cacheSet = wire.NewSet(redis.NewRedisCache)
 var repositorySet = wire.NewSet(postgres.NewWordRepository, postgres.NewCachedWordRepository, postgres.NewLearningRepository, postgres.NewUserRepository, postgres.NewCourseRepository, postgres.NewCourseSectionRepository, postgres.NewAdminRepository, postgres.NewQuestionTagRepository, postgres.NewQuestionRepository, postgres.NewChatHistoryRepository)
 
 // AI 服务集
-var aiSet = wire.NewSet(service.NewAIService, ai.NewDeepSeekService, ProvideLogger,
+var aiSet = wire.NewSet(service.NewAIService, ai.NewDeepSeekService, wire.Bind(new(service.DeepSeekService), new(*ai.DeepSeekService)), ProvideLogger,
 	ProvideDeepSeekConfig,
 )
 

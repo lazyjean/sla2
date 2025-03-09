@@ -13,12 +13,14 @@ import (
 	"github.com/lazyjean/sla2/internal/infrastructure/persistence/postgres"
 	"github.com/lazyjean/sla2/internal/infrastructure/security"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc"
-	"github.com/sirupsen/logrus"
+	"github.com/lazyjean/sla2/pkg/logger"
+	"go.uber.org/zap"
 )
 
 // 提供 Logger 实例
-func ProvideLogger() *logrus.Logger {
-	return logrus.New()
+func ProvideLogger() *zap.Logger {
+	// 使用项目中的标准 logger 实例
+	return logger.Log
 }
 
 // 提供 DeepSeekConfig 配置
