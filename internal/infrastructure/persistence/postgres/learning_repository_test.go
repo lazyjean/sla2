@@ -11,7 +11,8 @@ import (
 )
 
 func TestLearningRepository_CourseProgress(t *testing.T) {
-	db := setupTestDB(t)
+	db, cleanup := setupTestDB(t)
+	defer cleanup()
 	repo := NewLearningRepository(db)
 	ctx := context.Background()
 
@@ -42,7 +43,8 @@ func TestLearningRepository_CourseProgress(t *testing.T) {
 }
 
 func TestLearningRepository_SectionProgress(t *testing.T) {
-	db := setupTestDB(t)
+	db, cleanup := setupTestDB(t)
+	defer cleanup()
 	repo := NewLearningRepository(db)
 	ctx := context.Background()
 
@@ -72,7 +74,8 @@ func TestLearningRepository_SectionProgress(t *testing.T) {
 }
 
 func TestLearningRepository_UnitProgress(t *testing.T) {
-	db := setupTestDB(t)
+	db, cleanup := setupTestDB(t)
+	defer cleanup()
 	repo := NewLearningRepository(db)
 	ctx := context.Background()
 
@@ -102,7 +105,8 @@ func TestLearningRepository_UnitProgress(t *testing.T) {
 }
 
 func TestLearningRepository_SaveCourseProgress(t *testing.T) {
-	db := setupTestDB(t)
+	db, cleanup := setupTestDB(t)
+	defer cleanup()
 	repo := NewLearningRepository(db)
 	ctx := context.Background()
 
@@ -146,7 +150,8 @@ func TestLearningRepository_SaveCourseProgress(t *testing.T) {
 }
 
 func TestSaveSectionProgress(t *testing.T) {
-	db := setupTestDB(t)
+	db, cleanup := setupTestDB(t)
+	defer cleanup()
 	repo := NewLearningRepository(db)
 	ctx := context.Background()
 
@@ -163,7 +168,8 @@ func TestSaveSectionProgress(t *testing.T) {
 }
 
 func TestGetSectionProgress(t *testing.T) {
-	db := setupTestDB(t)
+	db, cleanup := setupTestDB(t)
+	defer cleanup()
 	repo := NewLearningRepository(db)
 	ctx := context.Background()
 
@@ -186,7 +192,8 @@ func TestGetSectionProgress(t *testing.T) {
 }
 
 func TestListSectionProgress(t *testing.T) {
-	db := setupTestDB(t)
+	db, cleanup := setupTestDB(t)
+	defer cleanup()
 	repo := NewLearningRepository(db)
 	ctx := context.Background()
 
@@ -208,7 +215,8 @@ func TestListSectionProgress(t *testing.T) {
 }
 
 func TestLearningRepository_SaveUnitProgress(t *testing.T) {
-	db := setupTestDB(t)
+	db, cleanup := setupTestDB(t)
+	defer cleanup()
 	repo := NewLearningRepository(db)
 	ctx := context.Background()
 

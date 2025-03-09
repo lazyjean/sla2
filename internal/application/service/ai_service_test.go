@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	pb "github.com/lazyjean/sla2/api/proto/v1"
 	"github.com/lazyjean/sla2/internal/infrastructure/ai"
@@ -13,14 +14,17 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// 创建 ChatHistoryRepository 的 Mock
+// MockChatHistoryRepo 是 ChatHistoryRepository 的 Mock 实现
 type MockChatHistoryRepo struct {
 	mock.Mock
 }
 
 func (m *MockChatHistoryRepo) GetHistory(ctx context.Context, userID string, sessionID string) ([]*pb.ChatHistory, error) {
 	args := m.Called(ctx, userID, sessionID)
-	return args.Get(0).([]*pb.ChatHistory), args.Error(1)
+	if v, ok := args.Get(0).([]*pb.ChatHistory); ok {
+		return v, args.Error(1)
+	}
+	return nil, args.Error(1)
 }
 
 func (m *MockChatHistoryRepo) SaveHistory(ctx context.Context, userID string, record *pb.ChatHistory) error {
@@ -46,7 +50,10 @@ func (m *MockChatHistoryRepo) GetSession(ctx context.Context, userID string, ses
 
 func (m *MockChatHistoryRepo) ListSessions(ctx context.Context, userID string, page uint32, pageSize uint32) ([]*pb.SessionResponse, uint32, error) {
 	args := m.Called(ctx, userID, page, pageSize)
-	return args.Get(0).([]*pb.SessionResponse), args.Get(1).(uint32), args.Error(2)
+	if v, ok := args.Get(0).([]*pb.SessionResponse); ok {
+		return v, args.Get(1).(uint32), args.Error(2)
+	}
+	return nil, 0, args.Error(2)
 }
 
 func (m *MockChatHistoryRepo) DeleteSession(ctx context.Context, userID string, sessionID string) error {
@@ -56,15 +63,17 @@ func (m *MockChatHistoryRepo) DeleteSession(ctx context.Context, userID string, 
 
 func (m *MockChatHistoryRepo) CountSessionMessages(ctx context.Context, sessionID string) (uint64, error) {
 	args := m.Called(ctx, sessionID)
-	return args.Get(0).(uint64), args.Error(1)
+	if v, ok := args.Get(0).(uint64); ok {
+		return v, args.Error(1)
+	}
+	return 0, args.Error(1)
 }
 
-// 创建 DeepSeekService 的 Mock
+// MockDeepSeekService 是 DeepSeekService 的 Mock 实现
 type MockDeepSeekService struct {
 	mock.Mock
 }
 
-// 实现 DeepSeekService 接口
 func (m *MockDeepSeekService) ChatCompletion(ctx context.Context, messages []ai.ChatMessage) (*ai.ChatCompletionResponse, error) {
 	args := m.Called(ctx, messages)
 	if v, ok := args.Get(0).(*ai.ChatCompletionResponse); ok {
@@ -83,8 +92,8 @@ func (m *MockDeepSeekService) StreamChatCompletion(ctx context.Context, messages
 
 func TestAIService_SessionManagement(t *testing.T) {
 	// 创建模拟对象
-	mockRepo := new(MockChatHistoryRepo)
-	mockDeepSeek := new(MockDeepSeekService)
+	mockRepo := &MockChatHistoryRepo{}
+	mockDeepSeek := &MockDeepSeekService{}
 
 	// 创建服务实例
 	service := NewAIService(mockDeepSeek, mockRepo)
@@ -96,8 +105,7 @@ func TestAIService_SessionManagement(t *testing.T) {
 	description := "会话描述"
 
 	// 测试 CreateSession
-	t.Run("CreateSession", func(t *testing.T) {
-		// 设置模拟行为
+	t.Run("CreateSession_Success", func(t *testing.T) {
 		expectedResponse := &pb.SessionResponse{
 			SessionId:    sessionID,
 			Title:        title,
@@ -108,18 +116,26 @@ func TestAIService_SessionManagement(t *testing.T) {
 		}
 		mockRepo.On("CreateSession", mock.Anything, userID, title, description).Return(expectedResponse, nil).Once()
 
-		// 调用服务
 		response, err := service.CreateSession(context.Background(), userID, title, description)
 
-		// 断言结果
 		require.NoError(t, err)
 		assert.Equal(t, expectedResponse, response)
 		mockRepo.AssertExpectations(t)
 	})
 
+	t.Run("CreateSession_Error", func(t *testing.T) {
+		mockRepo.On("CreateSession", mock.Anything, userID, title, description).Return(nil, errors.New("database error")).Once()
+
+		response, err := service.CreateSession(context.Background(), userID, title, description)
+
+		require.Error(t, err)
+		assert.Nil(t, response)
+		assert.Contains(t, err.Error(), "database error")
+		mockRepo.AssertExpectations(t)
+	})
+
 	// 测试 GetSession
-	t.Run("GetSession", func(t *testing.T) {
-		// 设置模拟行为
+	t.Run("GetSession_Success", func(t *testing.T) {
 		expectedResponse := &pb.SessionResponse{
 			SessionId:    sessionID,
 			Title:        title,
@@ -130,18 +146,26 @@ func TestAIService_SessionManagement(t *testing.T) {
 		}
 		mockRepo.On("GetSession", mock.Anything, userID, sessionID).Return(expectedResponse, nil).Once()
 
-		// 调用服务
 		response, err := service.GetSession(context.Background(), userID, sessionID)
 
-		// 断言结果
 		require.NoError(t, err)
 		assert.Equal(t, expectedResponse, response)
 		mockRepo.AssertExpectations(t)
 	})
 
+	t.Run("GetSession_NotFound", func(t *testing.T) {
+		mockRepo.On("GetSession", mock.Anything, userID, "non-existent").Return(nil, errors.New("session not found")).Once()
+
+		response, err := service.GetSession(context.Background(), userID, "non-existent")
+
+		require.Error(t, err)
+		assert.Nil(t, response)
+		assert.Contains(t, err.Error(), "session not found")
+		mockRepo.AssertExpectations(t)
+	})
+
 	// 测试 ListSessions
-	t.Run("ListSessions", func(t *testing.T) {
-		// 设置模拟行为
+	t.Run("ListSessions_Success", func(t *testing.T) {
 		expectedSessions := []*pb.SessionResponse{
 			{
 				SessionId:    sessionID,
@@ -155,84 +179,60 @@ func TestAIService_SessionManagement(t *testing.T) {
 		expectedTotal := uint32(1)
 		mockRepo.On("ListSessions", mock.Anything, userID, uint32(1), uint32(10)).Return(expectedSessions, expectedTotal, nil).Once()
 
-		// 调用服务
 		sessions, total, err := service.ListSessions(context.Background(), userID, 1, 10)
 
-		// 断言结果
 		require.NoError(t, err)
 		assert.Equal(t, expectedSessions, sessions)
 		assert.Equal(t, expectedTotal, total)
 		mockRepo.AssertExpectations(t)
 	})
 
+	t.Run("ListSessions_Empty", func(t *testing.T) {
+		mockRepo.On("ListSessions", mock.Anything, userID, uint32(1), uint32(10)).Return([]*pb.SessionResponse{}, uint32(0), nil).Once()
+
+		sessions, total, err := service.ListSessions(context.Background(), userID, 1, 10)
+
+		require.NoError(t, err)
+		assert.Empty(t, sessions)
+		assert.Equal(t, uint32(0), total)
+		mockRepo.AssertExpectations(t)
+	})
+
 	// 测试 DeleteSession
-	t.Run("DeleteSession", func(t *testing.T) {
-		// 设置模拟行为
+	t.Run("DeleteSession_Success", func(t *testing.T) {
 		mockRepo.On("DeleteSession", mock.Anything, userID, sessionID).Return(nil).Once()
 
-		// 调用服务
 		err := service.DeleteSession(context.Background(), userID, sessionID)
 
-		// 断言结果
 		require.NoError(t, err)
 		mockRepo.AssertExpectations(t)
 	})
 
-	// 测试错误情况
-	t.Run("ErrorHandling", func(t *testing.T) {
-		// 设置模拟行为 - 返回错误
-		expectedError := errors.New("数据库错误")
-		mockRepo.On("GetSession", mock.Anything, userID, "non-existent").Return(nil, expectedError).Once()
+	t.Run("DeleteSession_Error", func(t *testing.T) {
+		mockRepo.On("DeleteSession", mock.Anything, userID, "non-existent").Return(errors.New("session not found")).Once()
 
-		// 调用服务
-		_, err := service.GetSession(context.Background(), userID, "non-existent")
+		err := service.DeleteSession(context.Background(), userID, "non-existent")
 
-		// 断言结果
 		require.Error(t, err)
-		assert.Equal(t, expectedError, err)
+		assert.Contains(t, err.Error(), "session not found")
 		mockRepo.AssertExpectations(t)
 	})
 }
 
-func TestAIService_ChatWithSession(t *testing.T) {
-	// 创建模拟对象
-	mockRepo := new(MockChatHistoryRepo)
-	mockDeepSeek := new(MockDeepSeekService)
-
-	// 创建服务实例
+func TestAIService_Chat(t *testing.T) {
+	mockRepo := &MockChatHistoryRepo{}
+	mockDeepSeek := &MockDeepSeekService{}
 	service := NewAIService(mockDeepSeek, mockRepo)
 
-	// 测试数据
 	userID := "123"
 	sessionID := "test-session-456"
 	userMessage := "你好，AI助手"
 
-	// 模拟现有的聊天历史
-	existingHistory := []*pb.ChatHistory{
-		{
-			SessionId: sessionID,
-			Role:      "user",
-			Content:   "前一条用户消息",
-			Timestamp: 1000,
-		},
-		{
-			SessionId: sessionID,
-			Role:      "assistant",
-			Content:   "前一条AI回复",
-			Timestamp: 1001,
-		},
-	}
-
-	// 测试带会话ID的Chat方法
-	t.Run("ChatWithSessionID", func(t *testing.T) {
-		// 设置模拟行为
-		mockRepo.On("GetHistory", mock.Anything, userID, sessionID).Return(existingHistory, nil).Once()
-
-		// 模拟AI响应
-		aiResponse := &ai.ChatCompletionResponse{
-			ID:      "resp-123",
+	t.Run("Chat_WithoutSession", func(t *testing.T) {
+		expectedResponse := &ai.ChatCompletionResponse{
+			ID:      "resp1",
 			Object:  "chat.completion",
-			Created: 1000,
+			Created: time.Now().Unix(),
 			Model:   "deepseek-chat",
 			Choices: []struct {
 				Message      ai.ChatMessage `json:"message"`
@@ -241,51 +241,255 @@ func TestAIService_ChatWithSession(t *testing.T) {
 				{
 					Message: ai.ChatMessage{
 						Role:    "assistant",
-						Content: "你好！我是AI助手，有什么可以帮助你的？",
+						Content: "你好！我是AI助手",
 					},
 					FinishReason: "stop",
 				},
 			},
+			Usage: struct {
+				PromptTokens     int `json:"prompt_tokens"`
+				CompletionTokens int `json:"completion_tokens"`
+				TotalTokens      int `json:"total_tokens"`
+			}{
+				PromptTokens:     10,
+				CompletionTokens: 10,
+				TotalTokens:      20,
+			},
 		}
 
-		// 验证传递给DeepSeek的消息包含正确的历史记录
 		mockDeepSeek.On("ChatCompletion", mock.Anything, mock.MatchedBy(func(messages []ai.ChatMessage) bool {
-			// 验证消息数量是否正确（1个新消息 + 2个历史消息）
-			if len(messages) != 3 {
-				return false
-			}
-			// 验证新消息内容
-			if messages[0].Role != "user" || messages[0].Content != userMessage {
-				return false
-			}
-			// 验证历史消息
-			if messages[1].Role != "user" || messages[1].Content != "前一条用户消息" {
-				return false
-			}
-			if messages[2].Role != "assistant" || messages[2].Content != "前一条AI回复" {
-				return false
-			}
-			return true
-		})).Return(aiResponse, nil).Once()
+			return len(messages) == 1 && messages[0].Content == userMessage
+		})).Return(expectedResponse, nil).Once()
 
-		// 模拟保存用户消息和AI回复
-		mockRepo.On("SaveHistory", mock.Anything, userID, mock.MatchedBy(func(msg *pb.ChatHistory) bool {
-			return msg.Role == "user" && msg.Content == userMessage && msg.SessionId == sessionID
-		})).Return(nil).Once()
+		response, err := service.Chat(context.Background(), userID, userMessage, nil)
 
-		mockRepo.On("SaveHistory", mock.Anything, userID, mock.MatchedBy(func(msg *pb.ChatHistory) bool {
-			return msg.Role == "assistant" && msg.Content == "你好！我是AI助手，有什么可以帮助你的？" && msg.SessionId == sessionID
-		})).Return(nil).Once()
-
-		// 调用服务
-		ctx := &ChatContext{
-			SessionID: sessionID,
-		}
-		response, err := service.Chat(context.Background(), userID, userMessage, ctx)
-
-		// 断言结果
 		require.NoError(t, err)
-		assert.Equal(t, "你好！我是AI助手，有什么可以帮助你的？", response.Message)
+		assert.Equal(t, expectedResponse.Choices[0].Message.Content, response.Message)
+		assert.Equal(t, expectedResponse.Created, response.CreatedAt)
+		mockDeepSeek.AssertExpectations(t)
+	})
+
+	t.Run("Chat_WithSession", func(t *testing.T) {
+		history := []*pb.ChatHistory{
+			{
+				SessionId: sessionID,
+				Role:      "user",
+				Content:   "历史消息1",
+				Timestamp: 1000,
+			},
+			{
+				SessionId: sessionID,
+				Role:      "assistant",
+				Content:   "AI回复1",
+				Timestamp: 1001,
+			},
+		}
+
+		mockRepo.On("GetHistory", mock.Anything, userID, sessionID).Return(history, nil).Once()
+		mockRepo.On("SaveHistory", mock.Anything, userID, mock.MatchedBy(func(msg *pb.ChatHistory) bool {
+			return msg.Role == "user" && msg.Content == userMessage
+		})).Return(nil).Once()
+
+		expectedResponse := &ai.ChatCompletionResponse{
+			ID:      "resp2",
+			Object:  "chat.completion",
+			Created: time.Now().Unix(),
+			Model:   "deepseek-chat",
+			Choices: []struct {
+				Message      ai.ChatMessage `json:"message"`
+				FinishReason string         `json:"finish_reason"`
+			}{
+				{
+					Message: ai.ChatMessage{
+						Role:    "assistant",
+						Content: "你好！我是AI助手",
+					},
+					FinishReason: "stop",
+				},
+			},
+			Usage: struct {
+				PromptTokens     int `json:"prompt_tokens"`
+				CompletionTokens int `json:"completion_tokens"`
+				TotalTokens      int `json:"total_tokens"`
+			}{
+				PromptTokens:     20,
+				CompletionTokens: 10,
+				TotalTokens:      30,
+			},
+		}
+
+		mockDeepSeek.On("ChatCompletion", mock.Anything, mock.MatchedBy(func(messages []ai.ChatMessage) bool {
+			return len(messages) == 3 // 历史消息 + 新消息
+		})).Return(expectedResponse, nil).Once()
+
+		mockRepo.On("SaveHistory", mock.Anything, userID, mock.MatchedBy(func(msg *pb.ChatHistory) bool {
+			return msg.Role == "assistant" && msg.Content == expectedResponse.Choices[0].Message.Content
+		})).Return(nil).Once()
+
+		response, err := service.Chat(context.Background(), userID, userMessage, &ChatContext{SessionID: sessionID})
+
+		require.NoError(t, err)
+		assert.Equal(t, expectedResponse.Choices[0].Message.Content, response.Message)
+		assert.Equal(t, expectedResponse.Created, response.CreatedAt)
+		mockRepo.AssertExpectations(t)
+		mockDeepSeek.AssertExpectations(t)
+	})
+
+	t.Run("Chat_GetHistoryError", func(t *testing.T) {
+		mockRepo.On("GetHistory", mock.Anything, userID, sessionID).Return(nil, errors.New("database error")).Once()
+
+		response, err := service.Chat(context.Background(), userID, userMessage, &ChatContext{SessionID: sessionID})
+
+		require.Error(t, err)
+		assert.Nil(t, response)
+		assert.Contains(t, err.Error(), "获取聊天历史失败")
+		mockRepo.AssertExpectations(t)
+	})
+
+	t.Run("Chat_AIError", func(t *testing.T) {
+		mockDeepSeek.On("ChatCompletion", mock.Anything, mock.Anything).Return(nil, errors.New("AI service error")).Once()
+
+		response, err := service.Chat(context.Background(), userID, userMessage, nil)
+
+		require.Error(t, err)
+		assert.Nil(t, response)
+		assert.Contains(t, err.Error(), "AI聊天失败")
+		mockDeepSeek.AssertExpectations(t)
+	})
+
+	t.Run("Chat_SaveHistoryError", func(t *testing.T) {
+		mockRepo.On("GetHistory", mock.Anything, userID, sessionID).Return([]*pb.ChatHistory{}, nil).Once()
+		mockRepo.On("SaveHistory", mock.Anything, userID, mock.Anything).Return(errors.New("database error")).Once()
+
+		response, err := service.Chat(context.Background(), userID, userMessage, &ChatContext{SessionID: sessionID})
+
+		require.Error(t, err)
+		assert.Nil(t, response)
+		assert.Contains(t, err.Error(), "保存用户消息失败")
+		mockRepo.AssertExpectations(t)
+	})
+}
+
+func TestAIService_StreamChat(t *testing.T) {
+	mockRepo := &MockChatHistoryRepo{}
+	mockDeepSeek := &MockDeepSeekService{}
+	service := NewAIService(mockDeepSeek, mockRepo)
+
+	userID := "123"
+	sessionID := "test-session-789"
+	userMessage := "你好，AI助手"
+
+	t.Run("StreamChat_Success", func(t *testing.T) {
+		// 创建响应通道
+		chunkChan := make(chan *ai.ChatCompletionChunk)
+		mockRepo.On("GetHistory", mock.Anything, userID, sessionID).Return([]*pb.ChatHistory{}, nil).Once()
+		mockRepo.On("SaveHistory", mock.Anything, userID, mock.MatchedBy(func(msg *pb.ChatHistory) bool {
+			return msg.Role == "user" && msg.Content == userMessage
+		})).Return(nil).Once()
+		mockDeepSeek.On("StreamChatCompletion", mock.Anything, mock.MatchedBy(func(messages []ai.ChatMessage) bool {
+			return len(messages) == 1 && messages[0].Content == userMessage
+		})).Return((<-chan *ai.ChatCompletionChunk)(chunkChan), nil).Once()
+		mockRepo.On("SaveHistory", mock.Anything, userID, mock.MatchedBy(func(msg *pb.ChatHistory) bool {
+			return msg.Role == "assistant" && msg.Content == "你好"
+		})).Return(nil).Once()
+
+		// 启动流式聊天
+		responseChan, err := service.StreamChat(context.Background(), userID, userMessage, &ChatContext{SessionID: sessionID})
+		require.NoError(t, err)
+
+		// 模拟发送流式响应
+		go func() {
+			chunkChan <- &ai.ChatCompletionChunk{
+				ID:      "chunk1",
+				Object:  "chat.completion.chunk",
+				Created: time.Now().Unix(),
+				Model:   "deepseek-chat",
+				Choices: []struct {
+					Delta struct {
+						Content string `json:"content"`
+					} `json:"delta"`
+					FinishReason string `json:"finish_reason"`
+				}{
+					{
+						Delta: struct {
+							Content string `json:"content"`
+						}{Content: "你"},
+						FinishReason: "",
+					},
+				},
+			}
+			chunkChan <- &ai.ChatCompletionChunk{
+				ID:      "chunk2",
+				Object:  "chat.completion.chunk",
+				Created: time.Now().Unix(),
+				Model:   "deepseek-chat",
+				Choices: []struct {
+					Delta struct {
+						Content string `json:"content"`
+					} `json:"delta"`
+					FinishReason string `json:"finish_reason"`
+				}{
+					{
+						Delta: struct {
+							Content string `json:"content"`
+						}{Content: "好"},
+						FinishReason: "stop",
+					},
+				},
+			}
+			close(chunkChan)
+		}()
+
+		// 接收并验证响应
+		var responses []*ChatResponse
+		for response := range responseChan {
+			responses = append(responses, response)
+		}
+
+		assert.Len(t, responses, 2)
+		assert.Equal(t, "你", responses[0].Message)
+		assert.Equal(t, "你好", responses[1].Message)
+		mockRepo.AssertExpectations(t)
+		mockDeepSeek.AssertExpectations(t)
+	})
+
+	t.Run("StreamChat_GetHistoryError", func(t *testing.T) {
+		mockRepo.On("GetHistory", mock.Anything, userID, sessionID).Return(nil, errors.New("database error")).Once()
+
+		responseChan, err := service.StreamChat(context.Background(), userID, userMessage, &ChatContext{SessionID: sessionID})
+
+		require.Error(t, err)
+		assert.Nil(t, responseChan)
+		assert.Contains(t, err.Error(), "获取聊天历史失败")
+		mockRepo.AssertExpectations(t)
+	})
+
+	t.Run("StreamChat_SaveHistoryError", func(t *testing.T) {
+		mockRepo.On("GetHistory", mock.Anything, userID, sessionID).Return([]*pb.ChatHistory{}, nil).Once()
+		mockRepo.On("SaveHistory", mock.Anything, userID, mock.Anything).Return(errors.New("database error")).Once()
+
+		responseChan, err := service.StreamChat(context.Background(), userID, userMessage, &ChatContext{SessionID: sessionID})
+
+		require.Error(t, err)
+		assert.Nil(t, responseChan)
+		assert.Contains(t, err.Error(), "保存用户消息失败")
+		mockRepo.AssertExpectations(t)
+	})
+
+	t.Run("StreamChat_AIError", func(t *testing.T) {
+		mockRepo.On("GetHistory", mock.Anything, userID, sessionID).Return([]*pb.ChatHistory{}, nil).Once()
+		mockRepo.On("SaveHistory", mock.Anything, userID, mock.MatchedBy(func(msg *pb.ChatHistory) bool {
+			return msg.Role == "user" && msg.Content == userMessage
+		})).Return(nil).Once()
+		mockDeepSeek.On("StreamChatCompletion", mock.Anything, mock.MatchedBy(func(messages []ai.ChatMessage) bool {
+			return len(messages) == 1 && messages[0].Content == userMessage
+		})).Return(nil, errors.New("AI service error")).Once()
+
+		responseChan, err := service.StreamChat(context.Background(), userID, userMessage, &ChatContext{SessionID: sessionID})
+
+		require.Error(t, err)
+		assert.Nil(t, responseChan)
+		assert.Contains(t, err.Error(), "流式聊天失败")
 		mockRepo.AssertExpectations(t)
 		mockDeepSeek.AssertExpectations(t)
 	})

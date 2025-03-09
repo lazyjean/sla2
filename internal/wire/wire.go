@@ -66,6 +66,7 @@ var repositorySet = wire.NewSet(
 var aiSet = wire.NewSet(
 	service.NewAIService,
 	ai.NewDeepSeekService,
+	wire.Bind(new(service.DeepSeekService), new(*ai.DeepSeekService)),
 	ProvideLogger,
 	ProvideDeepSeekConfig,
 )

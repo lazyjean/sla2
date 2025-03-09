@@ -12,7 +12,8 @@ import (
 )
 
 func TestWordRepository_Save(t *testing.T) {
-	db := setupTestDB(t)
+	db, cleanup := setupTestDB(t)
+	defer cleanup()
 	repo := NewWordRepository(db)
 	ctx := context.WithValue(context.Background(), repository.UserIDKey, 1)
 
@@ -77,7 +78,8 @@ func TestWordRepository_Save(t *testing.T) {
 }
 
 func TestWordRepository_FindByText(t *testing.T) {
-	db := setupTestDB(t)
+	db, cleanup := setupTestDB(t)
+	defer cleanup()
 	repo := NewWordRepository(db)
 	ctx := context.Background()
 
