@@ -33,22 +33,21 @@ import (
 
 // Server gRPC 服务器
 type Server struct {
-	grpcServer        *grpc.Server
-	httpServer        *http.Server
-	adminSvc          *admin.AdminService
-	userSvc           *user.UserService
-	wordSvc           *word.WordService
-	learningSvc       *learning.LearningService
-	courseSvc         *course.CourseService
-	questionSvc       *question.QuestionService
-	questionTagSvc    *question.QuestionTagServiceGRPC
-	aiSvc             *ai.AIService
-	tokenService      security.TokenService
-	config            *config.Config
-	stopCh            chan struct{}                 // 用于通知所有 goroutine 停止
-	chatHandler       *websocket.UnifiedChatHandler // 统一的 WebSocket 聊天处理器
-	unaryInterceptor  grpc.UnaryServerInterceptor
-	streamInterceptor grpc.StreamServerInterceptor
+	grpcServer       *grpc.Server
+	httpServer       *http.Server
+	adminSvc         *admin.AdminService
+	userSvc          *user.UserService
+	wordSvc          *word.WordService
+	learningSvc      *learning.LearningService
+	courseSvc        *course.CourseService
+	questionSvc      *question.QuestionService
+	questionTagSvc   *question.QuestionTagServiceGRPC
+	aiSvc            *ai.AIService
+	tokenService     security.TokenService
+	config           *config.Config
+	stopCh           chan struct{}                 // 用于通知所有 goroutine 停止
+	chatHandler      *websocket.UnifiedChatHandler // 统一的 WebSocket 聊天处理器
+	unaryInterceptor grpc.UnaryServerInterceptor
 }
 
 // NewServer 创建 gRPC 服务器
@@ -154,6 +153,7 @@ func (s *Server) Start() error {
 		ctx := context.Background()
 		mux := runtime.NewServeMux(
 			runtime.WithMetadata(func(ctx context.Context, req *http.Request) metadata.MD {
+				logger.GetLogger(ctx).Info("request", zap.Any("req", req))
 				md := make(map[string]string)
 				if auth := req.Header.Get("Authorization"); auth != "" {
 					md["authorization"] = auth
