@@ -37,7 +37,7 @@ var (
 
 func request_AIChatService_CreateSession_0(ctx context.Context, marshaler runtime.Marshaler, client AIChatServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq CreateSessionRequest
+		protoReq AIChatServiceCreateSessionRequest
 		metadata runtime.ServerMetadata
 	)
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
@@ -49,7 +49,7 @@ func request_AIChatService_CreateSession_0(ctx context.Context, marshaler runtim
 
 func local_request_AIChatService_CreateSession_0(ctx context.Context, marshaler runtime.Marshaler, server AIChatServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq CreateSessionRequest
+		protoReq AIChatServiceCreateSessionRequest
 		metadata runtime.ServerMetadata
 	)
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
@@ -63,7 +63,7 @@ var filter_AIChatService_ListSessions_0 = &utilities.DoubleArray{Encoding: map[s
 
 func request_AIChatService_ListSessions_0(ctx context.Context, marshaler runtime.Marshaler, client AIChatServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq ListSessionsRequest
+		protoReq AIChatServiceListSessionsRequest
 		metadata runtime.ServerMetadata
 	)
 	if err := req.ParseForm(); err != nil {
@@ -78,7 +78,7 @@ func request_AIChatService_ListSessions_0(ctx context.Context, marshaler runtime
 
 func local_request_AIChatService_ListSessions_0(ctx context.Context, marshaler runtime.Marshaler, server AIChatServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq ListSessionsRequest
+		protoReq AIChatServiceListSessionsRequest
 		metadata runtime.ServerMetadata
 	)
 	if err := req.ParseForm(); err != nil {
@@ -91,11 +91,9 @@ func local_request_AIChatService_ListSessions_0(ctx context.Context, marshaler r
 	return msg, metadata, err
 }
 
-var filter_AIChatService_GetSession_0 = &utilities.DoubleArray{Encoding: map[string]int{"session_id": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
-
 func request_AIChatService_GetSession_0(ctx context.Context, marshaler runtime.Marshaler, client AIChatServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq GetSessionRequest
+		protoReq AIChatServiceGetSessionRequest
 		metadata runtime.ServerMetadata
 		err      error
 	)
@@ -103,15 +101,9 @@ func request_AIChatService_GetSession_0(ctx context.Context, marshaler runtime.M
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "session_id")
 	}
-	protoReq.SessionId, err = runtime.String(val)
+	protoReq.SessionId, err = runtime.Uint64(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "session_id", err)
-	}
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_AIChatService_GetSession_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 	msg, err := client.GetSession(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
@@ -119,7 +111,7 @@ func request_AIChatService_GetSession_0(ctx context.Context, marshaler runtime.M
 
 func local_request_AIChatService_GetSession_0(ctx context.Context, marshaler runtime.Marshaler, server AIChatServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq GetSessionRequest
+		protoReq AIChatServiceGetSessionRequest
 		metadata runtime.ServerMetadata
 		err      error
 	)
@@ -127,25 +119,17 @@ func local_request_AIChatService_GetSession_0(ctx context.Context, marshaler run
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "session_id")
 	}
-	protoReq.SessionId, err = runtime.String(val)
+	protoReq.SessionId, err = runtime.Uint64(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "session_id", err)
-	}
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_AIChatService_GetSession_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 	msg, err := server.GetSession(ctx, &protoReq)
 	return msg, metadata, err
 }
 
-var filter_AIChatService_DeleteSession_0 = &utilities.DoubleArray{Encoding: map[string]int{"session_id": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
-
 func request_AIChatService_DeleteSession_0(ctx context.Context, marshaler runtime.Marshaler, client AIChatServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq DeleteSessionRequest
+		protoReq AIChatServiceDeleteSessionRequest
 		metadata runtime.ServerMetadata
 		err      error
 	)
@@ -153,15 +137,9 @@ func request_AIChatService_DeleteSession_0(ctx context.Context, marshaler runtim
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "session_id")
 	}
-	protoReq.SessionId, err = runtime.String(val)
+	protoReq.SessionId, err = runtime.Uint64(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "session_id", err)
-	}
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_AIChatService_DeleteSession_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 	msg, err := client.DeleteSession(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
@@ -169,7 +147,7 @@ func request_AIChatService_DeleteSession_0(ctx context.Context, marshaler runtim
 
 func local_request_AIChatService_DeleteSession_0(ctx context.Context, marshaler runtime.Marshaler, server AIChatServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq DeleteSessionRequest
+		protoReq AIChatServiceDeleteSessionRequest
 		metadata runtime.ServerMetadata
 		err      error
 	)
@@ -177,15 +155,9 @@ func local_request_AIChatService_DeleteSession_0(ctx context.Context, marshaler 
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "session_id")
 	}
-	protoReq.SessionId, err = runtime.String(val)
+	protoReq.SessionId, err = runtime.Uint64(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "session_id", err)
-	}
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_AIChatService_DeleteSession_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 	msg, err := server.DeleteSession(ctx, &protoReq)
 	return msg, metadata, err

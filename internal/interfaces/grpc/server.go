@@ -66,12 +66,10 @@ func NewServer(
 ) *Server {
 	// 创建拦截器
 	unaryInterceptor := middleware.UnaryServerInterceptor(tokenService)
-	streamInterceptor := middleware.StreamServerInterceptor(tokenService)
 
 	// 创建 gRPC 服务器
 	grpcServer := grpc.NewServer(
 		grpc.UnaryInterceptor(unaryInterceptor),
-		grpc.StreamInterceptor(streamInterceptor),
 	)
 
 	// 创建统一的 WebSocket 聊天处理器
@@ -79,21 +77,20 @@ func NewServer(
 
 	// 创建服务器实例
 	server := &Server{
-		grpcServer:        grpcServer,
-		adminSvc:          admin.NewAdminService(adminService),
-		userSvc:           user.NewUserService(userService),
-		wordSvc:           word.NewWordService(wordService),
-		learningSvc:       learning.NewLearningService(learningService),
-		courseSvc:         course.NewCourseService(courseService),
-		questionSvc:       question.NewQuestionService(questionService),
-		questionTagSvc:    question.NewQuestionTagServiceGRPC(questionTagService),
-		aiSvc:             ai.NewAIService(aiService, tokenService),
-		tokenService:      tokenService,
-		config:            config,
-		stopCh:            make(chan struct{}),
-		chatHandler:       chatHandler,
-		unaryInterceptor:  unaryInterceptor,
-		streamInterceptor: streamInterceptor,
+		grpcServer:       grpcServer,
+		adminSvc:         admin.NewAdminService(adminService),
+		userSvc:          user.NewUserService(userService),
+		wordSvc:          word.NewWordService(wordService),
+		learningSvc:      learning.NewLearningService(learningService),
+		courseSvc:        course.NewCourseService(courseService),
+		questionSvc:      question.NewQuestionService(questionService),
+		questionTagSvc:   question.NewQuestionTagServiceGRPC(questionTagService),
+		aiSvc:            ai.NewAIService(aiService, tokenService),
+		tokenService:     tokenService,
+		config:           config,
+		stopCh:           make(chan struct{}),
+		chatHandler:      chatHandler,
+		unaryInterceptor: unaryInterceptor,
 	}
 
 	// 注册服务

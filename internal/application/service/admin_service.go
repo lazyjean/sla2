@@ -167,11 +167,7 @@ func (s *AdminService) RefreshToken(ctx context.Context, req *dto.RefreshTokenRe
 
 // GetCurrentAdminInfo 获取当前管理员信息
 func (s *AdminService) GetCurrentAdminInfo(ctx context.Context) (*dto.AdminInfoResponse, error) {
-	// 从令牌中获取当前管理员ID
-	adminID, _, err := s.tokenService.ValidateTokenFromContext(ctx)
-	if err != nil {
-		return nil, ErrUnauthorized
-	}
+	adminID := ctx.Value("user_id").(entity.UID)
 
 	// 获取管理员信息
 	admin, err := s.adminService.GetAdminByID(ctx, adminID)

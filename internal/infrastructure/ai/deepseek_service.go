@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/lazyjean/sla2/internal/domain/entity"
 	"go.uber.org/zap"
 	"golang.org/x/time/rate"
 )
@@ -47,7 +48,7 @@ func NewDeepSeekService(config *DeepSeekConfig, logger *zap.Logger) *DeepSeekSer
 	}
 }
 
-func (s *DeepSeekService) ChatCompletion(ctx context.Context, messages []ChatMessage) (*ChatCompletionResponse, error) {
+func (s *DeepSeekService) ChatCompletion(ctx context.Context, messages []entity.ChatMessage) (*ChatCompletionResponse, error) {
 	if err := s.rateLimit.Wait(ctx); err != nil {
 		return nil, fmt.Errorf("rate limit exceeded: %w", err)
 	}
@@ -92,7 +93,7 @@ func (s *DeepSeekService) ChatCompletion(ctx context.Context, messages []ChatMes
 }
 
 // StreamChatCompletion 流式聊天完成
-func (s *DeepSeekService) StreamChatCompletion(ctx context.Context, messages []ChatMessage) (<-chan *ChatCompletionChunk, error) {
+func (s *DeepSeekService) StreamChatCompletion(ctx context.Context, messages []entity.ChatMessage) (<-chan *ChatCompletionChunk, error) {
 	if err := s.rateLimit.Wait(ctx); err != nil {
 		return nil, fmt.Errorf("超出速率限制: %w", err)
 	}
@@ -181,17 +182,12 @@ func (s *DeepSeekService) StreamChatCompletion(ctx context.Context, messages []C
 	return chunkChan, nil
 }
 
-type ChatMessage struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
-}
-
 type ChatCompletionRequest struct {
-	Model       string        `json:"model"`
-	Messages    []ChatMessage `json:"messages"`
-	Temperature float64       `json:"temperature,omitempty"`
-	MaxTokens   int           `json:"max_tokens,omitempty"`
-	Stream      bool          `json:"stream,omitempty"`
+	Model       string               `json:"model"`
+	Messages    []entity.ChatMessage `json:"messages"`
+	Temperature float64              `json:"temperature,omitempty"`
+	MaxTokens   int                  `json:"max_tokens,omitempty"`
+	Stream      bool                 `json:"stream,omitempty"`
 }
 
 type ChatCompletionResponse struct {
@@ -200,8 +196,8 @@ type ChatCompletionResponse struct {
 	Created int64  `json:"created"`
 	Model   string `json:"model"`
 	Choices []struct {
-		Message      ChatMessage `json:"message"`
-		FinishReason string      `json:"finish_reason"`
+		Message      entity.ChatMessage `json:"message"`
+		FinishReason string             `json:"finish_reason"`
 	} `json:"choices"`
 	Usage struct {
 		PromptTokens     int `json:"prompt_tokens"`

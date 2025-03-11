@@ -61,7 +61,7 @@ var repositorySet = wire.NewSet(
 	postgres.NewAdminRepository,
 	postgres.NewQuestionTagRepository,
 	postgres.NewQuestionRepository,
-	postgres.NewChatHistoryRepository,
+	postgres.NewAiChatSessionRepository,
 )
 
 // AI 服务集

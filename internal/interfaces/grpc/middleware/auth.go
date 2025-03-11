@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/lazyjean/sla2/internal/domain/security"
+	"github.com/lazyjean/sla2/internal/pkg/auth"
 	"github.com/lazyjean/sla2/pkg/logger"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -51,48 +52,10 @@ func UnaryServerInterceptor(tokenService security.TokenService) grpc.UnaryServer
 		}
 
 		// 将用户信息添加到上下文
-		newCtx := context.WithValue(ctx, "user_id", userID)
-		newCtx = context.WithValue(newCtx, "roles", roles)
+		newCtx := auth.WithUserID(ctx, userID)
+		newCtx = auth.WithRoles(newCtx, roles)
 
 		return handler(newCtx, req)
-	}
-}
-
-// StreamServerInterceptor 流式 RPC 认证中间件
-func StreamServerInterceptor(tokenService security.TokenService) grpc.StreamServerInterceptor {
-	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
-		log := logger.GetLogger(ss.Context())
-
-		// 检查是否需要认证
-		if noAuthMethods[info.FullMethod] {
-			return handler(srv, ss)
-		}
-
-		// 从上下文中获取 token
-		token, err := extractToken(ss.Context())
-		if err != nil {
-			log.Error("Failed to extract token", zap.Error(err))
-			return status.Error(codes.Unauthenticated, "未授权")
-		}
-
-		// 验证 token
-		userID, roles, err := tokenService.ValidateToken(token)
-		if err != nil {
-			log.Error("Failed to validate token", zap.Error(err))
-			return status.Error(codes.Unauthenticated, "未授权")
-		}
-
-		// 将用户信息添加到上下文
-		newCtx := context.WithValue(ss.Context(), "user_id", userID)
-		newCtx = context.WithValue(newCtx, "roles", roles)
-
-		// 包装 ServerStream 以使用新的上下文
-		wrappedStream := &wrappedServerStream{
-			ServerStream: ss,
-			ctx:          newCtx,
-		}
-
-		return handler(srv, wrappedStream)
 	}
 }
 

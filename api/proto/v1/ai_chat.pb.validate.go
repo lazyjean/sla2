@@ -35,671 +35,46 @@ var (
 	_ = sort.Sort
 )
 
-// Validate checks the field values on ChatRequest with the rules defined in
-// the proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *ChatRequest) Validate() error {
+// Validate checks the field values on AIChatServiceMessage with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AIChatServiceMessage) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on ChatRequest with the rules defined in
-// the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in ChatRequestMultiError, or
-// nil if none found.
-func (m *ChatRequest) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *ChatRequest) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for UserId
-
-	// no validation rules for Message
-
-	// no validation rules for StreamId
-
-	if m.Context != nil {
-
-		if all {
-			switch v := interface{}(m.GetContext()).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, ChatRequestValidationError{
-						field:  "Context",
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, ChatRequestValidationError{
-						field:  "Context",
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(m.GetContext()).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return ChatRequestValidationError{
-					field:  "Context",
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
-
-	}
-
-	if len(errors) > 0 {
-		return ChatRequestMultiError(errors)
-	}
-
-	return nil
-}
-
-// ChatRequestMultiError is an error wrapping multiple validation errors
-// returned by ChatRequest.ValidateAll() if the designated constraints aren't met.
-type ChatRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m ChatRequestMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m ChatRequestMultiError) AllErrors() []error { return m }
-
-// ChatRequestValidationError is the validation error returned by
-// ChatRequest.Validate if the designated constraints aren't met.
-type ChatRequestValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e ChatRequestValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e ChatRequestValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e ChatRequestValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e ChatRequestValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e ChatRequestValidationError) ErrorName() string { return "ChatRequestValidationError" }
-
-// Error satisfies the builtin error interface
-func (e ChatRequestValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sChatRequest.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = ChatRequestValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = ChatRequestValidationError{}
-
-// Validate checks the field values on ChatResponse with the rules defined in
-// the proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *ChatResponse) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on ChatResponse with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in ChatResponseMultiError, or
-// nil if none found.
-func (m *ChatResponse) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *ChatResponse) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for Message
-
-	if all {
-		switch v := interface{}(m.GetCreatedAt()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, ChatResponseValidationError{
-					field:  "CreatedAt",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, ChatResponseValidationError{
-					field:  "CreatedAt",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return ChatResponseValidationError{
-				field:  "CreatedAt",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	// no validation rules for StreamId
-
-	// no validation rules for IsFinal
-
-	// no validation rules for Code
-
-	// no validation rules for ErrorMsg
-
-	if len(errors) > 0 {
-		return ChatResponseMultiError(errors)
-	}
-
-	return nil
-}
-
-// ChatResponseMultiError is an error wrapping multiple validation errors
-// returned by ChatResponse.ValidateAll() if the designated constraints aren't met.
-type ChatResponseMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m ChatResponseMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m ChatResponseMultiError) AllErrors() []error { return m }
-
-// ChatResponseValidationError is the validation error returned by
-// ChatResponse.Validate if the designated constraints aren't met.
-type ChatResponseValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e ChatResponseValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e ChatResponseValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e ChatResponseValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e ChatResponseValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e ChatResponseValidationError) ErrorName() string { return "ChatResponseValidationError" }
-
-// Error satisfies the builtin error interface
-func (e ChatResponseValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sChatResponse.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = ChatResponseValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = ChatResponseValidationError{}
-
-// Validate checks the field values on StreamChatRequest with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// first error encountered is returned, or nil if there are no violations.
-func (m *StreamChatRequest) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on StreamChatRequest with the rules
+// ValidateAll checks the field values on AIChatServiceMessage with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// StreamChatRequestMultiError, or nil if none found.
-func (m *StreamChatRequest) ValidateAll() error {
+// AIChatServiceMessageMultiError, or nil if none found.
+func (m *AIChatServiceMessage) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *StreamChatRequest) validate(all bool) error {
+func (m *AIChatServiceMessage) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
-
-	// no validation rules for UserId
-
-	// no validation rules for Message
-
-	// no validation rules for StreamId
-
-	if m.Context != nil {
-
-		if all {
-			switch v := interface{}(m.GetContext()).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, StreamChatRequestValidationError{
-						field:  "Context",
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, StreamChatRequestValidationError{
-						field:  "Context",
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(m.GetContext()).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return StreamChatRequestValidationError{
-					field:  "Context",
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
-
-	}
-
-	if len(errors) > 0 {
-		return StreamChatRequestMultiError(errors)
-	}
-
-	return nil
-}
-
-// StreamChatRequestMultiError is an error wrapping multiple validation errors
-// returned by StreamChatRequest.ValidateAll() if the designated constraints
-// aren't met.
-type StreamChatRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m StreamChatRequestMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m StreamChatRequestMultiError) AllErrors() []error { return m }
-
-// StreamChatRequestValidationError is the validation error returned by
-// StreamChatRequest.Validate if the designated constraints aren't met.
-type StreamChatRequestValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e StreamChatRequestValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e StreamChatRequestValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e StreamChatRequestValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e StreamChatRequestValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e StreamChatRequestValidationError) ErrorName() string {
-	return "StreamChatRequestValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e StreamChatRequestValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sStreamChatRequest.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = StreamChatRequestValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = StreamChatRequestValidationError{}
-
-// Validate checks the field values on StopStreamRequest with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// first error encountered is returned, or nil if there are no violations.
-func (m *StopStreamRequest) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on StopStreamRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// StopStreamRequestMultiError, or nil if none found.
-func (m *StopStreamRequest) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *StopStreamRequest) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for StreamId
-
-	if len(errors) > 0 {
-		return StopStreamRequestMultiError(errors)
-	}
-
-	return nil
-}
-
-// StopStreamRequestMultiError is an error wrapping multiple validation errors
-// returned by StopStreamRequest.ValidateAll() if the designated constraints
-// aren't met.
-type StopStreamRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m StopStreamRequestMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m StopStreamRequestMultiError) AllErrors() []error { return m }
-
-// StopStreamRequestValidationError is the validation error returned by
-// StopStreamRequest.Validate if the designated constraints aren't met.
-type StopStreamRequestValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e StopStreamRequestValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e StopStreamRequestValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e StopStreamRequestValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e StopStreamRequestValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e StopStreamRequestValidationError) ErrorName() string {
-	return "StopStreamRequestValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e StopStreamRequestValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sStopStreamRequest.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = StopStreamRequestValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = StopStreamRequestValidationError{}
-
-// Validate checks the field values on ChatContext with the rules defined in
-// the proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *ChatContext) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on ChatContext with the rules defined in
-// the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in ChatContextMultiError, or
-// nil if none found.
-func (m *ChatContext) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *ChatContext) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for SessionId
-
-	if len(errors) > 0 {
-		return ChatContextMultiError(errors)
-	}
-
-	return nil
-}
-
-// ChatContextMultiError is an error wrapping multiple validation errors
-// returned by ChatContext.ValidateAll() if the designated constraints aren't met.
-type ChatContextMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m ChatContextMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m ChatContextMultiError) AllErrors() []error { return m }
-
-// ChatContextValidationError is the validation error returned by
-// ChatContext.Validate if the designated constraints aren't met.
-type ChatContextValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e ChatContextValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e ChatContextValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e ChatContextValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e ChatContextValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e ChatContextValidationError) ErrorName() string { return "ChatContextValidationError" }
-
-// Error satisfies the builtin error interface
-func (e ChatContextValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sChatContext.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = ChatContextValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = ChatContextValidationError{}
-
-// Validate checks the field values on ChatHistory with the rules defined in
-// the proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *ChatHistory) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on ChatHistory with the rules defined in
-// the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in ChatHistoryMultiError, or
-// nil if none found.
-func (m *ChatHistory) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *ChatHistory) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for SessionId
 
 	// no validation rules for Role
 
 	// no validation rules for Content
 
-	// no validation rules for Timestamp
-
 	if len(errors) > 0 {
-		return ChatHistoryMultiError(errors)
+		return AIChatServiceMessageMultiError(errors)
 	}
 
 	return nil
 }
 
-// ChatHistoryMultiError is an error wrapping multiple validation errors
-// returned by ChatHistory.ValidateAll() if the designated constraints aren't met.
-type ChatHistoryMultiError []error
+// AIChatServiceMessageMultiError is an error wrapping multiple validation
+// errors returned by AIChatServiceMessage.ValidateAll() if the designated
+// constraints aren't met.
+type AIChatServiceMessageMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m ChatHistoryMultiError) Error() string {
+func (m AIChatServiceMessageMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -708,11 +83,11 @@ func (m ChatHistoryMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m ChatHistoryMultiError) AllErrors() []error { return m }
+func (m AIChatServiceMessageMultiError) AllErrors() []error { return m }
 
-// ChatHistoryValidationError is the validation error returned by
-// ChatHistory.Validate if the designated constraints aren't met.
-type ChatHistoryValidationError struct {
+// AIChatServiceMessageValidationError is the validation error returned by
+// AIChatServiceMessage.Validate if the designated constraints aren't met.
+type AIChatServiceMessageValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -720,22 +95,24 @@ type ChatHistoryValidationError struct {
 }
 
 // Field function returns field value.
-func (e ChatHistoryValidationError) Field() string { return e.field }
+func (e AIChatServiceMessageValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ChatHistoryValidationError) Reason() string { return e.reason }
+func (e AIChatServiceMessageValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ChatHistoryValidationError) Cause() error { return e.cause }
+func (e AIChatServiceMessageValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ChatHistoryValidationError) Key() bool { return e.key }
+func (e AIChatServiceMessageValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ChatHistoryValidationError) ErrorName() string { return "ChatHistoryValidationError" }
+func (e AIChatServiceMessageValidationError) ErrorName() string {
+	return "AIChatServiceMessageValidationError"
+}
 
 // Error satisfies the builtin error interface
-func (e ChatHistoryValidationError) Error() string {
+func (e AIChatServiceMessageValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -747,14 +124,14 @@ func (e ChatHistoryValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sChatHistory.%s: %s%s",
+		"invalid %sAIChatServiceMessage.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ChatHistoryValidationError{}
+var _ error = AIChatServiceMessageValidationError{}
 
 var _ interface {
 	Field() string
@@ -762,149 +139,39 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ChatHistoryValidationError{}
+} = AIChatServiceMessageValidationError{}
 
-// Validate checks the field values on CreateSessionRequest with the rules
+// Validate checks the field values on AIChatServiceSession with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *CreateSessionRequest) Validate() error {
+func (m *AIChatServiceSession) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on CreateSessionRequest with the rules
+// ValidateAll checks the field values on AIChatServiceSession with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// CreateSessionRequestMultiError, or nil if none found.
-func (m *CreateSessionRequest) ValidateAll() error {
+// AIChatServiceSessionMultiError, or nil if none found.
+func (m *AIChatServiceSession) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *CreateSessionRequest) validate(all bool) error {
+func (m *AIChatServiceSession) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
-	// no validation rules for UserId
+	// no validation rules for Id
 
 	// no validation rules for Title
-
-	// no validation rules for Description
-
-	if len(errors) > 0 {
-		return CreateSessionRequestMultiError(errors)
-	}
-
-	return nil
-}
-
-// CreateSessionRequestMultiError is an error wrapping multiple validation
-// errors returned by CreateSessionRequest.ValidateAll() if the designated
-// constraints aren't met.
-type CreateSessionRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m CreateSessionRequestMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m CreateSessionRequestMultiError) AllErrors() []error { return m }
-
-// CreateSessionRequestValidationError is the validation error returned by
-// CreateSessionRequest.Validate if the designated constraints aren't met.
-type CreateSessionRequestValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e CreateSessionRequestValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e CreateSessionRequestValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e CreateSessionRequestValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e CreateSessionRequestValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e CreateSessionRequestValidationError) ErrorName() string {
-	return "CreateSessionRequestValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e CreateSessionRequestValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sCreateSessionRequest.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = CreateSessionRequestValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = CreateSessionRequestValidationError{}
-
-// Validate checks the field values on SessionResponse with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// first error encountered is returned, or nil if there are no violations.
-func (m *SessionResponse) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on SessionResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// SessionResponseMultiError, or nil if none found.
-func (m *SessionResponse) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *SessionResponse) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for SessionId
-
-	// no validation rules for Title
-
-	// no validation rules for Description
 
 	if all {
 		switch v := interface{}(m.GetCreatedAt()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, SessionResponseValidationError{
+				errors = append(errors, AIChatServiceSessionValidationError{
 					field:  "CreatedAt",
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -912,7 +179,7 @@ func (m *SessionResponse) validate(all bool) error {
 			}
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
-				errors = append(errors, SessionResponseValidationError{
+				errors = append(errors, AIChatServiceSessionValidationError{
 					field:  "CreatedAt",
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -921,7 +188,7 @@ func (m *SessionResponse) validate(all bool) error {
 		}
 	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
-			return SessionResponseValidationError{
+			return AIChatServiceSessionValidationError{
 				field:  "CreatedAt",
 				reason: "embedded message failed validation",
 				cause:  err,
@@ -933,7 +200,7 @@ func (m *SessionResponse) validate(all bool) error {
 		switch v := interface{}(m.GetUpdatedAt()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, SessionResponseValidationError{
+				errors = append(errors, AIChatServiceSessionValidationError{
 					field:  "UpdatedAt",
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -941,7 +208,7 @@ func (m *SessionResponse) validate(all bool) error {
 			}
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
-				errors = append(errors, SessionResponseValidationError{
+				errors = append(errors, AIChatServiceSessionValidationError{
 					field:  "UpdatedAt",
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -950,7 +217,444 @@ func (m *SessionResponse) validate(all bool) error {
 		}
 	} else if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
-			return SessionResponseValidationError{
+			return AIChatServiceSessionValidationError{
+				field:  "UpdatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return AIChatServiceSessionMultiError(errors)
+	}
+
+	return nil
+}
+
+// AIChatServiceSessionMultiError is an error wrapping multiple validation
+// errors returned by AIChatServiceSession.ValidateAll() if the designated
+// constraints aren't met.
+type AIChatServiceSessionMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AIChatServiceSessionMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AIChatServiceSessionMultiError) AllErrors() []error { return m }
+
+// AIChatServiceSessionValidationError is the validation error returned by
+// AIChatServiceSession.Validate if the designated constraints aren't met.
+type AIChatServiceSessionValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AIChatServiceSessionValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AIChatServiceSessionValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AIChatServiceSessionValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AIChatServiceSessionValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AIChatServiceSessionValidationError) ErrorName() string {
+	return "AIChatServiceSessionValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AIChatServiceSessionValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAIChatServiceSession.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AIChatServiceSessionValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AIChatServiceSessionValidationError{}
+
+// Validate checks the field values on AIChatServiceSessionDetail with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AIChatServiceSessionDetail) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AIChatServiceSessionDetail with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AIChatServiceSessionDetailMultiError, or nil if none found.
+func (m *AIChatServiceSessionDetail) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AIChatServiceSessionDetail) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetSession()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, AIChatServiceSessionDetailValidationError{
+					field:  "Session",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, AIChatServiceSessionDetailValidationError{
+					field:  "Session",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetSession()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return AIChatServiceSessionDetailValidationError{
+				field:  "Session",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	for idx, item := range m.GetMessages() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, AIChatServiceSessionDetailValidationError{
+						field:  fmt.Sprintf("Messages[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, AIChatServiceSessionDetailValidationError{
+						field:  fmt.Sprintf("Messages[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return AIChatServiceSessionDetailValidationError{
+					field:  fmt.Sprintf("Messages[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return AIChatServiceSessionDetailMultiError(errors)
+	}
+
+	return nil
+}
+
+// AIChatServiceSessionDetailMultiError is an error wrapping multiple
+// validation errors returned by AIChatServiceSessionDetail.ValidateAll() if
+// the designated constraints aren't met.
+type AIChatServiceSessionDetailMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AIChatServiceSessionDetailMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AIChatServiceSessionDetailMultiError) AllErrors() []error { return m }
+
+// AIChatServiceSessionDetailValidationError is the validation error returned
+// by AIChatServiceSessionDetail.Validate if the designated constraints aren't met.
+type AIChatServiceSessionDetailValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AIChatServiceSessionDetailValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AIChatServiceSessionDetailValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AIChatServiceSessionDetailValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AIChatServiceSessionDetailValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AIChatServiceSessionDetailValidationError) ErrorName() string {
+	return "AIChatServiceSessionDetailValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AIChatServiceSessionDetailValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAIChatServiceSessionDetail.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AIChatServiceSessionDetailValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AIChatServiceSessionDetailValidationError{}
+
+// Validate checks the field values on AIChatServiceCreateSessionRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *AIChatServiceCreateSessionRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AIChatServiceCreateSessionRequest
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// AIChatServiceCreateSessionRequestMultiError, or nil if none found.
+func (m *AIChatServiceCreateSessionRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AIChatServiceCreateSessionRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Title
+
+	if len(errors) > 0 {
+		return AIChatServiceCreateSessionRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// AIChatServiceCreateSessionRequestMultiError is an error wrapping multiple
+// validation errors returned by
+// AIChatServiceCreateSessionRequest.ValidateAll() if the designated
+// constraints aren't met.
+type AIChatServiceCreateSessionRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AIChatServiceCreateSessionRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AIChatServiceCreateSessionRequestMultiError) AllErrors() []error { return m }
+
+// AIChatServiceCreateSessionRequestValidationError is the validation error
+// returned by AIChatServiceCreateSessionRequest.Validate if the designated
+// constraints aren't met.
+type AIChatServiceCreateSessionRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AIChatServiceCreateSessionRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AIChatServiceCreateSessionRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AIChatServiceCreateSessionRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AIChatServiceCreateSessionRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AIChatServiceCreateSessionRequestValidationError) ErrorName() string {
+	return "AIChatServiceCreateSessionRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AIChatServiceCreateSessionRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAIChatServiceCreateSessionRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AIChatServiceCreateSessionRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AIChatServiceCreateSessionRequestValidationError{}
+
+// Validate checks the field values on AIChatServiceCreateSessionResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *AIChatServiceCreateSessionResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AIChatServiceCreateSessionResponse
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// AIChatServiceCreateSessionResponseMultiError, or nil if none found.
+func (m *AIChatServiceCreateSessionResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AIChatServiceCreateSessionResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for SessionId
+
+	// no validation rules for Title
+
+	if all {
+		switch v := interface{}(m.GetCreatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, AIChatServiceCreateSessionResponseValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, AIChatServiceCreateSessionResponseValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return AIChatServiceCreateSessionResponseValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetUpdatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, AIChatServiceCreateSessionResponseValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, AIChatServiceCreateSessionResponseValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return AIChatServiceCreateSessionResponseValidationError{
 				field:  "UpdatedAt",
 				reason: "embedded message failed validation",
 				cause:  err,
@@ -961,19 +665,20 @@ func (m *SessionResponse) validate(all bool) error {
 	// no validation rules for MessageCount
 
 	if len(errors) > 0 {
-		return SessionResponseMultiError(errors)
+		return AIChatServiceCreateSessionResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// SessionResponseMultiError is an error wrapping multiple validation errors
-// returned by SessionResponse.ValidateAll() if the designated constraints
-// aren't met.
-type SessionResponseMultiError []error
+// AIChatServiceCreateSessionResponseMultiError is an error wrapping multiple
+// validation errors returned by
+// AIChatServiceCreateSessionResponse.ValidateAll() if the designated
+// constraints aren't met.
+type AIChatServiceCreateSessionResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m SessionResponseMultiError) Error() string {
+func (m AIChatServiceCreateSessionResponseMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -982,11 +687,12 @@ func (m SessionResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m SessionResponseMultiError) AllErrors() []error { return m }
+func (m AIChatServiceCreateSessionResponseMultiError) AllErrors() []error { return m }
 
-// SessionResponseValidationError is the validation error returned by
-// SessionResponse.Validate if the designated constraints aren't met.
-type SessionResponseValidationError struct {
+// AIChatServiceCreateSessionResponseValidationError is the validation error
+// returned by AIChatServiceCreateSessionResponse.Validate if the designated
+// constraints aren't met.
+type AIChatServiceCreateSessionResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -994,22 +700,24 @@ type SessionResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e SessionResponseValidationError) Field() string { return e.field }
+func (e AIChatServiceCreateSessionResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e SessionResponseValidationError) Reason() string { return e.reason }
+func (e AIChatServiceCreateSessionResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e SessionResponseValidationError) Cause() error { return e.cause }
+func (e AIChatServiceCreateSessionResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e SessionResponseValidationError) Key() bool { return e.key }
+func (e AIChatServiceCreateSessionResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e SessionResponseValidationError) ErrorName() string { return "SessionResponseValidationError" }
+func (e AIChatServiceCreateSessionResponseValidationError) ErrorName() string {
+	return "AIChatServiceCreateSessionResponseValidationError"
+}
 
 // Error satisfies the builtin error interface
-func (e SessionResponseValidationError) Error() string {
+func (e AIChatServiceCreateSessionResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -1021,14 +729,14 @@ func (e SessionResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sSessionResponse.%s: %s%s",
+		"invalid %sAIChatServiceCreateSessionResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = SessionResponseValidationError{}
+var _ error = AIChatServiceCreateSessionResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -1036,50 +744,50 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = SessionResponseValidationError{}
+} = AIChatServiceCreateSessionResponseValidationError{}
 
-// Validate checks the field values on ListSessionsRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *ListSessionsRequest) Validate() error {
+// Validate checks the field values on AIChatServiceListSessionsRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *AIChatServiceListSessionsRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on ListSessionsRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// ListSessionsRequestMultiError, or nil if none found.
-func (m *ListSessionsRequest) ValidateAll() error {
+// ValidateAll checks the field values on AIChatServiceListSessionsRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// AIChatServiceListSessionsRequestMultiError, or nil if none found.
+func (m *AIChatServiceListSessionsRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *ListSessionsRequest) validate(all bool) error {
+func (m *AIChatServiceListSessionsRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
-	// no validation rules for UserId
-
 	// no validation rules for Page
 
 	// no validation rules for PageSize
 
 	if len(errors) > 0 {
-		return ListSessionsRequestMultiError(errors)
+		return AIChatServiceListSessionsRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// ListSessionsRequestMultiError is an error wrapping multiple validation
-// errors returned by ListSessionsRequest.ValidateAll() if the designated
+// AIChatServiceListSessionsRequestMultiError is an error wrapping multiple
+// validation errors returned by
+// AIChatServiceListSessionsRequest.ValidateAll() if the designated
 // constraints aren't met.
-type ListSessionsRequestMultiError []error
+type AIChatServiceListSessionsRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m ListSessionsRequestMultiError) Error() string {
+func (m AIChatServiceListSessionsRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -1088,11 +796,12 @@ func (m ListSessionsRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m ListSessionsRequestMultiError) AllErrors() []error { return m }
+func (m AIChatServiceListSessionsRequestMultiError) AllErrors() []error { return m }
 
-// ListSessionsRequestValidationError is the validation error returned by
-// ListSessionsRequest.Validate if the designated constraints aren't met.
-type ListSessionsRequestValidationError struct {
+// AIChatServiceListSessionsRequestValidationError is the validation error
+// returned by AIChatServiceListSessionsRequest.Validate if the designated
+// constraints aren't met.
+type AIChatServiceListSessionsRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -1100,24 +809,24 @@ type ListSessionsRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e ListSessionsRequestValidationError) Field() string { return e.field }
+func (e AIChatServiceListSessionsRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ListSessionsRequestValidationError) Reason() string { return e.reason }
+func (e AIChatServiceListSessionsRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ListSessionsRequestValidationError) Cause() error { return e.cause }
+func (e AIChatServiceListSessionsRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ListSessionsRequestValidationError) Key() bool { return e.key }
+func (e AIChatServiceListSessionsRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ListSessionsRequestValidationError) ErrorName() string {
-	return "ListSessionsRequestValidationError"
+func (e AIChatServiceListSessionsRequestValidationError) ErrorName() string {
+	return "AIChatServiceListSessionsRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e ListSessionsRequestValidationError) Error() string {
+func (e AIChatServiceListSessionsRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -1129,14 +838,14 @@ func (e ListSessionsRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sListSessionsRequest.%s: %s%s",
+		"invalid %sAIChatServiceListSessionsRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ListSessionsRequestValidationError{}
+var _ error = AIChatServiceListSessionsRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -1144,24 +853,25 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ListSessionsRequestValidationError{}
+} = AIChatServiceListSessionsRequestValidationError{}
 
-// Validate checks the field values on ListSessionsResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *ListSessionsResponse) Validate() error {
+// Validate checks the field values on AIChatServiceListSessionsResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *AIChatServiceListSessionsResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on ListSessionsResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// ListSessionsResponseMultiError, or nil if none found.
-func (m *ListSessionsResponse) ValidateAll() error {
+// ValidateAll checks the field values on AIChatServiceListSessionsResponse
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// AIChatServiceListSessionsResponseMultiError, or nil if none found.
+func (m *AIChatServiceListSessionsResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *ListSessionsResponse) validate(all bool) error {
+func (m *AIChatServiceListSessionsResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -1175,7 +885,7 @@ func (m *ListSessionsResponse) validate(all bool) error {
 			switch v := interface{}(item).(type) {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, ListSessionsResponseValidationError{
+					errors = append(errors, AIChatServiceListSessionsResponseValidationError{
 						field:  fmt.Sprintf("Sessions[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -1183,7 +893,7 @@ func (m *ListSessionsResponse) validate(all bool) error {
 				}
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
-					errors = append(errors, ListSessionsResponseValidationError{
+					errors = append(errors, AIChatServiceListSessionsResponseValidationError{
 						field:  fmt.Sprintf("Sessions[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -1192,7 +902,7 @@ func (m *ListSessionsResponse) validate(all bool) error {
 			}
 		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				return ListSessionsResponseValidationError{
+				return AIChatServiceListSessionsResponseValidationError{
 					field:  fmt.Sprintf("Sessions[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -1209,19 +919,20 @@ func (m *ListSessionsResponse) validate(all bool) error {
 	// no validation rules for PageSize
 
 	if len(errors) > 0 {
-		return ListSessionsResponseMultiError(errors)
+		return AIChatServiceListSessionsResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// ListSessionsResponseMultiError is an error wrapping multiple validation
-// errors returned by ListSessionsResponse.ValidateAll() if the designated
+// AIChatServiceListSessionsResponseMultiError is an error wrapping multiple
+// validation errors returned by
+// AIChatServiceListSessionsResponse.ValidateAll() if the designated
 // constraints aren't met.
-type ListSessionsResponseMultiError []error
+type AIChatServiceListSessionsResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m ListSessionsResponseMultiError) Error() string {
+func (m AIChatServiceListSessionsResponseMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -1230,11 +941,12 @@ func (m ListSessionsResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m ListSessionsResponseMultiError) AllErrors() []error { return m }
+func (m AIChatServiceListSessionsResponseMultiError) AllErrors() []error { return m }
 
-// ListSessionsResponseValidationError is the validation error returned by
-// ListSessionsResponse.Validate if the designated constraints aren't met.
-type ListSessionsResponseValidationError struct {
+// AIChatServiceListSessionsResponseValidationError is the validation error
+// returned by AIChatServiceListSessionsResponse.Validate if the designated
+// constraints aren't met.
+type AIChatServiceListSessionsResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -1242,24 +954,24 @@ type ListSessionsResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e ListSessionsResponseValidationError) Field() string { return e.field }
+func (e AIChatServiceListSessionsResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ListSessionsResponseValidationError) Reason() string { return e.reason }
+func (e AIChatServiceListSessionsResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ListSessionsResponseValidationError) Cause() error { return e.cause }
+func (e AIChatServiceListSessionsResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ListSessionsResponseValidationError) Key() bool { return e.key }
+func (e AIChatServiceListSessionsResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ListSessionsResponseValidationError) ErrorName() string {
-	return "ListSessionsResponseValidationError"
+func (e AIChatServiceListSessionsResponseValidationError) ErrorName() string {
+	return "AIChatServiceListSessionsResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e ListSessionsResponseValidationError) Error() string {
+func (e AIChatServiceListSessionsResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -1271,14 +983,14 @@ func (e ListSessionsResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sListSessionsResponse.%s: %s%s",
+		"invalid %sAIChatServiceListSessionsResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ListSessionsResponseValidationError{}
+var _ error = AIChatServiceListSessionsResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -1286,154 +998,46 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ListSessionsResponseValidationError{}
+} = AIChatServiceListSessionsResponseValidationError{}
 
-// Validate checks the field values on GetSessionRequest with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// first error encountered is returned, or nil if there are no violations.
-func (m *GetSessionRequest) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on GetSessionRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// GetSessionRequestMultiError, or nil if none found.
-func (m *GetSessionRequest) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *GetSessionRequest) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for UserId
-
-	// no validation rules for SessionId
-
-	if len(errors) > 0 {
-		return GetSessionRequestMultiError(errors)
-	}
-
-	return nil
-}
-
-// GetSessionRequestMultiError is an error wrapping multiple validation errors
-// returned by GetSessionRequest.ValidateAll() if the designated constraints
-// aren't met.
-type GetSessionRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m GetSessionRequestMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m GetSessionRequestMultiError) AllErrors() []error { return m }
-
-// GetSessionRequestValidationError is the validation error returned by
-// GetSessionRequest.Validate if the designated constraints aren't met.
-type GetSessionRequestValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e GetSessionRequestValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e GetSessionRequestValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e GetSessionRequestValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e GetSessionRequestValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e GetSessionRequestValidationError) ErrorName() string {
-	return "GetSessionRequestValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e GetSessionRequestValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sGetSessionRequest.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = GetSessionRequestValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = GetSessionRequestValidationError{}
-
-// Validate checks the field values on DeleteSessionRequest with the rules
-// defined in the proto definition for this message. If any rules are
+// Validate checks the field values on AIChatServiceGetSessionRequest with the
+// rules defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *DeleteSessionRequest) Validate() error {
+func (m *AIChatServiceGetSessionRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on DeleteSessionRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// DeleteSessionRequestMultiError, or nil if none found.
-func (m *DeleteSessionRequest) ValidateAll() error {
+// ValidateAll checks the field values on AIChatServiceGetSessionRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// AIChatServiceGetSessionRequestMultiError, or nil if none found.
+func (m *AIChatServiceGetSessionRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *DeleteSessionRequest) validate(all bool) error {
+func (m *AIChatServiceGetSessionRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
-	// no validation rules for UserId
-
 	// no validation rules for SessionId
 
 	if len(errors) > 0 {
-		return DeleteSessionRequestMultiError(errors)
+		return AIChatServiceGetSessionRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// DeleteSessionRequestMultiError is an error wrapping multiple validation
-// errors returned by DeleteSessionRequest.ValidateAll() if the designated
-// constraints aren't met.
-type DeleteSessionRequestMultiError []error
+// AIChatServiceGetSessionRequestMultiError is an error wrapping multiple
+// validation errors returned by AIChatServiceGetSessionRequest.ValidateAll()
+// if the designated constraints aren't met.
+type AIChatServiceGetSessionRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m DeleteSessionRequestMultiError) Error() string {
+func (m AIChatServiceGetSessionRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -1442,11 +1046,12 @@ func (m DeleteSessionRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m DeleteSessionRequestMultiError) AllErrors() []error { return m }
+func (m AIChatServiceGetSessionRequestMultiError) AllErrors() []error { return m }
 
-// DeleteSessionRequestValidationError is the validation error returned by
-// DeleteSessionRequest.Validate if the designated constraints aren't met.
-type DeleteSessionRequestValidationError struct {
+// AIChatServiceGetSessionRequestValidationError is the validation error
+// returned by AIChatServiceGetSessionRequest.Validate if the designated
+// constraints aren't met.
+type AIChatServiceGetSessionRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -1454,24 +1059,24 @@ type DeleteSessionRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e DeleteSessionRequestValidationError) Field() string { return e.field }
+func (e AIChatServiceGetSessionRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e DeleteSessionRequestValidationError) Reason() string { return e.reason }
+func (e AIChatServiceGetSessionRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e DeleteSessionRequestValidationError) Cause() error { return e.cause }
+func (e AIChatServiceGetSessionRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e DeleteSessionRequestValidationError) Key() bool { return e.key }
+func (e AIChatServiceGetSessionRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e DeleteSessionRequestValidationError) ErrorName() string {
-	return "DeleteSessionRequestValidationError"
+func (e AIChatServiceGetSessionRequestValidationError) ErrorName() string {
+	return "AIChatServiceGetSessionRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e DeleteSessionRequestValidationError) Error() string {
+func (e AIChatServiceGetSessionRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -1483,14 +1088,14 @@ func (e DeleteSessionRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sDeleteSessionRequest.%s: %s%s",
+		"invalid %sAIChatServiceGetSessionRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = DeleteSessionRequestValidationError{}
+var _ error = AIChatServiceGetSessionRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -1498,4 +1103,348 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = DeleteSessionRequestValidationError{}
+} = AIChatServiceGetSessionRequestValidationError{}
+
+// Validate checks the field values on AIChatServiceGetSessionResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AIChatServiceGetSessionResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AIChatServiceGetSessionResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// AIChatServiceGetSessionResponseMultiError, or nil if none found.
+func (m *AIChatServiceGetSessionResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AIChatServiceGetSessionResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetSession()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, AIChatServiceGetSessionResponseValidationError{
+					field:  "Session",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, AIChatServiceGetSessionResponseValidationError{
+					field:  "Session",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetSession()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return AIChatServiceGetSessionResponseValidationError{
+				field:  "Session",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return AIChatServiceGetSessionResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// AIChatServiceGetSessionResponseMultiError is an error wrapping multiple
+// validation errors returned by AIChatServiceGetSessionResponse.ValidateAll()
+// if the designated constraints aren't met.
+type AIChatServiceGetSessionResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AIChatServiceGetSessionResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AIChatServiceGetSessionResponseMultiError) AllErrors() []error { return m }
+
+// AIChatServiceGetSessionResponseValidationError is the validation error
+// returned by AIChatServiceGetSessionResponse.Validate if the designated
+// constraints aren't met.
+type AIChatServiceGetSessionResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AIChatServiceGetSessionResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AIChatServiceGetSessionResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AIChatServiceGetSessionResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AIChatServiceGetSessionResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AIChatServiceGetSessionResponseValidationError) ErrorName() string {
+	return "AIChatServiceGetSessionResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AIChatServiceGetSessionResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAIChatServiceGetSessionResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AIChatServiceGetSessionResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AIChatServiceGetSessionResponseValidationError{}
+
+// Validate checks the field values on AIChatServiceDeleteSessionRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *AIChatServiceDeleteSessionRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AIChatServiceDeleteSessionRequest
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// AIChatServiceDeleteSessionRequestMultiError, or nil if none found.
+func (m *AIChatServiceDeleteSessionRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AIChatServiceDeleteSessionRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for SessionId
+
+	if len(errors) > 0 {
+		return AIChatServiceDeleteSessionRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// AIChatServiceDeleteSessionRequestMultiError is an error wrapping multiple
+// validation errors returned by
+// AIChatServiceDeleteSessionRequest.ValidateAll() if the designated
+// constraints aren't met.
+type AIChatServiceDeleteSessionRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AIChatServiceDeleteSessionRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AIChatServiceDeleteSessionRequestMultiError) AllErrors() []error { return m }
+
+// AIChatServiceDeleteSessionRequestValidationError is the validation error
+// returned by AIChatServiceDeleteSessionRequest.Validate if the designated
+// constraints aren't met.
+type AIChatServiceDeleteSessionRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AIChatServiceDeleteSessionRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AIChatServiceDeleteSessionRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AIChatServiceDeleteSessionRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AIChatServiceDeleteSessionRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AIChatServiceDeleteSessionRequestValidationError) ErrorName() string {
+	return "AIChatServiceDeleteSessionRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AIChatServiceDeleteSessionRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAIChatServiceDeleteSessionRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AIChatServiceDeleteSessionRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AIChatServiceDeleteSessionRequestValidationError{}
+
+// Validate checks the field values on AIChatServiceDeleteSessionResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *AIChatServiceDeleteSessionResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AIChatServiceDeleteSessionResponse
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// AIChatServiceDeleteSessionResponseMultiError, or nil if none found.
+func (m *AIChatServiceDeleteSessionResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AIChatServiceDeleteSessionResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return AIChatServiceDeleteSessionResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// AIChatServiceDeleteSessionResponseMultiError is an error wrapping multiple
+// validation errors returned by
+// AIChatServiceDeleteSessionResponse.ValidateAll() if the designated
+// constraints aren't met.
+type AIChatServiceDeleteSessionResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AIChatServiceDeleteSessionResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AIChatServiceDeleteSessionResponseMultiError) AllErrors() []error { return m }
+
+// AIChatServiceDeleteSessionResponseValidationError is the validation error
+// returned by AIChatServiceDeleteSessionResponse.Validate if the designated
+// constraints aren't met.
+type AIChatServiceDeleteSessionResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AIChatServiceDeleteSessionResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AIChatServiceDeleteSessionResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AIChatServiceDeleteSessionResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AIChatServiceDeleteSessionResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AIChatServiceDeleteSessionResponseValidationError) ErrorName() string {
+	return "AIChatServiceDeleteSessionResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AIChatServiceDeleteSessionResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAIChatServiceDeleteSessionResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AIChatServiceDeleteSessionResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AIChatServiceDeleteSessionResponseValidationError{}

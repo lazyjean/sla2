@@ -9,13 +9,11 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	pb "github.com/lazyjean/sla2/api/proto/v1"
 	"github.com/lazyjean/sla2/internal/application/service"
 	"github.com/lazyjean/sla2/internal/domain/entity"
 	"github.com/lazyjean/sla2/internal/domain/security"
 	"github.com/lazyjean/sla2/pkg/logger"
 	"go.uber.org/zap"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // StopStreamRequest 定义停止流请求结构体
@@ -25,8 +23,8 @@ type StopStreamRequest struct {
 
 // AIServiceInterface 定义 AIService 接口，方便测试
 type AIServiceInterface interface {
-	Chat(ctx context.Context, userID string, message string, chatContext *service.ChatContext) (*service.ChatResponse, error)
-	StreamChat(ctx context.Context, userID string, message string, chatContext *service.ChatContext) (<-chan *service.ChatResponse, error)
+	Chat(ctx context.Context, sessionID entity.SessionID, message string) (*service.ChatResponse, error)
+	StreamChat(ctx context.Context, sessionID entity.SessionID, message string) (<-chan *service.ChatResponse, error)
 }
 
 // TokenServiceInterface 定义 TokenService 接口，方便测试
@@ -54,6 +52,19 @@ func NewUnifiedChatHandler(aiService *service.AIService, tokenService security.T
 			},
 		},
 	}
+}
+
+// WebSocketMessage 定义 WebSocket 通信的消息结构体
+type WebSocketMessage struct {
+	Type      string `json:"type"`
+	Action    string `json:"action"`
+	Message   string `json:"message"`
+	Role      string `json:"role,omitempty"`
+	SessionID uint64 `json:"session_id"`
+	StreamID  string `json:"stream_id"`
+	Error     string `json:"error,omitempty"`
+	IsFinal   bool   `json:"is_final"`
+	Timestamp int64  `json:"timestamp"`
 }
 
 // HandleWebSocket 处理 WebSocket 连接
@@ -99,16 +110,8 @@ func (h *UnifiedChatHandler) handleConnection(ctx context.Context, conn *websock
 			break
 		}
 
-		// 尝试解析为 protobuf 消息
-		var protoReq pb.StreamChatRequest
-		if err := json.Unmarshal(message, &protoReq); err == nil && protoReq.StreamId != "" {
-			// 处理 protobuf 格式的消息
-			go h.handleProtobufMessage(ctx, conn, userID, &protoReq)
-			continue
-		}
-
-		// 尝试解析为普通聊天消息
-		var chatMsg ChatMessage
+		// 解析为普通聊天消息
+		var chatMsg WebSocketMessage
 		if err := json.Unmarshal(message, &chatMsg); err != nil {
 			log.Error("解析消息失败", zap.Error(err))
 			h.sendErrorMessage(conn, "消息格式错误")
@@ -120,7 +123,7 @@ func (h *UnifiedChatHandler) handleConnection(ctx context.Context, conn *websock
 			if h.cancelStream(chatMsg.StreamID) {
 				log.Info("流已终止", zap.String("streamId", chatMsg.StreamID))
 				// 发送终止确认消息
-				endMsg := ChatMessage{
+				endMsg := WebSocketMessage{
 					Type:      "stream",
 					Action:    "end",
 					SessionID: chatMsg.SessionID,
@@ -139,90 +142,17 @@ func (h *UnifiedChatHandler) handleConnection(ctx context.Context, conn *websock
 			continue
 		}
 
-		// 检查是否是protobuf格式的终止消息
-		var stopReq StopStreamRequest
-		if err := json.Unmarshal(message, &stopReq); err == nil && stopReq.StreamId != "" {
-			if h.cancelStream(stopReq.StreamId) {
-				log.Info("流已终止(protobuf)", zap.String("streamId", stopReq.StreamId))
-				// 发送终止确认消息
-				conn.WriteJSON(&pb.ChatResponse{
-					StreamId:  stopReq.StreamId,
-					IsFinal:   true,
-					Message:   "Stream terminated by client request",
-					Code:      pb.StatusCode_STATUS_OK,
-					CreatedAt: timestamppb.New(time.Now()),
-				})
-			} else {
-				log.Warn("尝试终止不存在的流(protobuf)", zap.String("streamId", stopReq.StreamId))
-				conn.WriteJSON(&pb.ChatResponse{
-					StreamId:  stopReq.StreamId,
-					IsFinal:   true,
-					Message:   "Stream not found",
-					Code:      pb.StatusCode_STREAM_ERROR,
-					CreatedAt: timestamppb.New(time.Now()),
-				})
-			}
-			continue
-		}
-
 		// 处理普通聊天消息
 		go h.handleChatMessage(ctx, conn, userID, &chatMsg)
 	}
 }
 
-// handleProtobufMessage 处理 protobuf 格式的消息
-func (h *UnifiedChatHandler) handleProtobufMessage(ctx context.Context, conn *websocket.Conn, userID string, req *pb.StreamChatRequest) {
-	log := logger.GetLogger(ctx)
-
-	// 调用流式处理
-	responseChan, err := h.aiService.StreamChat(ctx, userID, req.Message, &service.ChatContext{
-		SessionID: req.Context.GetSessionId(),
-		History:   req.Context.GetHistory(),
-	})
-
-	if err != nil {
-		log.Error("启动流式聊天失败", zap.Error(err))
-		conn.WriteJSON(&pb.ChatResponse{
-			StreamId:  req.GetStreamId(),
-			IsFinal:   true,
-			Code:      pb.StatusCode_INTERNAL_ERROR,
-			ErrorMsg:  err.Error(),
-			CreatedAt: timestamppb.New(time.Now()),
-		})
-		return
-	}
-
-	// 处理流式响应
-	for response := range responseChan {
-		resp := &pb.ChatResponse{
-			Message:   response.Message,
-			StreamId:  req.GetStreamId(),
-			IsFinal:   false,
-			Code:      pb.StatusCode_STATUS_OK,
-			CreatedAt: timestamppb.New(time.Unix(response.CreatedAt, 0)),
-		}
-
-		if err := conn.WriteJSON(resp); err != nil {
-			log.Error("发送消息失败", zap.Error(err))
-			return
-		}
-	}
-
-	// 发送结束消息
-	conn.WriteJSON(&pb.ChatResponse{
-		StreamId:  req.GetStreamId(),
-		IsFinal:   true,
-		Code:      pb.StatusCode_STATUS_OK,
-		CreatedAt: timestamppb.New(time.Now()),
-	})
-}
-
 // handleChatMessage 处理普通聊天消息
-func (h *UnifiedChatHandler) handleChatMessage(ctx context.Context, conn *websocket.Conn, userID string, msg *ChatMessage) {
+func (h *UnifiedChatHandler) handleChatMessage(ctx context.Context, conn *websocket.Conn, userID string, msg *WebSocketMessage) {
 	log := logger.GetLogger(ctx)
 
 	// 发送开始消息
-	startMsg := ChatMessage{
+	startMsg := WebSocketMessage{
 		Type:      "stream",
 		Action:    "start",
 		SessionID: msg.SessionID,
@@ -235,7 +165,7 @@ func (h *UnifiedChatHandler) handleChatMessage(ctx context.Context, conn *websoc
 	}
 
 	// 调用 AI 服务进行聊天
-	responseChan, err := h.aiService.StreamChat(ctx, userID, msg.Message, msg.Context)
+	responseChan, err := h.aiService.StreamChat(ctx, entity.SessionID(msg.SessionID), msg.Message)
 	if err != nil {
 		log.Error("AI 聊天失败", zap.Error(err))
 		h.sendErrorMessage(conn, "AI 服务暂时不可用")
@@ -244,7 +174,7 @@ func (h *UnifiedChatHandler) handleChatMessage(ctx context.Context, conn *websoc
 
 	// 发送流式响应
 	for response := range responseChan {
-		chatResp := ChatMessage{
+		chatResp := WebSocketMessage{
 			Type:      "stream",
 			Action:    "message",
 			Message:   response.Message,
@@ -262,7 +192,7 @@ func (h *UnifiedChatHandler) handleChatMessage(ctx context.Context, conn *websoc
 	}
 
 	// 发送结束消息
-	endMsg := ChatMessage{
+	endMsg := WebSocketMessage{
 		Type:      "stream",
 		Action:    "end",
 		SessionID: msg.SessionID,
@@ -277,7 +207,7 @@ func (h *UnifiedChatHandler) handleChatMessage(ctx context.Context, conn *websoc
 
 // sendErrorMessage 发送错误消息
 func (h *UnifiedChatHandler) sendErrorMessage(conn *websocket.Conn, errMsg string) {
-	errorResp := ChatMessage{
+	errorResp := WebSocketMessage{
 		Type:      "stream",
 		Action:    "error",
 		Error:     errMsg,
@@ -289,8 +219,8 @@ func (h *UnifiedChatHandler) sendErrorMessage(conn *websocket.Conn, errMsg strin
 
 // Broadcast 向所有连接广播系统消息
 func (h *UnifiedChatHandler) Broadcast(message string) {
-	sysMsg := ChatMessage{
-		Type:      "system",
+	sysMsg := WebSocketMessage{
+		Type:      "stream",
 		Action:    "message",
 		Message:   message,
 		Role:      "system",

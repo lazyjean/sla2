@@ -34,7 +34,11 @@ func NewTestWebSocketServer(t *testing.T, handler http.HandlerFunc) *TestWebSock
 }
 
 func (s *TestWebSocketServer) Connect(t *testing.T) *websocket.Conn {
-	conn, _, err := websocket.DefaultDialer.Dial(s.URL, nil)
+	// 模拟JWT token
+	header := http.Header{}
+	header.Add("Authorization", "Bearer test-token")
+
+	conn, _, err := websocket.DefaultDialer.Dial(s.URL, header)
 	require.NoError(t, err)
 	return conn
 }

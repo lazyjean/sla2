@@ -56,8 +56,8 @@ func InitializeApp(cfg *config.Config) (*App, error) {
 	deepSeekConfig := ProvideDeepSeekConfig(cfg)
 	logger := ProvideLogger()
 	deepSeekService := ai.NewDeepSeekService(deepSeekConfig, logger)
-	chatHistoryRepository := postgres.NewChatHistoryRepository(db)
-	aiService := service.NewAIService(deepSeekService, chatHistoryRepository)
+	aiChatSessionRepository := postgres.NewAiChatSessionRepository(db)
+	aiService := service.NewAIService(deepSeekService, aiChatSessionRepository)
 	server := grpc.NewServer(adminService, userService, wordService, learningService, courseService, questionService, questionTagService, aiService, tokenService, cfg)
 	app := NewApp(server, cfg, tokenService, appleAuthService)
 	return app, nil
@@ -93,7 +93,7 @@ var dbSet = wire.NewSet(postgres.NewDB)
 var cacheSet = wire.NewSet(redis.NewRedisCache)
 
 // 仓储集
-var repositorySet = wire.NewSet(postgres.NewWordRepository, postgres.NewCachedWordRepository, postgres.NewLearningRepository, postgres.NewUserRepository, postgres.NewCourseRepository, postgres.NewCourseSectionRepository, postgres.NewAdminRepository, postgres.NewQuestionTagRepository, postgres.NewQuestionRepository, postgres.NewChatHistoryRepository)
+var repositorySet = wire.NewSet(postgres.NewWordRepository, postgres.NewCachedWordRepository, postgres.NewLearningRepository, postgres.NewUserRepository, postgres.NewCourseRepository, postgres.NewCourseSectionRepository, postgres.NewAdminRepository, postgres.NewQuestionTagRepository, postgres.NewQuestionRepository, postgres.NewAiChatSessionRepository)
 
 // AI 服务集
 var aiSet = wire.NewSet(service.NewAIService, ai.NewDeepSeekService, wire.Bind(new(service.DeepSeekService), new(*ai.DeepSeekService)), ProvideLogger,

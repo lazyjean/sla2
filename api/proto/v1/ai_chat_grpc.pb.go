@@ -11,7 +11,6 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -31,10 +30,10 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AIChatServiceClient interface {
 	// Session Management APIs
-	CreateSession(ctx context.Context, in *CreateSessionRequest, opts ...grpc.CallOption) (*SessionResponse, error)
-	ListSessions(ctx context.Context, in *ListSessionsRequest, opts ...grpc.CallOption) (*ListSessionsResponse, error)
-	GetSession(ctx context.Context, in *GetSessionRequest, opts ...grpc.CallOption) (*SessionResponse, error)
-	DeleteSession(ctx context.Context, in *DeleteSessionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	CreateSession(ctx context.Context, in *AIChatServiceCreateSessionRequest, opts ...grpc.CallOption) (*AIChatServiceCreateSessionResponse, error)
+	ListSessions(ctx context.Context, in *AIChatServiceListSessionsRequest, opts ...grpc.CallOption) (*AIChatServiceListSessionsResponse, error)
+	GetSession(ctx context.Context, in *AIChatServiceGetSessionRequest, opts ...grpc.CallOption) (*AIChatServiceGetSessionResponse, error)
+	DeleteSession(ctx context.Context, in *AIChatServiceDeleteSessionRequest, opts ...grpc.CallOption) (*AIChatServiceDeleteSessionResponse, error)
 }
 
 type aIChatServiceClient struct {
@@ -45,9 +44,9 @@ func NewAIChatServiceClient(cc grpc.ClientConnInterface) AIChatServiceClient {
 	return &aIChatServiceClient{cc}
 }
 
-func (c *aIChatServiceClient) CreateSession(ctx context.Context, in *CreateSessionRequest, opts ...grpc.CallOption) (*SessionResponse, error) {
+func (c *aIChatServiceClient) CreateSession(ctx context.Context, in *AIChatServiceCreateSessionRequest, opts ...grpc.CallOption) (*AIChatServiceCreateSessionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SessionResponse)
+	out := new(AIChatServiceCreateSessionResponse)
 	err := c.cc.Invoke(ctx, AIChatService_CreateSession_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -55,9 +54,9 @@ func (c *aIChatServiceClient) CreateSession(ctx context.Context, in *CreateSessi
 	return out, nil
 }
 
-func (c *aIChatServiceClient) ListSessions(ctx context.Context, in *ListSessionsRequest, opts ...grpc.CallOption) (*ListSessionsResponse, error) {
+func (c *aIChatServiceClient) ListSessions(ctx context.Context, in *AIChatServiceListSessionsRequest, opts ...grpc.CallOption) (*AIChatServiceListSessionsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListSessionsResponse)
+	out := new(AIChatServiceListSessionsResponse)
 	err := c.cc.Invoke(ctx, AIChatService_ListSessions_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -65,9 +64,9 @@ func (c *aIChatServiceClient) ListSessions(ctx context.Context, in *ListSessions
 	return out, nil
 }
 
-func (c *aIChatServiceClient) GetSession(ctx context.Context, in *GetSessionRequest, opts ...grpc.CallOption) (*SessionResponse, error) {
+func (c *aIChatServiceClient) GetSession(ctx context.Context, in *AIChatServiceGetSessionRequest, opts ...grpc.CallOption) (*AIChatServiceGetSessionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SessionResponse)
+	out := new(AIChatServiceGetSessionResponse)
 	err := c.cc.Invoke(ctx, AIChatService_GetSession_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -75,9 +74,9 @@ func (c *aIChatServiceClient) GetSession(ctx context.Context, in *GetSessionRequ
 	return out, nil
 }
 
-func (c *aIChatServiceClient) DeleteSession(ctx context.Context, in *DeleteSessionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *aIChatServiceClient) DeleteSession(ctx context.Context, in *AIChatServiceDeleteSessionRequest, opts ...grpc.CallOption) (*AIChatServiceDeleteSessionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
+	out := new(AIChatServiceDeleteSessionResponse)
 	err := c.cc.Invoke(ctx, AIChatService_DeleteSession_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -90,10 +89,10 @@ func (c *aIChatServiceClient) DeleteSession(ctx context.Context, in *DeleteSessi
 // for forward compatibility.
 type AIChatServiceServer interface {
 	// Session Management APIs
-	CreateSession(context.Context, *CreateSessionRequest) (*SessionResponse, error)
-	ListSessions(context.Context, *ListSessionsRequest) (*ListSessionsResponse, error)
-	GetSession(context.Context, *GetSessionRequest) (*SessionResponse, error)
-	DeleteSession(context.Context, *DeleteSessionRequest) (*emptypb.Empty, error)
+	CreateSession(context.Context, *AIChatServiceCreateSessionRequest) (*AIChatServiceCreateSessionResponse, error)
+	ListSessions(context.Context, *AIChatServiceListSessionsRequest) (*AIChatServiceListSessionsResponse, error)
+	GetSession(context.Context, *AIChatServiceGetSessionRequest) (*AIChatServiceGetSessionResponse, error)
+	DeleteSession(context.Context, *AIChatServiceDeleteSessionRequest) (*AIChatServiceDeleteSessionResponse, error)
 	mustEmbedUnimplementedAIChatServiceServer()
 }
 
@@ -104,16 +103,16 @@ type AIChatServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedAIChatServiceServer struct{}
 
-func (UnimplementedAIChatServiceServer) CreateSession(context.Context, *CreateSessionRequest) (*SessionResponse, error) {
+func (UnimplementedAIChatServiceServer) CreateSession(context.Context, *AIChatServiceCreateSessionRequest) (*AIChatServiceCreateSessionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateSession not implemented")
 }
-func (UnimplementedAIChatServiceServer) ListSessions(context.Context, *ListSessionsRequest) (*ListSessionsResponse, error) {
+func (UnimplementedAIChatServiceServer) ListSessions(context.Context, *AIChatServiceListSessionsRequest) (*AIChatServiceListSessionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListSessions not implemented")
 }
-func (UnimplementedAIChatServiceServer) GetSession(context.Context, *GetSessionRequest) (*SessionResponse, error) {
+func (UnimplementedAIChatServiceServer) GetSession(context.Context, *AIChatServiceGetSessionRequest) (*AIChatServiceGetSessionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSession not implemented")
 }
-func (UnimplementedAIChatServiceServer) DeleteSession(context.Context, *DeleteSessionRequest) (*emptypb.Empty, error) {
+func (UnimplementedAIChatServiceServer) DeleteSession(context.Context, *AIChatServiceDeleteSessionRequest) (*AIChatServiceDeleteSessionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteSession not implemented")
 }
 func (UnimplementedAIChatServiceServer) mustEmbedUnimplementedAIChatServiceServer() {}
@@ -138,7 +137,7 @@ func RegisterAIChatServiceServer(s grpc.ServiceRegistrar, srv AIChatServiceServe
 }
 
 func _AIChatService_CreateSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateSessionRequest)
+	in := new(AIChatServiceCreateSessionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -150,13 +149,13 @@ func _AIChatService_CreateSession_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: AIChatService_CreateSession_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AIChatServiceServer).CreateSession(ctx, req.(*CreateSessionRequest))
+		return srv.(AIChatServiceServer).CreateSession(ctx, req.(*AIChatServiceCreateSessionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _AIChatService_ListSessions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListSessionsRequest)
+	in := new(AIChatServiceListSessionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -168,13 +167,13 @@ func _AIChatService_ListSessions_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: AIChatService_ListSessions_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AIChatServiceServer).ListSessions(ctx, req.(*ListSessionsRequest))
+		return srv.(AIChatServiceServer).ListSessions(ctx, req.(*AIChatServiceListSessionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _AIChatService_GetSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetSessionRequest)
+	in := new(AIChatServiceGetSessionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -186,13 +185,13 @@ func _AIChatService_GetSession_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: AIChatService_GetSession_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AIChatServiceServer).GetSession(ctx, req.(*GetSessionRequest))
+		return srv.(AIChatServiceServer).GetSession(ctx, req.(*AIChatServiceGetSessionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _AIChatService_DeleteSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteSessionRequest)
+	in := new(AIChatServiceDeleteSessionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -204,7 +203,7 @@ func _AIChatService_DeleteSession_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: AIChatService_DeleteSession_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AIChatServiceServer).DeleteSession(ctx, req.(*DeleteSessionRequest))
+		return srv.(AIChatServiceServer).DeleteSession(ctx, req.(*AIChatServiceDeleteSessionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

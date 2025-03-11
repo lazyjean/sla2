@@ -32,8 +32,7 @@ func setupTestDB(t *testing.T) (*gorm.DB, func()) {
 		&entity.CourseLearningProgress{},
 		&entity.CourseSectionProgress{},
 		&entity.CourseSectionUnitProgress{},
-		&ChatHistoryRecordPG{}, // 添加聊天历史记录表
-		&ChatSessionPG{},       // 添加聊天会话表
+		&entity.AiChatSession{}, // 添加聊天会话表
 	)
 	require.NoError(t, err)
 
@@ -62,8 +61,7 @@ func cleanTestData(t *testing.T, db *gorm.DB) {
 		"course_learning_progresses",
 		"course_section_progresses",
 		"course_section_unit_progresses",
-		"chat_histories", // 添加聊天历史表
-		"chat_sessions",  // 添加聊天会话表
+		"ai_chat_sessions", // 添加聊天会话表
 	}
 
 	for _, table := range tables {
