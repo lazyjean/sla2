@@ -66,10 +66,14 @@ func NewServer(
 ) *Server {
 	// 创建拦截器
 	unaryInterceptor := middleware.UnaryServerInterceptor(tokenService)
+	loggingInterceptor := middleware.LoggingUnaryServerInterceptor()
 
-	// 创建 gRPC 服务器
+	// 创建 gRPC 服务器，使用链式拦截器
 	grpcServer := grpc.NewServer(
-		grpc.UnaryInterceptor(unaryInterceptor),
+		grpc.ChainUnaryInterceptor(
+			loggingInterceptor, // 先记录日志
+			unaryInterceptor,   // 再进行认证
+		),
 	)
 
 	// 创建统一的 WebSocket 聊天处理器
@@ -190,25 +194,25 @@ func (s *Server) Start() error {
 		// 创建 HTTP 路由
 		router := http.NewServeMux()
 
-		// 注册 WebSocket 处理器
-		router.HandleFunc("/ws/chat", s.chatHandler.HandleWebSocket)
+		// 注册 WebSocket 处理器，添加日志中间件
+		router.Handle("/ws/chat", middleware.HTTPLoggingMiddleware(http.HandlerFunc(s.chatHandler.HandleWebSocket)))
 
-		// 注册 Swagger UI 处理器
+		// 注册 Swagger UI 处理器，添加日志中间件和基本认证
 		swaggerHandler := httpSwagger.Handler(
 			httpSwagger.URL(fmt.Sprintf("http://localhost:%d/swagger/doc.json", s.config.GRPC.GatewayPort)),
 			httpSwagger.DeepLinking(true),
 			httpSwagger.DocExpansion("none"),
 			httpSwagger.DomID("swagger-ui"),
 		)
-		router.Handle("/swagger/", s.basicAuth(swaggerHandler))
+		router.Handle("/swagger/", middleware.HTTPLoggingMiddleware(s.basicAuth(swaggerHandler)))
 
-		// 注册 swagger.json 文件处理
-		router.HandleFunc("/swagger/doc.json", func(w http.ResponseWriter, r *http.Request) {
+		// 注册 swagger.json 文件处理，添加日志中间件
+		router.Handle("/swagger/doc.json", middleware.HTTPLoggingMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
 			http.ServeFile(w, r, "api/swagger/swagger.json")
-		})
+		})))
 
-		// 注册 gRPC-Gateway 处理器
+		// 注册 gRPC-Gateway 处理器（不需要日志中间件，因为请求会转发到 gRPC）
 		router.Handle("/", mux)
 
 		// 创建 HTTP 服务器
