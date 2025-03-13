@@ -7,7 +7,6 @@ import (
 	"github.com/lazyjean/sla2/internal/application/service"
 	"github.com/lazyjean/sla2/internal/domain/entity"
 	"github.com/lazyjean/sla2/internal/domain/security"
-	"github.com/lazyjean/sla2/internal/pkg/auth"
 	"github.com/lazyjean/sla2/pkg/logger"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
@@ -60,7 +59,7 @@ func (s *AIService) CreateSession(ctx context.Context, req *pb.AIChatServiceCrea
 // ListSessions 获取用户的会话列表
 func (s *AIService) ListSessions(ctx context.Context, req *pb.AIChatServiceListSessionsRequest) (*pb.AIChatServiceListSessionsResponse, error) {
 	log := logger.GetLogger(ctx)
-	userID, err := auth.GetUserID(ctx)
+	userID, err := service.GetUserID(ctx)
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, "get user id from context failed")
 	}

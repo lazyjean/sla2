@@ -167,10 +167,13 @@ func (s *AdminService) RefreshToken(ctx context.Context, req *dto.RefreshTokenRe
 
 // GetCurrentAdminInfo 获取当前管理员信息
 func (s *AdminService) GetCurrentAdminInfo(ctx context.Context) (*dto.AdminInfoResponse, error) {
-	adminID := ctx.Value("user_id").(entity.UID)
+	userID, err := GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
 
 	// 获取管理员信息
-	admin, err := s.adminService.GetAdminByID(ctx, adminID)
+	admin, err := s.adminService.GetAdminByID(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -189,13 +192,18 @@ var (
 	ErrInvalidCredentials       = errors.New("invalid credentials")
 	ErrAdminNotFound            = errors.New("admin not found")
 	ErrUnauthorized             = errors.New("unauthorized")
+	ErrRoleNotFound             = errors.New("role not found")
 )
 
 // GetAdminIDFromContext 从上下文中获取管理员ID
 func GetAdminIDFromContext(ctx context.Context) (entity.UID, error) {
-	adminID, ok := ctx.Value(AdminIDKey).(entity.UID)
-	if !ok || adminID == 0 {
-		return 0, ErrUnauthorized
+	userID, err := GetUserID(ctx)
+	if err != nil {
+		return 0, err
 	}
-	return adminID, nil
+	// todo: 当前只有admin角色，可以访问管理端接口
+	if !HasAnyRole(ctx, "admin") {
+		return 0, ErrRoleNotFound
+	}
+	return userID, nil
 }

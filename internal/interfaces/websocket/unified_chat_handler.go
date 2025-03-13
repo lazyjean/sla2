@@ -70,7 +70,6 @@ type WebSocketMessage struct {
 // HandleWebSocket 处理 WebSocket 连接
 func (h *UnifiedChatHandler) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 	log := logger.GetLogger(r.Context())
-
 	// 验证用户身份
 	userID, _, err := h.tokenService.ValidateTokenFromRequest(r)
 	if err != nil {

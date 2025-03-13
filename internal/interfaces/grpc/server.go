@@ -8,11 +8,13 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gorilla/websocket"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	pb "github.com/lazyjean/sla2/api/proto/v1"
 	"github.com/lazyjean/sla2/config"
 	_ "github.com/lazyjean/sla2/docs" // 导入 Swagger 文档
 	"github.com/lazyjean/sla2/internal/application/service"
+	"github.com/lazyjean/sla2/internal/domain/entity"
 	"github.com/lazyjean/sla2/internal/domain/security"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/admin"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/ai"
@@ -22,13 +24,13 @@ import (
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/question"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/user"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/word"
-	"github.com/lazyjean/sla2/internal/interfaces/websocket"
 	"github.com/lazyjean/sla2/pkg/logger"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
+	"google.golang.org/protobuf/proto"
 )
 
 // Server gRPC 服务器
@@ -45,9 +47,10 @@ type Server struct {
 	aiSvc            *ai.AIService
 	tokenService     security.TokenService
 	config           *config.Config
-	stopCh           chan struct{}                 // 用于通知所有 goroutine 停止
-	chatHandler      *websocket.UnifiedChatHandler // 统一的 WebSocket 聊天处理器
+	stopCh           chan struct{} // 用于通知所有 goroutine 停止
 	unaryInterceptor grpc.UnaryServerInterceptor
+	upgrader         websocket.Upgrader // WebSocket 升级器
+	aiService        *service.AIService // AI 服务接口
 }
 
 // NewServer 创建 gRPC 服务器
@@ -66,17 +69,16 @@ func NewServer(
 	// 创建拦截器
 	unaryInterceptor := middleware.UnaryServerInterceptor(tokenService)
 	loggingInterceptor := middleware.LoggingUnaryServerInterceptor()
+	metadataInterceptor := middleware.MetadataUnaryServerInterceptor()
 
 	// 创建 gRPC 服务器，使用链式拦截器
 	grpcServer := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
-			loggingInterceptor, // 先记录日志
-			unaryInterceptor,   // 再进行认证
+			metadataInterceptor, // 首先处理元数据
+			loggingInterceptor,  // 然后记录日志
+			unaryInterceptor,    // 最后进行认证
 		),
 	)
-
-	// 创建统一的 WebSocket 聊天处理器
-	chatHandler := websocket.NewUnifiedChatHandler(aiService, tokenService)
 
 	// 创建服务器实例
 	server := &Server{
@@ -92,8 +94,13 @@ func NewServer(
 		tokenService:     tokenService,
 		config:           config,
 		stopCh:           make(chan struct{}),
-		chatHandler:      chatHandler,
 		unaryInterceptor: unaryInterceptor,
+		upgrader: websocket.Upgrader{
+			CheckOrigin: func(r *http.Request) bool {
+				return true // 开发环境允许所有来源
+			},
+		},
+		aiService: aiService,
 	}
 
 	// 注册服务
@@ -152,13 +159,61 @@ func (s *Server) Start() error {
 	go func() {
 		ctx := context.Background()
 		mux := runtime.NewServeMux(
+			// 处理请求元数据
 			runtime.WithMetadata(func(ctx context.Context, req *http.Request) metadata.MD {
-				logger.GetLogger(ctx).Info("request", zap.Any("req", req))
-				md := make(map[string]string)
+				log := logger.GetLogger(ctx)
+				log.Info("gRPC-Gateway request",
+					zap.String("method", req.Method),
+					zap.String("path", req.URL.Path),
+					zap.String("query", req.URL.RawQuery),
+					zap.String("remote_addr", req.RemoteAddr),
+					zap.String("user_agent", req.UserAgent()),
+				)
+
+				md := metadata.MD{}
+
+				// 从 Authorization header 获取 token
 				if auth := req.Header.Get("Authorization"); auth != "" {
-					md["authorization"] = auth
+					md = metadata.Join(md, metadata.Pairs("authorization", auth))
 				}
-				return metadata.New(md)
+
+				// 从 cookie 获取 token
+				if cookie, err := req.Cookie(middleware.TokenCookieName); err == nil {
+					md = metadata.Join(md, metadata.Pairs("authorization", "Bearer "+cookie.Value))
+				}
+
+				return md
+			}),
+			// 处理响应元数据
+			runtime.WithForwardResponseOption(func(ctx context.Context, w http.ResponseWriter, resp proto.Message) error {
+				log := logger.GetLogger(ctx)
+				md, ok := runtime.ServerMetadataFromContext(ctx)
+				if !ok {
+					log.Warn("No server metadata in context")
+					return nil
+				}
+
+				// 处理 cookie 设置
+				if vals := md.HeaderMD.Get("set-cookie-token"); len(vals) > 0 {
+					middleware.SetTokenCookie(ctx, w, vals[0])
+				}
+
+				return nil
+			}),
+			// 错误处理
+			runtime.WithErrorHandler(func(ctx context.Context, mux *runtime.ServeMux, marshaler runtime.Marshaler, w http.ResponseWriter, r *http.Request, err error) {
+				log := logger.GetLogger(ctx)
+				log.Error("gRPC-Gateway error",
+					zap.String("method", r.Method),
+					zap.String("path", r.URL.Path),
+					zap.Error(err),
+				)
+				runtime.DefaultHTTPErrorHandler(ctx, mux, marshaler, w, r, err)
+			}),
+			// 控制哪些响应元数据可以转换为 HTTP header
+			runtime.WithOutgoingHeaderMatcher(func(key string) (string, bool) {
+				// 不需要转换任何 metadata 为 header，因为我们使用 SetCookie 直接设置
+				return "", false
 			}),
 		)
 
@@ -194,25 +249,37 @@ func (s *Server) Start() error {
 		// 创建 HTTP 路由
 		router := http.NewServeMux()
 
-		// 注册 WebSocket 处理器，添加日志中间件
-		router.Handle("/ws/chat", middleware.HTTPLoggingMiddleware(http.HandlerFunc(s.chatHandler.HandleWebSocket)))
+		// 注册 WebSocket 处理器
+		router.Handle("/ws/chat", http.HandlerFunc(s.handleWebSocketChat))
 
-		// 注册 Swagger UI 处理器，添加日志中间件和基本认证
+		// 注册 Swagger UI 处理器
 		swaggerHandler := httpSwagger.Handler(
 			httpSwagger.URL(fmt.Sprintf("http://localhost:%d/swagger/doc.json", s.config.GRPC.GatewayPort)),
 			httpSwagger.DeepLinking(true),
 			httpSwagger.DocExpansion("none"),
 			httpSwagger.DomID("swagger-ui"),
 		)
-		router.Handle("/swagger/", middleware.HTTPLoggingMiddleware(s.basicAuth(swaggerHandler)))
 
-		// 注册 swagger.json 文件处理，添加日志中间件
-		router.Handle("/swagger/doc.json", middleware.HTTPLoggingMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Swagger 认证中间件
+		authenticatedSwaggerHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// 添加基本认证
+			user, pass, ok := r.BasicAuth()
+			if !ok || user != s.config.Swagger.Username || pass != s.config.Swagger.Password {
+				w.Header().Set("WWW-Authenticate", `Basic realm="Swagger API Documentation"`)
+				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				return
+			}
+			swaggerHandler.ServeHTTP(w, r)
+		})
+
+		// 注册 Swagger UI 和 swagger.json
+		router.Handle("/swagger/", authenticatedSwaggerHandler)
+		router.Handle("/swagger/doc.json", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
 			http.ServeFile(w, r, "api/swagger/swagger.json")
-		})))
+		}))
 
-		// 注册 gRPC-Gateway 处理器（不需要日志中间件，因为请求会转发到 gRPC）
+		// 注册 gRPC-Gateway 处理器
 		router.Handle("/", mux)
 
 		// 创建 HTTP 服务器
@@ -247,4 +314,74 @@ func (s *Server) Stop() error {
 	s.grpcServer.GracefulStop()
 
 	return nil
+}
+
+// handleWebSocketChat 处理 WebSocket 聊天连接
+func (s *Server) handleWebSocketChat(w http.ResponseWriter, r *http.Request) {
+	// 从请求中获取认证信息
+	var token string
+	auth := r.Header.Get("Authorization")
+	if auth != "" && len(auth) > 7 && auth[:7] == "Bearer " {
+		token = auth[7:]
+	} else {
+		// 从 cookie 获取 token
+		if cookie, err := r.Cookie(middleware.TokenCookieName); err == nil {
+			token = cookie.Value
+		}
+	}
+
+	// 验证 token
+	if token == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// 升级连接为 WebSocket
+	conn, err := s.upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log := logger.GetLogger(r.Context())
+		log.Error("Failed to upgrade connection to WebSocket", zap.Error(err))
+		return
+	}
+	defer conn.Close()
+
+	// 创建带有认证信息的上下文
+	ctx := metadata.NewIncomingContext(r.Context(), metadata.Pairs("authorization", "Bearer "+token))
+
+	// 处理 WebSocket 连接
+	s.handleWebSocketConnection(ctx, conn)
+}
+
+// handleWebSocketConnection 处理 WebSocket 连接的核心逻辑
+func (s *Server) handleWebSocketConnection(ctx context.Context, conn *websocket.Conn) {
+	log := logger.GetLogger(ctx)
+	log.Info("New WebSocket connection established")
+
+	// 创建一个临时会话ID为0的会话 - 这是一个无状态聊天
+	var sessionID entity.SessionID = 0
+
+	for {
+		// 读取消息
+		_, msg, err := conn.ReadMessage()
+		if err != nil {
+			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+				log.Error("Error reading WebSocket message", zap.Error(err))
+			}
+			return
+		}
+
+		// 处理消息 - 使用 aiService 处理消息
+		chatResp, err := s.aiService.Chat(ctx, sessionID, string(msg))
+		if err != nil {
+			log.Error("Error processing message", zap.Error(err))
+			conn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf("Error: %v", err)))
+			continue
+		}
+
+		// 发送响应
+		if err := conn.WriteMessage(websocket.TextMessage, []byte(chatResp.Message)); err != nil {
+			log.Error("Error sending WebSocket message", zap.Error(err))
+			return
+		}
+	}
 }

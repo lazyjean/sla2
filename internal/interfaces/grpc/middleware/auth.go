@@ -4,8 +4,8 @@ import (
 	"context"
 	"strings"
 
+	"github.com/lazyjean/sla2/internal/application/service"
 	"github.com/lazyjean/sla2/internal/domain/security"
-	"github.com/lazyjean/sla2/internal/pkg/auth"
 	"github.com/lazyjean/sla2/pkg/logger"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -52,8 +52,8 @@ func UnaryServerInterceptor(tokenService security.TokenService) grpc.UnaryServer
 		}
 
 		// 将用户信息添加到上下文
-		newCtx := auth.WithUserID(ctx, userID)
-		newCtx = auth.WithRoles(newCtx, roles)
+		newCtx := service.WithUserID(ctx, userID)
+		newCtx = service.WithRoles(newCtx, roles)
 
 		return handler(newCtx, req)
 	}

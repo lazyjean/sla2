@@ -2,7 +2,6 @@ package admin
 
 import (
 	"context"
-	"fmt"
 
 	pb "github.com/lazyjean/sla2/api/proto/v1"
 	"github.com/lazyjean/sla2/internal/application/dto"
@@ -47,6 +46,12 @@ func (s *AdminService) InitializeSystem(ctx context.Context, req *pb.AdminServic
 		return nil, err
 	}
 
+	// set cookie token to metadata, grpc-gateway will convert it to http set-cookie header
+	md := metadata.Pairs(
+		"set-cookie-token", resp.AccessToken,
+	)
+	grpc.SetHeader(ctx, md)
+
 	return &pb.AdminServiceInitializeSystemResponse{
 		Admin: &pb.AdminInfo{
 			Id:        uint64(resp.Admin.ID),
@@ -71,11 +76,10 @@ func (s *AdminService) AdminLogin(ctx context.Context, req *pb.AdminServiceAdmin
 		return nil, err
 	}
 
-	// 设置cookie到metadata（使用首字母大写的头名称） note: 测试环境使用 cookie, 正式环境需要考虑安全性
+	// set cookie token to metadata, grpc-gateway will convert it to http set-cookie header
 	md := metadata.Pairs(
-		"Set-Cookie", fmt.Sprintf("access_token=%s; Path=/; HttpOnly; SameSite=Strict", resp.AccessToken),
+		"set-cookie-token", resp.AccessToken,
 	)
-	// 仅设置Header，避免Trailer覆盖
 	grpc.SetHeader(ctx, md)
 
 	return &pb.AdminServiceAdminLoginResponse{

@@ -6,7 +6,9 @@ import (
 	pb "github.com/lazyjean/sla2/api/proto/v1"
 	"github.com/lazyjean/sla2/internal/application/dto"
 	"github.com/lazyjean/sla2/internal/application/service"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -21,18 +23,33 @@ func NewUserService(userService *service.UserService) *UserService {
 	}
 }
 
+// Register 用户注册
 func (s *UserService) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {
-	user, err := s.userService.Register(ctx, &dto.RegisterRequest{
+	result, err := s.userService.Register(ctx, &dto.RegisterRequest{
 		Username: req.Username,
 		Password: req.Password,
 		Email:    req.Email,
+		Nickname: req.Nickname,
 	})
 	if err != nil {
 		return nil, err
 	}
 
+	// 设置 token 到响应头，用于设置 cookie
+	if err := grpc.SetHeader(ctx, metadata.Pairs("set-cookie-token", result.Token)); err != nil {
+		return nil, err
+	}
+
 	return &pb.RegisterResponse{
-		User: convertUserToPb(user),
+		Token:        result.Token,
+		RefreshToken: result.RefreshToken,
+		User: &pb.User{
+			Id:       uint64(result.UserID),
+			Username: req.Username,
+			Email:    req.Email,
+			Nickname: req.Nickname,
+			Status:   pb.UserStatus_USER_STATUS_ACTIVE,
+		},
 	}, nil
 }
 
@@ -45,10 +62,21 @@ func (s *UserService) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Logi
 		return nil, err
 	}
 
+	if err := grpc.SetHeader(ctx, metadata.Pairs("set-cookie-token", result.Token)); err != nil {
+		return nil, err
+	}
+
 	return &pb.LoginResponse{
-		User:         convertUserToPb(result),
 		Token:        result.Token,
 		RefreshToken: result.RefreshToken,
+		User: &pb.User{
+			Id:       uint64(result.UserID),
+			Username: result.Username,
+			Email:    result.Email,
+			Nickname: result.Nickname,
+			Avatar:   result.Avatar,
+			Status:   pb.UserStatus_USER_STATUS_ACTIVE,
+		},
 	}, nil
 }
 
@@ -59,7 +87,14 @@ func (s *UserService) GetUserInfo(ctx context.Context, req *pb.GetUserInfoReques
 	}
 
 	return &pb.GetUserInfoResponse{
-		User: convertUserToPb(user),
+		User: &pb.User{
+			Id:       uint64(user.ID),
+			Username: user.Username,
+			Email:    user.Email,
+			Nickname: user.Nickname,
+			Avatar:   user.Avatar,
+			Status:   pb.UserStatus_USER_STATUS_ACTIVE,
+		},
 	}, nil
 }
 
@@ -112,17 +147,23 @@ func (s *UserService) AppleLogin(ctx context.Context, req *pb.AppleLoginRequest)
 		return nil, err
 	}
 
+	// 设置 token 到响应头，用于设置 cookie
+	if err := grpc.SetHeader(ctx, metadata.Pairs("set-cookie-token", resp.Token)); err != nil {
+		return nil, err
+	}
+
 	return &pb.AppleLoginResponse{
+		Token:        resp.Token,
+		RefreshToken: resp.RefreshToken,
+		IsNewUser:    resp.IsNewUser,
 		User: &pb.User{
 			Id:       uint64(resp.UserID),
 			Username: resp.Username,
 			Email:    resp.Email,
 			Nickname: resp.Nickname,
 			Avatar:   resp.Avatar,
+			Status:   pb.UserStatus_USER_STATUS_ACTIVE,
 		},
-		Token:        resp.Token,
-		RefreshToken: resp.RefreshToken,
-		IsNewUser:    resp.IsNewUser,
 	}, nil
 }
 
@@ -139,6 +180,11 @@ func (s *UserService) RefreshToken(ctx context.Context, req *pb.RefreshTokenRequ
 		return nil, err
 	}
 
+	// 设置新的 token 到响应头，用于设置 cookie
+	if err := grpc.SetHeader(ctx, metadata.Pairs("set-cookie-token", resp.AccessToken)); err != nil {
+		return nil, err
+	}
+
 	return &pb.RefreshTokenResponse{
 		Token:        resp.AccessToken,
 		RefreshToken: resp.RefreshToken,
@@ -147,51 +193,10 @@ func (s *UserService) RefreshToken(ctx context.Context, req *pb.RefreshTokenRequ
 
 // Logout 登出
 func (s *UserService) Logout(ctx context.Context, req *pb.LogoutRequest) (*pb.LogoutResponse, error) {
+	// 设置空的 token 到响应头，用于清除 cookie
+	if err := grpc.SetHeader(ctx, metadata.Pairs("set-cookie-token", "")); err != nil {
+		return nil, err
+	}
+
 	return &pb.LogoutResponse{}, nil
-}
-
-// 辅助函数：将领域对象转换为 pb 对象
-func convertUserToPb(user interface{}) *pb.User {
-	switch u := user.(type) {
-	case *dto.LoginResponse:
-		return &pb.User{
-			Id:       uint64(u.UserID),
-			Username: u.Username,
-			Email:    u.Email,
-			Nickname: u.Nickname,
-			Avatar:   u.Avatar,
-			Status:   pb.UserStatus_USER_STATUS_ACTIVE,
-		}
-	case *dto.RegisterResponse:
-		return &pb.User{
-			Id:     uint64(u.UserID),
-			Status: pb.UserStatus_USER_STATUS_ACTIVE,
-		}
-	case *dto.UserDTO:
-		return &pb.User{
-			Id:        uint64(u.ID),
-			Username:  u.Username,
-			Email:     u.Email,
-			Nickname:  u.Nickname,
-			Avatar:    u.Avatar,
-			Status:    convertUserStatusToPb(u.Status),
-			CreatedAt: u.CreatedAt.Unix(),
-			UpdatedAt: u.UpdatedAt.Unix(),
-		}
-	default:
-		return nil
-	}
-}
-
-func convertUserStatusToPb(status string) pb.UserStatus {
-	switch status {
-	case "active":
-		return pb.UserStatus_USER_STATUS_ACTIVE
-	case "inactive":
-		return pb.UserStatus_USER_STATUS_INACTIVE
-	case "suspended":
-		return pb.UserStatus_USER_STATUS_SUSPENDED
-	default:
-		return pb.UserStatus_USER_STATUS_UNSPECIFIED
-	}
 }

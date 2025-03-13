@@ -19,7 +19,7 @@ type ChatHistory []ChatMessage
 // Value implements the driver.Valuer interface for JSONB storage
 func (ch ChatHistory) Value() (driver.Value, error) {
 	if len(ch) == 0 {
-		return nil, nil
+		return json.Marshal([]ChatMessage{})
 	}
 	return json.Marshal(ch)
 }
