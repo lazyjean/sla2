@@ -8,10 +8,16 @@ const (
 	ResourceRole = "role"
 	// ResourcePermission 权限资源
 	ResourcePermission = "permission"
+	// ResourceUserRole 用户角色关联资源
+	ResourceUserRole = "user_role"
+	// ResourceRolePermission 角色权限关联资源
+	ResourceRolePermission = "role_permission"
 	// ResourceCourse 课程资源
 	ResourceCourse = "course"
 	// ResourceQuestion 问题资源
 	ResourceQuestion = "question"
+	// ResourceQuestionTag 问题标签资源
+	ResourceQuestionTag = "question_tag"
 	// ResourceWord 单词资源
 	ResourceWord = "word"
 	// ResourceAny 任意资源，通配符

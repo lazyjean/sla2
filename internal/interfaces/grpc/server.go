@@ -22,7 +22,6 @@ import (
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/question"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/user"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/word"
-	"github.com/lazyjean/sla2/internal/interfaces/middleware"
 	"github.com/lazyjean/sla2/pkg/logger"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"go.uber.org/zap"
@@ -44,6 +43,8 @@ type Server struct {
 	questionSvc      *question.QuestionService
 	questionTagSvc   *question.QuestionTagServiceGRPC
 	tokenService     security.TokenService
+	permissionHelper *security.PermissionHelper
+	rbacInterceptor  *grpcmiddleware.RBACInterceptor
 	config           *config.Config
 	stopCh           chan struct{} // 用于通知所有 goroutine 停止
 	unaryInterceptor grpc.UnaryServerInterceptor
@@ -60,16 +61,17 @@ func NewServer(
 	questionService *service.QuestionService,
 	questionTagService *service.QuestionTagService,
 	tokenService security.TokenService,
-	rbacInterceptor *middleware.RBACInterceptor,
+	permissionHelper *security.PermissionHelper,
 	config *config.Config,
 ) *Server {
-	// 创建拦截器
+	// 创建认证拦截器
 	unaryInterceptor := grpcmiddleware.UnaryServerInterceptor(tokenService)
 	loggingInterceptor := grpcmiddleware.LoggingUnaryServerInterceptor()
 	metadataInterceptor := grpcmiddleware.MetadataUnaryServerInterceptor()
 
-	// 注册方法权限映射
-	middleware.RegisterRBACMethodMappings(rbacInterceptor)
+	// 创建权限拦截器
+	rbacInterceptor := grpcmiddleware.NewRBACInterceptor(permissionHelper)
+	grpcmiddleware.RegisterRBACMethodMappings(rbacInterceptor)
 
 	// 创建 gRPC 服务器，使用链式拦截器
 	grpcServer := grpc.NewServer(
@@ -78,9 +80,6 @@ func NewServer(
 			loggingInterceptor,                       // 然后记录日志
 			unaryInterceptor,                         // 然后进行认证
 			rbacInterceptor.UnaryServerInterceptor(), // 最后进行权限检查
-		),
-		grpc.ChainStreamInterceptor(
-			rbacInterceptor.StreamServerInterceptor(), // 流式请求的权限检查
 		),
 	)
 
@@ -95,6 +94,8 @@ func NewServer(
 		questionSvc:      question.NewQuestionService(questionService),
 		questionTagSvc:   question.NewQuestionTagServiceGRPC(questionTagService),
 		tokenService:     tokenService,
+		permissionHelper: permissionHelper,
+		rbacInterceptor:  rbacInterceptor,
 		config:           config,
 		stopCh:           make(chan struct{}),
 		unaryInterceptor: unaryInterceptor,
@@ -160,7 +161,6 @@ func (s *Server) Start() error {
 	go func() {
 		ctx := context.Background()
 		mux := runtime.NewServeMux(
-			// 处理请求元数据
 			runtime.WithMetadata(func(ctx context.Context, req *http.Request) metadata.MD {
 				log := logger.GetLogger(ctx)
 				log.Info("gRPC-Gateway request",
@@ -185,7 +185,6 @@ func (s *Server) Start() error {
 
 				return md
 			}),
-			// 处理响应元数据
 			runtime.WithForwardResponseOption(func(ctx context.Context, w http.ResponseWriter, resp proto.Message) error {
 				log := logger.GetLogger(ctx)
 				md, ok := runtime.ServerMetadataFromContext(ctx)
@@ -201,7 +200,6 @@ func (s *Server) Start() error {
 
 				return nil
 			}),
-			// 错误处理
 			runtime.WithErrorHandler(func(ctx context.Context, mux *runtime.ServeMux, marshaler runtime.Marshaler, w http.ResponseWriter, r *http.Request, err error) {
 				log := logger.GetLogger(ctx)
 				log.Error("gRPC-Gateway error",
@@ -211,7 +209,6 @@ func (s *Server) Start() error {
 				)
 				runtime.DefaultHTTPErrorHandler(ctx, mux, marshaler, w, r, err)
 			}),
-			// 控制哪些响应元数据可以转换为 HTTP header
 			runtime.WithOutgoingHeaderMatcher(func(key string) (string, bool) {
 				// 不需要转换任何 metadata 为 header，因为我们使用 SetCookie 直接设置
 				return "", false

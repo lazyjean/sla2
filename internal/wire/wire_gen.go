@@ -16,7 +16,6 @@ import (
 	"github.com/lazyjean/sla2/internal/infrastructure/persistence/postgres"
 	"github.com/lazyjean/sla2/internal/infrastructure/security"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc"
-	"github.com/lazyjean/sla2/internal/interfaces/middleware"
 	"github.com/lazyjean/sla2/pkg/logger"
 	"go.uber.org/zap"
 )
@@ -60,8 +59,7 @@ func InitializeApp(cfg *config.Config) (*App, error) {
 		return nil, err
 	}
 	permissionHelper := providePermissionHelper(rbacProvider)
-	rbacInterceptor := middleware.NewRBACInterceptor(permissionHelper)
-	server := grpc.NewServer(adminService, userService, wordService, learningService, courseService, questionService, questionTagService, tokenService, rbacInterceptor, cfg)
+	server := grpc.NewServer(adminService, userService, wordService, learningService, courseService, questionService, questionTagService, tokenService, permissionHelper, cfg)
 	app := NewApp(server, cfg, tokenService, appleAuthService)
 	return app, nil
 }

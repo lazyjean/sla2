@@ -3,7 +3,7 @@ package wire
 import (
 	"github.com/google/wire"
 	domainsecurity "github.com/lazyjean/sla2/internal/domain/security"
-	"github.com/lazyjean/sla2/internal/interfaces/middleware"
+	"github.com/lazyjean/sla2/internal/interfaces/grpc/middleware"
 )
 
 // RBAC权限集

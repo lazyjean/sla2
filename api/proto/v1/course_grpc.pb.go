@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	CourseService_Create_FullMethodName        = "/proto.v1.CourseService/Create"
+	CourseService_BatchCreate_FullMethodName   = "/proto.v1.CourseService/BatchCreate"
 	CourseService_Update_FullMethodName        = "/proto.v1.CourseService/Update"
 	CourseService_Get_FullMethodName           = "/proto.v1.CourseService/Get"
 	CourseService_List_FullMethodName          = "/proto.v1.CourseService/List"
@@ -42,6 +43,8 @@ const (
 type CourseServiceClient interface {
 	// Create 创建课程
 	Create(ctx context.Context, in *CourseServiceCreateRequest, opts ...grpc.CallOption) (*CourseServiceCreateResponse, error)
+	// BatchCreate 批量创建课程，章节及单元
+	BatchCreate(ctx context.Context, in *CourseServiceBatchCreateRequest, opts ...grpc.CallOption) (*CourseServiceBatchCreateResponse, error)
 	// Update 更新课程
 	Update(ctx context.Context, in *CourseServiceUpdateRequest, opts ...grpc.CallOption) (*CourseServiceUpdateResponse, error)
 	// Get 获取课程详情
@@ -78,6 +81,16 @@ func (c *courseServiceClient) Create(ctx context.Context, in *CourseServiceCreat
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CourseServiceCreateResponse)
 	err := c.cc.Invoke(ctx, CourseService_Create_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *courseServiceClient) BatchCreate(ctx context.Context, in *CourseServiceBatchCreateRequest, opts ...grpc.CallOption) (*CourseServiceBatchCreateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CourseServiceBatchCreateResponse)
+	err := c.cc.Invoke(ctx, CourseService_BatchCreate_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -203,6 +216,8 @@ func (c *courseServiceClient) DeleteUnit(ctx context.Context, in *CourseServiceD
 type CourseServiceServer interface {
 	// Create 创建课程
 	Create(context.Context, *CourseServiceCreateRequest) (*CourseServiceCreateResponse, error)
+	// BatchCreate 批量创建课程，章节及单元
+	BatchCreate(context.Context, *CourseServiceBatchCreateRequest) (*CourseServiceBatchCreateResponse, error)
 	// Update 更新课程
 	Update(context.Context, *CourseServiceUpdateRequest) (*CourseServiceUpdateResponse, error)
 	// Get 获取课程详情
@@ -237,6 +252,9 @@ type UnimplementedCourseServiceServer struct{}
 
 func (UnimplementedCourseServiceServer) Create(context.Context, *CourseServiceCreateRequest) (*CourseServiceCreateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
+}
+func (UnimplementedCourseServiceServer) BatchCreate(context.Context, *CourseServiceBatchCreateRequest) (*CourseServiceBatchCreateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BatchCreate not implemented")
 }
 func (UnimplementedCourseServiceServer) Update(context.Context, *CourseServiceUpdateRequest) (*CourseServiceUpdateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
@@ -306,6 +324,24 @@ func _CourseService_Create_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CourseServiceServer).Create(ctx, req.(*CourseServiceCreateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CourseService_BatchCreate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CourseServiceBatchCreateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CourseServiceServer).BatchCreate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CourseService_BatchCreate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CourseServiceServer).BatchCreate(ctx, req.(*CourseServiceBatchCreateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -518,6 +554,10 @@ var CourseService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Create",
 			Handler:    _CourseService_Create_Handler,
+		},
+		{
+			MethodName: "BatchCreate",
+			Handler:    _CourseService_BatchCreate_Handler,
 		},
 		{
 			MethodName: "Update",

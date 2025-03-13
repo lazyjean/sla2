@@ -293,3 +293,117 @@ func (s *CourseService) DeleteSection(ctx context.Context, req *pb.CourseService
 
 	return &pb.CourseServiceDeleteSectionResponse{}, nil
 }
+
+// DeleteUnit 删除章节单元
+func (s *CourseService) DeleteUnit(ctx context.Context, req *pb.CourseServiceDeleteUnitRequest) (*pb.CourseServiceDeleteUnitResponse, error) {
+	err := s.courseService.DeleteUnit(ctx, entity.CourseSectionUnitID(req.Id))
+	if err != nil {
+		return nil, err
+	}
+	return &pb.CourseServiceDeleteUnitResponse{}, nil
+}
+
+// BatchCreate 批量创建课程、章节和单元
+func (s *CourseService) BatchCreate(ctx context.Context, req *pb.CourseServiceBatchCreateRequest) (*pb.CourseServiceBatchCreateResponse, error) {
+	// 转换请求数据为服务层所需的格式
+	var courses []struct {
+		Title       string
+		Description string
+		CoverURL    string
+		Level       string
+		Tags        []string
+		Sections    []struct {
+			Title      string
+			Desc       string
+			OrderIndex int32
+			Units      []struct {
+				Title       string
+				Desc        string
+				QuestionIds []uint32
+				OrderIndex  int32
+				Tags        []string
+			}
+		}
+	}
+
+	// 遍历请求中的课程
+	for _, coursePb := range req.Courses {
+		course := struct {
+			Title       string
+			Description string
+			CoverURL    string
+			Level       string
+			Tags        []string
+			Sections    []struct {
+				Title      string
+				Desc       string
+				OrderIndex int32
+				Units      []struct {
+					Title       string
+					Desc        string
+					QuestionIds []uint32
+					OrderIndex  int32
+					Tags        []string
+				}
+			}
+		}{
+			Title:       coursePb.Title,
+			Description: coursePb.Desc,
+			CoverURL:    coursePb.CoverUrl,
+			Level:       convertLevelToString(coursePb.Level),
+			Tags:        coursePb.Tags,
+		}
+
+		// 遍历章节
+		for _, sectionPb := range coursePb.Sections {
+			section := struct {
+				Title      string
+				Desc       string
+				OrderIndex int32
+				Units      []struct {
+					Title       string
+					Desc        string
+					QuestionIds []uint32
+					OrderIndex  int32
+					Tags        []string
+				}
+			}{
+				Title:      sectionPb.Title,
+				Desc:       sectionPb.Desc,
+				OrderIndex: sectionPb.OrderIndex,
+			}
+
+			// 遍历单元
+			for _, unitPb := range sectionPb.Units {
+				unit := struct {
+					Title       string
+					Desc        string
+					QuestionIds []uint32
+					OrderIndex  int32
+					Tags        []string
+				}{
+					Title:       unitPb.Title,
+					Desc:        unitPb.Desc,
+					QuestionIds: unitPb.QuestionIds,
+					OrderIndex:  unitPb.OrderIndex,
+					Tags:        unitPb.Tags,
+				}
+				section.Units = append(section.Units, unit)
+			}
+
+			course.Sections = append(course.Sections, section)
+		}
+
+		courses = append(courses, course)
+	}
+
+	// 调用服务批量创建课程
+	courseIds, err := s.courseService.BatchCreateCourse(ctx, courses)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.CourseServiceBatchCreateResponse{
+		Ids: courseIds,
+	}, nil
+}

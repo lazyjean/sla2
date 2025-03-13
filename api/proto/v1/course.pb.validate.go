@@ -3693,3 +3693,792 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = CourseServiceListResponseValidationError{}
+
+// Validate checks the field values on BatchSection with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *BatchSection) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on BatchSection with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in BatchSectionMultiError, or
+// nil if none found.
+func (m *BatchSection) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *BatchSection) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if _, ok := _BatchSection_Title_NotInLookup[m.GetTitle()]; ok {
+		err := BatchSectionValidationError{
+			field:  "Title",
+			reason: "value must not be in list [ 未命名章节]",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if l := utf8.RuneCountInString(m.GetTitle()); l < 2 || l > 100 {
+		err := BatchSectionValidationError{
+			field:  "Title",
+			reason: "value length must be between 2 and 100 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetDesc()) > 1000 {
+		err := BatchSectionValidationError{
+			field:  "Desc",
+			reason: "value length must be at most 1000 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	// no validation rules for OrderIndex
+
+	for idx, item := range m.GetUnits() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, BatchSectionValidationError{
+						field:  fmt.Sprintf("Units[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, BatchSectionValidationError{
+						field:  fmt.Sprintf("Units[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return BatchSectionValidationError{
+					field:  fmt.Sprintf("Units[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return BatchSectionMultiError(errors)
+	}
+
+	return nil
+}
+
+// BatchSectionMultiError is an error wrapping multiple validation errors
+// returned by BatchSection.ValidateAll() if the designated constraints aren't met.
+type BatchSectionMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m BatchSectionMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m BatchSectionMultiError) AllErrors() []error { return m }
+
+// BatchSectionValidationError is the validation error returned by
+// BatchSection.Validate if the designated constraints aren't met.
+type BatchSectionValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e BatchSectionValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e BatchSectionValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e BatchSectionValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e BatchSectionValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e BatchSectionValidationError) ErrorName() string { return "BatchSectionValidationError" }
+
+// Error satisfies the builtin error interface
+func (e BatchSectionValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sBatchSection.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = BatchSectionValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = BatchSectionValidationError{}
+
+var _BatchSection_Title_NotInLookup = map[string]struct{}{
+	"":      {},
+	"未命名章节": {},
+}
+
+// Validate checks the field values on BatchUnit with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *BatchUnit) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on BatchUnit with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in BatchUnitMultiError, or nil
+// if none found.
+func (m *BatchUnit) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *BatchUnit) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if _, ok := _BatchUnit_Title_NotInLookup[m.GetTitle()]; ok {
+		err := BatchUnitValidationError{
+			field:  "Title",
+			reason: "value must not be in list [ 未命名单元]",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if l := utf8.RuneCountInString(m.GetTitle()); l < 2 || l > 100 {
+		err := BatchUnitValidationError{
+			field:  "Title",
+			reason: "value length must be between 2 and 100 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetDesc()) > 1000 {
+		err := BatchUnitValidationError{
+			field:  "Desc",
+			reason: "value length must be at most 1000 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	// no validation rules for OrderIndex
+
+	if len(errors) > 0 {
+		return BatchUnitMultiError(errors)
+	}
+
+	return nil
+}
+
+// BatchUnitMultiError is an error wrapping multiple validation errors returned
+// by BatchUnit.ValidateAll() if the designated constraints aren't met.
+type BatchUnitMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m BatchUnitMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m BatchUnitMultiError) AllErrors() []error { return m }
+
+// BatchUnitValidationError is the validation error returned by
+// BatchUnit.Validate if the designated constraints aren't met.
+type BatchUnitValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e BatchUnitValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e BatchUnitValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e BatchUnitValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e BatchUnitValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e BatchUnitValidationError) ErrorName() string { return "BatchUnitValidationError" }
+
+// Error satisfies the builtin error interface
+func (e BatchUnitValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sBatchUnit.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = BatchUnitValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = BatchUnitValidationError{}
+
+var _BatchUnit_Title_NotInLookup = map[string]struct{}{
+	"":      {},
+	"未命名单元": {},
+}
+
+// Validate checks the field values on BatchCourse with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *BatchCourse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on BatchCourse with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in BatchCourseMultiError, or
+// nil if none found.
+func (m *BatchCourse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *BatchCourse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if _, ok := _BatchCourse_Title_NotInLookup[m.GetTitle()]; ok {
+		err := BatchCourseValidationError{
+			field:  "Title",
+			reason: "value must not be in list [ 未命名 新建课程]",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if l := utf8.RuneCountInString(m.GetTitle()); l < 2 || l > 50 {
+		err := BatchCourseValidationError{
+			field:  "Title",
+			reason: "value length must be between 2 and 50 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetDesc()) > 1000 {
+		err := BatchCourseValidationError{
+			field:  "Desc",
+			reason: "value length must be at most 1000 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if uri, err := url.Parse(m.GetCoverUrl()); err != nil {
+		err = BatchCourseValidationError{
+			field:  "CoverUrl",
+			reason: "value must be a valid URI",
+			cause:  err,
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	} else if !uri.IsAbs() {
+		err := BatchCourseValidationError{
+			field:  "CoverUrl",
+			reason: "value must be absolute",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if _, ok := _BatchCourse_Level_NotInLookup[m.GetLevel()]; ok {
+		err := BatchCourseValidationError{
+			field:  "Level",
+			reason: "value must not be in list [COURSE_LEVEL_UNSPECIFIED]",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(m.GetTags()) > 20 {
+		err := BatchCourseValidationError{
+			field:  "Tags",
+			reason: "value must contain no more than 20 item(s)",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	for idx, item := range m.GetTags() {
+		_, _ = idx, item
+
+		if utf8.RuneCountInString(item) > 20 {
+			err := BatchCourseValidationError{
+				field:  fmt.Sprintf("Tags[%v]", idx),
+				reason: "value length must be at most 20 runes",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	}
+
+	for idx, item := range m.GetSections() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, BatchCourseValidationError{
+						field:  fmt.Sprintf("Sections[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, BatchCourseValidationError{
+						field:  fmt.Sprintf("Sections[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return BatchCourseValidationError{
+					field:  fmt.Sprintf("Sections[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return BatchCourseMultiError(errors)
+	}
+
+	return nil
+}
+
+// BatchCourseMultiError is an error wrapping multiple validation errors
+// returned by BatchCourse.ValidateAll() if the designated constraints aren't met.
+type BatchCourseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m BatchCourseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m BatchCourseMultiError) AllErrors() []error { return m }
+
+// BatchCourseValidationError is the validation error returned by
+// BatchCourse.Validate if the designated constraints aren't met.
+type BatchCourseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e BatchCourseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e BatchCourseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e BatchCourseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e BatchCourseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e BatchCourseValidationError) ErrorName() string { return "BatchCourseValidationError" }
+
+// Error satisfies the builtin error interface
+func (e BatchCourseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sBatchCourse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = BatchCourseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = BatchCourseValidationError{}
+
+var _BatchCourse_Title_NotInLookup = map[string]struct{}{
+	"":     {},
+	"未命名":  {},
+	"新建课程": {},
+}
+
+var _BatchCourse_Level_NotInLookup = map[CourseLevel]struct{}{
+	0: {},
+}
+
+// Validate checks the field values on CourseServiceBatchCreateRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *CourseServiceBatchCreateRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CourseServiceBatchCreateRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// CourseServiceBatchCreateRequestMultiError, or nil if none found.
+func (m *CourseServiceBatchCreateRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CourseServiceBatchCreateRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetCourses() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, CourseServiceBatchCreateRequestValidationError{
+						field:  fmt.Sprintf("Courses[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, CourseServiceBatchCreateRequestValidationError{
+						field:  fmt.Sprintf("Courses[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return CourseServiceBatchCreateRequestValidationError{
+					field:  fmt.Sprintf("Courses[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return CourseServiceBatchCreateRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// CourseServiceBatchCreateRequestMultiError is an error wrapping multiple
+// validation errors returned by CourseServiceBatchCreateRequest.ValidateAll()
+// if the designated constraints aren't met.
+type CourseServiceBatchCreateRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CourseServiceBatchCreateRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CourseServiceBatchCreateRequestMultiError) AllErrors() []error { return m }
+
+// CourseServiceBatchCreateRequestValidationError is the validation error
+// returned by CourseServiceBatchCreateRequest.Validate if the designated
+// constraints aren't met.
+type CourseServiceBatchCreateRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CourseServiceBatchCreateRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CourseServiceBatchCreateRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CourseServiceBatchCreateRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CourseServiceBatchCreateRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CourseServiceBatchCreateRequestValidationError) ErrorName() string {
+	return "CourseServiceBatchCreateRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CourseServiceBatchCreateRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCourseServiceBatchCreateRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CourseServiceBatchCreateRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CourseServiceBatchCreateRequestValidationError{}
+
+// Validate checks the field values on CourseServiceBatchCreateResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *CourseServiceBatchCreateResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CourseServiceBatchCreateResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// CourseServiceBatchCreateResponseMultiError, or nil if none found.
+func (m *CourseServiceBatchCreateResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CourseServiceBatchCreateResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return CourseServiceBatchCreateResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// CourseServiceBatchCreateResponseMultiError is an error wrapping multiple
+// validation errors returned by
+// CourseServiceBatchCreateResponse.ValidateAll() if the designated
+// constraints aren't met.
+type CourseServiceBatchCreateResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CourseServiceBatchCreateResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CourseServiceBatchCreateResponseMultiError) AllErrors() []error { return m }
+
+// CourseServiceBatchCreateResponseValidationError is the validation error
+// returned by CourseServiceBatchCreateResponse.Validate if the designated
+// constraints aren't met.
+type CourseServiceBatchCreateResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CourseServiceBatchCreateResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CourseServiceBatchCreateResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CourseServiceBatchCreateResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CourseServiceBatchCreateResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CourseServiceBatchCreateResponseValidationError) ErrorName() string {
+	return "CourseServiceBatchCreateResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CourseServiceBatchCreateResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCourseServiceBatchCreateResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CourseServiceBatchCreateResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CourseServiceBatchCreateResponseValidationError{}

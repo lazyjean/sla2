@@ -279,3 +279,103 @@ func (s *CourseService) DeleteUnit(ctx context.Context, id entity.CourseSectionU
 func (s *CourseService) GetUnit(ctx context.Context, id entity.CourseSectionUnitID) (*entity.CourseSectionUnit, error) {
 	return s.courseSectionRepository.GetUnitByID(ctx, id)
 }
+
+// BatchCreateCourse 批量创建课程、章节和单元
+func (s *CourseService) BatchCreateCourse(ctx context.Context, courses []struct {
+	Title       string
+	Description string
+	CoverURL    string
+	Level       string
+	Tags        []string
+	Sections    []struct {
+		Title      string
+		Desc       string
+		OrderIndex int32
+		Units      []struct {
+			Title       string
+			Desc        string
+			QuestionIds []uint32
+			OrderIndex  int32
+			Tags        []string
+		}
+	}
+}) ([]uint32, error) {
+	// 用于存储创建的课程ID列表
+	var courseIds []uint32
+
+	// 遍历处理所有课程
+	for _, courseData := range courses {
+		// 1. 创建课程
+		course := &entity.Course{
+			Title:       courseData.Title,
+			Description: courseData.Description,
+			CoverURL:    courseData.CoverURL,
+			Level:       courseData.Level,
+			Tags:        courseData.Tags,
+			Status:      "draft",
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
+		}
+
+		if err := s.courseRepository.Create(ctx, course); err != nil {
+			return nil, err
+		}
+
+		// 添加课程ID到结果列表
+		courseIds = append(courseIds, uint32(course.ID))
+
+		// 2. 创建章节和单元
+		for _, section := range courseData.Sections {
+			// 创建章节
+			courseSection := &entity.CourseSection{
+				CourseID:   course.ID,
+				Title:      section.Title,
+				Desc:       section.Desc,
+				OrderIndex: section.OrderIndex,
+				Status:     "enabled",
+				CreatedAt:  time.Now(),
+				UpdatedAt:  time.Now(),
+			}
+
+			if err := s.courseSectionRepository.Create(ctx, courseSection); err != nil {
+				return nil, err
+			}
+
+			// 创建章节下的单元
+			for _, unit := range section.Units {
+				// 处理问题ID
+				var questionIdsStr string
+				if len(unit.QuestionIds) > 0 {
+					// 将 uint32 数组转换为字符串
+					strIds := make([]string, len(unit.QuestionIds))
+					for i, id := range unit.QuestionIds {
+						strIds[i] = strconv.FormatUint(uint64(id), 10)
+					}
+					questionIdsStr = strings.Join(strIds, ",")
+				}
+
+				// 处理标签
+				tagsStr := strings.Join(unit.Tags, ",")
+
+				// 创建单元
+				courseUnit := &entity.CourseSectionUnit{
+					SectionID:   courseSection.ID,
+					Title:       unit.Title,
+					Desc:        unit.Desc,
+					QuestionIds: questionIdsStr,
+					OrderIndex:  unit.OrderIndex,
+					Status:      1, // 启用状态
+					Tags:        tagsStr,
+					CreatedAt:   time.Now(),
+					UpdatedAt:   time.Now(),
+				}
+
+				if err := s.courseSectionRepository.CreateUnit(ctx, courseUnit); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+
+	return courseIds, nil
+}
