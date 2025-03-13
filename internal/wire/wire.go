@@ -7,7 +7,6 @@ import (
 	"github.com/google/wire"
 	"github.com/lazyjean/sla2/config"
 	"github.com/lazyjean/sla2/internal/application/service"
-	"github.com/lazyjean/sla2/internal/infrastructure/ai"
 	"github.com/lazyjean/sla2/internal/infrastructure/cache/redis"
 	"github.com/lazyjean/sla2/internal/infrastructure/oauth"
 	"github.com/lazyjean/sla2/internal/infrastructure/persistence/postgres"
@@ -23,21 +22,9 @@ func ProvideLogger() *zap.Logger {
 	return logger.Log
 }
 
-// 提供 DeepSeekConfig 配置
-func ProvideDeepSeekConfig(cfg *config.Config) *ai.DeepSeekConfig {
-	return &ai.DeepSeekConfig{
-		APIKey:      cfg.DeepSeek.APIKey,
-		BaseURL:     cfg.DeepSeek.BaseURL,
-		Timeout:     cfg.DeepSeek.Timeout,
-		MaxRetries:  cfg.DeepSeek.MaxRetries,
-		Temperature: cfg.DeepSeek.Temperature,
-		MaxTokens:   cfg.DeepSeek.MaxTokens,
-	}
-}
-
 // 配置集
 var configSet = wire.NewSet(
-	wire.FieldsOf(new(*config.Config), "Database", "Redis", "JWT", "Apple"),
+	wire.FieldsOf(new(*config.Config), "Database", "Redis", "JWT", "Apple", "RBAC"),
 )
 
 // 数据库集
@@ -61,16 +48,6 @@ var repositorySet = wire.NewSet(
 	postgres.NewAdminRepository,
 	postgres.NewQuestionTagRepository,
 	postgres.NewQuestionRepository,
-	postgres.NewAiChatSessionRepository,
-)
-
-// AI 服务集
-var aiSet = wire.NewSet(
-	service.NewAIService,
-	ai.NewDeepSeekService,
-	wire.Bind(new(service.DeepSeekService), new(*ai.DeepSeekService)),
-	ProvideLogger,
-	ProvideDeepSeekConfig,
 )
 
 // 服务集
@@ -109,7 +86,7 @@ func InitializeApp(cfg *config.Config) (*App, error) {
 		authSet,
 		cacheSet,
 		securitySet,
-		aiSet,
+		rbacSet,
 		grpc.NewServer,
 	)
 	return nil, nil

@@ -74,10 +74,8 @@ func autoMigrate(db *gorm.DB) error {
 			&entity.CourseSectionUnitProgress{},
 			&entity.User{},
 			&entity.Course{},
-			&entity.Admin{},
 			&entity.CourseSection{},
 			&entity.CourseSectionUnit{},
-			&entity.AiChatSession{},
 		); err != nil {
 			return err
 		}

@@ -53,10 +53,6 @@ swagger:
   username: "admin"
   password: "swagger"
 
-deepseek:
-  api_key: "sk-fd2767d50cac4d0fa5c40d1b111825f8"
-  base_url: "https://api.deepseek.com/v1"
-  timeout: 30
-  max_retries: 3
-  temperature: 0.7
-  max_tokens: 1000
+rbac:
+  config_dir: "./config"
+  auto_init: true

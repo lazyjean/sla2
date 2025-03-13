@@ -26,16 +26,7 @@ type Config struct {
 	JWT      JWTConfig      `mapstructure:"jwt"`
 	Apple    AppleConfig    `mapstructure:"apple"`
 	Swagger  SwaggerConfig  `mapstructure:"swagger"`
-	DeepSeek DeepSeekConfig `mapstructure:"deepseek"`
-}
-
-type DeepSeekConfig struct {
-	APIKey      string  `mapstructure:"api_key"`
-	BaseURL     string  `mapstructure:"base_url"`
-	Timeout     int     `mapstructure:"timeout"`
-	MaxRetries  int     `mapstructure:"max_retries"`
-	Temperature float64 `mapstructure:"temperature"`
-	MaxTokens   int     `mapstructure:"max_tokens"`
+	RBAC     RBACConfig     `mapstructure:"rbac"`
 }
 
 type ServerConfig struct {
@@ -100,6 +91,12 @@ type AppleConfig struct {
 type SwaggerConfig struct {
 	Username string `mapstructure:"username"`
 	Password string `mapstructure:"password"`
+}
+
+// RBACConfig RBAC权限控制配置
+type RBACConfig struct {
+	ConfigDir string `mapstructure:"config_dir"` // RBAC配置文件目录
+	AutoInit  bool   `mapstructure:"auto_init"`  // 是否自动初始化权限
 }
 
 var globalConfig *Config

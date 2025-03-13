@@ -10,12 +10,13 @@ import (
 	"github.com/google/wire"
 	"github.com/lazyjean/sla2/config"
 	"github.com/lazyjean/sla2/internal/application/service"
-	"github.com/lazyjean/sla2/internal/infrastructure/ai"
+	security2 "github.com/lazyjean/sla2/internal/domain/security"
 	"github.com/lazyjean/sla2/internal/infrastructure/cache/redis"
 	"github.com/lazyjean/sla2/internal/infrastructure/oauth"
 	"github.com/lazyjean/sla2/internal/infrastructure/persistence/postgres"
 	"github.com/lazyjean/sla2/internal/infrastructure/security"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc"
+	"github.com/lazyjean/sla2/internal/interfaces/middleware"
 	"github.com/lazyjean/sla2/pkg/logger"
 	"go.uber.org/zap"
 )
@@ -53,12 +54,14 @@ func InitializeApp(cfg *config.Config) (*App, error) {
 	questionService := service.NewQuestionService(questionRepository)
 	questionTagRepository := postgres.NewQuestionTagRepository(db)
 	questionTagService := service.NewQuestionTagService(questionTagRepository)
-	deepSeekConfig := ProvideDeepSeekConfig(cfg)
-	logger := ProvideLogger()
-	deepSeekService := ai.NewDeepSeekService(deepSeekConfig, logger)
-	aiChatSessionRepository := postgres.NewAiChatSessionRepository(db)
-	aiService := service.NewAIService(deepSeekService, aiChatSessionRepository)
-	server := grpc.NewServer(adminService, userService, wordService, learningService, courseService, questionService, questionTagService, aiService, tokenService, cfg)
+	rbacConfig := &cfg.RBAC
+	rbacProvider, err := security2.NewRBACProvider(db, rbacConfig)
+	if err != nil {
+		return nil, err
+	}
+	permissionHelper := providePermissionHelper(rbacProvider)
+	rbacInterceptor := middleware.NewRBACInterceptor(permissionHelper)
+	server := grpc.NewServer(adminService, userService, wordService, learningService, courseService, questionService, questionTagService, tokenService, rbacInterceptor, cfg)
 	app := NewApp(server, cfg, tokenService, appleAuthService)
 	return app, nil
 }
@@ -71,20 +74,8 @@ func ProvideLogger() *zap.Logger {
 	return logger.Log
 }
 
-// 提供 DeepSeekConfig 配置
-func ProvideDeepSeekConfig(cfg *config.Config) *ai.DeepSeekConfig {
-	return &ai.DeepSeekConfig{
-		APIKey:      cfg.DeepSeek.APIKey,
-		BaseURL:     cfg.DeepSeek.BaseURL,
-		Timeout:     cfg.DeepSeek.Timeout,
-		MaxRetries:  cfg.DeepSeek.MaxRetries,
-		Temperature: cfg.DeepSeek.Temperature,
-		MaxTokens:   cfg.DeepSeek.MaxTokens,
-	}
-}
-
 // 配置集
-var configSet = wire.NewSet(wire.FieldsOf(new(*config.Config), "Database", "Redis", "JWT", "Apple"))
+var configSet = wire.NewSet(wire.FieldsOf(new(*config.Config), "Database", "Redis", "JWT", "Apple", "RBAC"))
 
 // 数据库集
 var dbSet = wire.NewSet(postgres.NewDB)
@@ -93,12 +84,7 @@ var dbSet = wire.NewSet(postgres.NewDB)
 var cacheSet = wire.NewSet(redis.NewRedisCache)
 
 // 仓储集
-var repositorySet = wire.NewSet(postgres.NewWordRepository, postgres.NewCachedWordRepository, postgres.NewLearningRepository, postgres.NewUserRepository, postgres.NewCourseRepository, postgres.NewCourseSectionRepository, postgres.NewAdminRepository, postgres.NewQuestionTagRepository, postgres.NewQuestionRepository, postgres.NewAiChatSessionRepository)
-
-// AI 服务集
-var aiSet = wire.NewSet(service.NewAIService, ai.NewDeepSeekService, wire.Bind(new(service.DeepSeekService), new(*ai.DeepSeekService)), ProvideLogger,
-	ProvideDeepSeekConfig,
-)
+var repositorySet = wire.NewSet(postgres.NewWordRepository, postgres.NewCachedWordRepository, postgres.NewLearningRepository, postgres.NewUserRepository, postgres.NewCourseRepository, postgres.NewCourseSectionRepository, postgres.NewAdminRepository, postgres.NewQuestionTagRepository, postgres.NewQuestionRepository)
 
 // 服务集
 var serviceSet = wire.NewSet(service.NewWordService, service.NewLearningService, service.NewUserService, service.NewCourseService, service.NewAdminService, service.NewQuestionService, service.NewQuestionTagService)
