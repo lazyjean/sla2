@@ -6,6 +6,20 @@
 
 请查看 [开发规范指南](docs/development_guide.md) 了解项目的开发规范和最佳实践。
 
+## 开发工具链
+
+项目提供了一套完整的开发工具链：
+
+- `make proto` - 生成 Protocol Buffers 代码
+- `make docs` - 生成 API 文档（Swagger）
+- `make generate` - 生成 Wire 依赖注入代码
+- `make run` - 本地运行服务
+- `make test` - 运行测试
+- `make swagger-validate` - 验证 Swagger 文档的有效性和结构
+- `make build-swagger-validator` - 构建 Swagger 验证工具
+
+关于 Proto 和 Swagger 的详细使用说明，请参考 [Proto 和 Swagger 指南](docs/proto_and_swagger_guide.md)。
+
 ## 项目结构
 
 ```

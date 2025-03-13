@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -254,6 +255,23 @@ func (s *Server) Start() error {
 
 		// 需要 Basic Auth 的路由
 		router.Handle("/swagger/", s.basicAuth(swaggerHandler))
+
+		// 直接提供swagger.json文件
+		router.HandleFunc("/swagger/doc.json", func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+
+			// 读取swagger.json文件
+			swaggerFile := "./api/swagger/swagger.json"
+			data, err := os.ReadFile(swaggerFile)
+			if err != nil {
+				logger.GetLogger(ctx).Error("failed to read swagger.json", zap.Error(err))
+				http.Error(w, "Swagger file not found", http.StatusNotFound)
+				return
+			}
+
+			w.Write(data)
+		})
 
 		// API 路由
 		router.Handle("/api/", mux)

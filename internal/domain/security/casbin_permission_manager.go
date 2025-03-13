@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"path/filepath"
+	"strings"
 	"sync"
 
 	"github.com/casbin/casbin/v2"
@@ -99,6 +100,43 @@ func (pm *CasbinPermissionManager) CheckPermission(ctx context.Context, sub stri
 	pm.mu.RLock()
 	defer pm.mu.RUnlock()
 
+	logger.Log.Debug("Checking permission",
+		zap.String("subject", sub),
+		zap.String("object", obj),
+		zap.String("action", act))
+
+	// 先检查是否有管理员角色，管理员拥有所有权限
+	if strings.HasPrefix(sub, "u:") {
+		// userID := sub[2:] // 去掉 "u:" 前缀
+		adminRoleKey := "r:admin"
+		hasAdminRole, err := pm.enforcer.HasRoleForUser(sub, adminRoleKey)
+		if err != nil {
+			logger.Log.Error("Failed to check admin role",
+				zap.String("subject", sub),
+				zap.String("admin_role", adminRoleKey),
+				zap.Error(err))
+		} else if hasAdminRole {
+			logger.Log.Debug("User has admin role, granting permission",
+				zap.String("subject", sub),
+				zap.String("object", obj),
+				zap.String("action", act))
+			return true, nil
+		}
+
+		// 记录角色
+		roles, err := pm.enforcer.GetRolesForUser(sub)
+		if err != nil {
+			logger.Log.Warn("Failed to get roles for user",
+				zap.String("subject", sub),
+				zap.Error(err))
+		} else {
+			logger.Log.Debug("User roles",
+				zap.String("subject", sub),
+				zap.Strings("roles", roles))
+		}
+	}
+
+	// 标准权限检查
 	res, err := pm.enforcer.Enforce(sub, obj, act)
 	if err != nil {
 		logger.Log.Error("Failed to check permission",
@@ -108,6 +146,19 @@ func (pm *CasbinPermissionManager) CheckPermission(ctx context.Context, sub stri
 			zap.Error(err))
 		return false, err
 	}
+
+	if res {
+		logger.Log.Debug("Permission granted",
+			zap.String("subject", sub),
+			zap.String("object", obj),
+			zap.String("action", act))
+	} else {
+		logger.Log.Warn("Permission denied",
+			zap.String("subject", sub),
+			zap.String("object", obj),
+			zap.String("action", act))
+	}
+
 	return res, nil
 }
 

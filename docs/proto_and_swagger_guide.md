@@ -279,3 +279,108 @@ http://localhost:9102/swagger/
    - 如果 `make proto` 失败，检查 proto 文件语法
    - 如果 `make docs` 失败，检查 Swagger 注解格式
    - 如果文档未更新，尝试重启服务 
+
+## Swagger验证工具
+
+为了确保Swagger文档的有效性和一致性，我们开发了专门的Swagger验证工具。该工具可以验证Swagger文档是否符合OpenAPI规范，并检查必要的字段和结构是否存在。
+
+### 工具位置
+
+验证工具位于 `cmd/swagger-validator/main.go`，可以通过以下方式使用：
+
+#### 1. 使用Makefile命令
+
+```bash
+# 验证本地Swagger文档
+make swagger-validate
+
+# 构建验证工具可执行文件
+make build-swagger-validator
+```
+
+#### 2. 直接运行Go代码
+
+```bash
+# 验证本地文件
+go run cmd/swagger-validator/main.go --file ./api/swagger/swagger.json
+
+# 验证运行中的服务API
+go run cmd/swagger-validator/main.go --url http://localhost:9102/swagger/doc.json
+```
+
+### 命令行参数
+
+验证工具支持以下命令行参数：
+
+| 参数 | 默认值 | 说明 |
+|------|--------|------|
+| `--file` | "" | 本地Swagger文档文件路径，优先级高于URL |
+| `--url` | "http://localhost:9102/swagger/doc.json" | Swagger文档URL，当未指定file参数时使用 |
+| `--username` | "" | Basic Auth用户名 |
+| `--password` | "" | Basic Auth密码 |
+| `--timeout` | 5 | 请求超时时间(秒) |
+| `--output` | "" | 输出结果到文件 |
+| `--format` | "text" | 输出格式 (text, json) |
+
+### 使用场景
+
+#### 验证本地文件
+
+```bash
+go run cmd/swagger-validator/main.go --file ./api/swagger/swagger.json
+```
+
+#### 验证运行中的服务器
+
+```bash
+# 先启动服务器
+make run
+# 然后在另一个终端运行
+go run cmd/swagger-validator/main.go
+```
+
+#### 验证远程服务器
+
+```bash
+go run cmd/swagger-validator/main.go --url https://your-api.com/swagger/doc.json
+```
+
+#### 带认证的验证
+
+```bash
+go run cmd/swagger-validator/main.go --url https://your-api.com/swagger/doc.json --username admin --password secret
+```
+
+#### 输出JSON格式结果
+
+```bash
+go run cmd/swagger-validator/main.go --file ./api/swagger/swagger.json --format json
+```
+
+#### 将结果保存到文件
+
+```bash
+go run cmd/swagger-validator/main.go --file ./api/swagger/swagger.json --output results.json --format json
+```
+
+### 在CI/CD中使用
+
+您可以在CI/CD流程中使用此工具来确保Swagger文档的质量。例如，在GitHub Actions中：
+
+```yaml
+- name: Validate Swagger Documentation
+  run: make swagger-validate
+```
+
+如果验证失败，CI流程将停止，防止包含无效API文档的代码被合并。
+
+### 验证内容
+
+验证工具会检查以下几个方面：
+
+1. **格式验证** - 确保文档是有效的JSON格式
+2. **结构验证** - 检查必要的字段，如swagger版本、info、paths等
+3. **内容验证** - 检查info对象中的title和version字段
+4. **API验证** - 确保paths对象不为空，包含API定义
+
+如果发现任何问题，工具将输出详细的错误信息，指出问题所在。 

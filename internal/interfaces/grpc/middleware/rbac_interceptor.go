@@ -59,6 +59,13 @@ func (r *RBACInterceptor) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 			return handler(ctx, req)
 		}
 
+		// 获取方法对应的权限信息
+		permInfo, exists := r.methodPermissionMap[info.FullMethod]
+		if !exists {
+			log.Warn("No permission defined for method", zap.String("method", info.FullMethod))
+			return handler(ctx, req)
+		}
+
 		// 获取用户ID
 		userID, err := service.GetUserID(ctx)
 		if err != nil {
@@ -66,13 +73,6 @@ func (r *RBACInterceptor) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 				zap.String("method", info.FullMethod),
 				zap.Error(err))
 			return nil, status.Errorf(codes.Unauthenticated, "invalid authentication: %v", err)
-		}
-
-		// 获取方法对应的权限信息
-		permInfo, exists := r.methodPermissionMap[info.FullMethod]
-		if !exists {
-			log.Warn("No permission defined for method", zap.String("method", info.FullMethod))
-			return handler(ctx, req)
 		}
 
 		log.Debug("Checking permission",

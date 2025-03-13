@@ -23,7 +23,7 @@ func NewQuestionService(questionService *service.QuestionService) *QuestionServi
 	}
 }
 
-func (s *QuestionService) GetQuestion(ctx context.Context, req *pb.QuestionServiceGetRequest) (*pb.QuestionServiceGetResponse, error) {
+func (s *QuestionService) Get(ctx context.Context, req *pb.QuestionServiceGetRequest) (*pb.QuestionServiceGetResponse, error) {
 	log := logger.GetLogger(ctx)
 	log.Info("GetQuestion called", zap.Any("req", req))
 
@@ -41,7 +41,7 @@ func (s *QuestionService) GetQuestion(ctx context.Context, req *pb.QuestionServi
 	}, nil
 }
 
-func (s *QuestionService) CreateQuestion(ctx context.Context, req *pb.QuestionServiceCreateRequest) (*pb.QuestionServiceCreateResponse, error) {
+func (s *QuestionService) Create(ctx context.Context, req *pb.QuestionServiceCreateRequest) (*pb.QuestionServiceCreateResponse, error) {
 	log := logger.GetLogger(ctx)
 	log.Info("CreateQuestion called", zap.Any("req", req))
 
@@ -62,7 +62,7 @@ func (s *QuestionService) CreateQuestion(ctx context.Context, req *pb.QuestionSe
 	}, nil
 }
 
-func (s *QuestionService) SearchQuestions(ctx context.Context, req *pb.QuestionServiceSearchRequest) (*pb.QuestionServiceSearchResponse, error) {
+func (s *QuestionService) Search(ctx context.Context, req *pb.QuestionServiceSearchRequest) (*pb.QuestionServiceSearchResponse, error) {
 	log := logger.GetLogger(ctx)
 	log.Info("SearchQuestions called", zap.Any("req", req))
 
@@ -89,7 +89,7 @@ func (s *QuestionService) SearchQuestions(ctx context.Context, req *pb.QuestionS
 	}, nil
 }
 
-func (s *QuestionService) UpdateQuestion(ctx context.Context, req *pb.QuestionServiceUpdateRequest) (*pb.QuestionServiceUpdateResponse, error) {
+func (s *QuestionService) Update(ctx context.Context, req *pb.QuestionServiceUpdateRequest) (*pb.QuestionServiceUpdateResponse, error) {
 	log := logger.GetLogger(ctx)
 	log.Info("UpdateQuestion called", zap.Any("req", req))
 
@@ -108,7 +108,7 @@ func (s *QuestionService) UpdateQuestion(ctx context.Context, req *pb.QuestionSe
 	return &pb.QuestionServiceUpdateResponse{}, nil
 }
 
-func (s *QuestionService) DeleteQuestion(ctx context.Context, req *pb.QuestionServiceDeleteRequest) (*pb.QuestionServiceDeleteResponse, error) {
+func (s *QuestionService) Delete(ctx context.Context, req *pb.QuestionServiceDeleteRequest) (*pb.QuestionServiceDeleteResponse, error) {
 	log := logger.GetLogger(ctx)
 	log.Info("DeleteQuestion called", zap.Any("req", req))
 
@@ -122,7 +122,7 @@ func (s *QuestionService) DeleteQuestion(ctx context.Context, req *pb.QuestionSe
 	return &pb.QuestionServiceDeleteResponse{}, nil
 }
 
-func (s *QuestionService) PublishQuestion(ctx context.Context, req *pb.QuestionServicePublishRequest) (*pb.QuestionServicePublishResponse, error) {
+func (s *QuestionService) Publish(ctx context.Context, req *pb.QuestionServicePublishRequest) (*pb.QuestionServicePublishResponse, error) {
 	log := logger.GetLogger(ctx)
 	log.Info("PublishQuestion called", zap.Any("req", req))
 

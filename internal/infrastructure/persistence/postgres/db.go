@@ -76,6 +76,12 @@ func autoMigrate(db *gorm.DB) error {
 			&entity.Course{},
 			&entity.CourseSection{},
 			&entity.CourseSectionUnit{},
+			&entity.Question{},
+			&entity.QuestionTag{},
+			&entity.Permission{},
+			&entity.Role{},
+			&entity.RolePermission{},
+			&entity.Admin{},
 		); err != nil {
 			return err
 		}

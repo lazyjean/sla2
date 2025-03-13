@@ -42,15 +42,24 @@ func RegisterRBACMethodMappings(interceptor *RBACInterceptor) {
 
 // registerAuthWhitelist 注册认证相关API到白名单（不需要检查权限）
 func registerAuthWhitelist(interceptor *RBACInterceptor) {
-	// 登录接口不需要检查权限
-	interceptor.AddToWhitelist("/proto.v1.UserService/Login")
-	interceptor.AddToWhitelist("/proto.v1.UserService/Signup")
-	interceptor.AddToWhitelist("/proto.v1.UserService/ResetPassword")
-	interceptor.AddToWhitelist("/proto.v1.UserService/GetCurrentUser")
+	// 系统管理接口
+	interceptor.AddToWhitelist("/proto.v1.AdminService/CheckSystemStatus")
+	interceptor.AddToWhitelist("/proto.v1.AdminService/InitializeSystem")
 
-	// 管理员登录接口不需要检查权限
-	interceptor.AddToWhitelist("/proto.v1.AdminService/Login")
-	interceptor.AddToWhitelist("/proto.v1.AdminService/GetCurrentAdmin")
+	// 管理员认证接口
+	interceptor.AddToWhitelist("/proto.v1.AdminService/AdminLogin")
+	interceptor.AddToWhitelist("/proto.v1.AdminService/RefreshToken")
+
+	// 用户认证接口
+	interceptor.AddToWhitelist("/proto.v1.UserService/Register")
+	interceptor.AddToWhitelist("/proto.v1.UserService/Login")
+	interceptor.AddToWhitelist("/proto.v1.UserService/RefreshToken")
+	interceptor.AddToWhitelist("/proto.v1.UserService/AppleLogin")
+	interceptor.AddToWhitelist("/proto.v1.UserService/ResetPassword")
+
+	// 健康检查接口
+	interceptor.AddToWhitelist("/grpc.health.v1.Health/Check")
+	interceptor.AddToWhitelist("/grpc.health.v1.Health/Watch")
 }
 
 // registerUserMethodPermissions 注册用户相关API权限

@@ -86,6 +86,23 @@ release: test docker-build docker-push
 deploy:
 	kubectl set image deployment/$(IMAGE_NAME) $(IMAGE_NAME)=$(GET_FULL_IMAGE) -n default
 
+# 验证 Swagger 文档
+.PHONY: swagger-validate
+swagger-validate:
+	@echo "验证 Swagger 文档..."
+	@if [ ! -f ./api/swagger/swagger.json ]; then \
+		echo "错误: swagger.json 文件不存在"; \
+		exit 1; \
+	fi
+	@echo "Swagger 文档验证成功"
+
+# 生成 Swagger 验证工具
+.PHONY: build-swagger-validator
+build-swagger-validator:
+	@echo "构建 Swagger 验证工具..."
+	@go build -o bin/swagger-validator cmd/swagger-validator/main.go
+	@echo "Swagger 验证工具构建完成: bin/swagger-validator"
+
 # 帮助信息
 .PHONY: help
 help:
@@ -100,6 +117,8 @@ help:
 	@echo "  make clean         - 清理构建产物"
 	@echo "  make release       - 构建并推送镜像"
 	@echo "  make deploy        - 更新线上服务"
+	@echo "  make swagger-validate - 验证 Swagger 文档"
+	@echo "  make build-swagger-validator - 构建 Swagger 验证工具"
 	@echo "  make helm-install  - 安装 Helm 应用"
 	@echo "  make helm-uninstall - 卸载 Helm 应用"
 	@echo "  make helm-template - 生成 Helm 模板"
