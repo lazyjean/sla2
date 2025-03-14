@@ -6,6 +6,7 @@ import (
 
 	"github.com/lazyjean/sla2/internal/domain/entity"
 	"github.com/lazyjean/sla2/internal/domain/repository"
+	"github.com/lazyjean/sla2/internal/domain/security"
 )
 
 // Domain errors
@@ -17,7 +18,8 @@ var (
 
 // adminService 管理员领域服务实现
 type adminService struct {
-	adminRepo repository.AdminRepository
+	adminRepo        repository.AdminRepository
+	permissionHelper *security.PermissionHelper
 
 	// 系统初始化状态缓存（一旦初始化就永远为 true）
 	isInitialized bool
@@ -26,9 +28,11 @@ type adminService struct {
 // NewAdminService 创建管理员领域服务
 func NewAdminService(
 	adminRepo repository.AdminRepository,
+	permissionHelper *security.PermissionHelper,
 ) AdminService {
 	svc := &adminService{
-		adminRepo: adminRepo,
+		adminRepo:        adminRepo,
+		permissionHelper: permissionHelper,
 	}
 
 	// 在服务创建时检查系统初始化状态
@@ -73,10 +77,33 @@ func (s *adminService) InitializeSystem(ctx context.Context, admin *entity.Admin
 		return ErrSystemAlreadyInitialized
 	}
 
-	// 保存管理员（注意：这里应该在仓储层使用事务）
+	// 开始事务
+	// 注意：实际实现可能需要根据具体的事务管理方式进行调整
+	// 这里假设仓储层已实现事务支持
+
+	// 1. 保存管理员
 	if err := s.adminRepo.Create(ctx, admin); err != nil {
 		return err
 	}
+
+	// 2. 为新创建的管理员分配admin角色
+	// PermissionHelper.AssignRoleToUser 返回 (bool, error)
+	assigned, err := s.permissionHelper.AssignRoleToUser(ctx, admin.ID, security.RoleAdmin)
+	if err != nil {
+		// 回滚管理员创建
+		_ = s.adminRepo.Delete(ctx, admin.ID)
+		return err
+	}
+
+	if !assigned {
+		// 如果角色分配失败但没有错误，记录一个域错误
+		_ = s.adminRepo.Delete(ctx, admin.ID)
+		return NewDomainError("failed to assign admin role to admin user")
+	}
+
+	// 3. 为admin角色设置管理员权限已在PermissionInitializer中配置
+	// 根据permission_initializer.go的代码，admin角色已经被赋予所有权限
+	// fmt.Sprintf("r:%s", RoleAdmin), ResourceAny, ActionAny
 
 	// 更新初始化状态缓存
 	s.isInitialized = true

@@ -46,12 +46,8 @@ const (
 const (
 	// RoleAdmin 管理员角色
 	RoleAdmin = "admin"
-	// RoleUser 普通用户角色
-	RoleUser = "user"
-	// RoleGuest 访客角色
-	RoleGuest = "guest"
-	// RoleContentManager 内容管理员角色
-	RoleContentManager = "content_manager"
-	// RoleUserManager 用户管理员角色
-	RoleUserManager = "user_manager"
+	// RoleCourseManager 课程管理员角色
+	RoleContentManager = "course_manager"
+	// 普通用户不需要定义角色
+	// 删除 RoleUser, RoleGuest, RoleUserManager
 )

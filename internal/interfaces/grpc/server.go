@@ -70,6 +70,9 @@ func NewServer(
 	loggingInterceptor := grpcmiddleware.LoggingUnaryServerInterceptor()
 	metadataInterceptor := grpcmiddleware.MetadataUnaryServerInterceptor()
 
+	// 创建验证拦截器
+	validatorInterceptor := grpcmiddleware.ValidatorInterceptor()
+
 	// 创建权限拦截器
 	rbacInterceptor := grpcmiddleware.NewRBACInterceptor(permissionHelper)
 	grpcmiddleware.RegisterRBACMethodMappings(rbacInterceptor)
@@ -77,8 +80,9 @@ func NewServer(
 	// 创建 gRPC 服务器，使用链式拦截器
 	grpcServer := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
-			metadataInterceptor,                      // 首先处理元数据
-			loggingInterceptor,                       // 然后记录日志
+			metadataInterceptor, // 首先处理元数据
+			loggingInterceptor,  // 然后记录日志
+			validatorInterceptor,
 			unaryInterceptor,                         // 然后进行认证
 			rbacInterceptor.UnaryServerInterceptor(), // 最后进行权限检查
 		),

@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/lazyjean/sla2/config"
-	"github.com/lazyjean/sla2/internal/domain/entity"
 	"github.com/lazyjean/sla2/pkg/logger"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
@@ -33,37 +32,13 @@ func NewRBACProvider(db *gorm.DB, cfg *config.RBACConfig) (*RBACProvider, error)
 	initializer := NewPermissionInitializer(permManager)
 
 	// 如果配置了自动初始化，则初始化权限
-	if cfg.AutoInit {
-		logger.Log.Info("Auto-initializing RBAC permissions...")
-		if err := initializer.Initialize(context.Background()); err != nil {
-			logger.Log.Error("Failed to initialize permissions", zap.Error(err))
-			return nil, fmt.Errorf("failed to initialize permissions: %w", err)
-		}
-
-		// 手动为ID为1的admin用户分配admin角色
-		adminID := entity.UID(1)
-		logger.Log.Info("Assigning admin role to admin user", zap.Uint64("admin_id", uint64(adminID)))
-
-		// 检查用户角色
-		hasRole, err := permHelper.HasUserRole(context.Background(), adminID, RoleAdmin)
-		if err != nil {
-			logger.Log.Error("Failed to check admin role", zap.Error(err))
-		} else if !hasRole {
-			// 分配admin角色
-			assigned, err := permHelper.AssignRoleToUser(context.Background(), adminID, RoleAdmin)
-			if err != nil {
-				logger.Log.Error("Failed to assign admin role", zap.Error(err))
-			} else if assigned {
-				logger.Log.Info("Successfully assigned admin role to admin user", zap.Uint64("admin_id", uint64(adminID)))
-			} else {
-				logger.Log.Warn("Admin role already assigned to admin user", zap.Uint64("admin_id", uint64(adminID)))
-			}
-		} else {
-			logger.Log.Info("Admin user already has admin role", zap.Uint64("admin_id", uint64(adminID)))
-		}
-
-		logger.Log.Info("RBAC permissions initialized successfully")
+	logger.Log.Info("Auto-initializing RBAC permissions...")
+	if err := initializer.Initialize(context.Background()); err != nil {
+		logger.Log.Error("Failed to initialize permissions", zap.Error(err))
+		return nil, fmt.Errorf("failed to initialize permissions: %w", err)
 	}
+
+	logger.Log.Info("RBAC permissions initialized successfully")
 
 	return &RBACProvider{
 		permissionManager: permManager,

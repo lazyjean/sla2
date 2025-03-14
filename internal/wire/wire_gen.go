@@ -10,6 +10,7 @@ import (
 	"github.com/google/wire"
 	"github.com/lazyjean/sla2/config"
 	"github.com/lazyjean/sla2/internal/application/service"
+	"github.com/lazyjean/sla2/internal/domain/repository"
 	security2 "github.com/lazyjean/sla2/internal/domain/security"
 	"github.com/lazyjean/sla2/internal/infrastructure/cache/redis"
 	"github.com/lazyjean/sla2/internal/infrastructure/oauth"
@@ -31,7 +32,13 @@ func InitializeApp(cfg *config.Config) (*App, error) {
 	adminRepository := postgres.NewAdminRepository(db)
 	passwordService := security.NewBCryptPasswordService()
 	tokenService := security.NewJWTTokenService(cfg)
-	adminService := service.NewAdminService(adminRepository, passwordService, tokenService)
+	rbacConfig := &cfg.RBAC
+	rbacProvider, err := security2.NewRBACProvider(db, rbacConfig)
+	if err != nil {
+		return nil, err
+	}
+	permissionHelper := providePermissionHelper(rbacProvider)
+	adminService := provideAdminService(adminRepository, passwordService, tokenService, permissionHelper)
 	userRepository := postgres.NewUserRepository(db)
 	appleConfig := oauth.NewAppleConfig(cfg)
 	appleAuthService := oauth.NewAppleAuthService(appleConfig)
@@ -53,12 +60,6 @@ func InitializeApp(cfg *config.Config) (*App, error) {
 	questionService := service.NewQuestionService(questionRepository)
 	questionTagRepository := postgres.NewQuestionTagRepository(db)
 	questionTagService := service.NewQuestionTagService(questionTagRepository)
-	rbacConfig := &cfg.RBAC
-	rbacProvider, err := security2.NewRBACProvider(db, rbacConfig)
-	if err != nil {
-		return nil, err
-	}
-	permissionHelper := providePermissionHelper(rbacProvider)
 	server := grpc.NewServer(adminService, userService, wordService, learningService, courseService, questionService, questionTagService, tokenService, permissionHelper, cfg)
 	app := NewApp(server, cfg, tokenService, appleAuthService)
 	return app, nil
@@ -85,7 +86,22 @@ var cacheSet = wire.NewSet(redis.NewRedisCache)
 var repositorySet = wire.NewSet(postgres.NewWordRepository, postgres.NewCachedWordRepository, postgres.NewLearningRepository, postgres.NewUserRepository, postgres.NewCourseRepository, postgres.NewCourseSectionRepository, postgres.NewAdminRepository, postgres.NewQuestionTagRepository, postgres.NewQuestionRepository)
 
 // 服务集
-var serviceSet = wire.NewSet(service.NewWordService, service.NewLearningService, service.NewUserService, service.NewCourseService, service.NewAdminService, service.NewQuestionService, service.NewQuestionTagService)
+var serviceSet = wire.NewSet(service.NewWordService, service.NewLearningService, service.NewUserService, service.NewCourseService, provideAdminService, service.NewQuestionService, service.NewQuestionTagService)
+
+// provideAdminService 提供管理员服务
+func provideAdminService(
+	adminRepo repository.AdminRepository,
+	passwordService security2.PasswordService,
+	tokenService security2.TokenService,
+	permissionHelper *security2.PermissionHelper,
+) *service.AdminService {
+	return service.NewAdminService(
+		adminRepo,
+		passwordService,
+		tokenService,
+		permissionHelper,
+	)
+}
 
 // 认证集
 var authSet = wire.NewSet(oauth.NewAppleConfig, oauth.NewAppleAuthService)

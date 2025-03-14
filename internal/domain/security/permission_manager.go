@@ -2,6 +2,8 @@ package security
 
 import (
 	"context"
+
+	"github.com/lazyjean/sla2/internal/domain/entity"
 )
 
 // PermissionManager 权限管理器接口
@@ -22,34 +24,34 @@ type PermissionManager interface {
 	RemovePolicy(ctx context.Context, sub string, obj string, act string) (bool, error)
 
 	// AddRoleForUser 为用户添加角色
-	AddRoleForUser(ctx context.Context, user string, role string) (bool, error)
+	AddRoleForUser(ctx context.Context, user entity.UID, role string) (bool, error)
 
 	// DeleteRoleForUser 删除用户的角色
-	DeleteRoleForUser(ctx context.Context, user string, role string) (bool, error)
+	DeleteRoleForUser(ctx context.Context, user entity.UID, role string) (bool, error)
 
 	// GetRolesForUser 获取用户的所有角色
-	GetRolesForUser(ctx context.Context, user string) ([]string, error)
+	GetRolesForUser(ctx context.Context, user entity.UID) ([]string, error)
 
 	// GetUsersForRole 获取拥有指定角色的所有用户
 	GetUsersForRole(ctx context.Context, role string) ([]string, error)
 
 	// HasRoleForUser 检查用户是否拥有指定角色
-	HasRoleForUser(ctx context.Context, user string, role string) (bool, error)
+	HasRoleForUser(ctx context.Context, user entity.UID, role string) (bool, error)
 
 	// GetAllRoles 获取所有角色
 	GetAllRoles(ctx context.Context) ([]string, error)
 
 	// GetPermissionsForUser 获取用户的所有权限
-	GetPermissionsForUser(ctx context.Context, user string) ([][]string, error)
+	GetPermissionsForUser(ctx context.Context, user entity.UID) ([][]string, error)
 
 	// GetPermissionsForRole 获取角色的所有权限
 	GetPermissionsForRole(ctx context.Context, role string) ([][]string, error)
 
 	// AddUserPermission 直接添加用户权限
-	AddUserPermission(ctx context.Context, userId string, obj string, act string) (bool, error)
+	AddUserPermission(ctx context.Context, userId entity.UID, obj string, act string) (bool, error)
 
 	// RemoveUserPermission 移除用户权限
-	RemoveUserPermission(ctx context.Context, userId string, obj string, act string) (bool, error)
+	RemoveUserPermission(ctx context.Context, userId entity.UID, obj string, act string) (bool, error)
 
 	// GetAllPermissions 获取所有权限策略
 	GetAllPermissions(ctx context.Context) ([][]string, error)

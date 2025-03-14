@@ -15,4 +15,5 @@ type AdminRepository interface {
 	Create(ctx context.Context, admin *entity.Admin) error
 	FindByID(ctx context.Context, adminID entity.UID) (*entity.Admin, error)
 	FindByUsername(ctx context.Context, username string) (*entity.Admin, error)
+	Delete(ctx context.Context, adminID entity.UID) error
 }

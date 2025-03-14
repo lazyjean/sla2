@@ -73,3 +73,18 @@ func (r *adminRepository) FindByUsername(ctx context.Context, username string) (
 	}
 	return &admin, nil
 }
+
+// Delete 删除管理员
+func (r *adminRepository) Delete(ctx context.Context, adminID entity.UID) error {
+	result := r.db.WithContext(ctx).Delete(&entity.Admin{}, adminID)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	// 如果没有找到记录，返回错误
+	if result.RowsAffected == 0 {
+		return errors.New("admin not found")
+	}
+
+	return nil
+}

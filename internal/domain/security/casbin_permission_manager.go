@@ -99,24 +99,23 @@ func userOrRoleKey(id interface{}) string {
 func (pm *CasbinPermissionManager) CheckPermission(ctx context.Context, sub string, obj string, act string) (bool, error) {
 	pm.mu.RLock()
 	defer pm.mu.RUnlock()
-
-	logger.Log.Debug("Checking permission",
+	log := logger.GetLogger(ctx)
+	log.Debug("Checking permission",
 		zap.String("subject", sub),
 		zap.String("object", obj),
 		zap.String("action", act))
 
 	// 先检查是否有管理员角色，管理员拥有所有权限
 	if strings.HasPrefix(sub, "u:") {
-		// userID := sub[2:] // 去掉 "u:" 前缀
 		adminRoleKey := "r:admin"
 		hasAdminRole, err := pm.enforcer.HasRoleForUser(sub, adminRoleKey)
 		if err != nil {
-			logger.Log.Error("Failed to check admin role",
+			log.Error("Failed to check admin role",
 				zap.String("subject", sub),
 				zap.String("admin_role", adminRoleKey),
 				zap.Error(err))
 		} else if hasAdminRole {
-			logger.Log.Debug("User has admin role, granting permission",
+			log.Debug("User has admin role, granting permission",
 				zap.String("subject", sub),
 				zap.String("object", obj),
 				zap.String("action", act))
@@ -126,11 +125,11 @@ func (pm *CasbinPermissionManager) CheckPermission(ctx context.Context, sub stri
 		// 记录角色
 		roles, err := pm.enforcer.GetRolesForUser(sub)
 		if err != nil {
-			logger.Log.Warn("Failed to get roles for user",
+			log.Warn("Failed to get roles for user",
 				zap.String("subject", sub),
 				zap.Error(err))
 		} else {
-			logger.Log.Debug("User roles",
+			log.Debug("User roles",
 				zap.String("subject", sub),
 				zap.Strings("roles", roles))
 		}
@@ -201,7 +200,7 @@ func (pm *CasbinPermissionManager) RemovePolicy(ctx context.Context, sub string,
 }
 
 // AddRoleForUser 为用户添加角色
-func (pm *CasbinPermissionManager) AddRoleForUser(ctx context.Context, user string, role string) (bool, error) {
+func (pm *CasbinPermissionManager) AddRoleForUser(ctx context.Context, user entity.UID, role string) (bool, error) {
 	pm.mu.Lock()
 	defer pm.mu.Unlock()
 
@@ -223,7 +222,7 @@ func (pm *CasbinPermissionManager) AddRoleForUser(ctx context.Context, user stri
 }
 
 // DeleteRoleForUser 删除用户的角色
-func (pm *CasbinPermissionManager) DeleteRoleForUser(ctx context.Context, user string, role string) (bool, error) {
+func (pm *CasbinPermissionManager) DeleteRoleForUser(ctx context.Context, user entity.UID, role string) (bool, error) {
 	pm.mu.Lock()
 	defer pm.mu.Unlock()
 
@@ -245,7 +244,7 @@ func (pm *CasbinPermissionManager) DeleteRoleForUser(ctx context.Context, user s
 }
 
 // GetRolesForUser 获取用户的所有角色
-func (pm *CasbinPermissionManager) GetRolesForUser(ctx context.Context, user string) ([]string, error) {
+func (pm *CasbinPermissionManager) GetRolesForUser(ctx context.Context, user entity.UID) ([]string, error) {
 	pm.mu.RLock()
 	defer pm.mu.RUnlock()
 
@@ -293,7 +292,7 @@ func (pm *CasbinPermissionManager) GetUsersForRole(ctx context.Context, role str
 }
 
 // HasRoleForUser 检查用户是否拥有指定角色
-func (pm *CasbinPermissionManager) HasRoleForUser(ctx context.Context, user string, role string) (bool, error) {
+func (pm *CasbinPermissionManager) HasRoleForUser(ctx context.Context, user entity.UID, role string) (bool, error) {
 	pm.mu.RLock()
 	defer pm.mu.RUnlock()
 
@@ -312,7 +311,7 @@ func (pm *CasbinPermissionManager) GetAllRoles(ctx context.Context) ([]string, e
 }
 
 // GetPermissionsForUser 获取用户的所有权限
-func (pm *CasbinPermissionManager) GetPermissionsForUser(ctx context.Context, user string) ([][]string, error) {
+func (pm *CasbinPermissionManager) GetPermissionsForUser(ctx context.Context, user entity.UID) ([][]string, error) {
 	pm.mu.RLock()
 	defer pm.mu.RUnlock()
 
@@ -330,13 +329,13 @@ func (pm *CasbinPermissionManager) GetPermissionsForRole(ctx context.Context, ro
 }
 
 // AddUserPermission 直接添加用户权限
-func (pm *CasbinPermissionManager) AddUserPermission(ctx context.Context, userId string, obj string, act string) (bool, error) {
+func (pm *CasbinPermissionManager) AddUserPermission(ctx context.Context, userId entity.UID, obj string, act string) (bool, error) {
 	userKey := userOrRoleKey(userId)
 	return pm.AddPolicy(ctx, userKey, obj, act)
 }
 
 // RemoveUserPermission 移除用户权限
-func (pm *CasbinPermissionManager) RemoveUserPermission(ctx context.Context, userId string, obj string, act string) (bool, error) {
+func (pm *CasbinPermissionManager) RemoveUserPermission(ctx context.Context, userId entity.UID, obj string, act string) (bool, error) {
 	userKey := userOrRoleKey(userId)
 	return pm.RemovePolicy(ctx, userKey, obj, act)
 }

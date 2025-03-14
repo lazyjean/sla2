@@ -55,4 +55,3 @@ swagger:
 
 rbac:
   config_dir: "./config"
-  auto_init: true

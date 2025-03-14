@@ -92,10 +92,8 @@ func (ph *PermissionHelper) HasUserRole(ctx context.Context, userID entity.UID, 
 		return false, nil
 	}
 
-	sub := SubjectFromUserID(userID)
 	role := SubjectFromRoleName(roleName)
-
-	return ph.permissionManager.HasRoleForUser(ctx, sub, role)
+	return ph.permissionManager.HasRoleForUser(ctx, userID, role)
 }
 
 // GetUserRoles 获取用户的所有角色
@@ -104,8 +102,7 @@ func (ph *PermissionHelper) GetUserRoles(ctx context.Context, userID entity.UID)
 		return []string{}, nil
 	}
 
-	sub := SubjectFromUserID(userID)
-	return ph.permissionManager.GetRolesForUser(ctx, sub)
+	return ph.permissionManager.GetRolesForUser(ctx, userID)
 }
 
 // AssignRoleToUser 为用户分配角色
@@ -114,10 +111,8 @@ func (ph *PermissionHelper) AssignRoleToUser(ctx context.Context, userID entity.
 		return false, fmt.Errorf("invalid user ID or role name")
 	}
 
-	sub := SubjectFromUserID(userID)
 	role := SubjectFromRoleName(roleName)
-
-	return ph.permissionManager.AddRoleForUser(ctx, sub, role)
+	return ph.permissionManager.AddRoleForUser(ctx, userID, role)
 }
 
 // RemoveRoleFromUser 从用户移除角色
@@ -126,8 +121,6 @@ func (ph *PermissionHelper) RemoveRoleFromUser(ctx context.Context, userID entit
 		return false, fmt.Errorf("invalid user ID or role name")
 	}
 
-	sub := SubjectFromUserID(userID)
 	role := SubjectFromRoleName(roleName)
-
-	return ph.permissionManager.DeleteRoleForUser(ctx, sub, role)
+	return ph.permissionManager.DeleteRoleForUser(ctx, userID, role)
 }

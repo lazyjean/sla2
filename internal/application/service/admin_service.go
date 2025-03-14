@@ -18,14 +18,15 @@ type AdminService struct {
 	tokenService    security.TokenService
 }
 
-// NewAdminService 创建管理员服务
+// NewAdminService 创建带权限助手的管理员服务
 func NewAdminService(
 	adminRepo repository.AdminRepository,
 	passwordService security.PasswordService,
 	tokenService security.TokenService,
+	permissionHelper *security.PermissionHelper,
 ) *AdminService {
 	return &AdminService{
-		adminService:    domainService.NewAdminService(adminRepo),
+		adminService:    domainService.NewAdminService(adminRepo, permissionHelper),
 		passwordService: passwordService,
 		tokenService:    tokenService,
 	}

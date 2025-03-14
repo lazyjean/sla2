@@ -75,11 +75,35 @@ func (r *RBACInterceptor) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 			return nil, status.Errorf(codes.Unauthenticated, "invalid authentication: %v", err)
 		}
 
-		log.Debug("Checking permission",
+		log.Info("Checking permission with detailed info",
 			zap.String("method", info.FullMethod),
 			zap.Uint64("user_id", uint64(userID)),
 			zap.String("resource", permInfo["resource"]),
 			zap.String("action", permInfo["action"]))
+
+		// 添加额外的角色检查日志
+		roles, roleErr := r.permissionHelper.GetUserRoles(ctx, userID)
+		if roleErr != nil {
+			log.Warn("Failed to get user roles",
+				zap.Uint64("user_id", uint64(userID)),
+				zap.Error(roleErr))
+		} else {
+			log.Info("User roles",
+				zap.Uint64("user_id", uint64(userID)),
+				zap.Strings("roles", roles))
+		}
+
+		// 检查用户是否有admin角色
+		hasAdminRole, adminErr := r.permissionHelper.HasUserRole(ctx, userID, security.RoleAdmin)
+		if adminErr != nil {
+			log.Warn("Failed to check admin role",
+				zap.Uint64("user_id", uint64(userID)),
+				zap.Error(adminErr))
+		} else {
+			log.Info("Admin role check result",
+				zap.Uint64("user_id", uint64(userID)),
+				zap.Bool("has_admin_role", hasAdminRole))
+		}
 
 		// 检查权限
 		hasPermission, err := r.permissionHelper.CheckUserPermission(ctx, userID, permInfo["resource"], permInfo["action"])

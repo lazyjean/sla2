@@ -7,6 +7,8 @@ import (
 	"github.com/google/wire"
 	"github.com/lazyjean/sla2/config"
 	"github.com/lazyjean/sla2/internal/application/service"
+	"github.com/lazyjean/sla2/internal/domain/repository"
+	domainsecurity "github.com/lazyjean/sla2/internal/domain/security"
 	"github.com/lazyjean/sla2/internal/infrastructure/cache/redis"
 	"github.com/lazyjean/sla2/internal/infrastructure/oauth"
 	"github.com/lazyjean/sla2/internal/infrastructure/persistence/postgres"
@@ -56,10 +58,25 @@ var serviceSet = wire.NewSet(
 	service.NewLearningService,
 	service.NewUserService,
 	service.NewCourseService,
-	service.NewAdminService,
+	provideAdminService,
 	service.NewQuestionService,
 	service.NewQuestionTagService,
 )
+
+// provideAdminService 提供管理员服务
+func provideAdminService(
+	adminRepo repository.AdminRepository,
+	passwordService domainsecurity.PasswordService,
+	tokenService domainsecurity.TokenService,
+	permissionHelper *domainsecurity.PermissionHelper,
+) *service.AdminService {
+	return service.NewAdminService(
+		adminRepo,
+		passwordService,
+		tokenService,
+		permissionHelper,
+	)
+}
 
 // 认证集
 var authSet = wire.NewSet(
