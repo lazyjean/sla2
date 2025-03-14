@@ -2,9 +2,17 @@ package service
 
 import (
 	"context"
+	"errors"
 
 	"github.com/lazyjean/sla2/internal/domain/entity"
 	"github.com/lazyjean/sla2/internal/domain/repository"
+)
+
+// Domain errors
+var (
+	ErrSystemAlreadyInitialized = errors.New("system already initialized")
+	ErrSystemNotInitialized     = errors.New("system not initialized")
+	ErrAdminNotFound            = errors.New("admin not found")
 )
 
 // adminService 管理员领域服务实现
@@ -19,9 +27,18 @@ type adminService struct {
 func NewAdminService(
 	adminRepo repository.AdminRepository,
 ) AdminService {
-	return &adminService{
+	svc := &adminService{
 		adminRepo: adminRepo,
 	}
+
+	// 在服务创建时检查系统初始化状态
+	// 使用 context.Background() 作为初始检查的上下文
+	initialized, err := adminRepo.IsInitialized(context.Background())
+	if err == nil && initialized {
+		svc.isInitialized = true
+	}
+
+	return svc
 }
 
 // IsSystemInitialized 检查系统是否已初始化
@@ -69,6 +86,9 @@ func (s *adminService) InitializeSystem(ctx context.Context, admin *entity.Admin
 
 // GetAdminByID 根据ID获取管理员信息
 func (s *adminService) GetAdminByID(ctx context.Context, adminID entity.UID) (*entity.Admin, error) {
+	if !s.isInitialized {
+		return nil, ErrSystemNotInitialized
+	}
 	admin, err := s.adminRepo.FindByID(ctx, adminID)
 	if err != nil {
 		return nil, err
@@ -81,6 +101,9 @@ func (s *adminService) GetAdminByID(ctx context.Context, adminID entity.UID) (*e
 
 // GetAdminByUsername 根据用户名获取管理员信息
 func (s *adminService) GetAdminByUsername(ctx context.Context, username string) (*entity.Admin, error) {
+	if !s.isInitialized {
+		return nil, ErrSystemNotInitialized
+	}
 	admin, err := s.adminRepo.FindByUsername(ctx, username)
 	if err != nil {
 		return nil, err
@@ -90,13 +113,6 @@ func (s *adminService) GetAdminByUsername(ctx context.Context, username string) 
 	}
 	return admin, nil
 }
-
-// 错误定义
-var (
-	ErrSystemAlreadyInitialized = NewDomainError("system already initialized")
-	ErrInvalidCredentials       = NewDomainError("invalid credentials")
-	ErrAdminNotFound            = NewDomainError("admin not found")
-)
 
 // DomainError 领域错误
 type DomainError struct {

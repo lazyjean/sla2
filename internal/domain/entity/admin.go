@@ -8,13 +8,15 @@ import (
 
 // Admin 管理员实体
 type Admin struct {
-	ID        UID       `gorm:"primaryKey;autoIncrement"`   // 修改为自增整型
-	Username  string    `gorm:"uniqueIndex;not null"`       // 用户名
-	Password  string    `gorm:"not null"`                   // 密码（加密存储）
-	Nickname  string    `gorm:"not null"`                   // 昵称
-	Roles     []string  `gorm:"type:jsonb;serializer:json"` // 权限列表
-	CreatedAt time.Time `gorm:"not null"`                   // 创建时间
-	UpdatedAt time.Time `gorm:"not null"`                   // 更新时间
+	ID            UID       `gorm:"primaryKey;autoIncrement"`                     // 修改为自增整型
+	Username      string    `gorm:"uniqueIndex;not null"`                         // 用户名
+	Password      string    `gorm:"not null"`                                     // 密码（加密存储）
+	Nickname      string    `gorm:"not null"`                                     // 昵称
+	Email         string    `gorm:"not null"`                                     // 邮箱
+	EmailVerified bool      `gorm:"column:email_verified;not null;default:false"` // 邮箱是否已验证
+	Roles         []string  `gorm:"type:jsonb;serializer:json"`                   // 权限列表
+	CreatedAt     time.Time `gorm:"not null"`                                     // 创建时间
+	UpdatedAt     time.Time `gorm:"not null"`                                     // 更新时间
 }
 
 // Value 实现 driver.Valuer 接口
@@ -41,19 +43,21 @@ func (a *Admin) Scan(value interface{}) error {
 }
 
 // NewAdmin 创建新的管理员实体
-func NewAdmin(username, password, nickname string) *Admin {
+func NewAdmin(username, password, nickname, email string) *Admin {
 	now := time.Now()
 	// 如果没有提供昵称，则使用用户名作为默认昵称
 	if nickname == "" {
 		nickname = username
 	}
 	return &Admin{
-		Username:  username,
-		Password:  password,
-		Nickname:  nickname,
-		Roles:     []string{"admin"},
-		CreatedAt: now,
-		UpdatedAt: now,
+		Username:      username,
+		Password:      password,
+		Nickname:      nickname,
+		Email:         email,
+		EmailVerified: false,
+		Roles:         []string{"admin"},
+		CreatedAt:     now,
+		UpdatedAt:     now,
 	}
 }
 

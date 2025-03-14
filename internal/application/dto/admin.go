@@ -16,6 +16,7 @@ type InitializeSystemRequest struct {
 	Username string `json:"username" binding:"required"`
 	Nickname string `json:"nickname" binding:"required"`
 	Password string `json:"password" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
 }
 
 // InitializeSystemResponse 初始化系统响应
@@ -46,18 +47,22 @@ type AdminRefreshTokenResponse struct {
 
 // AdminInfoResponse 管理员信息响应
 type AdminInfoResponse struct {
-	ID       entity.UID `json:"id"`
-	Username string     `json:"username"`
-	Nickname string     `json:"nickname"`
-	Roles    []string   `json:"permissions"`
+	ID            entity.UID `json:"id"`
+	Username      string     `json:"username"`
+	Nickname      string     `json:"nickname"`
+	Email         string     `json:"email"`
+	EmailVerified bool       `json:"email_verified"`
+	Roles         []string   `json:"permissions"`
 }
 
 // AdminInfo 管理员信息
 type AdminInfo struct {
-	ID        entity.UID `json:"id"`
-	Username  string     `json:"username"`
-	Nickname  string     `json:"nickname"`
-	Roles     []string   `json:"roles"`
-	CreatedAt time.Time  `json:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at"`
+	ID            entity.UID `json:"id"`
+	Username      string     `json:"username"`
+	Nickname      string     `json:"nickname"`
+	Email         string     `json:"email"`
+	EmailVerified bool       `json:"email_verified"`
+	Roles         []string   `json:"roles"`
+	CreatedAt     time.Time  `json:"created_at"`
+	UpdatedAt     time.Time  `json:"updated_at"`
 }

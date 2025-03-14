@@ -41,6 +41,7 @@ func (s *AdminService) InitializeSystem(ctx context.Context, req *pb.AdminServic
 		Username: req.Username,
 		Nickname: req.Nickname,
 		Password: req.Password,
+		Email:    req.Email,
 	})
 	if err != nil {
 		return nil, err
@@ -57,6 +58,7 @@ func (s *AdminService) InitializeSystem(ctx context.Context, req *pb.AdminServic
 			Id:        uint64(resp.Admin.ID),
 			Username:  resp.Admin.Username,
 			Nickname:  resp.Admin.Nickname,
+			Email:     resp.Admin.Email,
 			Roles:     resp.Admin.Roles,
 			CreatedAt: resp.Admin.CreatedAt.Unix(),
 			UpdatedAt: resp.Admin.UpdatedAt.Unix(),
@@ -87,6 +89,7 @@ func (s *AdminService) AdminLogin(ctx context.Context, req *pb.AdminServiceAdmin
 			Id:        uint64(resp.Admin.ID),
 			Username:  resp.Admin.Username,
 			Nickname:  resp.Admin.Nickname,
+			Email:     resp.Admin.Email,
 			Roles:     resp.Admin.Roles,
 			CreatedAt: resp.Admin.CreatedAt.Unix(),
 			UpdatedAt: resp.Admin.UpdatedAt.Unix(),
@@ -123,6 +126,7 @@ func (s *AdminService) GetCurrentAdminInfo(ctx context.Context, req *pb.AdminSer
 			Id:       uint64(resp.ID),
 			Username: resp.Username,
 			Nickname: resp.Nickname,
+			Email:    resp.Email,
 			Roles:    resp.Roles,
 		},
 	}, nil

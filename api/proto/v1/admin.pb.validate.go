@@ -517,6 +517,8 @@ func (m *AdminServiceInitializeSystemRequest) validate(all bool) error {
 
 	// no validation rules for Nickname
 
+	// no validation rules for Email
+
 	if len(errors) > 0 {
 		return AdminServiceInitializeSystemRequestMultiError(errors)
 	}
@@ -1011,6 +1013,10 @@ func (m *AdminInfo) validate(all bool) error {
 	// no validation rules for CreatedAt
 
 	// no validation rules for UpdatedAt
+
+	// no validation rules for Email
+
+	// no validation rules for EmailVerified
 
 	if len(errors) > 0 {
 		return AdminInfoMultiError(errors)

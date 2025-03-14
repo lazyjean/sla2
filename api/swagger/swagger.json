@@ -1816,6 +1816,10 @@
         "updatedAt": {
           "type": "string",
           "format": "int64"
+        },
+        "email": {
+          "type": "string",
+          "title": "管理员邮箱"
         }
       },
       "title": "管理员信息"
@@ -1880,6 +1884,10 @@
         "nickname": {
           "type": "string",
           "title": "管理员昵称"
+        },
+        "email": {
+          "type": "string",
+          "title": "管理员邮箱"
         }
       },
       "title": "系统初始化请求"

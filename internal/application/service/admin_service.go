@@ -61,7 +61,8 @@ func (s *AdminService) InitializeSystem(ctx context.Context, req *dto.Initialize
 	}
 
 	// 创建管理员
-	admin := entity.NewAdmin(req.Username, hashedPassword, req.Nickname)
+	admin := entity.NewAdmin(req.Username, hashedPassword, req.Nickname, req.Email)
+
 	// 设置管理员权限
 	admin.Roles = []string{"admin"}
 
@@ -84,12 +85,14 @@ func (s *AdminService) InitializeSystem(ctx context.Context, req *dto.Initialize
 
 	return &dto.InitializeSystemResponse{
 		Admin: &dto.AdminInfo{
-			ID:        admin.ID,
-			Username:  admin.Username,
-			Nickname:  admin.Nickname,
-			Roles:     admin.Roles,
-			CreatedAt: admin.CreatedAt,
-			UpdatedAt: admin.UpdatedAt,
+			ID:            admin.ID,
+			Username:      admin.Username,
+			Nickname:      admin.Nickname,
+			Email:         admin.Email,
+			EmailVerified: admin.EmailVerified,
+			Roles:         admin.Roles,
+			CreatedAt:     admin.CreatedAt,
+			UpdatedAt:     admin.UpdatedAt,
 		},
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
@@ -125,6 +128,7 @@ func (s *AdminService) Login(ctx context.Context, req *dto.AdminLoginRequest) (*
 			ID:        admin.ID,
 			Username:  admin.Username,
 			Nickname:  admin.Nickname,
+			Email:     admin.Email,
 			Roles:     admin.Roles,
 			CreatedAt: admin.CreatedAt,
 			UpdatedAt: admin.UpdatedAt,
@@ -179,20 +183,26 @@ func (s *AdminService) GetCurrentAdminInfo(ctx context.Context) (*dto.AdminInfoR
 	}
 
 	return &dto.AdminInfoResponse{
-		ID:       admin.ID,
-		Username: admin.Username,
-		Nickname: admin.Nickname,
-		Roles:    admin.Roles,
+		ID:            admin.ID,
+		Username:      admin.Username,
+		Nickname:      admin.Nickname,
+		Email:         admin.Email,
+		EmailVerified: admin.EmailVerified,
+		Roles:         admin.Roles,
 	}, nil
 }
 
 // 错误定义
 var (
-	ErrSystemAlreadyInitialized = errors.New("system already initialized")
-	ErrInvalidCredentials       = errors.New("invalid credentials")
-	ErrAdminNotFound            = errors.New("admin not found")
-	ErrUnauthorized             = errors.New("unauthorized")
-	ErrRoleNotFound             = errors.New("role not found")
+	// 使用领域层错误
+	ErrSystemAlreadyInitialized = domainService.ErrSystemAlreadyInitialized
+	ErrSystemNotInitialized     = domainService.ErrSystemNotInitialized
+	ErrAdminNotFound            = domainService.ErrAdminNotFound
+
+	// 应用层特有的错误
+	ErrInvalidCredentials = errors.New("invalid credentials")
+	ErrUnauthorized       = errors.New("unauthorized")
+	ErrRoleNotFound       = errors.New("role not found")
 )
 
 // GetAdminIDFromContext 从上下文中获取管理员ID

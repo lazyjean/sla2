@@ -6,6 +6,8 @@ import (
 
 	"github.com/lazyjean/sla2/internal/domain/entity"
 	"github.com/lazyjean/sla2/internal/domain/repository"
+	"github.com/lazyjean/sla2/pkg/logger"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -30,8 +32,9 @@ func (r *adminRepository) IsInitialized(ctx context.Context) (bool, error) {
 	return count > 0, nil
 }
 
-// Create 创建管理员
+// Create 创建管理后续需要扩展
 func (r *adminRepository) Create(ctx context.Context, admin *entity.Admin) error {
+	log := logger.GetLogger(ctx)
 	if admin == nil {
 		return errors.New("admin is nil")
 	}
@@ -41,7 +44,10 @@ func (r *adminRepository) Create(ctx context.Context, admin *entity.Admin) error
 		admin.Roles = []string{}
 	}
 
-	return r.db.WithContext(ctx).Create(admin).Error
+	// 调试：打印实体字段值
+	log.Info("Creating admin with email_verified", zap.Any("admin", admin))
+
+	return r.db.WithContext(ctx).Select("*").Create(admin).Error
 }
 
 // FindByID 根据ID查找管理员

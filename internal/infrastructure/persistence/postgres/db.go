@@ -85,6 +85,20 @@ func autoMigrate(db *gorm.DB) error {
 		); err != nil {
 			return err
 		}
+
+		// 2. 特殊处理 admins 表的 email 字段
+		// 检查是否存在 email_verified 字段，并确保设置了默认值
+		if err := tx.Exec("ALTER TABLE admins ALTER COLUMN email_verified SET DEFAULT false").Error; err != nil {
+			tx.Logger.Error(tx.Statement.Context, "Failed to set default value for email_verified: %v", err)
+			// 不返回错误，继续执行
+		}
+
+		// 3. 手动更新现有记录中的 email_verified 为 false
+		if err := tx.Exec("UPDATE admins SET email_verified = false WHERE email_verified IS NULL").Error; err != nil {
+			tx.Logger.Error(tx.Statement.Context, "Failed to update null email_verified values: %v", err)
+			// 不返回错误，继续执行
+		}
+
 		return nil
 	})
 }
