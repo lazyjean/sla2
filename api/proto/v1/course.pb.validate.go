@@ -162,6 +162,12 @@ func (m *Course) validate(all bool) error {
 		}
 	}
 
+	// no validation rules for Prompt
+
+	// no validation rules for RecommendedAge
+
+	// no validation rules for StudyPlan
+
 	if len(errors) > 0 {
 		return CourseMultiError(errors)
 	}
@@ -270,6 +276,10 @@ func (m *SimpleCourse) validate(all bool) error {
 	// no validation rules for CoverUrl
 
 	// no validation rules for Level
+
+	// no validation rules for RecommendedAge
+
+	// no validation rules for StudyPlan
 
 	if len(errors) > 0 {
 		return SimpleCourseMultiError(errors)
@@ -460,6 +470,76 @@ func (m *CourseServiceCreateRequest) validate(all bool) error {
 			errors = append(errors, err)
 		}
 
+	}
+
+	if utf8.RuneCountInString(m.GetPrompt()) > 10000 {
+		err := CourseServiceCreateRequestValidationError{
+			field:  "Prompt",
+			reason: "value length must be at most 10000 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(m.GetResources()) > 50 {
+		err := CourseServiceCreateRequestValidationError{
+			field:  "Resources",
+			reason: "value must contain no more than 50 item(s)",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	for idx, item := range m.GetResources() {
+		_, _ = idx, item
+
+		if uri, err := url.Parse(item); err != nil {
+			err = CourseServiceCreateRequestValidationError{
+				field:  fmt.Sprintf("Resources[%v]", idx),
+				reason: "value must be a valid URI",
+				cause:  err,
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		} else if !uri.IsAbs() {
+			err := CourseServiceCreateRequestValidationError{
+				field:  fmt.Sprintf("Resources[%v]", idx),
+				reason: "value must be absolute",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	}
+
+	if utf8.RuneCountInString(m.GetRecommendedAge()) > 50 {
+		err := CourseServiceCreateRequestValidationError{
+			field:  "RecommendedAge",
+			reason: "value length must be at most 50 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetStudyPlan()) > 2000 {
+		err := CourseServiceCreateRequestValidationError{
+			field:  "StudyPlan",
+			reason: "value length must be at most 2000 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
 	if len(errors) > 0 {
@@ -701,10 +781,10 @@ func (m *CourseServiceUpdateRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if l := utf8.RuneCountInString(m.GetTitle()); l < 2 || l > 100 {
+	if l := utf8.RuneCountInString(m.GetTitle()); l < 2 || l > 50 {
 		err := CourseServiceUpdateRequestValidationError{
 			field:  "Title",
-			reason: "value length must be between 2 and 100 runes, inclusive",
+			reason: "value length must be between 2 and 50 runes, inclusive",
 		}
 		if !all {
 			return err
@@ -755,10 +835,10 @@ func (m *CourseServiceUpdateRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if len(m.GetTags()) > 10 {
+	if len(m.GetTags()) > 100 {
 		err := CourseServiceUpdateRequestValidationError{
 			field:  "Tags",
-			reason: "value must contain no more than 10 item(s)",
+			reason: "value must contain no more than 100 item(s)",
 		}
 		if !all {
 			return err
@@ -786,6 +866,76 @@ func (m *CourseServiceUpdateRequest) validate(all bool) error {
 		err := CourseServiceUpdateRequestValidationError{
 			field:  "Status",
 			reason: "value must not be in list [COURSE_STATUS_UNSPECIFIED]",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetPrompt()) > 10000 {
+		err := CourseServiceUpdateRequestValidationError{
+			field:  "Prompt",
+			reason: "value length must be at most 10000 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(m.GetResources()) > 50 {
+		err := CourseServiceUpdateRequestValidationError{
+			field:  "Resources",
+			reason: "value must contain no more than 50 item(s)",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	for idx, item := range m.GetResources() {
+		_, _ = idx, item
+
+		if uri, err := url.Parse(item); err != nil {
+			err = CourseServiceUpdateRequestValidationError{
+				field:  fmt.Sprintf("Resources[%v]", idx),
+				reason: "value must be a valid URI",
+				cause:  err,
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		} else if !uri.IsAbs() {
+			err := CourseServiceUpdateRequestValidationError{
+				field:  fmt.Sprintf("Resources[%v]", idx),
+				reason: "value must be absolute",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	}
+
+	if utf8.RuneCountInString(m.GetRecommendedAge()) > 50 {
+		err := CourseServiceUpdateRequestValidationError{
+			field:  "RecommendedAge",
+			reason: "value length must be at most 50 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetStudyPlan()) > 2000 {
+		err := CourseServiceUpdateRequestValidationError{
+			field:  "StudyPlan",
+			reason: "value length must be at most 2000 runes",
 		}
 		if !all {
 			return err
@@ -3922,6 +4072,17 @@ func (m *BatchUnit) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
+	if utf8.RuneCountInString(m.GetPrompt()) > 10000 {
+		err := BatchUnitValidationError{
+			field:  "Prompt",
+			reason: "value length must be at most 10000 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
 	// no validation rules for OrderIndex
 
 	if len(errors) > 0 {
@@ -4061,6 +4222,17 @@ func (m *BatchCourse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
+	if utf8.RuneCountInString(m.GetPrompt()) > 10000 {
+		err := BatchCourseValidationError{
+			field:  "Prompt",
+			reason: "value length must be at most 10000 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
 	if uri, err := url.Parse(m.GetCoverUrl()); err != nil {
 		err = BatchCourseValidationError{
 			field:  "CoverUrl",
@@ -4120,6 +4292,33 @@ func (m *BatchCourse) validate(all bool) error {
 
 	}
 
+	if len(m.GetResources()) > 50 {
+		err := BatchCourseValidationError{
+			field:  "Resources",
+			reason: "value must contain no more than 50 item(s)",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	for idx, item := range m.GetResources() {
+		_, _ = idx, item
+
+		if utf8.RuneCountInString(item) > 50 {
+			err := BatchCourseValidationError{
+				field:  fmt.Sprintf("Resources[%v]", idx),
+				reason: "value length must be at most 50 runes",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	}
+
 	for idx, item := range m.GetSections() {
 		_, _ = idx, item
 
@@ -4152,6 +4351,28 @@ func (m *BatchCourse) validate(all bool) error {
 			}
 		}
 
+	}
+
+	if utf8.RuneCountInString(m.GetRecommendedAge()) > 50 {
+		err := BatchCourseValidationError{
+			field:  "RecommendedAge",
+			reason: "value length must be at most 50 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetStudyPlan()) > 2000 {
+		err := BatchCourseValidationError{
+			field:  "StudyPlan",
+			reason: "value length must be at most 2000 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
 	if len(errors) > 0 {

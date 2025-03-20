@@ -28,16 +28,20 @@ func NewCourseService(
 }
 
 // CreateCourse 创建课程
-func (s *CourseService) CreateCourse(ctx context.Context, title, description, coverURL, level string, tags []string) (*entity.Course, error) {
+func (s *CourseService) CreateCourse(ctx context.Context, title, description, coverURL, level string, tags []string, prompt string, resources []string, recommendedAge string, studyPlan string) (*entity.Course, error) {
 	course := &entity.Course{
-		Title:       title,
-		Description: description,
-		CoverURL:    coverURL,
-		Level:       level,
-		Tags:        tags,
-		Status:      "draft",
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
+		Title:          title,
+		Description:    description,
+		CoverURL:       coverURL,
+		Level:          level,
+		Tags:           tags,
+		Status:         "draft",
+		Prompt:         prompt,
+		Resources:      resources,
+		RecommendedAge: recommendedAge,
+		StudyPlan:      studyPlan,
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
 	}
 
 	if err := s.courseRepository.Create(ctx, course); err != nil {
@@ -48,7 +52,7 @@ func (s *CourseService) CreateCourse(ctx context.Context, title, description, co
 }
 
 // UpdateCourse 更新课程
-func (s *CourseService) UpdateCourse(ctx context.Context, id uint, title, description, coverURL, level string, tags []string, status string) (*entity.Course, error) {
+func (s *CourseService) UpdateCourse(ctx context.Context, id uint, title, description, coverURL, level string, tags []string, status string, prompt string, resources []string, recommendedAge string, studyPlan string) (*entity.Course, error) {
 	course, err := s.courseRepository.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -60,6 +64,10 @@ func (s *CourseService) UpdateCourse(ctx context.Context, id uint, title, descri
 	course.Level = level
 	course.Tags = tags
 	course.Status = status
+	course.Prompt = prompt
+	course.Resources = resources
+	course.RecommendedAge = recommendedAge
+	course.StudyPlan = studyPlan
 	course.UpdatedAt = time.Now()
 
 	if err := s.courseRepository.Update(ctx, course); err != nil {
@@ -206,7 +214,7 @@ func (s *CourseService) ListSections(ctx context.Context, courseID entity.Course
 }
 
 // CreateUnit 创建课程单元
-func (s *CourseService) CreateUnit(ctx context.Context, sectionID entity.CourseSectionID, title, desc string, questionIds []uint32, tags []string) (*entity.CourseSectionUnit, error) {
+func (s *CourseService) CreateUnit(ctx context.Context, sectionID entity.CourseSectionID, title, desc string, questionIds []uint32, tags []string, prompt string) (*entity.CourseSectionUnit, error) {
 	// 将uint32数组转换为字符串数组
 	questionIdStrs := make([]string, len(questionIds))
 	for i, id := range questionIds {
@@ -219,6 +227,7 @@ func (s *CourseService) CreateUnit(ctx context.Context, sectionID entity.CourseS
 		Desc:        desc,
 		QuestionIds: strings.Join(questionIdStrs, ","),
 		Tags:        strings.Join(tags, ","),
+		Prompt:      prompt,
 		OrderIndex:  0, // 需要计算
 		Status:      1, // 默认启用
 		CreatedAt:   time.Now(),
@@ -244,7 +253,7 @@ func (s *CourseService) CreateUnit(ctx context.Context, sectionID entity.CourseS
 }
 
 // UpdateUnit 更新课程单元
-func (s *CourseService) UpdateUnit(ctx context.Context, id entity.CourseSectionUnitID, title, desc string, questionIds []uint32, tags []string, status int32) (*entity.CourseSectionUnit, error) {
+func (s *CourseService) UpdateUnit(ctx context.Context, id entity.CourseSectionUnitID, title, desc string, questionIds []uint32, tags []string, status int32, prompt string) (*entity.CourseSectionUnit, error) {
 	// 将uint32数组转换为字符串数组
 	questionIdStrs := make([]string, len(questionIds))
 	for i, id := range questionIds {
@@ -261,6 +270,7 @@ func (s *CourseService) UpdateUnit(ctx context.Context, id entity.CourseSectionU
 	unit.QuestionIds = strings.Join(questionIdStrs, ",")
 	unit.Tags = strings.Join(tags, ",")
 	unit.Status = status
+	unit.Prompt = prompt
 	unit.UpdatedAt = time.Now()
 
 	if err := s.courseSectionRepository.UpdateUnit(ctx, unit); err != nil {
@@ -280,14 +290,18 @@ func (s *CourseService) GetUnit(ctx context.Context, id entity.CourseSectionUnit
 	return s.courseSectionRepository.GetUnitByID(ctx, id)
 }
 
-// BatchCreateCourse 批量创建课程、章节和单元
+// BatchCreateCourse 批量创建课程
 func (s *CourseService) BatchCreateCourse(ctx context.Context, courses []struct {
-	Title       string
-	Description string
-	CoverURL    string
-	Level       string
-	Tags        []string
-	Sections    []struct {
+	Title          string
+	Description    string
+	CoverURL       string
+	Level          string
+	Tags           []string
+	Prompt         string   // AI 提示词
+	Resources      []string // 推荐学习资源 URL 列表
+	RecommendedAge string   // 推荐年龄范围
+	StudyPlan      string   // 建议学习计划
+	Sections       []struct {
 		Title      string
 		Desc       string
 		OrderIndex int32
@@ -297,6 +311,7 @@ func (s *CourseService) BatchCreateCourse(ctx context.Context, courses []struct 
 			QuestionIds []uint32
 			OrderIndex  int32
 			Tags        []string
+			Prompt      string // AI 提示词
 		}
 	}
 }) ([]uint32, error) {
@@ -307,14 +322,18 @@ func (s *CourseService) BatchCreateCourse(ctx context.Context, courses []struct 
 	for _, courseData := range courses {
 		// 1. 创建课程
 		course := &entity.Course{
-			Title:       courseData.Title,
-			Description: courseData.Description,
-			CoverURL:    courseData.CoverURL,
-			Level:       courseData.Level,
-			Tags:        courseData.Tags,
-			Status:      "draft",
-			CreatedAt:   time.Now(),
-			UpdatedAt:   time.Now(),
+			Title:          courseData.Title,
+			Description:    courseData.Description,
+			CoverURL:       courseData.CoverURL,
+			Level:          courseData.Level,
+			Tags:           courseData.Tags,
+			Status:         "draft",
+			Prompt:         courseData.Prompt,
+			Resources:      courseData.Resources,
+			RecommendedAge: courseData.RecommendedAge,
+			StudyPlan:      courseData.StudyPlan,
+			CreatedAt:      time.Now(),
+			UpdatedAt:      time.Now(),
 		}
 
 		if err := s.courseRepository.Create(ctx, course); err != nil {
@@ -366,6 +385,7 @@ func (s *CourseService) BatchCreateCourse(ctx context.Context, courses []struct 
 					OrderIndex:  unit.OrderIndex,
 					Status:      1, // 启用状态
 					Tags:        tagsStr,
+					Prompt:      unit.Prompt,
 					CreatedAt:   time.Now(),
 					UpdatedAt:   time.Now(),
 				}

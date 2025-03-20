@@ -25,14 +25,20 @@ func NewCourseService(courseService *service.CourseService) *CourseService {
 // convertLevelToString 将 protobuf 枚举类型转换为字符串
 func convertLevelToString(level pb.CourseLevel) string {
 	switch level {
-	case pb.CourseLevel_COURSE_LEVEL_BEGINNER:
-		return "beginner"
-	case pb.CourseLevel_COURSE_LEVEL_INTERMEDIATE:
-		return "intermediate"
-	case pb.CourseLevel_COURSE_LEVEL_ADVANCED:
-		return "advanced"
+	case pb.CourseLevel_COURSE_LEVEL_A1:
+		return "a1"
+	case pb.CourseLevel_COURSE_LEVEL_A2:
+		return "a2"
+	case pb.CourseLevel_COURSE_LEVEL_B1:
+		return "b1"
+	case pb.CourseLevel_COURSE_LEVEL_B2:
+		return "b2"
+	case pb.CourseLevel_COURSE_LEVEL_C1:
+		return "c1"
+	case pb.CourseLevel_COURSE_LEVEL_C2:
+		return "c2"
 	default:
-		return "beginner"
+		return "a1"
 	}
 }
 
@@ -53,12 +59,18 @@ func convertStatusToString(status pb.CourseStatus) string {
 // convertStringToLevel 将字符串转换为 protobuf 枚举类型
 func convertStringToLevel(level string) pb.CourseLevel {
 	switch level {
-	case "beginner":
-		return pb.CourseLevel_COURSE_LEVEL_BEGINNER
-	case "intermediate":
-		return pb.CourseLevel_COURSE_LEVEL_INTERMEDIATE
-	case "advanced":
-		return pb.CourseLevel_COURSE_LEVEL_ADVANCED
+	case "a1":
+		return pb.CourseLevel_COURSE_LEVEL_A1
+	case "a2":
+		return pb.CourseLevel_COURSE_LEVEL_A2
+	case "b1":
+		return pb.CourseLevel_COURSE_LEVEL_B1
+	case "b2":
+		return pb.CourseLevel_COURSE_LEVEL_B2
+	case "c1":
+		return pb.CourseLevel_COURSE_LEVEL_C1
+	case "c2":
+		return pb.CourseLevel_COURSE_LEVEL_C2
 	default:
 		return pb.CourseLevel_COURSE_LEVEL_UNSPECIFIED
 	}
@@ -111,6 +123,10 @@ func (s *CourseService) Create(ctx context.Context, req *pb.CourseServiceCreateR
 		req.CoverUrl,
 		convertLevelToString(req.Level),
 		req.Tags,
+		req.Prompt,
+		req.Resources,
+		req.RecommendedAge,
+		req.StudyPlan,
 	)
 	if err != nil {
 		return nil, err
@@ -132,6 +148,10 @@ func (s *CourseService) Update(ctx context.Context, req *pb.CourseServiceUpdateR
 		convertLevelToString(req.Level),
 		req.Tags,
 		convertStatusToString(req.Status),
+		req.Prompt,
+		req.Resources,
+		req.RecommendedAge,
+		req.StudyPlan,
 	)
 	if err != nil {
 		return nil, err
@@ -171,12 +191,13 @@ func (s *CourseService) List(ctx context.Context, req *pb.CourseServiceListReque
 	var pbCourses []*pb.SimpleCourse
 	for _, course := range courses {
 		pbCourses = append(pbCourses, &pb.SimpleCourse{
-			Id:       uint32(course.ID),
-			Title:    course.Title,
-			CoverUrl: course.CoverURL,
-			Level:    convertStringToLevel(course.Level),
-			Tags:     course.Tags,
-			Desc:     course.Description,
+			Id:        uint32(course.ID),
+			Title:     course.Title,
+			CoverUrl:  course.CoverURL,
+			Level:     convertStringToLevel(course.Level),
+			Tags:      course.Tags,
+			Desc:      course.Description,
+			Resources: course.Resources,
 		})
 	}
 
@@ -201,17 +222,21 @@ func (s *CourseService) Delete(ctx context.Context, req *pb.CourseServiceDeleteR
 // convertToPbCourse 将实体转换为 protobuf 消息
 func convertToPbCourse(course *entity.Course) *pb.Course {
 	return &pb.Course{
-		Id:        uint32(course.ID),
-		Title:     course.Title,
-		Desc:      course.Description,
-		CoverUrl:  course.CoverURL,
-		Level:     convertStringToLevel(course.Level),
-		Tags:      course.Tags,
-		Status:    convertStringToStatus(course.Status),
-		Version:   0, // 添加版本号字段
-		Sections:  convertToPbCourseSections(course.Sections),
-		CreatedAt: timestamppb.New(course.CreatedAt),
-		UpdatedAt: timestamppb.New(course.UpdatedAt),
+		Id:             uint32(course.ID),
+		Title:          course.Title,
+		Desc:           course.Description,
+		CoverUrl:       course.CoverURL,
+		Level:          convertStringToLevel(course.Level),
+		Tags:           course.Tags,
+		Status:         convertStringToStatus(course.Status),
+		Version:        0, // 添加版本号字段
+		Sections:       convertToPbCourseSections(course.Sections),
+		CreatedAt:      timestamppb.New(course.CreatedAt),
+		UpdatedAt:      timestamppb.New(course.UpdatedAt),
+		Prompt:         course.Prompt,
+		Resources:      course.Resources,
+		RecommendedAge: course.RecommendedAge,
+		StudyPlan:      course.StudyPlan,
 	}
 }
 
@@ -303,16 +328,19 @@ func (s *CourseService) DeleteUnit(ctx context.Context, req *pb.CourseServiceDel
 	return &pb.CourseServiceDeleteUnitResponse{}, nil
 }
 
-// BatchCreate 批量创建课程、章节和单元
+// BatchCreate 批量创建课程
 func (s *CourseService) BatchCreate(ctx context.Context, req *pb.CourseServiceBatchCreateRequest) (*pb.CourseServiceBatchCreateResponse, error) {
-	// 转换请求数据为服务层所需的格式
 	var courses []struct {
-		Title       string
-		Description string
-		CoverURL    string
-		Level       string
-		Tags        []string
-		Sections    []struct {
+		Title          string
+		Description    string
+		CoverURL       string
+		Level          string
+		Tags           []string
+		Prompt         string
+		Resources      []string
+		RecommendedAge string
+		StudyPlan      string
+		Sections       []struct {
 			Title      string
 			Desc       string
 			OrderIndex int32
@@ -322,19 +350,24 @@ func (s *CourseService) BatchCreate(ctx context.Context, req *pb.CourseServiceBa
 				QuestionIds []uint32
 				OrderIndex  int32
 				Tags        []string
+				Prompt      string
 			}
 		}
 	}
 
-	// 遍历请求中的课程
+	// 转换请求数据
 	for _, coursePb := range req.Courses {
 		course := struct {
-			Title       string
-			Description string
-			CoverURL    string
-			Level       string
-			Tags        []string
-			Sections    []struct {
+			Title          string
+			Description    string
+			CoverURL       string
+			Level          string
+			Tags           []string
+			Prompt         string
+			Resources      []string
+			RecommendedAge string
+			StudyPlan      string
+			Sections       []struct {
 				Title      string
 				Desc       string
 				OrderIndex int32
@@ -344,17 +377,22 @@ func (s *CourseService) BatchCreate(ctx context.Context, req *pb.CourseServiceBa
 					QuestionIds []uint32
 					OrderIndex  int32
 					Tags        []string
+					Prompt      string
 				}
 			}
 		}{
-			Title:       coursePb.Title,
-			Description: coursePb.Desc,
-			CoverURL:    coursePb.CoverUrl,
-			Level:       convertLevelToString(coursePb.Level),
-			Tags:        coursePb.Tags,
+			Title:          coursePb.Title,
+			Description:    coursePb.Desc,
+			CoverURL:       coursePb.CoverUrl,
+			Level:          convertLevelToString(coursePb.Level),
+			Tags:           coursePb.Tags,
+			Prompt:         coursePb.Prompt,
+			Resources:      coursePb.Resources,
+			RecommendedAge: coursePb.RecommendedAge,
+			StudyPlan:      coursePb.StudyPlan,
 		}
 
-		// 遍历章节
+		// 转换章节数据
 		for _, sectionPb := range coursePb.Sections {
 			section := struct {
 				Title      string
@@ -366,6 +404,7 @@ func (s *CourseService) BatchCreate(ctx context.Context, req *pb.CourseServiceBa
 					QuestionIds []uint32
 					OrderIndex  int32
 					Tags        []string
+					Prompt      string
 				}
 			}{
 				Title:      sectionPb.Title,
@@ -373,7 +412,7 @@ func (s *CourseService) BatchCreate(ctx context.Context, req *pb.CourseServiceBa
 				OrderIndex: sectionPb.OrderIndex,
 			}
 
-			// 遍历单元
+			// 转换单元数据
 			for _, unitPb := range sectionPb.Units {
 				unit := struct {
 					Title       string
@@ -381,12 +420,13 @@ func (s *CourseService) BatchCreate(ctx context.Context, req *pb.CourseServiceBa
 					QuestionIds []uint32
 					OrderIndex  int32
 					Tags        []string
+					Prompt      string
 				}{
-					Title:       unitPb.Title,
-					Desc:        unitPb.Desc,
-					QuestionIds: unitPb.QuestionIds,
-					OrderIndex:  unitPb.OrderIndex,
-					Tags:        unitPb.Tags,
+					Title:      unitPb.Title,
+					Desc:       unitPb.Desc,
+					OrderIndex: unitPb.OrderIndex,
+					Tags:       unitPb.Labels,
+					Prompt:     unitPb.Prompt,
 				}
 				section.Units = append(section.Units, unit)
 			}
@@ -397,13 +437,28 @@ func (s *CourseService) BatchCreate(ctx context.Context, req *pb.CourseServiceBa
 		courses = append(courses, course)
 	}
 
-	// 调用服务批量创建课程
-	courseIds, err := s.courseService.BatchCreateCourse(ctx, courses)
+	// 调用服务层方法
+	ids, err := s.courseService.BatchCreateCourse(ctx, courses)
 	if err != nil {
 		return nil, err
 	}
 
 	return &pb.CourseServiceBatchCreateResponse{
-		Ids: courseIds,
+		Ids: ids,
 	}, nil
+}
+
+// convertToPbSimpleCourse 将实体转换为简化的 protobuf 消息
+func convertToPbSimpleCourse(course *entity.Course) *pb.SimpleCourse {
+	return &pb.SimpleCourse{
+		Id:             uint32(course.ID),
+		Title:          course.Title,
+		Desc:           course.Description,
+		CoverUrl:       course.CoverURL,
+		Level:          convertStringToLevel(course.Level),
+		Tags:           course.Tags,
+		Resources:      course.Resources,
+		RecommendedAge: course.RecommendedAge,
+		StudyPlan:      course.StudyPlan,
+	}
 }

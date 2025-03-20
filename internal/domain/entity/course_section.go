@@ -33,6 +33,7 @@ type CourseSectionUnit struct {
 	OrderIndex  int32               `gorm:"not null;default:0"`         // 显示顺序
 	Status      int32               `gorm:"not null;default:1"`         // 状态：0-禁用，1-启用
 	Tags        string              `gorm:"type:text"`                  // 标签，多个标签用逗号分隔
+	Prompt      string              `gorm:"type:text"`                  // AI 提示词
 	CreatedAt   time.Time           `gorm:"not null"`                   // 创建时间
 	UpdatedAt   time.Time           `gorm:"not null"`                   // 更新时间
 }

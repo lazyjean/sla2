@@ -29,12 +29,12 @@ func (s *QuestionService) Get(ctx context.Context, id string) (*entity.Question,
 }
 
 // Create 创建新问题
-func (s *QuestionService) Create(ctx context.Context, title, content string, tags []string, creatorID string) (*entity.Question, error) {
+func (s *QuestionService) Create(ctx context.Context, title, content string, labels []string, creatorID string) (*entity.Question, error) {
 	if title == "" || content == "" {
 		return nil, errors.New("标题和内容不能为空")
 	}
 
-	question := entity.NewQuestion(title, content, tags, creatorID)
+	question := entity.NewQuestion(title, content, labels, creatorID)
 	if err := s.questionRepo.Create(ctx, question); err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func (s *QuestionService) Create(ctx context.Context, title, content string, tag
 }
 
 // Search 搜索问题
-func (s *QuestionService) Search(ctx context.Context, keyword string, tags []string, page, pageSize int) ([]*entity.Question, int64, error) {
+func (s *QuestionService) Search(ctx context.Context, keyword string, labels []string, page, pageSize int) ([]*entity.Question, int64, error) {
 	if page < 1 {
 		page = 1
 	}
@@ -50,11 +50,11 @@ func (s *QuestionService) Search(ctx context.Context, keyword string, tags []str
 		pageSize = 10
 	}
 
-	return s.questionRepo.Search(ctx, keyword, tags, page, pageSize)
+	return s.questionRepo.Search(ctx, keyword, labels, page, pageSize)
 }
 
 // Update 更新问题
-func (s *QuestionService) Update(ctx context.Context, id, title, content string, tags []string) (*entity.Question, error) {
+func (s *QuestionService) Update(ctx context.Context, id, title, content string, labels []string) (*entity.Question, error) {
 	if id == "" {
 		return nil, errors.New("问题ID不能为空")
 	}
@@ -67,7 +67,7 @@ func (s *QuestionService) Update(ctx context.Context, id, title, content string,
 		return nil, err
 	}
 
-	question.Update(title, content, tags)
+	question.Update(title, content, labels)
 	if err := s.questionRepo.Update(ctx, question); err != nil {
 		return nil, err
 	}

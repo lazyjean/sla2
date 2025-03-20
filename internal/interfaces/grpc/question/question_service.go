@@ -48,7 +48,7 @@ func (s *QuestionService) Create(ctx context.Context, req *pb.QuestionServiceCre
 	// 从请求中提取必要信息
 	title := req.GetTitle()
 	content := req.GetSimpleQuestion() // 使用SimpleQuestion作为content
-	tags := req.GetTags()
+	tags := req.GetLabels()
 	creatorID := "" // 可以从上下文获取，或者添加到请求参数中
 
 	question, err := s.questionService.Create(ctx, title, content, tags, creatorID)

@@ -2467,6 +2467,8 @@ func (m *QuestionServiceUpdateRequest) validate(all bool) error {
 
 	// no validation rules for Difficulty
 
+	// no validation rules for Category
+
 	// no validation rules for Explanation
 
 	// no validation rules for TimeLimit

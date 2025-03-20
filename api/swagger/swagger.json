@@ -230,15 +230,18 @@
           },
           {
             "name": "level",
-            "description": "课程难度级别过滤",
+            "description": "课程难度级别过滤\n\n - COURSE_LEVEL_UNSPECIFIED: 未指定级别\n - COURSE_LEVEL_A1: A1 - 入门级：能理解和使用简单表达，满足基本需求\n - COURSE_LEVEL_A2: A2 - 初级：能应对日常场景，进行简单交流\n - COURSE_LEVEL_B1: B1 - 中级：能处理工作、学习或旅行中的常见情境\n - COURSE_LEVEL_B2: B2 - 中高级：能理解复杂文本，参与专业讨论\n - COURSE_LEVEL_C1: C1 - 高级：能理解长篇复杂内容，流利表达\n - COURSE_LEVEL_C2: C2 - 精通级：接近母语水平，能轻松理解几乎所有内容",
             "in": "query",
             "required": false,
             "type": "string",
             "enum": [
               "COURSE_LEVEL_UNSPECIFIED",
-              "COURSE_LEVEL_BEGINNER",
-              "COURSE_LEVEL_INTERMEDIATE",
-              "COURSE_LEVEL_ADVANCED"
+              "COURSE_LEVEL_A1",
+              "COURSE_LEVEL_A2",
+              "COURSE_LEVEL_B1",
+              "COURSE_LEVEL_B2",
+              "COURSE_LEVEL_C1",
+              "COURSE_LEVEL_C2"
             ],
             "default": "COURSE_LEVEL_UNSPECIFIED"
           },
@@ -351,15 +354,18 @@
           },
           {
             "name": "level",
-            "description": "难度级别（可选）",
+            "description": "难度级别（可选）\n\n - COURSE_LEVEL_UNSPECIFIED: 未指定级别\n - COURSE_LEVEL_A1: A1 - 入门级：能理解和使用简单表达，满足基本需求\n - COURSE_LEVEL_A2: A2 - 初级：能应对日常场景，进行简单交流\n - COURSE_LEVEL_B1: B1 - 中级：能处理工作、学习或旅行中的常见情境\n - COURSE_LEVEL_B2: B2 - 中高级：能理解复杂文本，参与专业讨论\n - COURSE_LEVEL_C1: C1 - 高级：能理解长篇复杂内容，流利表达\n - COURSE_LEVEL_C2: C2 - 精通级：接近母语水平，能轻松理解几乎所有内容",
             "in": "query",
             "required": false,
             "type": "string",
             "enum": [
               "COURSE_LEVEL_UNSPECIFIED",
-              "COURSE_LEVEL_BEGINNER",
-              "COURSE_LEVEL_INTERMEDIATE",
-              "COURSE_LEVEL_ADVANCED"
+              "COURSE_LEVEL_A1",
+              "COURSE_LEVEL_A2",
+              "COURSE_LEVEL_B1",
+              "COURSE_LEVEL_B2",
+              "COURSE_LEVEL_C1",
+              "COURSE_LEVEL_C2"
             ],
             "default": "COURSE_LEVEL_UNSPECIFIED"
           },
@@ -1820,6 +1826,10 @@
         "email": {
           "type": "string",
           "title": "管理员邮箱"
+        },
+        "emailVerified": {
+          "type": "boolean",
+          "title": "邮箱是否已验证"
         }
       },
       "title": "管理员信息"
@@ -1978,6 +1988,10 @@
           "type": "string",
           "title": "课程描述"
         },
+        "prompt": {
+          "type": "string",
+          "title": "AI 提示词, 原始提示词, 用于配配合单元提示词, 生成题目"
+        },
         "coverUrl": {
           "type": "string",
           "title": "封面图片URL"
@@ -1993,6 +2007,13 @@
           },
           "title": "课程标签"
         },
+        "resources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "推荐学习资源 URL 列表"
+        },
         "sections": {
           "type": "array",
           "items": {
@@ -2000,6 +2021,14 @@
             "$ref": "#/definitions/v1BatchSection"
           },
           "title": "课程章节列表"
+        },
+        "recommendedAge": {
+          "type": "string",
+          "title": "推荐年龄范围，例如：\"7-12岁\""
+        },
+        "studyPlan": {
+          "type": "string",
+          "title": "建议学习计划，包括学习时长、频率等建议"
         }
       },
       "title": "批量创建课程信息"
@@ -2042,25 +2071,21 @@
           "type": "string",
           "title": "单元内容"
         },
-        "questionIds": {
-          "type": "array",
-          "items": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "title": "问题ID列表"
+        "prompt": {
+          "type": "string",
+          "title": "AI 提示词"
         },
         "orderIndex": {
           "type": "integer",
           "format": "int32",
           "title": "显示顺序"
         },
-        "tags": {
+        "labels": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "title": "标签列表"
+          "title": "标签列表, 通过标签在题库匹配题目"
         }
       },
       "title": "批量创建课程的单元信息"
@@ -2141,6 +2166,25 @@
           "type": "string",
           "format": "date-time",
           "title": "更新时间"
+        },
+        "prompt": {
+          "type": "string",
+          "title": "课程提示"
+        },
+        "resources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "推荐学习资源 URL 列表"
+        },
+        "recommendedAge": {
+          "type": "string",
+          "title": "推荐年龄范围，例如：\"7-12岁\""
+        },
+        "studyPlan": {
+          "type": "string",
+          "title": "建议学习计划，包括学习时长、频率等建议"
         }
       },
       "title": "Course 课程信息"
@@ -2149,12 +2193,16 @@
       "type": "string",
       "enum": [
         "COURSE_LEVEL_UNSPECIFIED",
-        "COURSE_LEVEL_BEGINNER",
-        "COURSE_LEVEL_INTERMEDIATE",
-        "COURSE_LEVEL_ADVANCED"
+        "COURSE_LEVEL_A1",
+        "COURSE_LEVEL_A2",
+        "COURSE_LEVEL_B1",
+        "COURSE_LEVEL_B2",
+        "COURSE_LEVEL_C1",
+        "COURSE_LEVEL_C2"
       ],
       "default": "COURSE_LEVEL_UNSPECIFIED",
-      "title": "CourseLevel 课程难度级别"
+      "description": "- COURSE_LEVEL_UNSPECIFIED: 未指定级别\n - COURSE_LEVEL_A1: A1 - 入门级：能理解和使用简单表达，满足基本需求\n - COURSE_LEVEL_A2: A2 - 初级：能应对日常场景，进行简单交流\n - COURSE_LEVEL_B1: B1 - 中级：能处理工作、学习或旅行中的常见情境\n - COURSE_LEVEL_B2: B2 - 中高级：能理解复杂文本，参与专业讨论\n - COURSE_LEVEL_C1: C1 - 高级：能理解长篇复杂内容，流利表达\n - COURSE_LEVEL_C2: C2 - 精通级：接近母语水平，能轻松理解几乎所有内容",
+      "title": "CourseLevel 课程难度级别 (CEFR标准)"
     },
     "v1CourseSection": {
       "type": "object",
@@ -2313,6 +2361,25 @@
             "type": "string"
           },
           "title": "课程标签"
+        },
+        "prompt": {
+          "type": "string",
+          "title": "AI 提示词"
+        },
+        "resources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "推荐学习资源 URL 列表"
+        },
+        "recommendedAge": {
+          "type": "string",
+          "title": "推荐年龄范围，例如：\"7-12岁\""
+        },
+        "studyPlan": {
+          "type": "string",
+          "title": "建议学习计划，包括学习时长、频率等建议"
         }
       },
       "title": "CreateCourseRequest 创建课程请求"
@@ -2435,6 +2502,25 @@
         "status": {
           "$ref": "#/definitions/v1CourseStatus",
           "title": "课程状态"
+        },
+        "prompt": {
+          "type": "string",
+          "title": "AI 提示词"
+        },
+        "resources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "推荐学习资源 URL 列表"
+        },
+        "recommendedAge": {
+          "type": "string",
+          "title": "推荐年龄范围，例如：\"7-12岁\""
+        },
+        "studyPlan": {
+          "type": "string",
+          "title": "建议学习计划，包括学习时长、频率等建议"
         }
       },
       "title": "UpdateCourseRequest 更新课程请求"
@@ -2718,12 +2804,12 @@
           "$ref": "#/definitions/v1QuestionCategory",
           "title": "题目分类"
         },
-        "tags": {
+        "labels": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "title": "标签列表"
+          "title": "标签列表, 通过标签在题库匹配题目"
         },
         "explanation": {
           "type": "string",
@@ -2879,12 +2965,12 @@
           "$ref": "#/definitions/v1QuestionCategory",
           "title": "题目分类"
         },
-        "tags": {
+        "labels": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "title": "标签列表"
+          "title": "标签列表, 通过标签在题库匹配题目"
         },
         "explanation": {
           "type": "string",
@@ -3000,12 +3086,16 @@
           "$ref": "#/definitions/v1QuestionDifficultyLevel",
           "title": "难度等级"
         },
-        "tags": {
+        "category": {
+          "$ref": "#/definitions/v1QuestionCategory",
+          "title": "题目分类"
+        },
+        "labels": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "title": "标签列表"
+          "title": "标签列表, 通过标签在题库匹配题目"
         },
         "explanation": {
           "type": "string",
@@ -3221,6 +3311,21 @@
             "type": "string"
           },
           "title": "课程标签"
+        },
+        "resources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "推荐学习资源 URL 列表"
+        },
+        "recommendedAge": {
+          "type": "string",
+          "title": "推荐年龄范围，例如：\"7-12岁\""
+        },
+        "studyPlan": {
+          "type": "string",
+          "title": "建议学习计划，包括学习时长、频率等建议"
         }
       },
       "title": "SimpleCourse 简化的课程信息，用于列表展示"

@@ -8,8 +8,8 @@ import (
 	"github.com/lazyjean/sla2/internal/domain/entity"
 )
 
-// StringToUID 将字符串转换为 entity.UID
-func StringToUID(s string) (entity.UID, error) {
+// SubToUID 将字符串转换为 entity.UID
+func SubToUID(s string) (entity.UID, error) {
 	// 处理 "r:rolename" 格式的字符串 - 角色不能直接转为 UID
 	if len(s) > 2 && s[:2] == "r:" {
 		return 0, fmt.Errorf("cannot convert role to UID: %s", s)
@@ -50,7 +50,7 @@ func (a *PermissionManagerAdapter) GetPermissionsForUser(ctx context.Context, su
 	}
 
 	// 普通用户
-	uid, err := StringToUID(sub)
+	uid, err := SubToUID(sub)
 	if err != nil {
 		return nil, err
 	}
