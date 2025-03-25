@@ -2,10 +2,13 @@ package question
 
 import (
 	"context"
+	"encoding/json"
 	"strconv"
 
 	pb "github.com/lazyjean/sla2/api/proto/v1"
+	"github.com/lazyjean/sla2/internal/application/dto"
 	"github.com/lazyjean/sla2/internal/application/service"
+	"github.com/lazyjean/sla2/internal/domain/entity"
 	"github.com/lazyjean/sla2/pkg/logger"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
@@ -15,11 +18,13 @@ import (
 type QuestionService struct {
 	pb.UnimplementedQuestionServiceServer
 	questionService *service.QuestionService
+	converter       *QuestionConverter
 }
 
 func NewQuestionService(questionService *service.QuestionService) *QuestionService {
 	return &QuestionService{
 		questionService: questionService,
+		converter:       NewQuestionConverter(),
 	}
 }
 
@@ -37,7 +42,7 @@ func (s *QuestionService) Get(ctx context.Context, req *pb.QuestionServiceGetReq
 	}
 
 	return &pb.QuestionServiceGetResponse{
-		Questions: []*pb.Question{question.ToProto()},
+		Questions: []*pb.Question{s.converter.ToProto(question)},
 	}, nil
 }
 
@@ -45,21 +50,95 @@ func (s *QuestionService) Create(ctx context.Context, req *pb.QuestionServiceCre
 	log := logger.GetLogger(ctx)
 	log.Info("CreateQuestion called", zap.Any("req", req))
 
-	// 从请求中提取必要信息
-	title := req.GetTitle()
-	content := req.GetSimpleQuestion() // 使用SimpleQuestion作为content
-	tags := req.GetLabels()
-	creatorID := "" // 可以从上下文获取，或者添加到请求参数中
+	// 将 HyperTextTag 对象转换为 JSON
+	content, err := json.Marshal(req.GetContent())
+	if err != nil {
+		log.Error("Failed to marshal HyperTextTag", zap.Error(err))
+		return nil, status.Error(codes.Internal, "failed to marshal HyperTextTag")
+	}
 
-	question, err := s.questionService.Create(ctx, title, content, tags, creatorID)
+	// 将选项列表转换为 JSON
+	options, err := json.Marshal(req.GetOptions())
+	if err != nil {
+		log.Error("Failed to marshal options", zap.Error(err))
+		return nil, status.Error(codes.Internal, "failed to marshal options")
+	}
+
+	// 将选项双元组列表转换为 JSON
+	optionTuples, err := json.Marshal(req.GetOptionTuples())
+	if err != nil {
+		log.Error("Failed to marshal option tuples", zap.Error(err))
+		return nil, status.Error(codes.Internal, "failed to marshal option tuples")
+	}
+
+	// 将请求转换为 DTO
+	questionDto := dto.NewCreateQuestionDTO(
+		req.GetTitle(),
+		content,
+		req.GetSimpleQuestion(),
+		req.GetQuestionType().String(),
+		s.getDifficultyString(req.GetDifficulty()),
+		options,
+		optionTuples,
+		req.GetAnswers(),
+		req.GetCategory().String(),
+		req.GetLabels(),
+		req.GetExplanation(),
+		req.GetAttachments(),
+		req.GetTimeLimit(),
+	)
+
+	// 创建问题
+	question, err := s.questionService.Create(ctx, questionDto)
 	if err != nil {
 		log.Error("CreateQuestion failed", zap.Error(err))
 		return nil, status.Error(codes.Internal, "failed to create question")
 	}
 
 	return &pb.QuestionServiceCreateResponse{
-		Id: uint32(question.ID),
+		Id: uint64(question.ID),
 	}, nil
+}
+
+// getDifficultyString 将 QuestionDifficultyLevel 转换为对应的字符串常量
+func (s *QuestionService) getDifficultyString(difficulty pb.QuestionDifficultyLevel) string {
+	switch difficulty {
+	case pb.QuestionDifficultyLevel_QUESTION_DIFFICULTY_LEVEL_CEFR_A1:
+		return entity.DifficultyCefrA1
+	case pb.QuestionDifficultyLevel_QUESTION_DIFFICULTY_LEVEL_CEFR_A2:
+		return entity.DifficultyCefrA2
+	case pb.QuestionDifficultyLevel_QUESTION_DIFFICULTY_LEVEL_CEFR_B1:
+		return entity.DifficultyCefrB1
+	case pb.QuestionDifficultyLevel_QUESTION_DIFFICULTY_LEVEL_CEFR_B2:
+		return entity.DifficultyCefrB2
+	case pb.QuestionDifficultyLevel_QUESTION_DIFFICULTY_LEVEL_CEFR_C1:
+		return entity.DifficultyCefrC1
+	case pb.QuestionDifficultyLevel_QUESTION_DIFFICULTY_LEVEL_CEFR_C2:
+		return entity.DifficultyCefrC2
+	case pb.QuestionDifficultyLevel_QUESTION_DIFFICULTY_LEVEL_HSK_1:
+		return entity.DifficultyHsk1
+	case pb.QuestionDifficultyLevel_QUESTION_DIFFICULTY_LEVEL_HSK_2:
+		return entity.DifficultyHsk2
+	case pb.QuestionDifficultyLevel_QUESTION_DIFFICULTY_LEVEL_HSK_3:
+		return entity.DifficultyHsk3
+	case pb.QuestionDifficultyLevel_QUESTION_DIFFICULTY_LEVEL_HSK_4:
+		return entity.DifficultyHsk4
+	case pb.QuestionDifficultyLevel_QUESTION_DIFFICULTY_LEVEL_HSK_5:
+		return entity.DifficultyHsk5
+	case pb.QuestionDifficultyLevel_QUESTION_DIFFICULTY_LEVEL_HSK_6:
+		return entity.DifficultyHsk6
+	default:
+		return entity.DifficultyCefrA1
+	}
+}
+
+// convertOptionsToStrings 将 QuestionOption 转换为字符串数组
+func convertOptionsToStrings(options []*pb.QuestionOption) []string {
+	result := make([]string, len(options))
+	for i, opt := range options {
+		result[i] = opt.GetValue()
+	}
+	return result
 }
 
 func (s *QuestionService) Search(ctx context.Context, req *pb.QuestionServiceSearchRequest) (*pb.QuestionServiceSearchResponse, error) {
@@ -80,7 +159,7 @@ func (s *QuestionService) Search(ctx context.Context, req *pb.QuestionServiceSea
 
 	var pbQuestions []*pb.Question
 	for _, q := range questions {
-		pbQuestions = append(pbQuestions, q.ToProto())
+		pbQuestions = append(pbQuestions, s.converter.ToProto(q))
 	}
 
 	return &pb.QuestionServiceSearchResponse{
@@ -93,13 +172,54 @@ func (s *QuestionService) Update(ctx context.Context, req *pb.QuestionServiceUpd
 	log := logger.GetLogger(ctx)
 	log.Info("UpdateQuestion called", zap.Any("req", req))
 
-	id := strconv.FormatUint(uint64(req.GetId()), 10)
-	title := req.GetTitle()
-	content := req.GetSimpleQuestion() // 使用SimpleQuestion作为content
-	// UpdateRequest中可能没有tags字段，检查proto定义
-	var tags []string
+	// 将 HyperTextTag 对象转换为 JSON
+	content, err := json.Marshal(req.GetContent())
+	if err != nil {
+		log.Error("Failed to marshal HyperTextTag", zap.Error(err))
+		return nil, status.Error(codes.Internal, "failed to marshal HyperTextTag")
+	}
 
-	_, err := s.questionService.Update(ctx, id, title, content, tags)
+	// 将选项列表转换为 JSON
+	options, err := json.Marshal(req.GetOptions())
+	if err != nil {
+		log.Error("Failed to marshal options", zap.Error(err))
+		return nil, status.Error(codes.Internal, "failed to marshal options")
+	}
+
+	// 将选项双元组列表转换为 JSON
+	optionTuples, err := json.Marshal(req.GetOptionTuples())
+	if err != nil {
+		log.Error("Failed to marshal option tuples", zap.Error(err))
+		return nil, status.Error(codes.Internal, "failed to marshal option tuples")
+	}
+
+	// 获取当前问题以保持题目类型不变
+	question, err := s.questionService.Get(ctx, strconv.FormatUint(uint64(req.GetId()), 10))
+	if err != nil {
+		log.Error("Failed to get question", zap.Error(err))
+		return nil, status.Error(codes.Internal, "failed to get question")
+	}
+
+	// 创建更新 DTO
+	updateDTO := dto.NewUpdateQuestionDTO(
+		strconv.FormatUint(uint64(req.GetId()), 10),
+		req.GetTitle(),
+		content,
+		req.GetSimpleQuestion(),
+		question.Type, // 保持原有的题目类型
+		s.getDifficultyString(req.GetDifficulty()),
+		options,
+		optionTuples,
+		req.GetAnswers(),
+		req.GetCategory().String(),
+		req.GetLabels(),
+		req.GetExplanation(),
+		req.GetAttachments(),
+		req.GetTimeLimit(),
+	)
+
+	// 更新问题
+	_, err = s.questionService.Update(ctx, updateDTO)
 	if err != nil {
 		log.Error("UpdateQuestion failed", zap.Error(err))
 		return nil, status.Error(codes.Internal, "failed to update question")

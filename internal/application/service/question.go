@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/lazyjean/sla2/internal/application/dto"
 	"github.com/lazyjean/sla2/internal/domain/entity"
 	"github.com/lazyjean/sla2/internal/domain/repository"
 )
@@ -29,12 +30,27 @@ func (s *QuestionService) Get(ctx context.Context, id string) (*entity.Question,
 }
 
 // Create 创建新问题
-func (s *QuestionService) Create(ctx context.Context, title, content string, labels []string, creatorID string) (*entity.Question, error) {
-	if title == "" || content == "" {
+func (s *QuestionService) Create(ctx context.Context, createDTO *dto.CreateQuestionDTO) (*entity.Question, error) {
+	if createDTO.Title == "" || createDTO.Content == nil {
 		return nil, errors.New("标题和内容不能为空")
 	}
 
-	question := entity.NewQuestion(title, content, labels, creatorID)
+	question := entity.NewQuestion(
+		createDTO.Title,
+		createDTO.Content,
+		createDTO.SimpleQuestion,
+		createDTO.Type,
+		createDTO.Difficulty,
+		createDTO.Options,
+		createDTO.OptionTuples,
+		createDTO.Answers,
+		createDTO.Category,
+		createDTO.Labels,
+		createDTO.Explanation,
+		createDTO.Attachments,
+		createDTO.TimeLimit,
+	)
+
 	if err := s.questionRepo.Create(ctx, question); err != nil {
 		return nil, err
 	}
@@ -54,20 +70,34 @@ func (s *QuestionService) Search(ctx context.Context, keyword string, labels []s
 }
 
 // Update 更新问题
-func (s *QuestionService) Update(ctx context.Context, id, title, content string, labels []string) (*entity.Question, error) {
-	if id == "" {
+func (s *QuestionService) Update(ctx context.Context, updateDTO *dto.UpdateQuestionDTO) (*entity.Question, error) {
+	if updateDTO.ID == "" {
 		return nil, errors.New("问题ID不能为空")
 	}
-	if title == "" || content == "" {
+	if updateDTO.Title == "" || updateDTO.Content == nil {
 		return nil, errors.New("标题和内容不能为空")
 	}
 
-	question, err := s.questionRepo.Get(ctx, id)
+	question, err := s.questionRepo.Get(ctx, updateDTO.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	question.Update(title, content, labels)
+	question.Update(
+		updateDTO.Title,
+		updateDTO.Content,
+		updateDTO.SimpleQuestion,
+		updateDTO.Type,
+		updateDTO.Difficulty,
+		updateDTO.Options,
+		updateDTO.OptionTuples,
+		updateDTO.Answers,
+		updateDTO.Category,
+		updateDTO.Labels,
+		updateDTO.Explanation,
+		updateDTO.Attachments,
+		updateDTO.TimeLimit,
+	)
 	if err := s.questionRepo.Update(ctx, question); err != nil {
 		return nil, err
 	}
