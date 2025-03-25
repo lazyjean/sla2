@@ -20,6 +20,102 @@
 
 关于 Proto 和 Swagger 的详细使用说明，请参考 [Proto 和 Swagger 指南](docs/proto_and_swagger_guide.md)。
 
+## 版本发布
+
+### 版本号规范
+
+项目使用语义化版本号（Semantic Versioning），格式为：`主版本号.次版本号.修订号`（例如：1.2.3）
+
+- 主版本号：不兼容的 API 修改
+- 次版本号：向下兼容的功能性新增
+- 修订号：向下兼容的问题修正
+
+### 发布流程
+
+1. **更新版本号**
+   ```bash
+   # 使用 bump-version 命令更新版本号
+   make bump-version
+   ```
+
+2. **构建 Docker 镜像**
+   ```bash
+   # 构建镜像
+   make docker-build
+   ```
+
+3. **推送镜像到镜像仓库**
+   ```bash
+   # 推送镜像
+   make docker-push
+   ```
+
+4. **更新 Kubernetes 服务**
+   ```bash
+   # 更新服务
+   make deploy
+   ```
+
+### 发布检查清单
+
+在发布新版本之前，请确保：
+
+1. 所有测试通过
+   ```bash
+   make test
+   ```
+
+2. 代码格式正确
+   ```bash
+   make fmt
+   ```
+
+3. 没有未提交的更改
+   ```bash
+   git status
+   ```
+
+4. 更新 CHANGELOG.md
+   ```bash
+   make changelog
+   ```
+
+5. 创建发布标签
+   ```bash
+   make tag
+   ```
+
+### 回滚流程
+
+如果发布后发现问题，可以使用以下命令回滚：
+
+```bash
+# 回滚开发环境
+make k8s-rollback-dev
+
+# 回滚生产环境
+make k8s-rollback-prod
+```
+
+### 发布后检查
+
+发布完成后，请检查：
+
+1. 服务健康状态
+   ```bash
+   make health-check
+   ```
+
+2. 监控指标
+   ```bash
+   make metrics-check
+   ```
+
+3. 日志输出
+   ```bash
+   make logs-check
+   ```
+
 ## 项目结构
 
 ```

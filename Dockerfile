@@ -1,10 +1,11 @@
 # 构建阶段
-FROM golang:1.21-alpine AS builder
+FROM golang:1.24-alpine AS builder
 
+# 设置工作目录
 WORKDIR /app
 
 # 安装构建依赖
-RUN apk add --no-cache gcc musl-dev
+RUN apk add --no-cache gcc musl-dev make
 
 # 设置 Go 模块代理
 ENV GOPROXY=https://goproxy.cn,direct
@@ -16,25 +17,32 @@ RUN go mod download
 # 复制源代码
 COPY . .
 
-# 生成 swagger 文档
-RUN make docs
-
 # 构建应用
-RUN CGO_ENABLED=0 GOOS=linux go build -o sla2 .
+RUN CGO_ENABLED=1 GOOS=linux go build -a -o main .
 
-# 运行阶段
+# 最终阶段
 FROM alpine:3.19
 
+# 设置工作目录
 WORKDIR /app
 
 # 安装运行时依赖
 RUN apk add --no-cache tzdata
 ENV TZ=Asia/Shanghai
 
-# 从构建阶段复制二进制文件和 swagger 文件
-COPY --from=builder /app/sla2 .
-COPY --from=builder /app/api/swagger /app/api/swagger
+# 从构建阶段复制二进制文件
+COPY --from=builder /app/main .
 
-EXPOSE 9000 8080
+# 复制配置文件
+COPY --from=builder /app/config ./config
 
-CMD ["./sla2"]
+# 复制 swagger.json 文件
+COPY --from=builder /app/api/swagger/swagger.json ./api/swagger/swagger.json
+
+# 设置环境变量
+ENV ACTIVE_PROFILE=prod
+
+# 暴露端口
+EXPOSE 8080 9000
+
+CMD ["./main"]

@@ -8,6 +8,10 @@ GET_FULL_IMAGE = $(DOCKER_REGISTRY)/$(IMAGE_NAME):$(GET_LATEST_TAG)
 
 BINARY_NAME := sla2
 
+# 版本管理
+VERSION_FILE := .version
+VERSION := $(shell cat $(VERSION_FILE) 2>/dev/null || echo "0.0.0")
+
 # 默认目标
 .PHONY: all
 all: build
@@ -214,3 +218,64 @@ docs:
 	@mkdir -p api/swagger
 	@cp -r sla2-proto/gen/openapiv2/api.swagger.json api/swagger/swagger.json
 	@echo "文档生成完成"
+
+# Docker 构建
+docker-build-dev: build
+	docker build -t $(DOCKER_REGISTRY)/$(IMAGE_NAME):dev-$(VERSION) .
+	docker tag $(DOCKER_REGISTRY)/$(IMAGE_NAME):dev-$(VERSION) $(DOCKER_REGISTRY)/$(IMAGE_NAME):dev-latest
+
+docker-build-prod: build
+	docker build -t $(DOCKER_REGISTRY)/$(IMAGE_NAME):$(VERSION) .
+	docker tag $(DOCKER_REGISTRY)/$(IMAGE_NAME):$(VERSION) $(DOCKER_REGISTRY)/$(IMAGE_NAME):latest
+
+# Docker 推送
+docker-push-dev: docker-build-dev
+	docker push $(DOCKER_REGISTRY)/$(IMAGE_NAME):dev-$(VERSION)
+	docker push $(DOCKER_REGISTRY)/$(IMAGE_NAME):dev-latest
+
+docker-push-prod: docker-build-prod
+	docker push $(DOCKER_REGISTRY)/$(IMAGE_NAME):$(VERSION)
+	docker push $(DOCKER_REGISTRY)/$(IMAGE_NAME):latest
+
+# Kubernetes 部署
+k8s-update-dev:
+	kubectl set image deployment/$(IMAGE_NAME) $(IMAGE_NAME)=$(DOCKER_REGISTRY)/$(IMAGE_NAME):dev-$(VERSION) -n default
+
+k8s-update-prod:
+	kubectl set image deployment/$(IMAGE_NAME) $(IMAGE_NAME)=$(DOCKER_REGISTRY)/$(IMAGE_NAME):$(VERSION) -n default
+
+# Kubernetes 回滚
+k8s-rollback-dev:
+	kubectl rollout undo deployment/$(IMAGE_NAME) -n default
+
+k8s-rollback-prod:
+	kubectl rollout undo deployment/$(IMAGE_NAME) -n default
+
+# 发布检查
+health-check:
+	kubectl get pods -n default -l app=$(IMAGE_NAME) -o jsonpath='{.items[*].status.conditions[?(@.type=="Ready")].status}' | grep -q "True"
+
+metrics-check:
+	kubectl exec -it $$(kubectl get pod -n default -l app=$(IMAGE_NAME) -o jsonpath='{.items[0].metadata.name}') -n default -- curl -s localhost:9090/metrics
+
+logs-check:
+	kubectl logs -f -l app=$(IMAGE_NAME) -n default
+
+# 发布前检查
+fmt:
+	go fmt ./...
+
+changelog:
+	@echo "## [$(VERSION)] - $$(date +%Y-%m-%d)" >> CHANGELOG.md
+	@echo "" >> CHANGELOG.md
+	@echo "### Added" >> CHANGELOG.md
+	@echo "### Changed" >> CHANGELOG.md
+	@echo "### Deprecated" >> CHANGELOG.md
+	@echo "### Removed" >> CHANGELOG.md
+	@echo "### Fixed" >> CHANGELOG.md
+	@echo "### Security" >> CHANGELOG.md
+	@echo "" >> CHANGELOG.md
+
+tag:
+	git tag -a v$(VERSION) -m "Release v$(VERSION)"
+	git push origin v$(VERSION)
