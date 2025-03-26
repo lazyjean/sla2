@@ -44,7 +44,7 @@ docker-build-local: build
 .PHONY: docker-build
 docker-build:
 	@echo "Building docker image: $(GET_FULL_IMAGE)"
-	docker build -t $(GET_FULL_IMAGE) .
+	docker build -t $(GET_FULL_IMAGE) --platform linux/amd64 .
 	docker tag $(GET_FULL_IMAGE) $(DOCKER_REGISTRY)/$(IMAGE_NAME):latest
 
 # 运行测试
