@@ -18,7 +18,7 @@ RUN go mod download
 COPY . .
 
 # 构建应用
-RUN CGO_ENABLED=1 GOOS=linux go build -a -o main .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o main .
 
 # 最终阶段
 FROM alpine:3.19
@@ -43,6 +43,6 @@ COPY --from=builder /app/api/swagger/swagger.json ./api/swagger/swagger.json
 ENV ACTIVE_PROFILE=prod
 
 # 暴露端口
-EXPOSE 8080 9000
+EXPOSE 9101 9102 
 
 CMD ["./main"]
