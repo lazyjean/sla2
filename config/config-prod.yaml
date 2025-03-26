@@ -4,8 +4,9 @@ server:
   version: "v1.0.0"
 
 grpc:
-  port: 9001
-  reflection: true # todo: 生产环境关闭反射服务
+  port: 9101
+  gateway_port: 9102
+  reflection: true # todo: 开发环境注册反射服务
 
 database:
   host: "postgres-postgresql.default.svc.cluster.local"
@@ -47,6 +48,10 @@ apple:
   private_key: "LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JR1RBZ0VBTUJNR0J5cUdTTTQ5QWdFR0NDcUdTTTQ5QXdFSEJIa3dkd0lCQVFRZ1ZzNHF3d0J5dEg5ZlZYQ1gKa1ZrQ3pPTTN2SUVSMFZvZzg3bFMyMDJFak42Z0NnWUlLb1pJemowREFRZWhSQU5DQUFSMFRLTlg2eHpocFY1TwpPSUVIV2dmbG9JcC9YcWZKVXpuYjcvbjN3M2VkKzg2bG9CZDUydG5UZmlpek1CZ3krd0tQYXFYS3cvRkkyWnE4Cmp4a3Rkc0F5Ci0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0="
   key_id: "F854P88YB7"
   team_id: "N9B347KDE9"
+
+swagger:
+  username: "admin"
+  password: "swagger"
 
 rbac:
   config_dir: "./config"
