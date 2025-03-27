@@ -43,6 +43,6 @@ COPY --from=builder /app/api/swagger/swagger.json ./api/swagger/swagger.json
 ENV ACTIVE_PROFILE=prod
 
 # 暴露端口
-EXPOSE 9101 9102 
+EXPOSE 9100 
 
 CMD ["./main"]
