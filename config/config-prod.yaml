@@ -1,11 +1,5 @@
-server:
-  port: "9000"
-  mode: "release"
-  version: "v1.0.0"
-
 grpc:
-  port: 9101
-  gateway_port: 9102
+  port: 9100
   reflection: true # todo: 开发环境注册反射服务
 
 database:

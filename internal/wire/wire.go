@@ -13,7 +13,8 @@ import (
 	"github.com/lazyjean/sla2/internal/infrastructure/oauth"
 	"github.com/lazyjean/sla2/internal/infrastructure/persistence/postgres"
 	"github.com/lazyjean/sla2/internal/infrastructure/security"
-	"github.com/lazyjean/sla2/internal/interfaces/grpc"
+	grpcserver "github.com/lazyjean/sla2/internal/interfaces/grpc"
+	"github.com/lazyjean/sla2/internal/interfaces/http/ws/handler"
 	"github.com/lazyjean/sla2/pkg/logger"
 	"go.uber.org/zap"
 )
@@ -26,6 +27,7 @@ func ProvideLogger() *zap.Logger {
 
 // 配置集
 var configSet = wire.NewSet(
+	config.GetConfig,
 	wire.FieldsOf(new(*config.Config), "Database", "Redis", "JWT", "Apple", "RBAC"),
 )
 
@@ -54,7 +56,7 @@ var repositorySet = wire.NewSet(
 
 // 服务集
 var serviceSet = wire.NewSet(
-	service.NewWordService,
+	service.NewVocabularyService,
 	service.NewLearningService,
 	service.NewUserService,
 	service.NewCourseService,
@@ -93,18 +95,39 @@ var securitySet = wire.NewSet(
 	security.NewJWTTokenService,
 )
 
-func InitializeApp(cfg *config.Config) (*App, error) {
+// WebSocket处理器集
+var wsSet = wire.NewSet(
+	handler.NewWebSocketHandler,
+)
+
+// gRPC服务器集
+var grpcSet = wire.NewSet(
+	grpcserver.NewGRPCServer,
+)
+
+// 提供 PermissionHelper
+func ProvidePermissionHelper(rbacConfig *config.RBACConfig) *domainsecurity.PermissionHelper {
+	return &domainsecurity.PermissionHelper{}
+}
+
+// RBAC权限集
+var rbacSet = wire.NewSet(
+	ProvidePermissionHelper,
+)
+
+// InitializeApp 初始化应用程序
+func InitializeApp() (*Application, error) {
 	wire.Build(
-		NewApp,
+		NewApplication,
 		configSet,
 		dbSet,
 		repositorySet,
 		serviceSet,
 		authSet,
-		cacheSet,
 		securitySet,
+		wsSet,
+		grpcSet,
 		rbacSet,
-		grpc.NewServer,
 	)
 	return nil, nil
 }

@@ -17,52 +17,43 @@ import (
 	"github.com/lazyjean/sla2/internal/infrastructure/persistence/postgres"
 	"github.com/lazyjean/sla2/internal/infrastructure/security"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc"
+	"github.com/lazyjean/sla2/internal/interfaces/http/ws/handler"
 	"github.com/lazyjean/sla2/pkg/logger"
 	"go.uber.org/zap"
 )
 
 // Injectors from wire.go:
 
-func InitializeApp(cfg *config.Config) (*App, error) {
-	databaseConfig := &cfg.Database
+// InitializeApp 初始化应用程序
+func InitializeApp() (*Application, error) {
+	configConfig := config.GetConfig()
+	databaseConfig := &configConfig.Database
 	db, err := postgres.NewDB(databaseConfig)
 	if err != nil {
 		return nil, err
 	}
-	adminRepository := postgres.NewAdminRepository(db)
-	passwordService := security.NewBCryptPasswordService()
-	tokenService := security.NewJWTTokenService(cfg)
-	rbacConfig := &cfg.RBAC
-	rbacProvider, err := security2.NewRBACProvider(db, rbacConfig)
-	if err != nil {
-		return nil, err
-	}
-	permissionHelper := providePermissionHelper(rbacProvider)
-	adminService := provideAdminService(adminRepository, passwordService, tokenService, permissionHelper)
 	userRepository := postgres.NewUserRepository(db)
-	appleConfig := oauth.NewAppleConfig(cfg)
+	tokenService := security.NewJWTTokenService(configConfig)
+	passwordService := security.NewBCryptPasswordService()
+	appleConfig := oauth.NewAppleConfig(configConfig)
 	appleAuthService := oauth.NewAppleAuthService(appleConfig)
 	userService := service.NewUserService(userRepository, tokenService, passwordService, appleAuthService)
-	wordRepository := postgres.NewWordRepository(db)
-	redisConfig := &cfg.Redis
-	cache, err := redis.NewRedisCache(redisConfig)
-	if err != nil {
-		return nil, err
-	}
-	cachedWordRepository := postgres.NewCachedWordRepository(wordRepository, cache)
-	wordService := service.NewWordService(cachedWordRepository)
-	learningRepository := postgres.NewLearningRepository(db)
-	learningService := service.NewLearningService(learningRepository)
+	questionRepository := postgres.NewQuestionRepository(db)
+	questionService := service.NewQuestionService(questionRepository)
+	vocabularyService := service.NewVocabularyService()
 	courseRepository := postgres.NewCourseRepository(db)
 	courseSectionRepository := postgres.NewCourseSectionRepository(db)
 	courseService := service.NewCourseService(courseRepository, courseSectionRepository)
-	questionRepository := postgres.NewQuestionRepository(db)
-	questionService := service.NewQuestionService(questionRepository)
-	questionTagRepository := postgres.NewQuestionTagRepository(db)
-	questionTagService := service.NewQuestionTagService(questionTagRepository)
-	server := grpc.NewServer(adminService, userService, wordService, learningService, courseService, questionService, questionTagService, tokenService, permissionHelper, cfg)
-	app := NewApp(server, cfg, tokenService, appleAuthService)
-	return app, nil
+	learningRepository := postgres.NewLearningRepository(db)
+	learningService := service.NewLearningService(learningRepository)
+	adminRepository := postgres.NewAdminRepository(db)
+	rbacConfig := &configConfig.RBAC
+	permissionHelper := ProvidePermissionHelper(rbacConfig)
+	adminService := provideAdminService(adminRepository, passwordService, tokenService, permissionHelper)
+	webSocketHandler := handler.NewWebSocketHandler()
+	grpcServer := grpc.NewGRPCServer(userService, questionService, vocabularyService, courseService, learningService, adminService, webSocketHandler, tokenService)
+	application := NewApplication(configConfig, grpcServer)
+	return application, nil
 }
 
 // wire.go:
@@ -74,7 +65,7 @@ func ProvideLogger() *zap.Logger {
 }
 
 // 配置集
-var configSet = wire.NewSet(wire.FieldsOf(new(*config.Config), "Database", "Redis", "JWT", "Apple", "RBAC"))
+var configSet = wire.NewSet(config.GetConfig, wire.FieldsOf(new(*config.Config), "Database", "Redis", "JWT", "Apple", "RBAC"))
 
 // 数据库集
 var dbSet = wire.NewSet(postgres.NewDB)
@@ -86,7 +77,7 @@ var cacheSet = wire.NewSet(redis.NewRedisCache)
 var repositorySet = wire.NewSet(postgres.NewWordRepository, postgres.NewCachedWordRepository, postgres.NewLearningRepository, postgres.NewUserRepository, postgres.NewCourseRepository, postgres.NewCourseSectionRepository, postgres.NewAdminRepository, postgres.NewQuestionTagRepository, postgres.NewQuestionRepository)
 
 // 服务集
-var serviceSet = wire.NewSet(service.NewWordService, service.NewLearningService, service.NewUserService, service.NewCourseService, provideAdminService, service.NewQuestionService, service.NewQuestionTagService)
+var serviceSet = wire.NewSet(service.NewVocabularyService, service.NewLearningService, service.NewUserService, service.NewCourseService, provideAdminService, service.NewQuestionService, service.NewQuestionTagService)
 
 // provideAdminService 提供管理员服务
 func provideAdminService(
@@ -108,3 +99,19 @@ var authSet = wire.NewSet(oauth.NewAppleConfig, oauth.NewAppleAuthService)
 
 // 安全服务集
 var securitySet = wire.NewSet(security.NewBCryptPasswordService, security.NewJWTTokenService)
+
+// WebSocket处理器集
+var wsSet = wire.NewSet(handler.NewWebSocketHandler)
+
+// gRPC服务器集
+var grpcSet = wire.NewSet(grpc.NewGRPCServer)
+
+// 提供 PermissionHelper
+func ProvidePermissionHelper(rbacConfig *config.RBACConfig) *security2.PermissionHelper {
+	return &security2.PermissionHelper{}
+}
+
+// RBAC权限集
+var rbacSet = wire.NewSet(
+	ProvidePermissionHelper,
+)

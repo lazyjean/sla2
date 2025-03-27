@@ -74,10 +74,9 @@ type JWTConfig struct {
 	RefreshExpiration int    `mapstructure:"refresh_expiration"` // hour
 }
 
+// GRPCConfig gRPC 配置
 type GRPCConfig struct {
-	Port        int  `mapstructure:"port"`
-	GatewayPort int  `mapstructure:"gateway_port"`
-	Reflection  bool `mapstructure:"reflection"`
+	Port int `yaml:"port"` // gRPC 服务端口
 }
 
 // AppleConfig 苹果登录配置
