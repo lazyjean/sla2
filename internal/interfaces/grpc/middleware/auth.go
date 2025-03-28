@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
@@ -32,6 +33,14 @@ var noAuthMethods = map[string]bool{
 func UnaryServerInterceptor(tokenService security.TokenService) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		log := logger.GetLogger(ctx)
+
+		// print headers
+		md, ok := metadata.FromIncomingContext(ctx)
+		if !ok {
+			log.Warn("No metadata in context")
+			return handler(ctx, req)
+		}
+		log.Info("Metadata", zap.Any("metadata", md))
 
 		// 检查是否需要认证
 		if noAuthMethods[info.FullMethod] || isPublicService(info.FullMethod) {
@@ -105,6 +114,8 @@ func StreamServerInterceptor(tokenService security.TokenService) grpc.StreamServ
 		if !ok {
 			return status.Errorf(codes.Unauthenticated, "未授权")
 		}
+
+		fmt.Println("Metadata", md)
 
 		// 从元数据中获取 token
 		token := extractTokenFromMD(md)

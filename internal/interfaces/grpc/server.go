@@ -158,12 +158,14 @@ func NewGRPCServer(
 		}),
 	)
 
+	// todo: 整理这里的拦截器
 	// 创建拦截器链
 	unaryInterceptors := []grpc.UnaryServerInterceptor{
 		grpc_recovery.UnaryServerInterceptor(),
 		grpc_ctxtags.UnaryServerInterceptor(),
 		grpc_prometheus.UnaryServerInterceptor,
 		grpc_zap.UnaryServerInterceptor(logger.GetLogger(context.Background())),
+		grpcmiddleware.MetadataLoggerUnaryInterceptor(),
 		grpcmiddleware.UnaryServerInterceptor(tokenService),
 		grpc_validator.UnaryServerInterceptor(),
 	}
@@ -173,6 +175,7 @@ func NewGRPCServer(
 		grpc_ctxtags.StreamServerInterceptor(),
 		grpc_prometheus.StreamServerInterceptor,
 		grpc_zap.StreamServerInterceptor(logger.GetLogger(context.Background())),
+		grpcmiddleware.MetadataLoggerStreamInterceptor(),
 		grpcmiddleware.StreamServerInterceptor(tokenService),
 		grpc_validator.StreamServerInterceptor(),
 	}
@@ -322,7 +325,7 @@ func (s *GRPCServer) Start() error {
 	m := cmux.New(lis)
 
 	// 匹配 gRPC 流量 (HTTP/2)
-	grpcL := m.Match(cmux.HTTP2HeaderField("content-type", "application/grpc"))
+	grpcL := m.Match(cmux.HTTP2())
 	// 匹配 HTTP/1.1 流量
 	httpL := m.Match(cmux.HTTP1Fast())
 
