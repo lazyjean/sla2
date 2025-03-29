@@ -325,9 +325,9 @@ func (s *GRPCServer) Start() error {
 	m := cmux.New(lis)
 
 	// 匹配 gRPC 流量
-	grpcL := m.Match(cmux.HTTP2HeaderField("content-type", "application/grpc"))
+	grpcL := m.Match(cmux.HTTP2())
 	// 匹配 HTTP/1.1 和 HTTP/2 流量
-	httpL := m.Match(cmux.Any())
+	httpL := m.Match(cmux.HTTP1Fast(), cmux.Any())
 
 	// 创建 HTTP 路由
 	router := http.NewServeMux()
