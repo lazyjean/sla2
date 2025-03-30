@@ -200,9 +200,6 @@ func (m *MockPermissionManager) SavePolicy(ctx context.Context) error {
 }
 
 func TestAdminService_InitializeSystem(t *testing.T) {
-	// 暂时跳过这个测试，因为需要更多调整
-	t.Skip("暂时跳过，等待权限系统完成更新")
-
 	// 创建上下文
 	ctx := context.Background()
 
@@ -222,24 +219,29 @@ func TestAdminService_InitializeSystem(t *testing.T) {
 	// 创建实际的PermissionHelper，但使用mock的PermissionManager
 	permissionHelper := security.NewPermissionHelper(mockPermissionManager)
 
-	// 模拟可能的回滚调用
-	mockRepo.On("Delete", ctx, mock.AnythingOfType("entity.UID")).Return(nil)
-
-	// 模拟权限管理器调用
-	mockPermissionManager.On("AddRoleForUser", ctx, mock.AnythingOfType("entity.UID"), security.RoleAdmin).Return(true, nil)
+	// 创建一个固定的测试用户ID
+	testUserID := entity.UID(1)
 
 	// 设置模拟行为
 	mockRepo.On("IsInitialized", ctx).Return(false, nil)
 	mockPasswordService.On("HashPassword", req.Password).Return("hashed_password", nil)
 	mockRepo.On("Create", ctx, mock.MatchedBy(func(admin *entity.Admin) bool {
-		return admin.Username == "admin" &&
+		// 设置固定的用户ID
+		if admin.ID == 0 {
+			admin.ID = testUserID
+		}
+		return admin.Username == req.Username &&
 			admin.Password == "hashed_password" &&
-			admin.Nickname == "admin" &&
+			admin.Nickname == req.Nickname &&
 			len(admin.Roles) == 1 &&
-			admin.Roles[0] == "admin"
+			admin.Roles[0] == security.RoleAdmin
 	})).Return(nil)
-	mockTokenService.On("GenerateToken", mock.Anything, []string{"admin"}).Return("access_token", nil)
-	mockTokenService.On("GenerateRefreshToken", mock.Anything, []string{"admin"}).Return("refresh_token", nil)
+
+	// 使用固定的用户ID和角色进行权限设置
+	// 注意：角色名会被添加 "r:" 前缀
+	mockPermissionManager.On("AddRoleForUser", ctx, testUserID, "r:"+security.RoleAdmin).Return(true, nil)
+	mockTokenService.On("GenerateToken", testUserID, []string{security.RoleAdmin}).Return("access_token", nil)
+	mockTokenService.On("GenerateRefreshToken", testUserID, []string{security.RoleAdmin}).Return("refresh_token", nil)
 
 	// 创建服务实例
 	service := NewAdminService(mockRepo, mockPasswordService, mockTokenService, permissionHelper)
@@ -250,7 +252,8 @@ func TestAdminService_InitializeSystem(t *testing.T) {
 	// 验证结果
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
-	assert.Equal(t, "admin", resp.Admin.Username)
+	assert.Equal(t, req.Username, resp.Admin.Username)
+	assert.Equal(t, req.Nickname, resp.Admin.Nickname)
 	assert.Equal(t, "access_token", resp.AccessToken)
 	assert.Equal(t, "refresh_token", resp.RefreshToken)
 
@@ -262,9 +265,6 @@ func TestAdminService_InitializeSystem(t *testing.T) {
 }
 
 func TestAdminService_Login(t *testing.T) {
-	// 暂时跳过这个测试，因为需要更多调整
-	t.Skip("暂时跳过，等待权限系统完成更新")
-
 	// 创建上下文
 	ctx := context.Background()
 
@@ -283,21 +283,19 @@ func TestAdminService_Login(t *testing.T) {
 	// 创建实际的PermissionHelper，但使用mock的PermissionManager
 	permissionHelper := security.NewPermissionHelper(mockPermissionManager)
 
-	// 模拟可能的回滚调用
-	mockRepo.On("Delete", ctx, mock.AnythingOfType("entity.UID")).Return(nil)
-
 	// 创建测试用的管理员实体
 	admin := &entity.Admin{
 		ID:        entity.UID(1),
 		Username:  "admin",
 		Password:  "hashed_password",
 		Nickname:  "Admin",
-		Roles:     []string{"admin"},
+		Roles:     []string{security.RoleAdmin},
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
 
 	// 设置模拟行为
+	mockRepo.On("IsInitialized", ctx).Return(true, nil)
 	mockRepo.On("FindByUsername", ctx, req.Username).Return(admin, nil)
 	mockPasswordService.On("VerifyPassword", req.Password, admin.Password).Return(true)
 	mockTokenService.On("GenerateToken", admin.ID, admin.Roles).Return("access_token", nil)
@@ -313,6 +311,8 @@ func TestAdminService_Login(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
 	assert.Equal(t, admin.ID, resp.Admin.ID)
+	assert.Equal(t, admin.Username, resp.Admin.Username)
+	assert.Equal(t, admin.Nickname, resp.Admin.Nickname)
 	assert.Equal(t, "access_token", resp.AccessToken)
 	assert.Equal(t, "refresh_token", resp.RefreshToken)
 
@@ -324,9 +324,6 @@ func TestAdminService_Login(t *testing.T) {
 }
 
 func TestAdminService_RefreshToken(t *testing.T) {
-	// 暂时跳过这个测试，因为需要更多调整
-	t.Skip("暂时跳过，等待权限系统完成更新")
-
 	// 创建上下文
 	ctx := context.Background()
 
@@ -344,29 +341,27 @@ func TestAdminService_RefreshToken(t *testing.T) {
 	// 创建实际的PermissionHelper，但使用mock的PermissionManager
 	permissionHelper := security.NewPermissionHelper(mockPermissionManager)
 
-	// 模拟可能的回滚调用
-	mockRepo.On("Delete", ctx, mock.AnythingOfType("entity.UID")).Return(nil)
-
 	// 创建测试用的管理员实体
 	admin := &entity.Admin{
 		ID:        entity.UID(1),
 		Username:  "admin",
 		Password:  "hashed_password",
 		Nickname:  "Admin",
-		Roles:     []string{"admin"},
+		Roles:     []string{security.RoleAdmin},
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
 
+	// 设置模拟行为
+	mockRepo.On("IsInitialized", mock.Anything).Return(true, nil)
+	mockTokenService.On("ValidateRefreshToken", req.RefreshToken).Return(admin.ID, admin.Roles, nil)
+	mockRepo.On("FindByID", mock.Anything, admin.ID).Return(admin, nil)
+	mockTokenService.On("GenerateToken", admin.ID, admin.Roles).Return("new_access_token", nil)
+	mockTokenService.On("GenerateRefreshToken", admin.ID, admin.Roles).Return("new_refresh_token", nil)
+
 	// 添加用户ID和角色到上下文
 	ctx = WithUserID(ctx, admin.ID)
 	ctx = WithRoles(ctx, admin.Roles)
-
-	// 设置模拟行为
-	mockTokenService.On("ValidateRefreshToken", req.RefreshToken).Return(admin.ID, admin.Roles, nil)
-	mockRepo.On("FindByID", ctx, admin.ID).Return(admin, nil)
-	mockTokenService.On("GenerateToken", admin.ID, admin.Roles).Return("new_access_token", nil)
-	mockTokenService.On("GenerateRefreshToken", admin.ID, admin.Roles).Return("new_refresh_token", nil)
 
 	// 创建服务实例
 	service := NewAdminService(mockRepo, mockPasswordService, mockTokenService, permissionHelper)
@@ -387,9 +382,6 @@ func TestAdminService_RefreshToken(t *testing.T) {
 }
 
 func TestAdminService_GetCurrentAdminInfo(t *testing.T) {
-	// 暂时跳过这个测试，因为需要更多调整
-	t.Skip("暂时跳过，等待权限系统完成更新")
-
 	// 创建上下文
 	ctx := context.Background()
 
@@ -402,26 +394,24 @@ func TestAdminService_GetCurrentAdminInfo(t *testing.T) {
 	// 创建实际的PermissionHelper，但使用mock的PermissionManager
 	permissionHelper := security.NewPermissionHelper(mockPermissionManager)
 
-	// 模拟可能的回滚调用
-	mockRepo.On("Delete", ctx, mock.AnythingOfType("entity.UID")).Return(nil)
-
 	// 创建测试用的管理员实体
 	admin := &entity.Admin{
 		ID:        entity.UID(1),
 		Username:  "admin",
 		Password:  "hashed_password",
 		Nickname:  "Admin",
-		Roles:     []string{"admin"},
+		Roles:     []string{security.RoleAdmin},
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
 
+	// 设置模拟行为
+	mockRepo.On("IsInitialized", mock.Anything).Return(true, nil)
+	mockRepo.On("FindByID", mock.Anything, admin.ID).Return(admin, nil)
+
 	// 添加用户ID和角色到上下文
 	ctx = WithUserID(ctx, admin.ID)
 	ctx = WithRoles(ctx, admin.Roles)
-
-	// 设置模拟行为
-	mockRepo.On("FindByID", ctx, admin.ID).Return(admin, nil)
 
 	// 创建服务实例
 	service := NewAdminService(mockRepo, mockPasswordService, mockTokenService, permissionHelper)

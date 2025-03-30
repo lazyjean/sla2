@@ -48,7 +48,11 @@ func InitializeApp() (*Application, error) {
 	learningService := service.NewLearningService(learningRepository)
 	adminRepository := postgres.NewAdminRepository(db)
 	rbacConfig := &configConfig.RBAC
-	permissionHelper := ProvidePermissionHelper(rbacConfig)
+	rbacProvider, err := security2.NewRBACProvider(db, rbacConfig)
+	if err != nil {
+		return nil, err
+	}
+	permissionHelper := rbacProvider.PermissionHelper
 	adminService := provideAdminService(adminRepository, passwordService, tokenService, permissionHelper)
 	webSocketHandler := handler.NewWebSocketHandler()
 	grpcServer := grpc.NewGRPCServer(userService, questionService, vocabularyService, courseService, learningService, adminService, webSocketHandler, tokenService)
@@ -112,6 +116,4 @@ func ProvidePermissionHelper(rbacConfig *config.RBACConfig) *security2.Permissio
 }
 
 // RBAC权限集
-var rbacSet = wire.NewSet(
-	ProvidePermissionHelper,
-)
+var rbacSet = wire.NewSet(security2.NewRBACProvider, wire.FieldsOf(new(*security2.RBACProvider), "PermissionHelper"))

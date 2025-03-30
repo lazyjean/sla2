@@ -13,7 +13,7 @@ import (
 // RBACProvider RBAC权限系统供应商
 type RBACProvider struct {
 	permissionManager PermissionManager
-	permissionHelper  *PermissionHelper
+	PermissionHelper  *PermissionHelper
 	initializer       *PermissionInitializer
 }
 
@@ -42,7 +42,7 @@ func NewRBACProvider(db *gorm.DB, cfg *config.RBACConfig) (*RBACProvider, error)
 
 	return &RBACProvider{
 		permissionManager: permManager,
-		permissionHelper:  permHelper,
+		PermissionHelper:  permHelper,
 		initializer:       initializer,
 	}, nil
 }
@@ -54,7 +54,7 @@ func (p *RBACProvider) GetPermissionManager() PermissionManager {
 
 // GetPermissionHelper 获取权限辅助工具
 func (p *RBACProvider) GetPermissionHelper() *PermissionHelper {
-	return p.permissionHelper
+	return p.PermissionHelper
 }
 
 // GetInitializer 获取权限初始化器

@@ -12,7 +12,7 @@ import (
 	"github.com/lazyjean/sla2/internal/infrastructure/cache/redis"
 	"github.com/lazyjean/sla2/internal/infrastructure/oauth"
 	"github.com/lazyjean/sla2/internal/infrastructure/persistence/postgres"
-	"github.com/lazyjean/sla2/internal/infrastructure/security"
+	infrasecurity "github.com/lazyjean/sla2/internal/infrastructure/security"
 	grpcserver "github.com/lazyjean/sla2/internal/interfaces/grpc"
 	"github.com/lazyjean/sla2/internal/interfaces/http/ws/handler"
 	"github.com/lazyjean/sla2/pkg/logger"
@@ -89,10 +89,10 @@ var authSet = wire.NewSet(
 // 安全服务集
 var securitySet = wire.NewSet(
 	// 密码服务
-	security.NewBCryptPasswordService,
+	infrasecurity.NewBCryptPasswordService,
 
 	// 令牌服务
-	security.NewJWTTokenService,
+	infrasecurity.NewJWTTokenService,
 )
 
 // WebSocket处理器集
@@ -112,7 +112,8 @@ func ProvidePermissionHelper(rbacConfig *config.RBACConfig) *domainsecurity.Perm
 
 // RBAC权限集
 var rbacSet = wire.NewSet(
-	ProvidePermissionHelper,
+	domainsecurity.NewRBACProvider,
+	wire.FieldsOf(new(*domainsecurity.RBACProvider), "PermissionHelper"),
 )
 
 // InitializeApp 初始化应用程序
