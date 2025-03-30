@@ -13,7 +13,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-//go:embed config-*.yaml
+//go:embed config*.yaml
 var configFS embed.FS
 
 // Config 配置结构体
@@ -76,7 +76,8 @@ type JWTConfig struct {
 
 // GRPCConfig gRPC 配置
 type GRPCConfig struct {
-	Port int `yaml:"port"` // gRPC 服务端口
+	Port        int `mapstructure:"port"`         // gRPC 服务端口
+	GatewayPort int `mapstructure:"gateway_port"` // gRPC-Gateway 服务端口
 }
 
 // AppleConfig 苹果登录配置
@@ -103,7 +104,24 @@ func InitConfig() error {
 	v := viper.New()
 	v.SetConfigType("yaml")
 
-	// 从环境变量获取环境配置，默认为 development
+	// 1. 加载公共配置
+	commonConfigFile := "config.yaml"
+	commonFileData, err := configFS.ReadFile(commonConfigFile)
+	if err == nil {
+		if err := v.ReadConfig(bytes.NewReader(commonFileData)); err != nil {
+			return fmt.Errorf("failed to read embedded common config: %w", err)
+		}
+	} else {
+		// 如果嵌入文件不存在，尝试从本地文件系统读取
+		v.SetConfigName("config")
+		v.AddConfigPath(".")      // 当前目录
+		v.AddConfigPath("config") // 添加 config 目录
+		if err := v.ReadInConfig(); err != nil {
+			return fmt.Errorf("failed to read common config from file system: %w", err)
+		}
+	}
+
+	// 2. 加载环境特定配置
 	env := os.Getenv("ACTIVE_PROFILE")
 	var fileName string
 	if env == "" {
@@ -112,21 +130,29 @@ func InitConfig() error {
 		fileName = fmt.Sprintf("config-%s", env)
 	}
 
-	// try to read embedded config
+	// 创建新的 viper 实例用于加载环境配置
+	envV := viper.New()
+	envV.SetConfigType("yaml")
+
 	configFile := fmt.Sprintf("%s.yaml", fileName)
 	fileData, err := configFS.ReadFile(configFile)
 	if err == nil {
-		if err := v.ReadConfig(bytes.NewReader(fileData)); err != nil {
-			return fmt.Errorf("failed to read embedded config: %w", err)
+		if err := envV.ReadConfig(bytes.NewReader(fileData)); err != nil {
+			return fmt.Errorf("failed to read embedded env config: %w", err)
 		}
 	} else {
-		// 2. 如果嵌入文件不存在，尝试从本地文件系统读取
-		v.SetConfigName(fileName)
-		v.AddConfigPath(".")      // 当前目录
-		v.AddConfigPath("config") // 添加 config 目录
-		if err := v.ReadInConfig(); err != nil {
-			return fmt.Errorf("failed to read config from file system: %w", err)
+		// 如果嵌入文件不存在，尝试从本地文件系统读取
+		envV.SetConfigName(fileName)
+		envV.AddConfigPath(".")      // 当前目录
+		envV.AddConfigPath("config") // 添加 config 目录
+		if err := envV.ReadInConfig(); err != nil {
+			return fmt.Errorf("failed to read env config from file system: %w", err)
 		}
+	}
+
+	// 合并环境配置到主配置中
+	if err := v.MergeConfigMap(envV.AllSettings()); err != nil {
+		return fmt.Errorf("failed to merge env config: %w", err)
 	}
 
 	// 3. 支持从 Apollo 配置中心加载配置
@@ -162,7 +188,7 @@ func InitConfig() error {
 	// 设置配置监听
 	v.WatchConfig()
 	v.OnConfigChange(func(e fsnotify.Event) {
-		fmt.Println("Config file changed:", e.Name)
+		fmt.Printf("Config file changed: %s\n", e.Name)
 		if err := v.Unmarshal(&globalConfig); err != nil {
 			fmt.Printf("Error reloading config: %v\n", err)
 		}
@@ -171,6 +197,12 @@ func InitConfig() error {
 	if err := v.Unmarshal(&globalConfig); err != nil {
 		return fmt.Errorf("failed to unmarshal config: %w", err)
 	}
+
+	// 打印配置信息
+	fmt.Printf("Config loaded - gRPC port: %d, Gateway port: %d\n",
+		globalConfig.GRPC.Port,
+		globalConfig.GRPC.GatewayPort,
+	)
 
 	return nil
 }

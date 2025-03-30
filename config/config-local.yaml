@@ -1,51 +1,19 @@
-grpc:
-  port: 9100
-  reflection: true # todo: 开发环境注册反射服务
-
+# 本地环境特定配置
 database:
   host: localhost
   port: 5432
   user: sla
   password: sla1234
   dbname: sla2
-  sslmode: disable
-  debug: false
-  max_open_conns: 100
-  max_idle_conns: 10
-  conn_max_lifetime: "30m"
-  conn_max_idle_time: "10m"
 
 redis:
   host: localhost
   port: 6379
   password: ""
   db: 0
-  max_retries: 3
-  min_retry_backoff: "100ms"
-  max_retry_backoff: "2s"
-  pool_size: 100
-  min_idle_conns: 10
-  max_conn_age: "30m"
-
-log:
-  level: "debug"
-  file_path: "./logs/app.log"
 
 jwt:
   token_secret_key: "dj2n8xK9pL5mQ7vR3fT1hG4wY6sB8cA0eU9nM2iP"
   refresh_secret_key: "kL9mN5vX7pH2jR4wT8cA3fE6bY1iU0qS5nD8mK2p"
   token_expiration: 168
   refresh_expiration: 720
-
-apple:
-  client_id: "leeszi.SLA" # todo: 需要替换为实际的 bundle id & team id
-  private_key: "LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JR1RBZ0VBTUJNR0J5cUdTTTQ5QWdFR0NDcUdTTTQ5QXdFSEJIa3dkd0lCQVFRZ1ZzNHF3d0J5dEg5ZlZYQ1gKa1ZrQ3pPTTN2SUVSMFZvZzg3bFMyMDJFak42Z0NnWUlLb1pJemowREFRZWhSQU5DQUFSMFRLTlg2eHpocFY1TwpPSUVIV2dmbG9JcC9YcWZKVXpuYjcvbjN3M2VkKzg2bG9CZDUydG5UZmlpek1CZ3krd0tQYXFYS3cvRkkyWnE4Cmp4a3Rkc0F5Ci0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0="
-  key_id: "F854P88YB7"
-  team_id: "N9B347KDE9"
-
-swagger:
-  username: "admin"
-  password: "swagger"
-
-rbac:
-  config_dir: "./config"

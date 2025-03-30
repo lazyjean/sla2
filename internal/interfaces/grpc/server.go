@@ -7,7 +7,6 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -31,7 +30,6 @@ import (
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/vocabulary"
 	"github.com/lazyjean/sla2/internal/interfaces/http/ws/handler"
 	"github.com/lazyjean/sla2/pkg/logger"
-	"github.com/soheilhy/cmux"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -158,14 +156,12 @@ func NewGRPCServer(
 		}),
 	)
 
-	// todo: 整理这里的拦截器
 	// 创建拦截器链
 	unaryInterceptors := []grpc.UnaryServerInterceptor{
 		grpc_recovery.UnaryServerInterceptor(),
 		grpc_ctxtags.UnaryServerInterceptor(),
 		grpc_prometheus.UnaryServerInterceptor,
 		grpc_zap.UnaryServerInterceptor(logger.GetLogger(context.Background())),
-		grpcmiddleware.MetadataLoggerUnaryInterceptor(),
 		grpcmiddleware.UnaryServerInterceptor(tokenService),
 		grpc_validator.UnaryServerInterceptor(),
 	}
@@ -175,7 +171,6 @@ func NewGRPCServer(
 		grpc_ctxtags.StreamServerInterceptor(),
 		grpc_prometheus.StreamServerInterceptor,
 		grpc_zap.StreamServerInterceptor(logger.GetLogger(context.Background())),
-		grpcmiddleware.MetadataLoggerStreamInterceptor(),
 		grpcmiddleware.StreamServerInterceptor(tokenService),
 		grpc_validator.StreamServerInterceptor(),
 	}
@@ -215,7 +210,7 @@ func NewGRPCServer(
 
 	// 注册 Swagger UI
 	swaggerHandler := httpSwagger.Handler(
-		httpSwagger.URL(fmt.Sprintf("/swagger/doc.json")),
+		httpSwagger.URL("/swagger/doc.json"),
 		httpSwagger.DeepLinking(true),
 		httpSwagger.DocExpansion("none"),
 		httpSwagger.DomID("swagger-ui"),
@@ -269,8 +264,8 @@ func NewGRPCServer(
 	// 注册健康检查服务
 	grpc_health_v1.RegisterHealthServer(grpcServer, &healthServer{})
 
-	// 注册反射服务
-	reflection.Register(grpcServer)
+	// 注册反射服务（只使用 v1 版本）
+	reflection.RegisterV1(grpcServer)
 
 	// 注册服务
 	srv.registerServices()
@@ -315,26 +310,24 @@ func (s *GRPCServer) basicAuth(next http.Handler) http.Handler {
 
 // Start 启动服务器
 func (s *GRPCServer) Start() error {
-	// 创建 TCP 监听器
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", s.config.GRPC.Port))
+	// 创建 gRPC 监听器
+	grpcLis, err := net.Listen("tcp", fmt.Sprintf(":%d", s.config.GRPC.Port))
 	if err != nil {
-		return fmt.Errorf("failed to listen: %w", err)
+		return fmt.Errorf("failed to listen gRPC: %w", err)
 	}
 
-	// 创建 cmux
-	m := cmux.New(lis)
-
-	// 匹配 gRPC 流量
-	grpcL := m.Match(cmux.HTTP2())
-	// 匹配 HTTP/1.1 和 HTTP/2 流量
-	httpL := m.Match(cmux.HTTP1Fast(), cmux.Any())
+	// 创建 HTTP 监听器
+	httpLis, err := net.Listen("tcp", fmt.Sprintf(":%d", s.config.GRPC.GatewayPort))
+	if err != nil {
+		return fmt.Errorf("failed to listen HTTP: %w", err)
+	}
 
 	// 创建 HTTP 路由
 	router := http.NewServeMux()
 
 	// 注册 Swagger UI
 	swaggerHandler := httpSwagger.Handler(
-		httpSwagger.URL(fmt.Sprintf("/swagger/doc.json")),
+		httpSwagger.URL("/swagger/doc.json"),
 		httpSwagger.DeepLinking(true),
 		httpSwagger.DocExpansion("none"),
 		httpSwagger.DomID("swagger-ui"),
@@ -371,42 +364,47 @@ func (s *GRPCServer) Start() error {
 
 	// 创建 HTTP 服务器
 	s.httpServer = &http.Server{
-		Addr: fmt.Sprintf(":%d", config.GetConfig().GRPC.Port),
-		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if r.ProtoMajor == 2 && strings.Contains(r.Header.Get("Content-Type"), "application/grpc") {
-				s.grpcServer.ServeHTTP(w, r)
-			} else {
-				router.ServeHTTP(w, r)
-			}
-		}),
+		Addr:    fmt.Sprintf(":%d", s.config.GRPC.GatewayPort),
+		Handler: router,
 	}
 
 	// 启动 gRPC 服务器
 	go func() {
-		logger.GetLogger(context.Background()).Info("gRPC server is running", zap.Int("port", s.config.GRPC.Port))
-		if err := s.grpcServer.Serve(grpcL); err != nil {
+		defer func() {
+			if r := recover(); r != nil {
+				logger.GetLogger(context.Background()).Error("gRPC server panic recovered",
+					zap.Any("panic", r),
+				)
+			}
+		}()
+		logger.GetLogger(context.Background()).Info("Starting gRPC server",
+			zap.String("address", fmt.Sprintf(":%d", s.config.GRPC.Port)),
+		)
+		if err := s.grpcServer.Serve(grpcLis); err != nil {
 			logger.GetLogger(context.Background()).Fatal("failed to serve gRPC", zap.Error(err))
 		}
 	}()
 
 	// 启动 HTTP 服务器
 	go func() {
-		logger.GetLogger(context.Background()).Info("HTTP server is running",
-			zap.Int("port", s.config.GRPC.Port),
-			zap.String("swagger_url", fmt.Sprintf("http://localhost:%d/swagger/", s.config.GRPC.Port)),
-			zap.String("swagger_username", s.config.Swagger.Username),
-			zap.String("swagger_password", s.config.Swagger.Password),
+		defer func() {
+			if r := recover(); r != nil {
+				logger.GetLogger(context.Background()).Error("HTTP server panic recovered",
+					zap.Any("panic", r),
+				)
+			}
+		}()
+		logger.GetLogger(context.Background()).Info("Starting HTTP Gateway server",
+			zap.String("address", fmt.Sprintf(":%d", s.config.GRPC.GatewayPort)),
+			zap.String("swagger_url", fmt.Sprintf("http://localhost:%d/swagger/", s.config.GRPC.GatewayPort)),
 		)
-		if err := s.httpServer.Serve(httpL); err != nil && err != http.ErrServerClosed {
+		if err := s.httpServer.Serve(httpLis); err != nil && err != http.ErrServerClosed {
 			logger.GetLogger(context.Background()).Fatal("failed to serve HTTP", zap.Error(err))
 		}
 	}()
 
-	// 启动 cmux
-	logger.GetLogger(context.Background()).Info("Server is running", zap.Int("port", s.config.GRPC.Port))
-	if err := m.Serve(); err != nil {
-		return fmt.Errorf("failed to serve cmux: %w", err)
-	}
+	// 等待停止信号
+	<-s.stopCh
 
 	return nil
 }
