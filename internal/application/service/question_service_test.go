@@ -5,6 +5,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/lazyjean/sla2/internal/application/dto"
 	"github.com/lazyjean/sla2/internal/domain/entity"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -86,22 +87,70 @@ func TestQuestionService_Create(t *testing.T) {
 	t.Run("成功创建问题", func(t *testing.T) {
 		mockRepo.On("Create", ctx, mock.AnythingOfType("*entity.Question")).Return(nil).Once()
 
-		question, err := service.Create(ctx, "测试标题", "测试内容", []string{"标签1"}, "user1")
+		createDTO := &dto.CreateQuestionDTO{
+			Title:          "测试标题",
+			Content:        []byte("测试内容"),
+			SimpleQuestion: "测试内容",
+			Type:           "single_choice",
+			Difficulty:     "easy",
+			Options:        []byte("[]"),
+			OptionTuples:   []byte("[]"),
+			Answers:        []string{"A"},
+			Category:       "grammar",
+			Labels:         []string{"标签1"},
+			Explanation:    "解析",
+			Attachments:    []string{},
+			TimeLimit:      60,
+		}
+
+		question, err := service.Create(ctx, createDTO)
 		assert.NoError(t, err)
 		assert.NotNil(t, question)
 		assert.Equal(t, "测试标题", question.Title)
-		assert.Equal(t, "测试内容", question.Content)
+		assert.Equal(t, []byte("测试内容"), question.Content)
 	})
 
 	t.Run("标题为空", func(t *testing.T) {
-		question, err := service.Create(ctx, "", "测试内容", []string{"标签1"}, "user1")
+		createDTO := &dto.CreateQuestionDTO{
+			Title:          "",
+			Content:        []byte("测试内容"),
+			SimpleQuestion: "测试内容",
+			Type:           "single_choice",
+			Difficulty:     "easy",
+			Options:        []byte("[]"),
+			OptionTuples:   []byte("[]"),
+			Answers:        []string{"A"},
+			Category:       "grammar",
+			Labels:         []string{"标签1"},
+			Explanation:    "解析",
+			Attachments:    []string{},
+			TimeLimit:      60,
+		}
+
+		question, err := service.Create(ctx, createDTO)
 		assert.Error(t, err)
 		assert.Nil(t, question)
 		assert.Equal(t, "标题和内容不能为空", err.Error())
 	})
 
 	t.Run("内容为空", func(t *testing.T) {
-		question, err := service.Create(ctx, "测试标题", "", []string{"标签1"}, "user1")
+		createDTO := &dto.CreateQuestionDTO{
+			Title:          "测试标题",
+			Content:        nil,
+			SimpleQuestion: "测试内容",
+			Type:           "single_choice",
+			Difficulty:     "easy",
+			Options:        []byte("[]"),
+			OptionTuples:   []byte("[]"),
+			Answers:        []string{"A"},
+			Category:       "grammar",
+			Labels:         []string{"标签1"},
+			Explanation:    "解析",
+			Attachments:    []string{},
+			TimeLimit:      60,
+		}
+
+		question, err := service.Create(ctx, createDTO)
 		assert.Error(t, err)
 		assert.Nil(t, question)
 		assert.Equal(t, "标题和内容不能为空", err.Error())
@@ -110,7 +159,23 @@ func TestQuestionService_Create(t *testing.T) {
 	t.Run("创建失败", func(t *testing.T) {
 		mockRepo.On("Create", ctx, mock.AnythingOfType("*entity.Question")).Return(errors.New("创建失败")).Once()
 
-		question, err := service.Create(ctx, "测试标题", "测试内容", []string{"标签1"}, "user1")
+		createDTO := &dto.CreateQuestionDTO{
+			Title:          "测试标题",
+			Content:        []byte("测试内容"),
+			SimpleQuestion: "测试内容",
+			Type:           "single_choice",
+			Difficulty:     "easy",
+			Options:        []byte("[]"),
+			OptionTuples:   []byte("[]"),
+			Answers:        []string{"A"},
+			Category:       "grammar",
+			Labels:         []string{"标签1"},
+			Explanation:    "解析",
+			Attachments:    []string{},
+			TimeLimit:      60,
+		}
+
+		question, err := service.Create(ctx, createDTO)
 		assert.Error(t, err)
 		assert.Nil(t, question)
 	})
@@ -160,25 +225,76 @@ func TestQuestionService_Update(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("成功更新问题", func(t *testing.T) {
-		originalQuestion := &entity.Question{ID: entity.QuestionID(1), Title: "原标题", Content: "原内容"}
+		originalQuestion := &entity.Question{ID: entity.QuestionID(1), Title: "原标题", Content: []byte("原内容")}
 		mockRepo.On("Get", ctx, "1").Return(originalQuestion, nil).Once()
 		mockRepo.On("Update", ctx, mock.AnythingOfType("*entity.Question")).Return(nil).Once()
 
-		question, err := service.Update(ctx, "1", "新标题", "新内容", []string{"新标签"})
+		updateDTO := &dto.UpdateQuestionDTO{
+			ID:             "1",
+			Title:          "新标题",
+			Content:        []byte("新内容"),
+			SimpleQuestion: "新内容",
+			Type:           "single_choice",
+			Difficulty:     "easy",
+			Options:        []byte("[]"),
+			OptionTuples:   []byte("[]"),
+			Answers:        []string{"A"},
+			Category:       "grammar",
+			Labels:         []string{"新标签"},
+			Explanation:    "解析",
+			Attachments:    []string{},
+			TimeLimit:      60,
+		}
+
+		question, err := service.Update(ctx, updateDTO)
 		assert.NoError(t, err)
 		assert.Equal(t, "新标题", question.Title)
-		assert.Equal(t, "新内容", question.Content)
+		assert.Equal(t, []byte("新内容"), question.Content)
 	})
 
 	t.Run("问题ID为空", func(t *testing.T) {
-		question, err := service.Update(ctx, "", "新标题", "新内容", []string{"新标签"})
+		updateDTO := &dto.UpdateQuestionDTO{
+			ID:             "",
+			Title:          "新标题",
+			Content:        []byte("新内容"),
+			SimpleQuestion: "新内容",
+			Type:           "single_choice",
+			Difficulty:     "easy",
+			Options:        []byte("[]"),
+			OptionTuples:   []byte("[]"),
+			Answers:        []string{"A"},
+			Category:       "grammar",
+			Labels:         []string{"新标签"},
+			Explanation:    "解析",
+			Attachments:    []string{},
+			TimeLimit:      60,
+		}
+
+		question, err := service.Update(ctx, updateDTO)
 		assert.Error(t, err)
 		assert.Nil(t, question)
 		assert.Equal(t, "问题ID不能为空", err.Error())
 	})
 
 	t.Run("标题为空", func(t *testing.T) {
-		question, err := service.Update(ctx, "1", "", "新内容", []string{"新标签"})
+		updateDTO := &dto.UpdateQuestionDTO{
+			ID:             "1",
+			Title:          "",
+			Content:        []byte("新内容"),
+			SimpleQuestion: "新内容",
+			Type:           "single_choice",
+			Difficulty:     "easy",
+			Options:        []byte("[]"),
+			OptionTuples:   []byte("[]"),
+			Answers:        []string{"A"},
+			Category:       "grammar",
+			Labels:         []string{"新标签"},
+			Explanation:    "解析",
+			Attachments:    []string{},
+			TimeLimit:      60,
+		}
+
+		question, err := service.Update(ctx, updateDTO)
 		assert.Error(t, err)
 		assert.Nil(t, question)
 		assert.Equal(t, "标题和内容不能为空", err.Error())
@@ -187,7 +303,24 @@ func TestQuestionService_Update(t *testing.T) {
 	t.Run("问题不存在", func(t *testing.T) {
 		mockRepo.On("Get", ctx, "999").Return(nil, errors.New("问题不存在")).Once()
 
-		question, err := service.Update(ctx, "999", "新标题", "新内容", []string{"新标签"})
+		updateDTO := &dto.UpdateQuestionDTO{
+			ID:             "999",
+			Title:          "新标题",
+			Content:        []byte("新内容"),
+			SimpleQuestion: "新内容",
+			Type:           "single_choice",
+			Difficulty:     "easy",
+			Options:        []byte("[]"),
+			OptionTuples:   []byte("[]"),
+			Answers:        []string{"A"},
+			Category:       "grammar",
+			Labels:         []string{"新标签"},
+			Explanation:    "解析",
+			Attachments:    []string{},
+			TimeLimit:      60,
+		}
+
+		question, err := service.Update(ctx, updateDTO)
 		assert.Error(t, err)
 		assert.Nil(t, question)
 	})

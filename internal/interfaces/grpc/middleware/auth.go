@@ -24,6 +24,7 @@ var noAuthMethods = map[string]bool{
 	"/proto.v1.UserService/ResetPassword":                       true,
 	"/proto.v1.AdminService/CheckSystemStatus":                  true,
 	"/proto.v1.AdminService/InitializeSystem":                   true,
+	"/proto.v1.AdminService/AdminLogin":                         true,
 	"/grpc.reflection.v1.ServerReflection/ServerReflectionInfo": true,
 	"/grpc.health.v1.Health/Check":                              true,
 	"/grpc.health.v1.Health/Watch":                              true,

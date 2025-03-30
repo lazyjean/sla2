@@ -34,7 +34,7 @@ func TestSwaggerDocumentAvailable(t *testing.T) {
 	require.NoError(t, err)
 
 	// 创建模拟的服务器实例
-	mockServer := &Server{
+	mockServer := &GRPCServer{
 		config: &config.Config{
 			Swagger: config.SwaggerConfig{
 				Username: "admin",
