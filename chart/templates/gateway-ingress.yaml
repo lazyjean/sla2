@@ -1,0 +1,43 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sla2-api
+  annotations:
+    # 可以在这里添加特定于API服务的 annotations
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+        # 证书管理相关 (保留)
+    cert-manager.io/cluster-issuer: lets-encrypt
+    # HTTP/2 相关 (保留)
+    nginx.ingress.kubernetes.io/http2-push-preload: "true"
+    # SSL 重定向 (保留)
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # 添加 HTTP 特定的 annotations
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+spec:
+  ingressClassName: public
+  rules:
+  - host: sla2.leeszi.cn
+    http:
+      paths:
+      - backend:
+          service:
+            name: sla2
+            port:
+              number: 9101
+        path: /api
+        pathType: Prefix
+      - backend:
+          service:
+            name: sla2
+            port:
+              number: 9101
+        path: /swagger
+        pathType: Prefix
+  tls:
+  - hosts:
+    - sla2.leeszi.cn
+    secretName: sla2-leeszi-tls
