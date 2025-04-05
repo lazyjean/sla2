@@ -40,7 +40,9 @@ func InitializeApp() (*Application, error) {
 	userService := service.NewUserService(userRepository, tokenService, passwordService, appleAuthService)
 	questionRepository := postgres.NewQuestionRepository(db)
 	questionService := service.NewQuestionService(questionRepository)
-	vocabularyService := service.NewVocabularyService()
+	hanCharRepository := postgres.NewHanCharRepository(db)
+	wordRepository := postgres.NewWordRepository(db)
+	vocabularyService := service.NewVocabularyService(hanCharRepository, wordRepository)
 	courseRepository := postgres.NewCourseRepository(db)
 	courseSectionRepository := postgres.NewCourseSectionRepository(db)
 	courseService := service.NewCourseService(courseRepository, courseSectionRepository)
@@ -78,7 +80,7 @@ var dbSet = wire.NewSet(postgres.NewDB)
 var cacheSet = wire.NewSet(redis.NewRedisCache)
 
 // 仓储集
-var repositorySet = wire.NewSet(postgres.NewWordRepository, postgres.NewCachedWordRepository, postgres.NewLearningRepository, postgres.NewUserRepository, postgres.NewCourseRepository, postgres.NewCourseSectionRepository, postgres.NewAdminRepository, postgres.NewQuestionTagRepository, postgres.NewQuestionRepository)
+var repositorySet = wire.NewSet(postgres.NewWordRepository, postgres.NewCachedWordRepository, postgres.NewLearningRepository, postgres.NewUserRepository, postgres.NewCourseRepository, postgres.NewCourseSectionRepository, postgres.NewAdminRepository, postgres.NewQuestionTagRepository, postgres.NewQuestionRepository, postgres.NewHanCharRepository)
 
 // 服务集
 var serviceSet = wire.NewSet(service.NewVocabularyService, service.NewLearningService, service.NewUserService, service.NewCourseService, provideAdminService, service.NewQuestionService, service.NewQuestionTagService)

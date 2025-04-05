@@ -16,6 +16,19 @@ VERSION := $(shell cat $(VERSION_FILE) 2>/dev/null || echo "0.0.0")
 .PHONY: all
 all: build
 
+# 安装 air 工具
+.PHONY: install-air
+install-air:
+	@echo "Installing air..."
+	@go install github.com/air-verse/air@latest
+	@echo "Air installed successfully"
+
+# 使用 air 运行服务（热重载）
+.PHONY: run-hot
+run-hot:
+	@echo "Starting service with hot reload..."
+	@air -c .air.toml
+
 # 生成 protobuf 代码
 .PHONY: proto
 proto:

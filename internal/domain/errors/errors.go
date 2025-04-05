@@ -44,6 +44,16 @@ var (
 	ErrProgressNotFound   = NewError(CodeProgressNotFound, "学习进度不存在")
 )
 
+// HanChar related errors
+var (
+	ErrHanCharAlreadyExists   = NewError(CodeHanCharAlreadyExists, "汉字已存在")
+	ErrNotImplemented         = NewError(CodeNotImplemented, "功能未实现")
+	ErrInvalidDifficultyLevel = NewError(CodeInvalidDifficultyLevel, "无效的难度等级")
+)
+
+// ErrInvalidWord 表示无效的单词
+var ErrInvalidWord = errors.New("invalid word")
+
 type Error struct {
 	Code    int
 	Message string

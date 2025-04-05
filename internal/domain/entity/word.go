@@ -18,8 +18,8 @@ type Word struct {
 	Text string `gorm:"type:varchar(100);not null;index;uniqueIndex:idx_user_text,priority:2"`
 	// Phonetic 音标
 	Phonetic string `gorm:"type:varchar(100)"`
-	// Translation 翻译
-	Translation string `gorm:"type:text;not null"`
+	// Definitions 释义列表
+	Definitions []Definition `gorm:"type:jsonb;serializer:json;not null;default:'[]'"`
 	// Examples 例句列表
 	Examples []string `gorm:"type:jsonb;serializer:json;not null;default:'[]'"`
 	// Tags 标签列表
@@ -38,45 +38,38 @@ type Word struct {
 	UpdatedAt time.Time `gorm:"not null;default:CURRENT_TIMESTAMP"`
 }
 
+// Definition 单词释义
+type Definition struct {
+	// PartOfSpeech 词性
+	PartOfSpeech string `json:"part_of_speech"`
+	// Meaning 含义
+	Meaning string `json:"meaning"`
+	// Example 例句
+	Example string `json:"example"`
+	// Synonyms 同义词
+	Synonyms []string `json:"synonyms"`
+	// Antonyms 反义词
+	Antonyms []string `json:"antonyms"`
+}
+
 // NewWord 创建新生词
-func NewWord(userID UID, text string, phonetic string, translation string, examples []string, tags []string) (*Word, error) {
+func NewWord(userID UID, text, phonetic string, definitions []Definition, examples, tags []string) (*Word, error) {
 	if userID == 0 {
 		return nil, errors.ErrInvalidUserID
 	}
 	if text == "" {
-		return nil, errors.ErrEmptyWordText
-	}
-	if translation == "" {
-		return nil, errors.ErrEmptyTranslation
-	}
-
-	// 过滤空字符串
-	filteredExamples := make([]string, 0, len(examples))
-	for _, ex := range examples {
-		if ex != "" {
-			filteredExamples = append(filteredExamples, ex)
-		}
-	}
-
-	filteredTags := make([]string, 0, len(tags))
-	for _, t := range tags {
-		if t != "" {
-			filteredTags = append(filteredTags, t)
-		}
+		return nil, errors.ErrInvalidWord
 	}
 
 	return &Word{
-		UserID:       userID,
-		Text:         text,
-		Phonetic:     phonetic,
-		Translation:  translation,
-		Difficulty:   1,
-		MasteryLevel: 0,
-		ReviewCount:  0,
-		Examples:     filteredExamples,
-		Tags:         filteredTags,
-		CreatedAt:    time.Now(),
-		UpdatedAt:    time.Now(),
+		UserID:      userID,
+		Text:        text,
+		Phonetic:    phonetic,
+		Definitions: definitions,
+		Examples:    examples,
+		Tags:        tags,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
 	}, nil
 }
 
@@ -148,10 +141,7 @@ func (w *Word) Validate() error {
 		return errors.ErrInvalidUserID
 	}
 	if w.Text == "" {
-		return errors.ErrEmptyWordText
-	}
-	if w.Translation == "" {
-		return errors.ErrEmptyTranslation
+		return errors.ErrInvalidWord
 	}
 	return nil
 }

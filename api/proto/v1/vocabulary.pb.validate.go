@@ -224,6 +224,8 @@ func (m *Word) validate(all bool) error {
 
 	// no validation rules for Id
 
+	// no validation rules for Word
+
 	// no validation rules for Spelling
 
 	// no validation rules for Pronunciation
@@ -1168,6 +1170,8 @@ func (m *VocabularyServiceListHanCharRequest) validate(all bool) error {
 	// no validation rules for Page
 
 	// no validation rules for PageSize
+
+	// no validation rules for Level
 
 	if len(errors) > 0 {
 		return VocabularyServiceListHanCharRequestMultiError(errors)

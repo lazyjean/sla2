@@ -43,4 +43,9 @@ const (
 
 	// 系统错误码 (9000-9999)
 	CodeInternalError = 9000
+
+	// HanChar related error codes (7000-7999)
+	CodeHanCharAlreadyExists = 7000 + iota
+	CodeNotImplemented
+	CodeInvalidDifficultyLevel
 )

@@ -52,6 +52,7 @@ var repositorySet = wire.NewSet(
 	postgres.NewAdminRepository,
 	postgres.NewQuestionTagRepository,
 	postgres.NewQuestionRepository,
+	postgres.NewHanCharRepository,
 )
 
 // 服务集

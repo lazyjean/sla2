@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/lazyjean/sla2/internal/domain/entity"
-	domainErrors "github.com/lazyjean/sla2/internal/domain/errors"
+	"github.com/lazyjean/sla2/internal/domain/errors"
 	"github.com/lazyjean/sla2/internal/domain/repository"
 	"github.com/lazyjean/sla2/internal/infrastructure/cache"
 )
@@ -24,8 +24,8 @@ func NewCachedWordRepository(repo repository.WordRepository, cache cache.Cache) 
 	}
 }
 
-func (r *CachedWordRepository) Save(ctx context.Context, word *entity.Word) error {
-	if err := r.repo.Save(ctx, word); err != nil {
+func (r *CachedWordRepository) Create(ctx context.Context, word *entity.Word) error {
+	if err := r.repo.Create(ctx, word); err != nil {
 		return err
 	}
 
@@ -39,29 +39,50 @@ func (r *CachedWordRepository) Save(ctx context.Context, word *entity.Word) erro
 }
 
 func (r *CachedWordRepository) Update(ctx context.Context, word *entity.Word) error {
-	if err := r.repo.Update(ctx, word); err != nil {
-		return err
-	}
-
-	// 更新缓存
-	if wordJSON, err := json.Marshal(word); err == nil {
-		cacheKey := fmt.Sprintf("word:%d", word.ID)
-		r.cache.Set(ctx, cacheKey, string(wordJSON), 30*time.Minute)
-	}
-
-	return nil
+	return r.repo.Update(ctx, word)
 }
 
-func (r *CachedWordRepository) Delete(ctx context.Context, id uint) error {
-	if err := r.repo.Delete(ctx, id); err != nil {
-		return err
+func (r *CachedWordRepository) Delete(ctx context.Context, id entity.WordID) error {
+	return r.repo.Delete(ctx, id)
+}
+
+func (r *CachedWordRepository) GetByID(ctx context.Context, id entity.WordID) (*entity.Word, error) {
+	return r.repo.GetByID(ctx, id)
+}
+
+func (r *CachedWordRepository) GetByWord(ctx context.Context, word string) (*entity.Word, error) {
+	return r.repo.GetByWord(ctx, word)
+}
+
+func (r *CachedWordRepository) List(ctx context.Context, offset, limit int, filters map[string]interface{}) ([]*entity.Word, int64, error) {
+	return r.repo.List(ctx, offset, limit, filters)
+}
+
+func (r *CachedWordRepository) Search(ctx context.Context, keyword string, offset, limit int, filters map[string]interface{}) ([]*entity.Word, int64, error) {
+	return r.repo.Search(ctx, keyword, offset, limit, filters)
+}
+
+func (r *CachedWordRepository) GetAllTags(ctx context.Context) ([]string, error) {
+	return r.repo.GetAllTags(ctx)
+}
+
+func (r *CachedWordRepository) GetAllCategories(ctx context.Context) ([]string, error) {
+	return r.repo.GetAllCategories(ctx)
+}
+
+// FindByText 根据文本查找单词
+func (r *CachedWordRepository) FindByText(ctx context.Context, text string) (*entity.Word, error) {
+	filters := make(map[string]interface{})
+	filters["keyword"] = text
+
+	words, _, err := r.Search(ctx, text, 0, 1, filters)
+	if err != nil {
+		return nil, err
 	}
-
-	// 删除缓存
-	cacheKey := fmt.Sprintf("word:%d", id)
-	r.cache.Delete(ctx, cacheKey)
-
-	return nil
+	if len(words) == 0 {
+		return nil, errors.ErrWordNotFound
+	}
+	return words[0], nil
 }
 
 func (r *CachedWordRepository) FindByID(ctx context.Context, id uint) (*entity.Word, error) {
@@ -75,7 +96,7 @@ func (r *CachedWordRepository) FindByID(ctx context.Context, id uint) (*entity.W
 	}
 
 	// 从数据库获取
-	word, err := r.repo.FindByID(ctx, id)
+	word, err := r.repo.GetByID(ctx, entity.WordID(id))
 	if err != nil {
 		return nil, err
 	}
@@ -88,23 +109,8 @@ func (r *CachedWordRepository) FindByID(ctx context.Context, id uint) (*entity.W
 	return word, nil
 }
 
-func (r *CachedWordRepository) FindByText(ctx context.Context, text string) (*entity.Word, error) {
-	query := &repository.WordQuery{
-		Text:   text,
-		Limit:  1,
-		Offset: 0,
-	}
-	words, _, err := r.Search(ctx, query)
-	if err != nil {
-		return nil, err
-	}
-	if len(words) == 0 {
-		return nil, domainErrors.ErrWordNotFound
-	}
-	return words[0], nil
-}
-
-func (r *CachedWordRepository) List(ctx context.Context, userID uint, offset, limit int) ([]*entity.Word, int64, error) {
+// ListByUserID 根据用户ID获取单词列表
+func (r *CachedWordRepository) ListByUserID(ctx context.Context, userID uint, offset, limit int) ([]*entity.Word, int64, error) {
 	// 从缓存获取
 	cacheKey := fmt.Sprintf("words:list:%d:%d:%d", userID, offset, limit)
 	var words []*entity.Word
@@ -117,8 +123,11 @@ func (r *CachedWordRepository) List(ctx context.Context, userID uint, offset, li
 		}
 	}
 
+	filters := make(map[string]interface{})
+	filters["user_id"] = userID
+
 	// 从数据库获取
-	words, total, err := r.repo.List(ctx, userID, offset, limit)
+	words, total, err := r.List(ctx, offset, limit, filters)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -130,12 +139,5 @@ func (r *CachedWordRepository) List(ctx context.Context, userID uint, offset, li
 
 	return words, total, nil
 }
-
-func (r *CachedWordRepository) Search(ctx context.Context, query *repository.WordQuery) ([]*entity.Word, int64, error) {
-	// 搜索功能不使用缓存，因为条件组合太多
-	return r.repo.Search(ctx, query)
-}
-
-// 其他方法类似，实现缓存逻辑...
 
 var _ repository.CachedWordRepository = (*CachedWordRepository)(nil)

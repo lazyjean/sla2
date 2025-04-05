@@ -1,3 +1,6 @@
+server:
+  mode: "debug"
+
 grpc:
   port: 9100
   gateway_port: 9101
