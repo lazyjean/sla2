@@ -85,10 +85,13 @@ clean:
 .PHONY: release
 release: test docker-build docker-push
 
-# 更新线上服务（需要配置 kubectl）
+# 更新线上服务（使用 Helm）
 .PHONY: deploy
 deploy:
-	kubectl set image deployment/$(IMAGE_NAME) $(IMAGE_NAME)=$(GET_FULL_IMAGE) -n default
+	helm upgrade --install $(IMAGE_NAME) ./chart \
+		--set image.repository=$(DOCKER_REGISTRY)/$(IMAGE_NAME) \
+		--set image.tag=$(GET_LATEST_TAG) \
+		-n default
 
 # 验证 Swagger 文档
 .PHONY: swagger-validate
@@ -190,7 +193,7 @@ bump-version:
 
 # 修改 ci target
 .PHONY: ci
-ci: bump-version docker-build docker-push deploy
+ci: fmt proto generate test bump-version docker-build docker-push deploy
 
 # gRPC 接口调试
 .PHONY: run-grpcui-local run-grpcui-remote

@@ -101,9 +101,9 @@ type UserDTO struct {
 	EmailVerified bool       `json:"email_verified"`
 	Nickname      string     `json:"nickname,omitempty"`
 	Avatar        string     `json:"avatar,omitempty"`
-	Status        string    `json:"status"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
+	Status        string     `json:"status"`
+	CreatedAt     time.Time  `json:"created_at"`
+	UpdatedAt     time.Time  `json:"updated_at"`
 }
 
 // AppleLoginRequest Apple 登录请求
@@ -120,6 +120,6 @@ type AppleLoginResponse struct {
 	Nickname     string     `json:"nickname,omitempty"`
 	Avatar       string     `json:"avatar,omitempty"`
 	Token        string     `json:"token,omitempty"`
-	RefreshToken string `json:"refresh_token,omitempty"`
-	IsNewUser    bool   `json:"is_new_user"`
+	RefreshToken string     `json:"refresh_token,omitempty"`
+	IsNewUser    bool       `json:"is_new_user"`
 }

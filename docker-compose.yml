@@ -1,23 +1,4 @@
 services:
-  app:
-    build: .
-    container_name: sla2-app
-    ports:
-      - "9000:9000"
-    environment:
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_USER=sla
-      - DB_PASSWORD=sla1234
-      - DB_NAME=sla2
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - ACTIVE_PROFILE=local
-    depends_on:
-      - postgres
-      - redis
-    restart: unless-stopped
-
   postgres:
     image: postgres:16-alpine
     container_name: sla2-postgres
@@ -43,6 +24,8 @@ services:
   adminer:
     image: adminer:latest
     container_name: sla2-adminer
+    environment:
+      - ADMINER_DESIGN=pepa-linha
     ports:
       - "8080:8080"
     depends_on:

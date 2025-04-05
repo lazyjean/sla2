@@ -55,13 +55,20 @@ securityContext:
 service:
   # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
   type: ClusterIP
-  # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
-  port: 9100
+  # HTTP service configuration
+  http:
+    port: 9101
+  # gRPC service configuration
+  grpc:
+    port: 9100
 
 # This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
 ingress:
   enabled: true
   className: public
+  # Domain configuration
+  domain:
+    api: sla2.leeszi.cn
   annotations:
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     nginx.ingress.kubernetes.io/preserve-trailing-slash: "false"
@@ -75,6 +82,13 @@ ingress:
     - secretName: sla2-leeszi-tls
       hosts:
         - sla2.leeszi.cn
+  # gRPC ingress configuration
+  grpc:
+    enabled: true
+    annotations:
+      nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
+      cert-manager.io/cluster-issuer: lets-encrypt
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 
 resources:
   limits:

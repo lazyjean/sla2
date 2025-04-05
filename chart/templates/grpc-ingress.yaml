@@ -1,20 +1,24 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "chart.fullname" . }}-http
+  name: {{ include "chart.fullname" . }}-grpc
   annotations:
+    # gRPC 相关设置
+    nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
     # 超时设置
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
-    # HTTP/2 相关
-    nginx.ingress.kubernetes.io/http2-push-preload: "true"
     # SSL 重定向
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     # 证书管理
     cert-manager.io/cluster-issuer: lets-encrypt
     # 其他优化
     nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "8k"
+    nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
+    nginx.ingress.kubernetes.io/proxy-max-temp-file-size: "1024m"
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "chart.labels" . | nindent 4 }}
@@ -28,17 +32,10 @@ spec:
           service:
             name: {{ include "chart.fullname" . }}
             port:
-              number: {{ .Values.service.http.port }}
-        path: /api/
-        pathType: Prefix
-      - backend:
-          service:
-            name: {{ include "chart.fullname" . }}
-            port:
-              number: {{ .Values.service.http.port }}
-        path: /swagger/
+              number: {{ .Values.service.grpc.port }}
+        path: /
         pathType: Prefix
   tls:
   - hosts:
     - {{ .Values.ingress.domain.api }}
-    secretName: {{ .Values.ingress.domain.api }}-tls
+    secretName: {{ .Values.ingress.domain.api }}-tls 
