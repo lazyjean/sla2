@@ -9,7 +9,7 @@ import (
 // HanCharRepository 汉字仓库接口
 type HanCharRepository interface {
 	// Create 创建汉字
-	Create(ctx context.Context, hanChar *entity.HanChar) error
+	Create(ctx context.Context, hanChar *entity.HanChar) (entity.HanCharID, error)
 	// Update 更新汉字
 	Update(ctx context.Context, hanChar *entity.HanChar) error
 	// Delete 删除汉字

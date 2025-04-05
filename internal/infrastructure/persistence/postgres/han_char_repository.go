@@ -7,6 +7,7 @@ import (
 	"github.com/lazyjean/sla2/internal/domain/repository"
 	"github.com/lazyjean/sla2/internal/domain/valueobject"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 // hanCharRepository PostgreSQL 汉字仓库实现
@@ -22,8 +23,18 @@ func NewHanCharRepository(db *gorm.DB) repository.HanCharRepository {
 }
 
 // Create 创建汉字
-func (r *hanCharRepository) Create(ctx context.Context, hanChar *entity.HanChar) error {
-	return r.db.WithContext(ctx).Create(hanChar).Error
+func (r *hanCharRepository) Create(ctx context.Context, hanChar *entity.HanChar) (entity.HanCharID, error) {
+	// 使用 GORM 的 Create 方法，GORM 会自动处理 JSONB 字段的序列化
+	err := r.db.WithContext(ctx).
+		Clauses(clause.OnConflict{
+			Columns:   []clause.Column{{Name: "character"}},
+			DoNothing: true,
+		}).
+		Create(hanChar).Error
+	if err != nil {
+		return 0, err
+	}
+	return hanChar.ID, nil
 }
 
 // Update 更新汉字

@@ -42,10 +42,12 @@ func (s *VocabularyService) CreateHanChar(ctx context.Context, character, pinyin
 	hanChar.Examples = examples
 
 	// 保存到数据库
-	if err := s.hanCharRepository.Create(ctx, hanChar); err != nil {
+	id, err := s.hanCharRepository.Create(ctx, hanChar)
+	if err != nil {
 		return nil, err
 	}
 
+	hanChar.ID = id
 	return hanChar, nil
 }
 
@@ -225,11 +227,20 @@ func (s *VocabularyService) BatchCreateHanChars(ctx context.Context, hanChars []
 		if err != nil {
 			return nil, err
 		}
-		newHanChar, err := s.CreateHanChar(ctx, hanChar.Character, hanChar.Pinyin, level, hanChar.Tags, hanChar.Categories, hanChar.Examples)
+
+		// 创建新的汉字实体
+		newHanChar := entity.NewHanChar(hanChar.Character, hanChar.Pinyin, level)
+		newHanChar.Tags = hanChar.Tags
+		newHanChar.Categories = hanChar.Categories
+		newHanChar.Examples = hanChar.Examples
+
+		// 保存到数据库
+		id, err := s.hanCharRepository.Create(ctx, newHanChar)
 		if err != nil {
 			return nil, err
 		}
-		ids = append(ids, uint(newHanChar.ID))
+
+		ids = append(ids, uint(id))
 	}
 	return ids, nil
 }

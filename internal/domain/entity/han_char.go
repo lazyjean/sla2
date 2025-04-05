@@ -19,11 +19,11 @@ type HanChar struct {
 	// Pinyin 拼音
 	Pinyin string `gorm:"type:varchar(50);not null;comment:拼音"`
 	// Tags 标签列表
-	Tags []string `gorm:"type:jsonb;not null;comment:标签列表"`
+	Tags []string `gorm:"type:jsonb;serializer:json;not null;comment:标签列表"`
 	// Categories 分类列表
-	Categories []string `gorm:"type:jsonb;not null;comment:分类列表"`
+	Categories []string `gorm:"type:jsonb;serializer:json;not null;comment:分类列表"`
 	// Examples 例句列表
-	Examples []string `gorm:"type:jsonb;not null;comment:例句列表"`
+	Examples []string `gorm:"type:jsonb;serializer:json;not null;comment:例句列表"`
 	// Level 难度等级
 	Level valueobject.WordDifficultyLevel `gorm:"type:integer;not null;comment:难度等级"`
 	// CreatedAt 创建时间
