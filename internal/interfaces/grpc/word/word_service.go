@@ -25,12 +25,17 @@ func (s *WordService) GetWord(ctx context.Context, req *pb.WordServiceGetRequest
 		return nil, err
 	}
 
+	var definitions []string
+	for _, def := range word.Definitions {
+		definitions = append(definitions, def.Meaning)
+	}
+
 	return &pb.WordServiceGetResponse{
 		Word: &pb.WordInfo{
 			Id:            uint32(word.ID),
 			Spelling:      word.Text,
 			Pronunciation: word.Phonetic,
-			Definitions:   []string{word.Translation},
+			Definitions:   definitions,
 			Examples:      word.Examples,
 			CreatedAt:     timestamppb.New(word.CreatedAt),
 			UpdatedAt:     timestamppb.New(word.UpdatedAt),
@@ -46,11 +51,16 @@ func (s *WordService) ListWords(ctx context.Context, req *pb.WordServiceListRequ
 
 	var pbWords []*pb.WordInfo
 	for _, word := range words {
+		var definitions []string
+		for _, def := range word.Definitions {
+			definitions = append(definitions, def.Meaning)
+		}
+
 		pbWords = append(pbWords, &pb.WordInfo{
 			Id:            uint32(word.ID),
 			Spelling:      word.Text,
 			Pronunciation: word.Phonetic,
-			Definitions:   []string{word.Translation},
+			Definitions:   definitions,
 			Examples:      word.Examples,
 			CreatedAt:     timestamppb.New(word.CreatedAt),
 			UpdatedAt:     timestamppb.New(word.UpdatedAt),

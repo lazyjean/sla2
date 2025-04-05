@@ -16,6 +16,7 @@ var (
 	ErrInvalidDifficulty   = NewError(CodeInvalidDifficulty, "难度必须在1到5之间")
 	ErrInvalidMasteryLevel = NewError(CodeInvalidMasteryLevel, "熟练度必须在0到5之间")
 	ErrDuplicateTag        = NewError(CodeDuplicateTag, "标签已存在")
+	ErrEmptyDefinition     = NewError(CodeEmptyDefinition, "释义不能为空")
 )
 
 // Repository related errors

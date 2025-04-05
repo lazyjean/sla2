@@ -78,6 +78,12 @@ func (w *Word) AddExample(example string) error {
 	if example == "" {
 		return errors.ErrEmptyExample
 	}
+	// 检查例句是否已存在
+	for _, e := range w.Examples {
+		if e == example {
+			return nil // 例句已存在，直接返回
+		}
+	}
 	w.Examples = append(w.Examples, example)
 	w.UpdatedAt = time.Now()
 	return nil
@@ -142,6 +148,9 @@ func (w *Word) Validate() error {
 	}
 	if w.Text == "" {
 		return errors.ErrInvalidWord
+	}
+	if len(w.Definitions) == 0 {
+		return errors.ErrEmptyDefinition
 	}
 	return nil
 }

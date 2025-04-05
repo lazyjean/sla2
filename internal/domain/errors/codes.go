@@ -13,6 +13,7 @@ const (
 	CodeInvalidDifficulty
 	CodeInvalidMasteryLevel
 	CodeDuplicateTag
+	CodeEmptyDefinition
 
 	// repository 错误码 (3000-3999)
 	CodeFailedToSave = 3000 + iota

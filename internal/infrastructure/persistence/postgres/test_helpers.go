@@ -32,6 +32,7 @@ func setupTestDB(t *testing.T) (*gorm.DB, func()) {
 		&entity.CourseLearningProgress{},
 		&entity.CourseSectionProgress{},
 		&entity.CourseSectionUnitProgress{},
+		&entity.HanChar{},
 	)
 	require.NoError(t, err)
 
@@ -60,6 +61,7 @@ func cleanTestData(t *testing.T, db *gorm.DB) {
 		"course_learning_progresses",
 		"course_section_progresses",
 		"course_section_unit_progresses",
+		"han_chars",
 	}
 
 	for _, table := range tables {

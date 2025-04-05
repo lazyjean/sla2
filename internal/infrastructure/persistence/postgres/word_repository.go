@@ -8,7 +8,6 @@ import (
 	domainErrors "github.com/lazyjean/sla2/internal/domain/errors"
 	"github.com/lazyjean/sla2/internal/domain/repository"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 type WordRepository struct {
@@ -62,11 +61,17 @@ func (r *WordRepository) Save(ctx context.Context, word *entity.Word) error {
 		return err
 	}
 
+	// 检查单词是否已存在
+	existing, err := r.FindByUserAndText(ctx, uint(word.UserID), word.Text)
+	if err != nil && err != domainErrors.ErrWordNotFound {
+		return err
+	}
+	if existing != nil {
+		return domainErrors.ErrWordAlreadyExists
+	}
+
 	// 使用 Create 方法，GORM 会自动处理 JSON 类型的序列化
-	if err := r.db.WithContext(ctx).Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "text"}, {Name: "user_id"}},
-		DoNothing: true,
-	}).Create(word).Error; err != nil {
+	if err := r.db.WithContext(ctx).Create(word).Error; err != nil {
 		return domainErrors.ErrFailedToSave
 	}
 	return nil
