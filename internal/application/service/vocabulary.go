@@ -163,7 +163,7 @@ func (s *VocabularyService) GetAllMetadata(ctx context.Context) ([]string, []str
 }
 
 // CreateWord 创建单词
-func (s *VocabularyService) CreateWord(ctx context.Context, userID entity.UID, text, phonetic string, definitions []entity.Definition, examples, tags []string) (*entity.Word, error) {
+func (s *VocabularyService) CreateWord(ctx context.Context, text, phonetic string, definitions []entity.Definition, examples, tags []string) (*entity.Word, error) {
 	// 检查单词是否已存在
 	existing, err := s.wordRepository.GetByWord(ctx, text)
 	if err != nil {
@@ -174,7 +174,7 @@ func (s *VocabularyService) CreateWord(ctx context.Context, userID entity.UID, t
 	}
 
 	// 创建新的单词实体
-	word, err := entity.NewWord(userID, text, phonetic, definitions, examples, tags)
+	word, err := entity.NewWord(text, phonetic, definitions, examples, tags)
 	if err != nil {
 		return nil, err
 	}
@@ -188,7 +188,7 @@ func (s *VocabularyService) CreateWord(ctx context.Context, userID entity.UID, t
 }
 
 // BatchCreateWords 批量创建单词
-func (s *VocabularyService) BatchCreateWords(ctx context.Context, userID entity.UID, words []dto.BatchCreateWordRequest) ([]uint, error) {
+func (s *VocabularyService) BatchCreateWords(ctx context.Context, words []dto.BatchCreateWordRequest) ([]uint, error) {
 	var ids []uint
 	for _, word := range words {
 		// 转换释义
@@ -203,7 +203,7 @@ func (s *VocabularyService) BatchCreateWords(ctx context.Context, userID entity.
 			})
 		}
 
-		newWord, err := s.CreateWord(ctx, userID, word.Word, "", definitions, word.Examples, word.Tags)
+		newWord, err := s.CreateWord(ctx, word.Word, "", definitions, word.Examples, word.Tags)
 		if err != nil {
 			return nil, err
 		}

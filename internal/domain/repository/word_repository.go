@@ -21,16 +21,25 @@ type WordRepository interface {
 	GetByWord(ctx context.Context, word string) (*entity.Word, error)
 	// List 获取单词列表
 	List(ctx context.Context, offset, limit int, filters map[string]interface{}) ([]*entity.Word, int64, error)
+	// ListByIDs 通过ID列表获取单词
+	ListByIDs(ctx context.Context, ids []entity.WordID) ([]*entity.Word, error)
 	// Search 搜索单词
 	Search(ctx context.Context, keyword string, offset, limit int, filters map[string]interface{}) ([]*entity.Word, int64, error)
 	// GetAllTags 获取所有标签
 	GetAllTags(ctx context.Context) ([]string, error)
 	// GetAllCategories 获取所有分类
 	GetAllCategories(ctx context.Context) ([]string, error)
+	// ListNeedReview 获取需要复习的单词列表
+	ListNeedReview(ctx context.Context, before time.Time, limit int) ([]*entity.Word, error)
 }
 
+// CachedWordRepository 缓存单词仓储接口
 type CachedWordRepository interface {
 	WordRepository
+	// GetByID 通过ID获取单词
+	GetByID(ctx context.Context, id entity.WordID) (*entity.Word, error)
+	// ListByIDs 通过ID列表获取单词
+	ListByIDs(ctx context.Context, ids []entity.WordID) ([]*entity.Word, error)
 }
 
 // WordQuery 定义查询参数

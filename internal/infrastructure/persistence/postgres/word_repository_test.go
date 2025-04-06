@@ -6,7 +6,6 @@ import (
 
 	"github.com/lazyjean/sla2/internal/domain/entity"
 	"github.com/lazyjean/sla2/internal/domain/errors"
-	"github.com/lazyjean/sla2/internal/domain/repository"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -15,7 +14,7 @@ func TestWordRepository_Create(t *testing.T) {
 	db, cleanup := setupTestDB(t)
 	defer cleanup()
 	repo := NewWordRepository(db)
-	ctx := context.WithValue(context.Background(), repository.UserIDKey, 1)
+	ctx := context.Background()
 
 	word := &entity.Word{
 		Text: "resilient",
@@ -32,8 +31,7 @@ func TestWordRepository_Create(t *testing.T) {
 			"Children are generally more resilient than adults.",
 			"The company proved resilient during the economic crisis.",
 		},
-		Tags:   []string{"adjective", "personality", "advanced"},
-		UserID: 1,
+		Tags: []string{"adjective", "personality", "advanced"},
 	}
 
 	// 第一次创建
@@ -51,7 +49,6 @@ func TestWordRepository_Create(t *testing.T) {
 	assert.Equal(t, word.Phonetic, saved.Phonetic)
 	assert.Equal(t, word.Examples, saved.Examples)
 	assert.Equal(t, word.Tags, saved.Tags)
-	assert.Equal(t, word.UserID, saved.UserID)
 
 	// 尝试创建重复的单词
 	duplicate := &entity.Word{
@@ -69,8 +66,7 @@ func TestWordRepository_Create(t *testing.T) {
 			"Children are generally more resilient than adults.",
 			"The company proved resilient during the economic crisis.",
 		},
-		Tags:   []string{"adjective", "personality", "advanced"},
-		UserID: 1,
+		Tags: []string{"adjective", "personality", "advanced"},
 	}
 	err = repo.Create(ctx, duplicate)
 	assert.Error(t, err)
@@ -81,7 +77,7 @@ func TestWordRepository_GetByWord(t *testing.T) {
 	db, cleanup := setupTestDB(t)
 	defer cleanup()
 	repo := NewWordRepository(db)
-	ctx := context.WithValue(context.Background(), repository.UserIDKey, 1)
+	ctx := context.Background()
 
 	word := &entity.Word{
 		Text: "resilient",
@@ -98,8 +94,7 @@ func TestWordRepository_GetByWord(t *testing.T) {
 			"Children are generally more resilient than adults.",
 			"The company proved resilient during the economic crisis.",
 		},
-		Tags:   []string{"adjective", "personality", "advanced"},
-		UserID: 1,
+		Tags: []string{"adjective", "personality", "advanced"},
 	}
 
 	// 创建单词
@@ -117,7 +112,6 @@ func TestWordRepository_GetByWord(t *testing.T) {
 	assert.Equal(t, word.Phonetic, saved.Phonetic)
 	assert.Equal(t, word.Examples, saved.Examples)
 	assert.Equal(t, word.Tags, saved.Tags)
-	assert.Equal(t, word.UserID, saved.UserID)
 
 	// 获取不存在的单词
 	_, err = repo.GetByWord(ctx, "nonexistent")

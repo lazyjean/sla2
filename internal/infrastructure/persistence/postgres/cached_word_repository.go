@@ -140,4 +140,70 @@ func (r *CachedWordRepository) ListByUserID(ctx context.Context, userID uint, of
 	return words, total, nil
 }
 
+// ListByIDs 通过ID列表获取单词
+func (r *CachedWordRepository) ListByIDs(ctx context.Context, ids []entity.WordID) ([]*entity.Word, error) {
+	// 1. 从缓存中获取
+	var words []*entity.Word
+	var missingIDs []entity.WordID
+	for _, id := range ids {
+		if wordStr, err := r.cache.Get(ctx, fmt.Sprintf("word:%d", id)); err == nil {
+			var word entity.Word
+			if err := json.Unmarshal([]byte(wordStr), &word); err == nil {
+				words = append(words, &word)
+			} else {
+				missingIDs = append(missingIDs, id)
+			}
+		} else {
+			missingIDs = append(missingIDs, id)
+		}
+	}
+
+	// 2. 如果所有单词都在缓存中，直接返回
+	if len(missingIDs) == 0 {
+		return words, nil
+	}
+
+	// 3. 从数据库中获取缺失的单词
+	dbWords, err := r.repo.ListByIDs(ctx, missingIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	// 4. 将数据库中的单词存入缓存
+	for _, word := range dbWords {
+		wordBytes, err := json.Marshal(word)
+		if err != nil {
+			return nil, err
+		}
+		if err := r.cache.Set(ctx, fmt.Sprintf("word:%d", word.ID), string(wordBytes), 24*time.Hour); err != nil {
+			return nil, err
+		}
+		words = append(words, word)
+	}
+
+	return words, nil
+}
+
+// ListNeedReview 获取需要复习的单词
+func (r *CachedWordRepository) ListNeedReview(ctx context.Context, before time.Time, limit int) ([]*entity.Word, error) {
+	// 1. 从数据库中获取需要复习的单词
+	words, err := r.repo.ListNeedReview(ctx, before, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	// 2. 将单词存入缓存
+	for _, word := range words {
+		wordBytes, err := json.Marshal(word)
+		if err != nil {
+			return nil, err
+		}
+		if err := r.cache.Set(ctx, fmt.Sprintf("word:%d", word.ID), string(wordBytes), 24*time.Hour); err != nil {
+			return nil, err
+		}
+	}
+
+	return words, nil
+}
+
 var _ repository.CachedWordRepository = (*CachedWordRepository)(nil)

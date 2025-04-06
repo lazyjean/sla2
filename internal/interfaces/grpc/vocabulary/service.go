@@ -6,7 +6,6 @@ import (
 	pb "github.com/lazyjean/sla2/api/proto/v1"
 	"github.com/lazyjean/sla2/internal/application/dto"
 	"github.com/lazyjean/sla2/internal/application/service"
-	"github.com/lazyjean/sla2/internal/domain/entity"
 	"github.com/lazyjean/sla2/internal/domain/valueobject"
 )
 
@@ -136,7 +135,7 @@ func (s *VocabularyService) BatchCreate(ctx context.Context, req *pb.VocabularyS
 		words = append(words, word)
 	}
 
-	ids, err := s.service.BatchCreateWords(ctx, entity.UID(0), words)
+	ids, err := s.service.BatchCreateWords(ctx, words)
 	if err != nil {
 		return nil, err
 	}

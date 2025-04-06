@@ -46,12 +46,23 @@ type BatchCreateWordRequest struct {
 }
 
 // ToEntity 将DTO转换为领域实体
-func (dto *WordCreateDTO) ToEntity(userID entity.UID) (*entity.Word, error) {
+func (dto *WordCreateDTO) ToEntity() (*entity.Word, error) {
+	// 转换释义
+	var definitions []entity.Definition
+	for _, def := range dto.Definitions {
+		definitions = append(definitions, entity.Definition{
+			PartOfSpeech: def.PartOfSpeech,
+			Meaning:      def.Meaning,
+			Example:      def.Example,
+			Synonyms:     def.Synonyms,
+			Antonyms:     def.Antonyms,
+		})
+	}
+
 	return entity.NewWord(
-		userID,
 		dto.Text,
 		dto.Phonetic,
-		dto.Definitions,
+		definitions,
 		dto.Examples,
 		dto.Tags,
 	)

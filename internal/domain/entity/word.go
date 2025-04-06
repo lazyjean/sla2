@@ -8,14 +8,12 @@ import (
 
 type WordID uint32
 
-// Word 生词实体
+// Word 单词实体
 type Word struct {
 	// ID 单词唯一标识
 	ID WordID `gorm:"primaryKey;autoIncrement"`
-	// UserID 用户ID
-	UserID UID `gorm:"not null;index;uniqueIndex:idx_user_text,priority:1"`
 	// Text 单词文本
-	Text string `gorm:"type:varchar(100);not null;index;uniqueIndex:idx_user_text,priority:2"`
+	Text string `gorm:"type:varchar(100);not null;uniqueIndex"`
 	// Phonetic 音标
 	Phonetic string `gorm:"type:varchar(100)"`
 	// Definitions 释义列表
@@ -26,12 +24,6 @@ type Word struct {
 	Tags []string `gorm:"type:jsonb;serializer:json;not null;default:'[]'"`
 	// Difficulty 难度等级（1-5）
 	Difficulty int `gorm:"type:int;not null;default:0"`
-	// MasteryLevel 掌握程度（0-5）
-	MasteryLevel int `gorm:"default:0"`
-	// NextReviewAt 下次复习时间
-	NextReviewAt *time.Time
-	// ReviewCount 复习次数
-	ReviewCount int `gorm:"default:0"`
 	// CreatedAt 创建时间
 	CreatedAt time.Time `gorm:"not null;default:CURRENT_TIMESTAMP"`
 	// UpdatedAt 更新时间
@@ -52,17 +44,13 @@ type Definition struct {
 	Antonyms []string `json:"antonyms"`
 }
 
-// NewWord 创建新生词
-func NewWord(userID UID, text, phonetic string, definitions []Definition, examples, tags []string) (*Word, error) {
-	if userID == 0 {
-		return nil, errors.ErrInvalidUserID
-	}
+// NewWord 创建新单词
+func NewWord(text, phonetic string, definitions []Definition, examples, tags []string) (*Word, error) {
 	if text == "" {
 		return nil, errors.ErrInvalidWord
 	}
 
 	return &Word{
-		UserID:      userID,
 		Text:        text,
 		Phonetic:    phonetic,
 		Definitions: definitions,
@@ -116,36 +104,18 @@ func (w *Word) RemoveTag(tagName string) {
 	}
 }
 
-// UpdateMastery 更新掌握度
-func (w *Word) UpdateMastery(level int) {
-	w.MasteryLevel = level
-	w.ReviewCount++
-
-	// 根据掌握度计算下次复习时间
-	var nextReview time.Time
-	switch level {
-	case 1:
-		nextReview = time.Now().Add(24 * time.Hour)
-	case 2:
-		nextReview = time.Now().Add(3 * 24 * time.Hour)
-	case 3:
-		nextReview = time.Now().Add(7 * 24 * time.Hour)
-	case 4:
-		nextReview = time.Now().Add(14 * 24 * time.Hour)
-	case 5:
-		nextReview = time.Now().Add(30 * 24 * time.Hour)
-	default:
-		nextReview = time.Now().Add(12 * time.Hour)
+// HasTag 检查是否包含指定标签
+func (w *Word) HasTag(tagName string) bool {
+	for _, tag := range w.Tags {
+		if tag == tagName {
+			return true
+		}
 	}
-	w.NextReviewAt = &nextReview
-	w.UpdatedAt = time.Now()
+	return false
 }
 
 // Validate 验证单词数据
 func (w *Word) Validate() error {
-	if w.UserID == 0 {
-		return errors.ErrInvalidUserID
-	}
 	if w.Text == "" {
 		return errors.ErrInvalidWord
 	}
@@ -157,8 +127,23 @@ func (w *Word) Validate() error {
 
 // IsNeedReview 检查是否需要复习
 func (w *Word) IsNeedReview() bool {
-	if w.NextReviewAt == nil {
-		return false
-	}
-	return w.NextReviewAt.Before(time.Now())
+	return time.Now().After(w.UpdatedAt)
+}
+
+// Update 更新单词信息
+func (w *Word) Update(
+	text string,
+	phonetic string,
+	definitions []Definition,
+	examples []string,
+	tags []string,
+	difficulty int,
+) {
+	w.Text = text
+	w.Phonetic = phonetic
+	w.Definitions = definitions
+	w.Examples = examples
+	w.Tags = tags
+	w.Difficulty = difficulty
+	w.UpdatedAt = time.Now()
 }

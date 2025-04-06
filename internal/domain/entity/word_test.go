@@ -2,150 +2,180 @@ package entity
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNewWord(t *testing.T) {
+	text := "hello"
+	phonetic := "həˈləʊ"
+	definitions := []Definition{
+		{
+			PartOfSpeech: "int.",
+			Meaning:      "你好",
+			Example:      "Hello, how are you?",
+		},
+	}
+	examples := []string{"Hello, how are you?"}
+	tags := []string{"greeting"}
+
+	word, err := NewWord(text, phonetic, definitions, examples, tags)
+	assert.NoError(t, err)
+	assert.NotNil(t, word)
+	assert.Equal(t, text, word.Text)
+	assert.Equal(t, phonetic, word.Phonetic)
+	assert.Equal(t, definitions, word.Definitions)
+	assert.Equal(t, examples, word.Examples)
+	assert.Equal(t, tags, word.Tags)
+	assert.Equal(t, 0, word.Difficulty)
+	assert.True(t, word.CreatedAt.After(time.Now().Add(-time.Second)))
+	assert.True(t, word.UpdatedAt.After(time.Now().Add(-time.Second)))
+}
+
+func TestWordValidation(t *testing.T) {
 	tests := []struct {
-		name        string
-		userID      uint
-		text        string
-		definitions []Definition
-		phonetic    string
-		examples    []string
-		tags        []string
-		wantErr     error
+		name    string
+		word    *Word
+		wantErr bool
 	}{
 		{
-			name:   "valid word with common English word",
-			userID: 1,
-			text:   "appreciate",
-			definitions: []Definition{
-				{
-					PartOfSpeech: "verb",
-					Meaning:      "欣赏；感激；领会",
-					Example:      "I really appreciate your help.",
-					Synonyms:     []string{"value", "cherish"},
+			name: "valid word",
+			word: &Word{
+				Text: "hello",
+				Definitions: []Definition{
+					{
+						PartOfSpeech: "int.",
+						Meaning:      "你好",
+					},
 				},
 			},
-			phonetic: "əˈpriːʃieɪt",
-			examples: []string{"I really appreciate your help.", "We should appreciate the beauty of nature."},
-			tags:     []string{"verb", "advanced"},
-			wantErr:  nil,
+			wantErr: false,
 		},
 		{
-			name:   "valid word with idiom",
-			userID: 1,
-			text:   "break the ice",
-			definitions: []Definition{
-				{
-					PartOfSpeech: "idiom",
-					Meaning:      "打破僵局；消除陌生感",
-					Example:      "The party games helped to break the ice between the guests.",
-					Synonyms:     []string{"start a conversation", "make friends"},
+			name: "empty text",
+			word: &Word{
+				Text: "",
+				Definitions: []Definition{
+					{
+						PartOfSpeech: "int.",
+						Meaning:      "你好",
+					},
 				},
 			},
-			phonetic: "", // 习语通常不需要音标
-			examples: []string{"The party games helped to break the ice between the guests."},
-			tags:     []string{"idiom", "social"},
-			wantErr:  nil,
+			wantErr: true,
 		},
 		{
-			name:   "valid word with multiple meanings",
-			userID: 1,
-			text:   "light",
-			definitions: []Definition{
-				{
-					PartOfSpeech: "noun",
-					Meaning:      "光",
-					Example:      "Please turn on the light.",
-					Synonyms:     []string{"illumination", "brightness"},
-				},
-				{
-					PartOfSpeech: "adjective",
-					Meaning:      "轻的；浅色的",
-					Example:      "This bag is very light.",
-					Synonyms:     []string{"weightless", "pale"},
-				},
-				{
-					PartOfSpeech: "verb",
-					Meaning:      "点燃",
-					Example:      "He lit a cigarette.",
-					Synonyms:     []string{"ignite", "kindle"},
-				},
+			name: "empty definitions",
+			word: &Word{
+				Text:        "hello",
+				Definitions: []Definition{},
 			},
-			phonetic: "laɪt",
-			examples: []string{
-				"Please turn on the light.",
-				"This bag is very light.",
-				"He lit a cigarette.",
-			},
-			tags:    []string{"noun", "adjective", "verb"},
-			wantErr: nil,
+			wantErr: true,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			word, err := NewWord(UID(tt.userID), tt.text, tt.phonetic, tt.definitions, tt.examples, tt.tags)
-			if tt.wantErr != nil {
-				assert.ErrorIs(t, err, tt.wantErr)
-				return
+			err := tt.word.Validate()
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
 			}
-			assert.NoError(t, err)
-			assert.Equal(t, UID(tt.userID), word.UserID)
-			assert.Equal(t, tt.text, word.Text)
-			assert.Equal(t, tt.definitions, word.Definitions)
-			assert.Equal(t, tt.phonetic, word.Phonetic)
-			assert.Equal(t, tt.examples, word.Examples)
-			assert.Equal(t, tt.tags, word.Tags)
 		})
 	}
 }
 
-func TestWord_AddExample(t *testing.T) {
+func TestAddExample(t *testing.T) {
 	word := &Word{
-		UserID: 1,
-		Text:   "test",
+		Text: "hello",
 		Definitions: []Definition{
 			{
-				PartOfSpeech: "noun",
-				Meaning:      "测试",
-				Example:      "This is a test.",
+				PartOfSpeech: "int.",
+				Meaning:      "你好",
 			},
 		},
-		Examples: []string{"This is a test."},
 	}
 
-	// 添加新的例句
-	word.AddExample("This is another test.")
-	assert.Equal(t, []string{"This is a test.", "This is another test."}, word.Examples)
+	// 添加新例句
+	err := word.AddExample("Hello, how are you?")
+	assert.NoError(t, err)
+	assert.Len(t, word.Examples, 1)
+	assert.Equal(t, "Hello, how are you?", word.Examples[0])
 
-	// 添加重复的例句
-	word.AddExample("This is a test.")
-	assert.Equal(t, []string{"This is a test.", "This is another test."}, word.Examples)
+	// 添加重复例句
+	err = word.AddExample("Hello, how are you?")
+	assert.NoError(t, err)
+	assert.Len(t, word.Examples, 1)
+
+	// 添加空例句
+	err = word.AddExample("")
+	assert.Error(t, err)
 }
 
-func TestWord_AddTag(t *testing.T) {
+func TestAddTag(t *testing.T) {
 	word := &Word{
-		UserID: 1,
-		Text:   "test",
+		Text: "hello",
 		Definitions: []Definition{
 			{
-				PartOfSpeech: "noun",
-				Meaning:      "测试",
-				Example:      "This is a test.",
+				PartOfSpeech: "int.",
+				Meaning:      "你好",
 			},
 		},
-		Tags: []string{"test"},
 	}
 
-	// 添加新的标签
-	word.AddTag("example")
-	assert.Equal(t, []string{"test", "example"}, word.Tags)
+	// 添加新标签
+	err := word.AddTag("greeting")
+	assert.NoError(t, err)
+	assert.Len(t, word.Tags, 1)
+	assert.Equal(t, "greeting", word.Tags[0])
 
-	// 添加重复的标签
-	word.AddTag("test")
-	assert.Equal(t, []string{"test", "example"}, word.Tags)
+	// 添加重复标签
+	err = word.AddTag("greeting")
+	assert.NoError(t, err)
+	assert.Len(t, word.Tags, 1)
+
+	// 添加空标签
+	err = word.AddTag("")
+	assert.Error(t, err)
+}
+
+func TestRemoveTag(t *testing.T) {
+	word := &Word{
+		Text: "hello",
+		Definitions: []Definition{
+			{
+				PartOfSpeech: "int.",
+				Meaning:      "你好",
+			},
+		},
+		Tags: []string{"greeting", "basic"},
+	}
+
+	// 移除存在的标签
+	word.RemoveTag("greeting")
+	assert.Len(t, word.Tags, 1)
+	assert.Equal(t, "basic", word.Tags[0])
+
+	// 移除不存在的标签
+	word.RemoveTag("nonexistent")
+	assert.Len(t, word.Tags, 1)
+}
+
+func TestHasTag(t *testing.T) {
+	word := &Word{
+		Text: "hello",
+		Definitions: []Definition{
+			{
+				PartOfSpeech: "int.",
+				Meaning:      "你好",
+			},
+		},
+		Tags: []string{"greeting", "basic"},
+	}
+
+	assert.True(t, word.HasTag("greeting"))
+	assert.True(t, word.HasTag("basic"))
+	assert.False(t, word.HasTag("nonexistent"))
 }

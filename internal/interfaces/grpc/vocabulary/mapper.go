@@ -11,7 +11,6 @@ import (
 // ToEntity 将 DTO 转换为实体
 func ToEntity(createDTO *dto.WordCreateDTO, userID entity.UID) (*entity.Word, error) {
 	return entity.NewWord(
-		userID,
 		createDTO.Text,
 		createDTO.Phonetic,
 		createDTO.Definitions,
@@ -90,7 +89,6 @@ func ToEntityFromProto(proto *pb.WordInfo, userID entity.UID) (*entity.Word, err
 	}
 
 	return entity.NewWord(
-		userID,
 		proto.Spelling,
 		proto.Pronunciation,
 		definitions,
