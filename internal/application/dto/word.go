@@ -2,34 +2,44 @@ package dto
 
 import (
 	"github.com/lazyjean/sla2/internal/domain/entity"
+	"github.com/lazyjean/sla2/internal/domain/valueobject"
 )
+
+// CreateWordRequest 创建单词的请求数据
+type CreateWordRequest struct {
+	Text        string
+	Phonetic    string
+	Definitions []entity.Definition
+	Examples    []string
+	Tags        []string
+	Level       valueobject.WordDifficultyLevel
+}
 
 // WordCreateDTO 创建单词的请求数据
 type WordCreateDTO struct {
-	Text        string              `json:"text" binding:"required" example:"hello"`
-	Definitions []entity.Definition `json:"definitions" binding:"required"`
-	Phonetic    string              `json:"phonetic" example:"həˈləʊ"`
-	Examples    []string            `json:"examples" example:"Hello, world!"`
-	Tags        []string            `json:"tags" example:"common,greeting"`
+	Text        string
+	Definitions []entity.Definition
+	Phonetic    string
+	Examples    []string
+	Tags        []string
+	Level       valueobject.WordDifficultyLevel
 }
 
 // WordResponseDTO 单词响应的数据传输对象
 type WordResponseDTO struct {
-	ID          uint32              `json:"id" example:"1"`
-	Text        string              `json:"text" example:"hello"`
-	Definitions []entity.Definition `json:"definitions"`
-	Phonetic    string              `json:"phonetic" example:"həˈləʊ"`
-	Examples    []string            `json:"examples" example:"Hello, world!"`
-	Tags        []string            `json:"tags" example:"common,greeting"`
-	CreatedAt   string              `json:"created_at" example:"2025-01-26 18:00:00"`
-	UpdatedAt   string              `json:"updated_at" example:"2025-01-26 18:00:00"`
+	ID          uint32
+	Text        string
+	Definitions []entity.Definition
+	Phonetic    string
+	Examples    []string
+	Tags        []string
+	CreatedAt   string
+	UpdatedAt   string
 }
 
 // BatchCreateWordRequest 批量创建单词请求
 type BatchCreateWordRequest struct {
-	// Word 单词文本
-	Word string
-	// Definitions 单词释义列表
+	Word        string
 	Definitions []struct {
 		PartOfSpeech string
 		Meaning      string
@@ -37,16 +47,13 @@ type BatchCreateWordRequest struct {
 		Synonyms     []string
 		Antonyms     []string
 	}
-	// Level 难度等级
-	Level string
-	// Tags 标签列表
-	Tags []string
-	// Examples 例句列表
+	Level    valueobject.WordDifficultyLevel
+	Tags     []string
 	Examples []string
 }
 
 // ToEntity 将DTO转换为领域实体
-func (dto *WordCreateDTO) ToEntity() (*entity.Word, error) {
+func (dto *WordCreateDTO) ToEntity() *entity.Word {
 	// 转换释义
 	var definitions []entity.Definition
 	for _, def := range dto.Definitions {
@@ -65,6 +72,7 @@ func (dto *WordCreateDTO) ToEntity() (*entity.Word, error) {
 		definitions,
 		dto.Examples,
 		dto.Tags,
+		dto.Level,
 	)
 }
 

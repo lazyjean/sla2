@@ -232,7 +232,7 @@ func (m *Word) validate(all bool) error {
 
 	// no validation rules for AudioUrl
 
-	// no validation rules for Difficulty
+	// no validation rules for Level
 
 	for idx, item := range m.GetDefinitions() {
 		_, _ = idx, item
@@ -714,7 +714,7 @@ func (m *VocabularyServiceListRequest) validate(all bool) error {
 
 	// no validation rules for PageSize
 
-	// no validation rules for Difficulty
+	// no validation rules for Level
 
 	if len(errors) > 0 {
 		return VocabularyServiceListRequestMultiError(errors)

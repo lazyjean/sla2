@@ -2,8 +2,8 @@ package entity
 
 import (
 	"testing"
-	"time"
 
+	"github.com/lazyjean/sla2/internal/domain/valueobject"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -19,18 +19,16 @@ func TestNewWord(t *testing.T) {
 	}
 	examples := []string{"Hello, how are you?"}
 	tags := []string{"greeting"}
+	level := valueobject.WORD_DIFFICULTY_LEVEL_A1
 
-	word, err := NewWord(text, phonetic, definitions, examples, tags)
-	assert.NoError(t, err)
+	word := NewWord(text, phonetic, definitions, examples, tags, level)
 	assert.NotNil(t, word)
 	assert.Equal(t, text, word.Text)
 	assert.Equal(t, phonetic, word.Phonetic)
 	assert.Equal(t, definitions, word.Definitions)
 	assert.Equal(t, examples, word.Examples)
 	assert.Equal(t, tags, word.Tags)
-	assert.Equal(t, 0, word.Difficulty)
-	assert.True(t, word.CreatedAt.After(time.Now().Add(-time.Second)))
-	assert.True(t, word.UpdatedAt.After(time.Now().Add(-time.Second)))
+	assert.Equal(t, level, word.Level)
 }
 
 func TestWordValidation(t *testing.T) {
@@ -49,6 +47,7 @@ func TestWordValidation(t *testing.T) {
 						Meaning:      "你好",
 					},
 				},
+				Level: valueobject.WORD_DIFFICULTY_LEVEL_A1,
 			},
 			wantErr: false,
 		},
@@ -62,6 +61,7 @@ func TestWordValidation(t *testing.T) {
 						Meaning:      "你好",
 					},
 				},
+				Level: valueobject.WORD_DIFFICULTY_LEVEL_A1,
 			},
 			wantErr: true,
 		},
@@ -70,6 +70,21 @@ func TestWordValidation(t *testing.T) {
 			word: &Word{
 				Text:        "hello",
 				Definitions: []Definition{},
+				Level:       valueobject.WORD_DIFFICULTY_LEVEL_A1,
+			},
+			wantErr: true,
+		},
+		{
+			name: "invalid level",
+			word: &Word{
+				Text: "hello",
+				Definitions: []Definition{
+					{
+						PartOfSpeech: "int.",
+						Meaning:      "你好",
+					},
+				},
+				Level: valueobject.WordDifficultyLevel(999),
 			},
 			wantErr: true,
 		},

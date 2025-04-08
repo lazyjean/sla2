@@ -11,7 +11,7 @@ import (
 )
 
 func TestLearningRepository_CourseProgress(t *testing.T) {
-	db, cleanup := setupTestDB(t)
+	db, cleanup := SetupTestDB(t)
 	defer cleanup()
 	repo := NewLearningRepository(db)
 	ctx := context.Background()
@@ -43,7 +43,7 @@ func TestLearningRepository_CourseProgress(t *testing.T) {
 }
 
 func TestLearningRepository_SectionProgress(t *testing.T) {
-	db, cleanup := setupTestDB(t)
+	db, cleanup := SetupTestDB(t)
 	defer cleanup()
 	repo := NewLearningRepository(db)
 	ctx := context.Background()
@@ -74,38 +74,48 @@ func TestLearningRepository_SectionProgress(t *testing.T) {
 }
 
 func TestLearningRepository_UnitProgress(t *testing.T) {
-	db, cleanup := setupTestDB(t)
+	db, cleanup := SetupTestDB(t)
 	defer cleanup()
 	repo := NewLearningRepository(db)
 	ctx := context.Background()
 
 	// 创建测试数据
 	progress := &entity.CourseSectionUnitProgress{
-		UserID:   1,
-		UnitID:   300,
-		Status:   "in_progress",
-		Progress: 75.0,
+		UserID:        1,
+		SectionID:     100,
+		UnitID:        300,
+		Status:        "in_progress",
+		CompleteCount: 0,
 	}
 
 	// 测试保存
-	err := repo.SaveUnitProgress(ctx, progress)
+	err := repo.UpsertUnitProgress(ctx, progress)
 	require.NoError(t, err)
 	assert.NotZero(t, progress.ID)
-
-	// 测试查询
-	found, err := repo.GetUnitProgress(ctx, progress.UserID, progress.UnitID)
-	require.NoError(t, err)
-	assert.Equal(t, progress.Status, found.Status)
-	assert.Equal(t, progress.Progress, found.Progress)
 
 	// 测试列表
 	list, err := repo.ListUnitProgress(ctx, progress.UserID, progress.SectionID)
 	require.NoError(t, err)
 	assert.Len(t, list, 1)
+	assert.Equal(t, progress.Status, list[0].Status)
+	assert.Equal(t, progress.CompleteCount, list[0].CompleteCount)
+
+	// 测试更新
+	progress.Status = "completed"
+	progress.CompleteCount = 1
+	err = repo.UpsertUnitProgress(ctx, progress)
+	require.NoError(t, err)
+
+	// 验证更新
+	list, err = repo.ListUnitProgress(ctx, progress.UserID, progress.SectionID)
+	require.NoError(t, err)
+	assert.Len(t, list, 1)
+	assert.Equal(t, "completed", list[0].Status)
+	assert.Equal(t, uint(1), list[0].CompleteCount)
 }
 
 func TestLearningRepository_SaveCourseProgress(t *testing.T) {
-	db, cleanup := setupTestDB(t)
+	db, cleanup := SetupTestDB(t)
 	defer cleanup()
 	repo := NewLearningRepository(db)
 	ctx := context.Background()
@@ -149,8 +159,34 @@ func TestLearningRepository_SaveCourseProgress(t *testing.T) {
 	assert.Len(t, list, 1)
 }
 
-func TestSaveSectionProgress(t *testing.T) {
-	db, cleanup := setupTestDB(t)
+func TestLearningRepository_GetCourseProgress(t *testing.T) {
+	db, cleanup := SetupTestDB(t)
+	defer cleanup()
+	repo := NewLearningRepository(db)
+	ctx := context.Background()
+
+	// 创建测试数据
+	progress := &entity.CourseLearningProgress{
+		UserID:   entity.UID(1),
+		CourseID: 100,
+		Status:   "in_progress",
+		Score:    80,
+	}
+
+	// 测试保存
+	err := repo.SaveCourseProgress(ctx, progress)
+	require.NoError(t, err)
+	assert.NotZero(t, progress.ID)
+
+	// 测试查询
+	found, err := repo.GetCourseProgress(ctx, uint(progress.UserID), progress.CourseID)
+	require.NoError(t, err)
+	assert.Equal(t, progress.Status, found.Status)
+	assert.Equal(t, progress.Score, found.Score)
+}
+
+func TestLearningRepository_SaveSectionProgress(t *testing.T) {
+	db, cleanup := SetupTestDB(t)
 	defer cleanup()
 	repo := NewLearningRepository(db)
 	ctx := context.Background()
@@ -167,8 +203,8 @@ func TestSaveSectionProgress(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestGetSectionProgress(t *testing.T) {
-	db, cleanup := setupTestDB(t)
+func TestLearningRepository_GetSectionProgress(t *testing.T) {
+	db, cleanup := SetupTestDB(t)
 	defer cleanup()
 	repo := NewLearningRepository(db)
 	ctx := context.Background()
@@ -191,8 +227,34 @@ func TestGetSectionProgress(t *testing.T) {
 	assert.Equal(t, progress.Progress, found.Progress)
 }
 
-func TestListSectionProgress(t *testing.T) {
-	db, cleanup := setupTestDB(t)
+func TestLearningRepository_ListCourseProgress(t *testing.T) {
+	db, cleanup := SetupTestDB(t)
+	defer cleanup()
+	repo := NewLearningRepository(db)
+	ctx := context.Background()
+
+	// 创建测试数据
+	progress := &entity.CourseLearningProgress{
+		UserID:   entity.UID(1),
+		CourseID: 100,
+		Status:   "in_progress",
+		Score:    80,
+	}
+
+	// 测试保存
+	err := repo.SaveCourseProgress(ctx, progress)
+	require.NoError(t, err)
+	assert.NotZero(t, progress.ID)
+
+	// 测试列表
+	list, total, err := repo.ListCourseProgress(ctx, uint(progress.UserID), 0, 10)
+	require.NoError(t, err)
+	assert.Equal(t, int64(1), total)
+	assert.Len(t, list, 1)
+}
+
+func TestLearningRepository_ListSectionProgress(t *testing.T) {
+	db, cleanup := SetupTestDB(t)
 	defer cleanup()
 	repo := NewLearningRepository(db)
 	ctx := context.Background()
@@ -210,37 +272,6 @@ func TestListSectionProgress(t *testing.T) {
 
 	// 测试列表
 	list, err := repo.ListSectionProgress(ctx, progress.UserID, progress.CourseID)
-	require.NoError(t, err)
-	assert.Len(t, list, 1)
-}
-
-func TestLearningRepository_SaveUnitProgress(t *testing.T) {
-	db, cleanup := setupTestDB(t)
-	defer cleanup()
-	repo := NewLearningRepository(db)
-	ctx := context.Background()
-
-	// 创建测试数据
-	progress := &entity.CourseSectionUnitProgress{
-		UserID:   1,
-		UnitID:   300,
-		Status:   "in_progress",
-		Progress: 75.0,
-	}
-
-	// 测试保存
-	err := repo.SaveUnitProgress(ctx, progress)
-	require.NoError(t, err)
-	assert.NotZero(t, progress.ID)
-
-	// 测试查询
-	found, err := repo.GetUnitProgress(ctx, progress.UserID, progress.UnitID)
-	require.NoError(t, err)
-	assert.Equal(t, progress.Status, found.Status)
-	assert.Equal(t, progress.Progress, found.Progress)
-
-	// 测试列表
-	list, err := repo.ListUnitProgress(ctx, progress.UserID, progress.SectionID)
 	require.NoError(t, err)
 	assert.Len(t, list, 1)
 }

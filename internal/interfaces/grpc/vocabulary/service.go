@@ -7,6 +7,8 @@ import (
 	"github.com/lazyjean/sla2/internal/application/dto"
 	"github.com/lazyjean/sla2/internal/application/service"
 	"github.com/lazyjean/sla2/internal/domain/valueobject"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // VocabularyService 词汇服务实现
@@ -40,7 +42,7 @@ func (s *VocabularyService) List(ctx context.Context, req *pb.VocabularyServiceL
 		ctx,
 		int(req.Page),
 		int(req.PageSize),
-		ConvertLevelToString(req.Difficulty),
+		ConvertLevelToValueObject(req.Level),
 		req.Tags,
 		req.Categories,
 	)
@@ -74,10 +76,13 @@ func (s *VocabularyService) GetAllMetadata(ctx context.Context, req *pb.Vocabula
 
 // ListHanChar 获取汉字列表
 func (s *VocabularyService) ListHanChar(ctx context.Context, req *pb.VocabularyServiceListHanCharRequest) (*pb.VocabularyServiceListHanCharResponse, error) {
+	// 将 protobuf 枚举值转换为内部枚举值
+	level := ConvertLevelToValueObject(req.Level)
+
 	request := dto.ListHanCharsDTO{
 		Page:       int(req.Page),
 		PageSize:   int(req.PageSize),
-		Level:      valueobject.WordDifficultyLevel(req.Level),
+		Level:      level,
 		Tags:       req.Tags,
 		Categories: req.Categories,
 	}
@@ -111,7 +116,7 @@ func (s *VocabularyService) BatchCreate(ctx context.Context, req *pb.VocabularyS
 	for _, wordPb := range req.Words {
 		word := dto.BatchCreateWordRequest{
 			Word:     wordPb.Word,
-			Level:    ConvertLevelToString(wordPb.Difficulty),
+			Level:    ConvertLevelToValueObject(wordPb.Level),
 			Tags:     wordPb.Tags,
 			Examples: wordPb.Examples,
 		}
@@ -135,20 +140,12 @@ func (s *VocabularyService) BatchCreate(ctx context.Context, req *pb.VocabularyS
 		words = append(words, word)
 	}
 
-	ids, err := s.service.BatchCreateWords(ctx, words)
+	err := s.service.BatchCreateWords(ctx, words)
 	if err != nil {
-		return nil, err
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	// 转换 []uint 为 []uint32
-	uint32Ids := make([]uint32, len(ids))
-	for i, id := range ids {
-		uint32Ids[i] = uint32(id)
-	}
-
-	return &pb.VocabularyServiceBatchCreateResponse{
-		Ids: uint32Ids,
-	}, nil
+	return &pb.VocabularyServiceBatchCreateResponse{}, nil
 }
 
 // BatchCreateHanChar 批量创建汉字
@@ -156,7 +153,7 @@ func (s *VocabularyService) BatchCreateHanChar(ctx context.Context, req *pb.Voca
 	var hanChars []struct {
 		Character  string
 		Pinyin     string
-		Level      string
+		Level      valueobject.WordDifficultyLevel
 		Tags       []string
 		Categories []string
 		Examples   []string
@@ -166,14 +163,14 @@ func (s *VocabularyService) BatchCreateHanChar(ctx context.Context, req *pb.Voca
 		hanChars = append(hanChars, struct {
 			Character  string
 			Pinyin     string
-			Level      string
+			Level      valueobject.WordDifficultyLevel
 			Tags       []string
 			Categories []string
 			Examples   []string
 		}{
 			Character:  hanCharPb.Character,
 			Pinyin:     hanCharPb.Pinyin,
-			Level:      ConvertLevelToString(hanCharPb.Level),
+			Level:      ConvertLevelToValueObject(hanCharPb.Level),
 			Tags:       hanCharPb.Tags,
 			Categories: hanCharPb.Categories,
 			Examples:   hanCharPb.Examples,

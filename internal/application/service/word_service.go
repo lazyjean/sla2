@@ -22,10 +22,7 @@ func NewWordService(wordRepo repository.WordRepository) *WordService {
 
 // CreateWord 创建生词
 func (s *WordService) CreateWord(ctx context.Context, createDTO *dto.WordCreateDTO, userID entity.UID) (*entity.Word, error) {
-	word, err := createDTO.ToEntity()
-	if err != nil {
-		return nil, err
-	}
+	word := createDTO.ToEntity()
 
 	if err := s.wordRepo.Create(ctx, word); err != nil {
 		return nil, err

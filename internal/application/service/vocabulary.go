@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/lazyjean/sla2/internal/application/dto"
 	"github.com/lazyjean/sla2/internal/domain/entity"
@@ -130,11 +131,11 @@ func (s *VocabularyService) GetWord(ctx context.Context, id uint) (*entity.Word,
 }
 
 // ListWords 获取单词列表
-func (s *VocabularyService) ListWords(ctx context.Context, page, pageSize int, level string, tags, categories []string) ([]*entity.Word, int64, error) {
+func (s *VocabularyService) ListWords(ctx context.Context, page, pageSize int, level valueobject.WordDifficultyLevel, tags, categories []string) ([]*entity.Word, int64, error) {
 	offset := (page - 1) * pageSize
 
 	filters := make(map[string]interface{})
-	if level != "" {
+	if level != valueobject.WORD_DIFFICULTY_LEVEL_UNSPECIFIED {
 		filters["level"] = level
 	}
 	if len(tags) > 0 {
@@ -163,73 +164,82 @@ func (s *VocabularyService) GetAllMetadata(ctx context.Context) ([]string, []str
 }
 
 // CreateWord 创建单词
-func (s *VocabularyService) CreateWord(ctx context.Context, text, phonetic string, definitions []entity.Definition, examples, tags []string) (*entity.Word, error) {
+func (s *VocabularyService) CreateWord(ctx context.Context, req dto.CreateWordRequest) (*entity.Word, error) {
 	// 检查单词是否已存在
-	existing, err := s.wordRepository.GetByWord(ctx, text)
-	if err != nil {
-		return nil, err
+	existingWord, err := s.wordRepository.GetByWord(ctx, req.Text)
+	if err != nil && !errors.Is(err, errors.ErrWordNotFound) {
+		return nil, fmt.Errorf("failed to check word existence: %w", err)
 	}
-	if existing != nil {
+	if existingWord != nil {
 		return nil, errors.ErrWordAlreadyExists
 	}
 
-	// 创建新的单词实体
-	word, err := entity.NewWord(text, phonetic, definitions, examples, tags)
-	if err != nil {
-		return nil, err
-	}
+	// 创建新单词
+	word := entity.NewWord(
+		req.Text,
+		req.Phonetic,
+		req.Definitions,
+		req.Examples,
+		req.Tags,
+		req.Level,
+	)
 
-	// 保存到数据库
+	// 保存单词
 	if err := s.wordRepository.Create(ctx, word); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create word: %w", err)
 	}
 
 	return word, nil
 }
 
 // BatchCreateWords 批量创建单词
-func (s *VocabularyService) BatchCreateWords(ctx context.Context, words []dto.BatchCreateWordRequest) ([]uint, error) {
-	var ids []uint
+func (s *VocabularyService) BatchCreateWords(ctx context.Context, words []dto.BatchCreateWordRequest) error {
 	for _, word := range words {
+		// 解析难度等级
+		level := word.Level
+
+		// 创建单词请求
+		req := dto.CreateWordRequest{
+			Text:        word.Word,
+			Definitions: make([]entity.Definition, len(word.Definitions)),
+			Examples:    word.Examples,
+			Tags:        word.Tags,
+			Level:       level,
+		}
+
 		// 转换释义
-		var definitions []entity.Definition
-		for _, def := range word.Definitions {
-			definitions = append(definitions, entity.Definition{
+		for i, def := range word.Definitions {
+			req.Definitions[i] = entity.Definition{
 				PartOfSpeech: def.PartOfSpeech,
 				Meaning:      def.Meaning,
 				Example:      def.Example,
 				Synonyms:     def.Synonyms,
 				Antonyms:     def.Antonyms,
-			})
+			}
 		}
 
-		newWord, err := s.CreateWord(ctx, word.Word, "", definitions, word.Examples, word.Tags)
-		if err != nil {
-			return nil, err
+		// 创建单词
+		if _, err := s.CreateWord(ctx, req); err != nil {
+			return fmt.Errorf("failed to create word %s: %w", word.Word, err)
 		}
-		ids = append(ids, uint(newWord.ID))
 	}
-	return ids, nil
+
+	return nil
 }
 
 // BatchCreateHanChars 批量创建汉字
 func (s *VocabularyService) BatchCreateHanChars(ctx context.Context, hanChars []struct {
 	Character  string
 	Pinyin     string
-	Level      string
+	Level      valueobject.WordDifficultyLevel
 	Tags       []string
 	Categories []string
 	Examples   []string
 }) ([]uint, error) {
 	var ids []uint
 	for _, hanChar := range hanChars {
-		level, err := valueobject.ParseWordDifficultyLevel(hanChar.Level)
-		if err != nil {
-			return nil, err
-		}
-
 		// 创建新的汉字实体
-		newHanChar := entity.NewHanChar(hanChar.Character, hanChar.Pinyin, level)
+		newHanChar := entity.NewHanChar(hanChar.Character, hanChar.Pinyin, hanChar.Level)
 		newHanChar.Tags = hanChar.Tags
 		newHanChar.Categories = hanChar.Categories
 		newHanChar.Examples = hanChar.Examples

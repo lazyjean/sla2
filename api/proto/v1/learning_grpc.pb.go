@@ -21,7 +21,6 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	LearningService_GetCourseProgress_FullMethodName     = "/proto.v1.LearningService/GetCourseProgress"
 	LearningService_GetSectionProgress_FullMethodName    = "/proto.v1.LearningService/GetSectionProgress"
-	LearningService_GetUnitProgress_FullMethodName       = "/proto.v1.LearningService/GetUnitProgress"
 	LearningService_UpdateUnitProgress_FullMethodName    = "/proto.v1.LearningService/UpdateUnitProgress"
 	LearningService_GetMemoryStatus_FullMethodName       = "/proto.v1.LearningService/GetMemoryStatus"
 	LearningService_UpdateMemoryStatus_FullMethodName    = "/proto.v1.LearningService/UpdateMemoryStatus"
@@ -40,8 +39,6 @@ type LearningServiceClient interface {
 	GetCourseProgress(ctx context.Context, in *LearningServiceGetCourseProgressRequest, opts ...grpc.CallOption) (*LearningServiceGetCourseProgressResponse, error)
 	// GetSectionProgress 获取章节学习进度
 	GetSectionProgress(ctx context.Context, in *LearningServiceGetSectionProgressRequest, opts ...grpc.CallOption) (*LearningServiceGetSectionProgressResponse, error)
-	// GetUnitProgress 获取单元学习进度
-	GetUnitProgress(ctx context.Context, in *LearningServiceGetUnitProgressRequest, opts ...grpc.CallOption) (*LearningServiceGetUnitProgressResponse, error)
 	// UpdateUnitProgress 更新单元学习进度
 	UpdateUnitProgress(ctx context.Context, in *LearningServiceUpdateUnitProgressRequest, opts ...grpc.CallOption) (*LearningServiceUpdateUnitProgressResponse, error)
 	// 获取记忆单元状态
@@ -78,16 +75,6 @@ func (c *learningServiceClient) GetSectionProgress(ctx context.Context, in *Lear
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(LearningServiceGetSectionProgressResponse)
 	err := c.cc.Invoke(ctx, LearningService_GetSectionProgress_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *learningServiceClient) GetUnitProgress(ctx context.Context, in *LearningServiceGetUnitProgressRequest, opts ...grpc.CallOption) (*LearningServiceGetUnitProgressResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(LearningServiceGetUnitProgressResponse)
-	err := c.cc.Invoke(ctx, LearningService_GetUnitProgress_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -164,8 +151,6 @@ type LearningServiceServer interface {
 	GetCourseProgress(context.Context, *LearningServiceGetCourseProgressRequest) (*LearningServiceGetCourseProgressResponse, error)
 	// GetSectionProgress 获取章节学习进度
 	GetSectionProgress(context.Context, *LearningServiceGetSectionProgressRequest) (*LearningServiceGetSectionProgressResponse, error)
-	// GetUnitProgress 获取单元学习进度
-	GetUnitProgress(context.Context, *LearningServiceGetUnitProgressRequest) (*LearningServiceGetUnitProgressResponse, error)
 	// UpdateUnitProgress 更新单元学习进度
 	UpdateUnitProgress(context.Context, *LearningServiceUpdateUnitProgressRequest) (*LearningServiceUpdateUnitProgressResponse, error)
 	// 获取记忆单元状态
@@ -193,9 +178,6 @@ func (UnimplementedLearningServiceServer) GetCourseProgress(context.Context, *Le
 }
 func (UnimplementedLearningServiceServer) GetSectionProgress(context.Context, *LearningServiceGetSectionProgressRequest) (*LearningServiceGetSectionProgressResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSectionProgress not implemented")
-}
-func (UnimplementedLearningServiceServer) GetUnitProgress(context.Context, *LearningServiceGetUnitProgressRequest) (*LearningServiceGetUnitProgressResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetUnitProgress not implemented")
 }
 func (UnimplementedLearningServiceServer) UpdateUnitProgress(context.Context, *LearningServiceUpdateUnitProgressRequest) (*LearningServiceUpdateUnitProgressResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUnitProgress not implemented")
@@ -268,24 +250,6 @@ func _LearningService_GetSectionProgress_Handler(srv interface{}, ctx context.Co
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(LearningServiceServer).GetSectionProgress(ctx, req.(*LearningServiceGetSectionProgressRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _LearningService_GetUnitProgress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LearningServiceGetUnitProgressRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(LearningServiceServer).GetUnitProgress(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: LearningService_GetUnitProgress_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LearningServiceServer).GetUnitProgress(ctx, req.(*LearningServiceGetUnitProgressRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -412,10 +376,6 @@ var LearningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetSectionProgress",
 			Handler:    _LearningService_GetSectionProgress_Handler,
-		},
-		{
-			MethodName: "GetUnitProgress",
-			Handler:    _LearningService_GetUnitProgress_Handler,
 		},
 		{
 			MethodName: "UpdateUnitProgress",

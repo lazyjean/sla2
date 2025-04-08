@@ -47,7 +47,9 @@ func InitializeApp() (*Application, error) {
 	courseSectionRepository := postgres.NewCourseSectionRepository(db)
 	courseService := service.NewCourseService(courseRepository, courseSectionRepository)
 	learningRepository := postgres.NewLearningRepository(db)
-	learningService := service.NewLearningService(learningRepository)
+	memoryUnitRepository := postgres.NewMemoryUnitRepository(db)
+	memoryService := service.NewMemoryService(wordRepository, memoryUnitRepository)
+	learningService := service.NewLearningService(learningRepository, memoryService)
 	adminRepository := postgres.NewAdminRepository(db)
 	rbacConfig := &configConfig.RBAC
 	rbacProvider, err := security2.NewRBACProvider(db, rbacConfig)
@@ -57,7 +59,7 @@ func InitializeApp() (*Application, error) {
 	permissionHelper := rbacProvider.PermissionHelper
 	adminService := provideAdminService(adminRepository, passwordService, tokenService, permissionHelper)
 	webSocketHandler := handler.NewWebSocketHandler()
-	grpcServer := grpc.NewGRPCServer(userService, questionService, vocabularyService, courseService, learningService, adminService, webSocketHandler, tokenService)
+	grpcServer := grpc.NewGRPCServer(userService, questionService, vocabularyService, courseService, learningService, memoryService, adminService, webSocketHandler, tokenService)
 	application := NewApplication(configConfig, grpcServer)
 	return application, nil
 }
@@ -80,10 +82,10 @@ var dbSet = wire.NewSet(postgres.NewDB)
 var cacheSet = wire.NewSet(redis.NewRedisCache)
 
 // 仓储集
-var repositorySet = wire.NewSet(postgres.NewWordRepository, postgres.NewCachedWordRepository, postgres.NewLearningRepository, postgres.NewUserRepository, postgres.NewCourseRepository, postgres.NewCourseSectionRepository, postgres.NewAdminRepository, postgres.NewQuestionTagRepository, postgres.NewQuestionRepository, postgres.NewHanCharRepository)
+var repositorySet = wire.NewSet(postgres.NewWordRepository, postgres.NewCachedWordRepository, postgres.NewLearningRepository, postgres.NewUserRepository, postgres.NewCourseRepository, postgres.NewCourseSectionRepository, postgres.NewAdminRepository, postgres.NewQuestionTagRepository, postgres.NewQuestionRepository, postgres.NewHanCharRepository, postgres.NewMemoryUnitRepository)
 
 // 服务集
-var serviceSet = wire.NewSet(service.NewVocabularyService, service.NewLearningService, service.NewUserService, service.NewCourseService, provideAdminService, service.NewQuestionService, service.NewQuestionTagService)
+var serviceSet = wire.NewSet(service.NewVocabularyService, service.NewLearningService, service.NewUserService, service.NewCourseService, provideAdminService, service.NewQuestionService, service.NewQuestionTagService, service.NewMemoryService)
 
 // provideAdminService 提供管理员服务
 func provideAdminService(

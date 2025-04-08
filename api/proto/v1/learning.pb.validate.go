@@ -59,13 +59,139 @@ func (m *MemoryUnit) validate(all bool) error {
 
 	// no validation rules for Id
 
+	// no validation rules for UserId
+
 	// no validation rules for Type
 
 	// no validation rules for ContentId
 
-	// no validation rules for Content
+	if all {
+		switch v := interface{}(m.GetCreatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, MemoryUnitValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, MemoryUnitValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return MemoryUnitValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
-	// no validation rules for Difficulty
+	if all {
+		switch v := interface{}(m.GetUpdatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, MemoryUnitValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, MemoryUnitValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return MemoryUnitValidationError{
+				field:  "UpdatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for MasteryLevel
+
+	// no validation rules for ReviewCount
+
+	if all {
+		switch v := interface{}(m.GetNextReviewAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, MemoryUnitValidationError{
+					field:  "NextReviewAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, MemoryUnitValidationError{
+					field:  "NextReviewAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetNextReviewAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return MemoryUnitValidationError{
+				field:  "NextReviewAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetLastReviewAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, MemoryUnitValidationError{
+					field:  "LastReviewAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, MemoryUnitValidationError{
+					field:  "LastReviewAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetLastReviewAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return MemoryUnitValidationError{
+				field:  "LastReviewAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for StudyDuration
+
+	// no validation rules for RetentionRate
+
+	// no validation rules for ConsecutiveCorrect
+
+	// no validation rules for ConsecutiveWrong
 
 	if len(errors) > 0 {
 		return MemoryUnitMultiError(errors)
@@ -143,179 +269,6 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = MemoryUnitValidationError{}
-
-// Validate checks the field values on MemoryStatus with the rules defined in
-// the proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *MemoryStatus) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on MemoryStatus with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in MemoryStatusMultiError, or
-// nil if none found.
-func (m *MemoryStatus) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *MemoryStatus) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for MemoryUnitId
-
-	// no validation rules for UserId
-
-	// no validation rules for MasteryLevel
-
-	// no validation rules for ReviewCount
-
-	if all {
-		switch v := interface{}(m.GetNextReviewAt()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, MemoryStatusValidationError{
-					field:  "NextReviewAt",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, MemoryStatusValidationError{
-					field:  "NextReviewAt",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetNextReviewAt()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return MemoryStatusValidationError{
-				field:  "NextReviewAt",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if all {
-		switch v := interface{}(m.GetLastReviewAt()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, MemoryStatusValidationError{
-					field:  "LastReviewAt",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, MemoryStatusValidationError{
-					field:  "LastReviewAt",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetLastReviewAt()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return MemoryStatusValidationError{
-				field:  "LastReviewAt",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	// no validation rules for StudyDuration
-
-	// no validation rules for RetentionRate
-
-	// no validation rules for ConsecutiveCorrect
-
-	// no validation rules for ConsecutiveWrong
-
-	if len(errors) > 0 {
-		return MemoryStatusMultiError(errors)
-	}
-
-	return nil
-}
-
-// MemoryStatusMultiError is an error wrapping multiple validation errors
-// returned by MemoryStatus.ValidateAll() if the designated constraints aren't met.
-type MemoryStatusMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m MemoryStatusMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m MemoryStatusMultiError) AllErrors() []error { return m }
-
-// MemoryStatusValidationError is the validation error returned by
-// MemoryStatus.Validate if the designated constraints aren't met.
-type MemoryStatusValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e MemoryStatusValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e MemoryStatusValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e MemoryStatusValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e MemoryStatusValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e MemoryStatusValidationError) ErrorName() string { return "MemoryStatusValidationError" }
-
-// Error satisfies the builtin error interface
-func (e MemoryStatusValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sMemoryStatus.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = MemoryStatusValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = MemoryStatusValidationError{}
 
 // Validate checks the field values on ReviewInterval with the rules defined in
 // the proto definition for this message. If any rules are violated, the first
@@ -528,141 +481,6 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = LearningProgressValidationError{}
-
-// Validate checks the field values on LearningUnitStatus with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *LearningUnitStatus) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on LearningUnitStatus with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// LearningUnitStatusMultiError, or nil if none found.
-func (m *LearningUnitStatus) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *LearningUnitStatus) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for Completed
-
-	if all {
-		switch v := interface{}(m.GetLastAccessTime()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, LearningUnitStatusValidationError{
-					field:  "LastAccessTime",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, LearningUnitStatusValidationError{
-					field:  "LastAccessTime",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetLastAccessTime()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return LearningUnitStatusValidationError{
-				field:  "LastAccessTime",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	// no validation rules for StudyDuration
-
-	if len(errors) > 0 {
-		return LearningUnitStatusMultiError(errors)
-	}
-
-	return nil
-}
-
-// LearningUnitStatusMultiError is an error wrapping multiple validation errors
-// returned by LearningUnitStatus.ValidateAll() if the designated constraints
-// aren't met.
-type LearningUnitStatusMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m LearningUnitStatusMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m LearningUnitStatusMultiError) AllErrors() []error { return m }
-
-// LearningUnitStatusValidationError is the validation error returned by
-// LearningUnitStatus.Validate if the designated constraints aren't met.
-type LearningUnitStatusValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e LearningUnitStatusValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e LearningUnitStatusValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e LearningUnitStatusValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e LearningUnitStatusValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e LearningUnitStatusValidationError) ErrorName() string {
-	return "LearningUnitStatusValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e LearningUnitStatusValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sLearningUnitStatus.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = LearningUnitStatusValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = LearningUnitStatusValidationError{}
 
 // Validate checks the field values on LearningServiceGetCourseProgressRequest
 // with the rules defined in the proto definition for this message. If any
@@ -1257,141 +1075,6 @@ var _ interface {
 	ErrorName() string
 } = LearningServiceGetUnitProgressRequestValidationError{}
 
-// Validate checks the field values on LearningServiceGetUnitProgressResponse
-// with the rules defined in the proto definition for this message. If any
-// rules are violated, the first error encountered is returned, or nil if
-// there are no violations.
-func (m *LearningServiceGetUnitProgressResponse) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on
-// LearningServiceGetUnitProgressResponse with the rules defined in the proto
-// definition for this message. If any rules are violated, the result is a
-// list of violation errors wrapped in
-// LearningServiceGetUnitProgressResponseMultiError, or nil if none found.
-func (m *LearningServiceGetUnitProgressResponse) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *LearningServiceGetUnitProgressResponse) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if all {
-		switch v := interface{}(m.GetStatus()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, LearningServiceGetUnitProgressResponseValidationError{
-					field:  "Status",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, LearningServiceGetUnitProgressResponseValidationError{
-					field:  "Status",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetStatus()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return LearningServiceGetUnitProgressResponseValidationError{
-				field:  "Status",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if len(errors) > 0 {
-		return LearningServiceGetUnitProgressResponseMultiError(errors)
-	}
-
-	return nil
-}
-
-// LearningServiceGetUnitProgressResponseMultiError is an error wrapping
-// multiple validation errors returned by
-// LearningServiceGetUnitProgressResponse.ValidateAll() if the designated
-// constraints aren't met.
-type LearningServiceGetUnitProgressResponseMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m LearningServiceGetUnitProgressResponseMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m LearningServiceGetUnitProgressResponseMultiError) AllErrors() []error { return m }
-
-// LearningServiceGetUnitProgressResponseValidationError is the validation
-// error returned by LearningServiceGetUnitProgressResponse.Validate if the
-// designated constraints aren't met.
-type LearningServiceGetUnitProgressResponseValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e LearningServiceGetUnitProgressResponseValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e LearningServiceGetUnitProgressResponseValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e LearningServiceGetUnitProgressResponseValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e LearningServiceGetUnitProgressResponseValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e LearningServiceGetUnitProgressResponseValidationError) ErrorName() string {
-	return "LearningServiceGetUnitProgressResponseValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e LearningServiceGetUnitProgressResponseValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sLearningServiceGetUnitProgressResponse.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = LearningServiceGetUnitProgressResponseValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = LearningServiceGetUnitProgressResponseValidationError{}
-
 // Validate checks the field values on LearningServiceUpdateUnitProgressRequest
 // with the rules defined in the proto definition for this message. If any
 // rules are violated, the first error encountered is returned, or nil if
@@ -1418,9 +1101,9 @@ func (m *LearningServiceUpdateUnitProgressRequest) validate(all bool) error {
 
 	// no validation rules for UnitId
 
-	// no validation rules for Completed
+	// no validation rules for SectionId
 
-	// no validation rules for StudyDuration
+	// no validation rules for Completed
 
 	if len(errors) > 0 {
 		return LearningServiceUpdateUnitProgressRequestMultiError(errors)
@@ -1974,35 +1657,6 @@ func (m *UpdateMemoryStatusResponse) validate(all bool) error {
 	}
 
 	var errors []error
-
-	if all {
-		switch v := interface{}(m.GetStatus()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, UpdateMemoryStatusResponseValidationError{
-					field:  "Status",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, UpdateMemoryStatusResponseValidationError{
-					field:  "Status",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetStatus()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return UpdateMemoryStatusResponseValidationError{
-				field:  "Status",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
 
 	if len(errors) > 0 {
 		return UpdateMemoryStatusResponseMultiError(errors)
@@ -2582,7 +2236,7 @@ func (m *RecordLearningResultRequest) validate(all bool) error {
 
 	// no validation rules for MemoryUnitId
 
-	// no validation rules for IsCorrect
+	// no validation rules for Result
 
 	// no validation rules for ResponseTime
 
@@ -2689,64 +2343,6 @@ func (m *RecordLearningResultResponse) validate(all bool) error {
 
 	var errors []error
 
-	if all {
-		switch v := interface{}(m.GetStatus()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, RecordLearningResultResponseValidationError{
-					field:  "Status",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, RecordLearningResultResponseValidationError{
-					field:  "Status",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetStatus()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return RecordLearningResultResponseValidationError{
-				field:  "Status",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if all {
-		switch v := interface{}(m.GetNextReviewInterval()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, RecordLearningResultResponseValidationError{
-					field:  "NextReviewInterval",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, RecordLearningResultResponseValidationError{
-					field:  "NextReviewInterval",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetNextReviewInterval()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return RecordLearningResultResponseValidationError{
-				field:  "NextReviewInterval",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
 	if len(errors) > 0 {
 		return RecordLearningResultResponseMultiError(errors)
 	}
@@ -2827,3 +2423,170 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = RecordLearningResultResponseValidationError{}
+
+// Validate checks the field values on MemoryReview with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *MemoryReview) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on MemoryReview with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in MemoryReviewMultiError, or
+// nil if none found.
+func (m *MemoryReview) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *MemoryReview) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for MemoryUnitId
+
+	// no validation rules for UserId
+
+	// no validation rules for Result
+
+	// no validation rules for ResponseTime
+
+	if all {
+		switch v := interface{}(m.GetReviewTime()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, MemoryReviewValidationError{
+					field:  "ReviewTime",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, MemoryReviewValidationError{
+					field:  "ReviewTime",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetReviewTime()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return MemoryReviewValidationError{
+				field:  "ReviewTime",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetCreatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, MemoryReviewValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, MemoryReviewValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return MemoryReviewValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return MemoryReviewMultiError(errors)
+	}
+
+	return nil
+}
+
+// MemoryReviewMultiError is an error wrapping multiple validation errors
+// returned by MemoryReview.ValidateAll() if the designated constraints aren't met.
+type MemoryReviewMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m MemoryReviewMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m MemoryReviewMultiError) AllErrors() []error { return m }
+
+// MemoryReviewValidationError is the validation error returned by
+// MemoryReview.Validate if the designated constraints aren't met.
+type MemoryReviewValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e MemoryReviewValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e MemoryReviewValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e MemoryReviewValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e MemoryReviewValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e MemoryReviewValidationError) ErrorName() string { return "MemoryReviewValidationError" }
+
+// Error satisfies the builtin error interface
+func (e MemoryReviewValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sMemoryReview.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = MemoryReviewValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = MemoryReviewValidationError{}

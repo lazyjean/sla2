@@ -35,14 +35,6 @@ func UnaryServerInterceptor(tokenService security.TokenService) grpc.UnaryServer
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		log := logger.GetLogger(ctx)
 
-		// print headers
-		md, ok := metadata.FromIncomingContext(ctx)
-		if !ok {
-			log.Warn("No metadata in context")
-			return handler(ctx, req)
-		}
-		log.Info("Metadata", zap.Any("metadata", md))
-
 		// 检查是否需要认证
 		if noAuthMethods[info.FullMethod] || isPublicService(info.FullMethod) {
 			return handler(ctx, req)

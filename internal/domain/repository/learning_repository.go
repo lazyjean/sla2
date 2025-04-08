@@ -11,7 +11,7 @@ type LearningRepository interface {
 	// 课程进度
 	SaveCourseProgress(ctx context.Context, progress *entity.CourseLearningProgress) error
 	GetCourseProgress(ctx context.Context, userID, courseID uint) (*entity.CourseLearningProgress, error)
-	ListCourseProgress(ctx context.Context, userID uint, offset, limit int) ([]*entity.CourseLearningProgress, int64, error)
+	ListCourseProgress(ctx context.Context, courseID uint, offset, limit int) ([]*entity.CourseLearningProgress, int64, error)
 
 	// 章节进度
 	SaveSectionProgress(ctx context.Context, progress *entity.CourseSectionProgress) error
@@ -19,7 +19,6 @@ type LearningRepository interface {
 	ListSectionProgress(ctx context.Context, userID, courseID uint) ([]*entity.CourseSectionProgress, error)
 
 	// 单元进度
-	SaveUnitProgress(ctx context.Context, progress *entity.CourseSectionUnitProgress) error
-	GetUnitProgress(ctx context.Context, userID, unitID uint) (*entity.CourseSectionUnitProgress, error)
+	UpsertUnitProgress(ctx context.Context, progress *entity.CourseSectionUnitProgress) error
 	ListUnitProgress(ctx context.Context, userID, sectionID uint) ([]*entity.CourseSectionUnitProgress, error)
 }

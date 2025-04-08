@@ -49,6 +49,7 @@ type GRPCServer struct {
 	vocabularyService *service.VocabularyService
 	courseService     *service.CourseService
 	learningService   *service.LearningService
+	memoryService     service.MemoryService
 	adminService      *service.AdminService
 	wsHandler         *handler.WebSocketHandler
 	unaryInterceptor  grpc.UnaryServerInterceptor
@@ -96,6 +97,7 @@ func NewGRPCServer(
 	vocabularyService *service.VocabularyService,
 	courseService *service.CourseService,
 	learningService *service.LearningService,
+	memoryService service.MemoryService,
 	adminService *service.AdminService,
 	wsHandler *handler.WebSocketHandler,
 	tokenService security.TokenService,
@@ -225,6 +227,7 @@ func NewGRPCServer(
 		vocabularyService: vocabularyService,
 		courseService:     courseService,
 		learningService:   learningService,
+		memoryService:     memoryService,
 		adminService:      adminService,
 		wsHandler:         wsHandler,
 		mux:               mux,
@@ -287,12 +290,10 @@ func (s *GRPCServer) registerServices() {
 	pb.RegisterCourseServiceServer(s.grpcServer, course.NewCourseService(s.courseService))
 
 	// 注册学习服务
-	pb.RegisterLearningServiceServer(s.grpcServer, learning.NewLearningService(s.learningService))
+	pb.RegisterLearningServiceServer(s.grpcServer, learning.NewLearningService(s.learningService, s.memoryService))
 
 	// 注册管理员服务
 	pb.RegisterAdminServiceServer(s.grpcServer, admin.NewAdminService(s.adminService))
-
-	// 注册健康检查和反射服务已在 NewGRPCServer 中完成
 }
 
 // basicAuth 中间件

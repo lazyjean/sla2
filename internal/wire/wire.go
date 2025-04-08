@@ -53,6 +53,7 @@ var repositorySet = wire.NewSet(
 	postgres.NewQuestionTagRepository,
 	postgres.NewQuestionRepository,
 	postgres.NewHanCharRepository,
+	postgres.NewMemoryUnitRepository,
 )
 
 // 服务集
@@ -64,6 +65,7 @@ var serviceSet = wire.NewSet(
 	provideAdminService,
 	service.NewQuestionService,
 	service.NewQuestionTagService,
+	service.NewMemoryService,
 )
 
 // provideAdminService 提供管理员服务

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/lazyjean/sla2/internal/domain/errors"
+	"github.com/lazyjean/sla2/internal/domain/valueobject"
 )
 
 type WordID uint32
@@ -22,8 +23,8 @@ type Word struct {
 	Examples []string `gorm:"type:jsonb;serializer:json;not null;default:'[]'"`
 	// Tags 标签列表
 	Tags []string `gorm:"type:jsonb;serializer:json;not null;default:'[]'"`
-	// Difficulty 难度等级（1-5）
-	Difficulty int `gorm:"type:int;not null;default:0"`
+	// Level 难度等级
+	Level valueobject.WordDifficultyLevel `gorm:"type:integer;not null;comment:难度等级"`
 	// CreatedAt 创建时间
 	CreatedAt time.Time `gorm:"not null;default:CURRENT_TIMESTAMP"`
 	// UpdatedAt 更新时间
@@ -44,21 +45,23 @@ type Definition struct {
 	Antonyms []string `json:"antonyms"`
 }
 
-// NewWord 创建新单词
-func NewWord(text, phonetic string, definitions []Definition, examples, tags []string) (*Word, error) {
-	if text == "" {
-		return nil, errors.ErrInvalidWord
-	}
-
+// NewWord 创建新的单词
+func NewWord(
+	text string,
+	phonetic string,
+	definitions []Definition,
+	examples []string,
+	tags []string,
+	level valueobject.WordDifficultyLevel,
+) *Word {
 	return &Word{
 		Text:        text,
 		Phonetic:    phonetic,
 		Definitions: definitions,
 		Examples:    examples,
 		Tags:        tags,
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
-	}, nil
+		Level:       level,
+	}
 }
 
 // AddExample 添加例句
@@ -122,6 +125,9 @@ func (w *Word) Validate() error {
 	if len(w.Definitions) == 0 {
 		return errors.ErrEmptyDefinition
 	}
+	if !w.Level.IsValid() || !w.Level.IsCEFR() {
+		return errors.ErrInvalidWord
+	}
 	return nil
 }
 
@@ -137,13 +143,13 @@ func (w *Word) Update(
 	definitions []Definition,
 	examples []string,
 	tags []string,
-	difficulty int,
+	level valueobject.WordDifficultyLevel,
 ) {
 	w.Text = text
 	w.Phonetic = phonetic
 	w.Definitions = definitions
 	w.Examples = examples
 	w.Tags = tags
-	w.Difficulty = difficulty
+	w.Level = level
 	w.UpdatedAt = time.Now()
 }

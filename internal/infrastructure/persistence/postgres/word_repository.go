@@ -34,7 +34,23 @@ func (r *WordRepository) List(ctx context.Context, offset, limit int, filters ma
 		case "categories":
 			query = query.Where("categories @> ?", value)
 		case "level":
-			query = query.Where("difficulty = ?", value)
+			// 将字符串转换为对应的数字值
+			switch value {
+			case "HSK1":
+				query = query.Where("difficulty = ?", 1)
+			case "HSK2":
+				query = query.Where("difficulty = ?", 2)
+			case "HSK3":
+				query = query.Where("difficulty = ?", 3)
+			case "HSK4":
+				query = query.Where("difficulty = ?", 4)
+			case "HSK5":
+				query = query.Where("difficulty = ?", 5)
+			case "HSK6":
+				query = query.Where("difficulty = ?", 6)
+			default:
+				// 如果是不支持的级别，不添加过滤条件
+			}
 		}
 	}
 
@@ -356,7 +372,7 @@ func (r *WordRepository) GetByID(ctx context.Context, id entity.WordID) (*entity
 	err := r.db.WithContext(ctx).First(&word, id).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
+			return nil, domainErrors.ErrWordNotFound
 		}
 		return nil, err
 	}

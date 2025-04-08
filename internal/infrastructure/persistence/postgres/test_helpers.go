@@ -11,7 +11,7 @@ import (
 	"github.com/lazyjean/sla2/internal/domain/entity"
 )
 
-func setupTestDB(t *testing.T) (*gorm.DB, func()) {
+func SetupTestDB(t *testing.T) (*gorm.DB, func()) {
 	// 从环境变量获取测试数据库配置
 	cfg := &config.DatabaseConfig{
 		Host:     getEnvOrDefault("TEST_DB_HOST", "localhost"),

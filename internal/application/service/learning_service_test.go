@@ -16,6 +16,63 @@ type MockLearningRepository struct {
 	mock.Mock
 }
 
+// MockMemoryService 是记忆服务的mock实现
+type MockMemoryService struct {
+	mock.Mock
+}
+
+func (m *MockMemoryService) RecordLearningResult(ctx context.Context, memoryUnitID uint32, result bool, responseTime uint32, userNotes []string) error {
+	args := m.Called(ctx, memoryUnitID, result, responseTime, userNotes)
+	return args.Error(0)
+}
+
+func (m *MockMemoryService) GetMemoryUnit(ctx context.Context, memoryUnitID uint32) (*entity.MemoryUnit, error) {
+	args := m.Called(ctx, memoryUnitID)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*entity.MemoryUnit), args.Error(1)
+}
+
+func (m *MockMemoryService) UpdateMemoryUnit(ctx context.Context, memoryUnit *entity.MemoryUnit) error {
+	args := m.Called(ctx, memoryUnit)
+	return args.Error(0)
+}
+
+func (m *MockMemoryService) GetLearningProgress(ctx context.Context) (*LearningProgress, error) {
+	args := m.Called(ctx)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*LearningProgress), args.Error(1)
+}
+
+func (m *MockMemoryService) GetNextReviewWords(ctx context.Context, limit int) ([]*entity.Word, error) {
+	args := m.Called(ctx, limit)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]*entity.Word), args.Error(1)
+}
+
+func (m *MockMemoryService) GetWordStats(ctx context.Context, wordID entity.WordID) (*WordStats, error) {
+	args := m.Called(ctx, wordID)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*WordStats), args.Error(1)
+}
+
+func (m *MockMemoryService) ReviewWord(ctx context.Context, wordID entity.WordID, result bool, responseTime uint32) error {
+	args := m.Called(ctx, wordID, result, responseTime)
+	return args.Error(0)
+}
+
+func (m *MockMemoryService) UpdateMemoryStatus(ctx context.Context, memoryUnitID uint32, masteryLevel entity.MasteryLevel, studyDuration uint32) error {
+	args := m.Called(ctx, memoryUnitID, masteryLevel, studyDuration)
+	return args.Error(0)
+}
+
 func (m *MockLearningRepository) SaveCourseProgress(ctx context.Context, progress *entity.CourseLearningProgress) error {
 	args := m.Called(ctx, progress)
 	return args.Error(0)
@@ -67,12 +124,21 @@ func (m *MockLearningRepository) GetUnitProgress(ctx context.Context, userID, un
 
 func (m *MockLearningRepository) ListUnitProgress(ctx context.Context, userID, sectionID uint) ([]*entity.CourseSectionUnitProgress, error) {
 	args := m.Called(ctx, userID, sectionID)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
 	return args.Get(0).([]*entity.CourseSectionUnitProgress), args.Error(1)
+}
+
+func (m *MockLearningRepository) UpsertUnitProgress(ctx context.Context, progress *entity.CourseSectionUnitProgress) error {
+	args := m.Called(ctx, progress)
+	return args.Error(0)
 }
 
 func TestLearningService_SaveCourseProgress(t *testing.T) {
 	mockRepo := new(MockLearningRepository)
-	service := NewLearningService(mockRepo)
+	mockMemoryService := new(MockMemoryService)
+	service := NewLearningService(mockRepo, mockMemoryService)
 	ctx := context.Background()
 
 	tests := []struct {
@@ -136,8 +202,9 @@ func TestLearningService_SaveCourseProgress(t *testing.T) {
 
 func TestLearningService_GetCourseProgress(t *testing.T) {
 	mockRepo := new(MockLearningRepository)
-	service := NewLearningService(mockRepo)
-	ctx := context.Background()
+	mockMemoryService := new(MockMemoryService)
+	service := NewLearningService(mockRepo, mockMemoryService)
+	ctx := WithUserID(context.Background(), entity.UID(1))
 
 	mockProgress := &entity.CourseLearningProgress{
 		ID:       1,
@@ -151,7 +218,7 @@ func TestLearningService_GetCourseProgress(t *testing.T) {
 	mockRepo.On("GetCourseProgress", ctx, uint(1), uint(999)).Return(nil, nil)
 
 	t.Run("获取存在的课程进度", func(t *testing.T) {
-		progress, err := service.GetCourseProgress(ctx, 1, 100)
+		progress, err := service.GetCourseProgress(ctx, uint(100))
 		require.NoError(t, err)
 		assert.NotNil(t, progress)
 		assert.Equal(t, mockProgress.ID, progress.ID)
@@ -159,7 +226,7 @@ func TestLearningService_GetCourseProgress(t *testing.T) {
 	})
 
 	t.Run("获取不存在的课程进度", func(t *testing.T) {
-		progress, err := service.GetCourseProgress(ctx, 1, 999)
+		progress, err := service.GetCourseProgress(ctx, uint(999))
 		require.NoError(t, err)
 		assert.Nil(t, progress)
 	})
@@ -167,7 +234,8 @@ func TestLearningService_GetCourseProgress(t *testing.T) {
 
 func TestLearningService_ListCourseProgress(t *testing.T) {
 	mockRepo := new(MockLearningRepository)
-	service := NewLearningService(mockRepo)
+	mockMemoryService := new(MockMemoryService)
+	service := NewLearningService(mockRepo, mockMemoryService)
 	ctx := context.Background()
 
 	mockProgresses := []*entity.CourseLearningProgress{

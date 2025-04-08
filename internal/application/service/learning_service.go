@@ -3,19 +3,19 @@ package service
 import (
 	"context"
 
-	pb "github.com/lazyjean/sla2/api/proto/v1"
 	"github.com/lazyjean/sla2/internal/domain/entity"
 	"github.com/lazyjean/sla2/internal/domain/repository"
 )
 
 type LearningService struct {
-	pb.UnimplementedLearningServiceServer
-	learningRepo repository.LearningRepository
+	learningRepo  repository.LearningRepository
+	memoryService MemoryService
 }
 
-func NewLearningService(learningRepo repository.LearningRepository) *LearningService {
+func NewLearningService(learningRepo repository.LearningRepository, memoryService MemoryService) *LearningService {
 	return &LearningService{
-		learningRepo: learningRepo,
+		learningRepo:  learningRepo,
+		memoryService: memoryService,
 	}
 }
 
@@ -40,8 +40,12 @@ func (s *LearningService) SaveCourseProgress(ctx context.Context, userID entity.
 }
 
 // GetCourseProgress 获取课程学习进度
-func (s *LearningService) GetCourseProgress(ctx context.Context, userID, courseID uint) (*entity.CourseLearningProgress, error) {
-	return s.learningRepo.GetCourseProgress(ctx, userID, courseID)
+func (s *LearningService) GetCourseProgress(ctx context.Context, courseID uint) (*entity.CourseLearningProgress, error) {
+	userID, err := GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return s.learningRepo.GetCourseProgress(ctx, uint(userID), courseID)
 }
 
 // ListCourseProgress 获取用户的课程学习进度列表
@@ -72,42 +76,137 @@ func (s *LearningService) SaveSectionProgress(ctx context.Context, userID, cours
 }
 
 // GetSectionProgress 获取章节学习进度
-func (s *LearningService) GetSectionProgress(ctx context.Context, userID, sectionID uint) (*entity.CourseSectionProgress, error) {
-	return s.learningRepo.GetSectionProgress(ctx, userID, sectionID)
+func (s *LearningService) GetSectionProgress(ctx context.Context, sectionID uint) (*entity.CourseSectionProgress, error) {
+	userID, err := GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return s.learningRepo.GetSectionProgress(ctx, uint(userID), sectionID)
 }
 
 // ListSectionProgress 获取课程的章节学习进度列表
-func (s *LearningService) ListSectionProgress(ctx context.Context, userID, courseID uint) ([]*entity.CourseSectionProgress, error) {
-	return s.learningRepo.ListSectionProgress(ctx, userID, courseID)
+func (s *LearningService) ListSectionProgress(ctx context.Context, courseID uint) ([]*entity.CourseSectionProgress, error) {
+	userID, err := GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return s.learningRepo.ListSectionProgress(ctx, uint(userID), courseID)
 }
 
 // SaveUnitProgress 保存单元学习进度
-func (s *LearningService) SaveUnitProgress(ctx context.Context, userID, sectionID, unitID uint, status string, progress float64, lastWordID *uint) (*entity.CourseSectionUnitProgress, error) {
+func (s *LearningService) SaveUnitProgress(ctx context.Context, sectionID, unitID uint, status string, progress float64) (*entity.CourseSectionUnitProgress, error) {
+	userID, err := GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
 	unitProgress := &entity.CourseSectionUnitProgress{
-		UserID:    userID,
+		UserID:    uint(userID),
 		SectionID: sectionID,
 		UnitID:    unitID,
 		Status:    status,
-		Progress:  progress,
 	}
 
-	if status == "completed" {
-		unitProgress.Progress = 100
-	}
-
-	if err := s.learningRepo.SaveUnitProgress(ctx, unitProgress); err != nil {
+	if err := s.learningRepo.UpsertUnitProgress(ctx, unitProgress); err != nil {
 		return nil, err
 	}
 
 	return unitProgress, nil
 }
 
-// GetUnitProgress 获取单元学习进度
-func (s *LearningService) GetUnitProgress(ctx context.Context, userID, unitID uint) (*entity.CourseSectionUnitProgress, error) {
-	return s.learningRepo.GetUnitProgress(ctx, userID, unitID)
+// ListUnitProgress 获取章节的单元学习进度列表
+func (s *LearningService) ListUnitProgress(ctx context.Context, sectionID uint) ([]*entity.CourseSectionUnitProgress, error) {
+	userID, err := GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return s.learningRepo.ListUnitProgress(ctx, uint(userID), sectionID)
 }
 
-// ListUnitProgress 获取章节的单元学习进度列表
-func (s *LearningService) ListUnitProgress(ctx context.Context, userID, sectionID uint) ([]*entity.CourseSectionUnitProgress, error) {
-	return s.learningRepo.ListUnitProgress(ctx, userID, sectionID)
+// UpdateUnitProgress 更新单元学习进度
+func (s *LearningService) UpdateUnitProgress(ctx context.Context, unitID uint, sectionID uint, completed bool) error {
+	userID, err := GetUserID(ctx)
+	if err != nil {
+		return err
+	}
+
+	// 设置状态
+	status := "in_progress"
+	if completed {
+		status = "completed"
+	}
+
+	// 保存更新后的进度
+	unitProgress := &entity.CourseSectionUnitProgress{
+		UserID:        uint(userID),
+		SectionID:     sectionID,
+		UnitID:        unitID,
+		Status:        status,
+		CompleteCount: 0, // 初始完成次数为0，数据库会自动增加
+	}
+
+	if err := s.learningRepo.UpsertUnitProgress(ctx, unitProgress); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// RecordLearningResult 记录学习结果
+func (s *LearningService) RecordLearningResult(ctx context.Context, memoryUnitID uint32, result bool, responseTime uint32, userNotes []string) error {
+	return s.memoryService.RecordLearningResult(ctx, memoryUnitID, result, responseTime, userNotes)
+}
+
+// GetCourseProgressWithStats 获取课程学习进度及统计信息
+func (s *LearningService) GetCourseProgressWithStats(ctx context.Context, courseID uint) (float64, int, int, error) {
+	// 获取课程进度
+	progress, err := s.GetCourseProgress(ctx, courseID)
+	if err != nil {
+		return 0, 0, 0, err
+	}
+
+	// 获取章节总数
+	sections, err := s.ListSectionProgress(ctx, courseID)
+	if err != nil {
+		return 0, 0, 0, err
+	}
+
+	// 计算完成章节数
+	completedSections := 0
+	for _, section := range sections {
+		if section.Status == "completed" {
+			completedSections++
+		}
+	}
+
+	return progress.Progress, completedSections, len(sections), nil
+}
+
+// GetSectionProgressWithStats 获取章节学习进度及统计信息
+func (s *LearningService) GetSectionProgressWithStats(ctx context.Context, sectionID uint) (float64, int, int, error) {
+	// 获取章节进度
+	progress, err := s.GetSectionProgress(ctx, sectionID)
+	if err != nil {
+		return 0, 0, 0, err
+	}
+
+	// 获取单元总数
+	units, err := s.ListUnitProgress(ctx, sectionID)
+	if err != nil {
+		return 0, 0, 0, err
+	}
+
+	// 计算完成单元数
+	completedUnits := 0
+	for _, unit := range units {
+		if unit.Status == "completed" {
+			completedUnits++
+		}
+	}
+
+	return progress.Progress, completedUnits, len(units), nil
+}
+
+// UpdateMemoryStatus 更新记忆单元状态
+func (s *LearningService) UpdateMemoryStatus(ctx context.Context, memoryUnitID uint32, masteryLevel entity.MasteryLevel, studyDuration uint32) error {
+	return s.memoryService.UpdateMemoryStatus(ctx, memoryUnitID, masteryLevel, studyDuration)
 }

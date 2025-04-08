@@ -2,11 +2,13 @@ package postgres
 
 import (
 	"context"
+	"time"
 
 	"github.com/lazyjean/sla2/internal/domain/entity"
 	domainErrors "github.com/lazyjean/sla2/internal/domain/errors"
 	"github.com/lazyjean/sla2/internal/domain/repository"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type LearningRepository struct {
@@ -105,39 +107,33 @@ func (r *LearningRepository) ListSectionProgress(ctx context.Context, userID, co
 	return progresses, nil
 }
 
-// SaveUnitProgress 保存单元进度
-func (r *LearningRepository) SaveUnitProgress(ctx context.Context, progress *entity.CourseSectionUnitProgress) error {
-	if err := r.db.WithContext(ctx).Save(progress).Error; err != nil {
+// UpsertUnitProgress 保存或更新单元进度
+func (r *LearningRepository) UpsertUnitProgress(ctx context.Context, progress *entity.CourseSectionUnitProgress) error {
+	result := r.db.WithContext(ctx).Clauses(clause.OnConflict{
+		Columns: []clause.Column{
+			{Name: "user_id"},
+			{Name: "section_id"},
+			{Name: "unit_id"},
+		},
+		DoUpdates: clause.Assignments(map[string]interface{}{
+			"status":         progress.Status,
+			"complete_count": gorm.Expr("course_section_unit_progresses.complete_count + 1"),
+			"updated_at":     time.Now(),
+		}),
+	}).Create(progress)
+
+	if result.Error != nil {
 		return domainErrors.ErrFailedToSave
 	}
+
 	return nil
 }
 
-// GetUnitProgress 获取单元进度
-func (r *LearningRepository) GetUnitProgress(ctx context.Context, userID, unitID uint) (*entity.CourseSectionUnitProgress, error) {
-	var progress entity.CourseSectionUnitProgress
-	err := r.db.WithContext(ctx).
-		Where("user_id = ? AND unit_id = ?", userID, unitID).
-		First(&progress).Error
-
-	if err == gorm.ErrRecordNotFound {
-		return nil, domainErrors.ErrProgressNotFound
-	}
-	if err != nil {
-		return nil, domainErrors.ErrFailedToQuery
-	}
-	return &progress, nil
-}
-
-// ListUnitProgress 列出单元进度
+// ListUnitProgress 获取章节的单元学习进度列表
 func (r *LearningRepository) ListUnitProgress(ctx context.Context, userID, sectionID uint) ([]*entity.CourseSectionUnitProgress, error) {
-	var progresses []*entity.CourseSectionUnitProgress
-	err := r.db.WithContext(ctx).
-		Where("user_id = ? AND section_id = ?", userID, sectionID).
-		Order("unit_id ASC").
-		Find(&progresses).Error
-	if err != nil {
+	var progress []*entity.CourseSectionUnitProgress
+	if err := r.db.WithContext(ctx).Where("user_id = ? AND section_id = ?", userID, sectionID).Find(&progress).Error; err != nil {
 		return nil, domainErrors.ErrFailedToQuery
 	}
-	return progresses, nil
+	return progress, nil
 }

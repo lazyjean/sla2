@@ -5,17 +5,19 @@ import (
 
 	pb "github.com/lazyjean/sla2/api/proto/v1"
 	"github.com/lazyjean/sla2/internal/application/service"
-	"google.golang.org/protobuf/types/known/timestamppb"
+	"github.com/lazyjean/sla2/internal/domain/entity"
 )
 
 type LearningService struct {
 	pb.UnimplementedLearningServiceServer
 	learningService *service.LearningService
+	memoryService   service.MemoryService
 }
 
-func NewLearningService(learningService *service.LearningService) *LearningService {
+func NewLearningService(learningService *service.LearningService, memoryService service.MemoryService) *LearningService {
 	return &LearningService{
 		learningService: learningService,
+		memoryService:   memoryService,
 	}
 }
 
@@ -23,27 +25,17 @@ func NewLearningService(learningService *service.LearningService) *LearningServi
 func (s *LearningService) GetCourseProgress(ctx context.Context, req *pb.LearningServiceGetCourseProgressRequest) (*pb.LearningServiceGetCourseProgressResponse, error) {
 	courseID := req.CourseId
 
-	// TODO: 从上下文中获取用户ID
-	userID := uint(1)
-
-	// 获取章节总数
-	sections, err := s.learningService.ListSectionProgress(ctx, userID, uint(courseID))
+	// 获取课程进度及统计信息
+	progress, completedSections, totalSections, err := s.learningService.GetCourseProgressWithStats(ctx, uint(courseID))
 	if err != nil {
 		return nil, err
 	}
 
-	completedSections := 0
-	for _, section := range sections {
-		if section.Status == "completed" {
-			completedSections++
-		}
-	}
-
 	return &pb.LearningServiceGetCourseProgressResponse{
 		Progress: &pb.LearningProgress{
-			Progress:       100.0,
+			Progress:       float32(progress),
 			CompletedItems: uint32(completedSections),
-			TotalItems:     uint32(len(sections)),
+			TotalItems:     uint32(totalSections),
 		},
 	}, nil
 }
@@ -52,74 +44,78 @@ func (s *LearningService) GetCourseProgress(ctx context.Context, req *pb.Learnin
 func (s *LearningService) GetSectionProgress(ctx context.Context, req *pb.LearningServiceGetSectionProgressRequest) (*pb.LearningServiceGetSectionProgressResponse, error) {
 	sectionID := req.SectionId
 
-	// TODO: 从上下文中获取用户ID
-	userID := uint(1)
-
-	// 获取单元总数
-	units, err := s.learningService.ListUnitProgress(ctx, userID, uint(sectionID))
+	// 获取章节进度及统计信息
+	progress, completedUnits, totalUnits, err := s.learningService.GetSectionProgressWithStats(ctx, uint(sectionID))
 	if err != nil {
 		return nil, err
 	}
 
-	completedUnits := 0
-	for _, unit := range units {
+	// 获取已完成的单元ID列表
+	unitProgresses, err := s.learningService.ListUnitProgress(ctx, uint(sectionID))
+	if err != nil {
+		return nil, err
+	}
+
+	// 收集已完成的单元ID
+	completedUnitIDs := make([]uint32, 0)
+	for _, unit := range unitProgresses {
 		if unit.Status == "completed" {
-			completedUnits++
+			completedUnitIDs = append(completedUnitIDs, uint32(unit.UnitID))
 		}
 	}
 
 	return &pb.LearningServiceGetSectionProgressResponse{
 		Progress: &pb.LearningProgress{
-			Progress:       float32(completedUnits) / float32(len(units)) * 100,
+			Progress:       float32(progress),
 			CompletedItems: uint32(completedUnits),
-			TotalItems:     uint32(len(units)),
+			TotalItems:     uint32(totalUnits),
 		},
-	}, nil
-}
-
-// GetUnitProgress 获取单元学习进度
-func (s *LearningService) GetUnitProgress(ctx context.Context, req *pb.LearningServiceGetUnitProgressRequest) (*pb.LearningServiceGetUnitProgressResponse, error) {
-	unitID := req.UnitId
-
-	// TODO: 从上下文中获取用户ID
-	userID := uint(1)
-
-	progress, err := s.learningService.GetUnitProgress(ctx, userID, uint(unitID))
-	if err != nil {
-		return nil, err
-	}
-
-	return &pb.LearningServiceGetUnitProgressResponse{
-		Status: &pb.LearningUnitStatus{
-			Completed:      progress.Status == "completed",
-			LastAccessTime: timestamppb.New(progress.UpdatedAt),
-			StudyDuration:  0, // 临时固定值，需要根据实际学习时长计算
-		},
+		CompletedUnitIds: completedUnitIDs,
 	}, nil
 }
 
 // UpdateUnitProgress 更新单元学习进度
 func (s *LearningService) UpdateUnitProgress(ctx context.Context, req *pb.LearningServiceUpdateUnitProgressRequest) (*pb.LearningServiceUpdateUnitProgressResponse, error) {
-	unitID := req.UnitId
-
-	// TODO: 从上下文中获取用户ID
-	userID := uint(1)
-
-	status := "in_progress"
-	if req.Completed {
-		status = "completed"
-	}
-
-	// 获取当前单元所属的章节ID
-	currentProgress, err := s.learningService.GetUnitProgress(ctx, userID, uint(unitID))
+	err := s.learningService.UpdateUnitProgress(ctx, uint(req.UnitId), uint(req.SectionId), req.Completed)
 	if err != nil {
 		return nil, err
 	}
-
-	_, err = s.learningService.SaveUnitProgress(ctx, userID, currentProgress.SectionID, uint(unitID), status, float64(req.StudyDuration), nil)
-	if err != nil {
-		return nil, err
-	}
-
 	return &pb.LearningServiceUpdateUnitProgressResponse{}, nil
+}
+
+// UpdateMemoryStatus 更新记忆单元状态
+func (s *LearningService) UpdateMemoryStatus(ctx context.Context, req *pb.UpdateMemoryStatusRequest) (*pb.UpdateMemoryStatusResponse, error) {
+	err := s.learningService.UpdateMemoryStatus(ctx, req.MemoryUnitId, entity.MasteryLevel(req.MasteryLevel), req.StudyDuration)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.UpdateMemoryStatusResponse{}, nil
+}
+
+// RecordLearningResult 记录学习结果
+func (s *LearningService) RecordLearningResult(ctx context.Context, req *pb.RecordLearningResultRequest) (*pb.RecordLearningResultResponse, error) {
+	// 将 ReviewResult 转换为 bool
+	result := req.Result == pb.ReviewResult_REVIEW_RESULT_CORRECT
+
+	// 记录学习结果
+	err := s.learningService.RecordLearningResult(ctx, req.MemoryUnitId, result, req.ResponseTime, req.UserNotes)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.RecordLearningResultResponse{}, nil
+}
+
+// GetMemoryStatus 获取记忆单元状态
+func (s *LearningService) GetMemoryStatus(ctx context.Context, req *pb.GetMemoryStatusRequest) (*pb.GetMemoryStatusResponse, error) {
+	// 获取记忆单元
+	memoryUnit, err := s.memoryService.GetMemoryUnit(ctx, req.MemoryUnitId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.GetMemoryStatusResponse{
+		Status: ToPBMemoryUnit(memoryUnit),
+	}, nil
 }

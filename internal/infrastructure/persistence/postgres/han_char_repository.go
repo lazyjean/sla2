@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/lazyjean/sla2/internal/domain/entity"
 	"github.com/lazyjean/sla2/internal/domain/repository"
@@ -83,6 +84,7 @@ func (r *hanCharRepository) List(ctx context.Context, offset, limit int, filters
 		case "level":
 			if v, ok := value.(valueobject.WordDifficultyLevel); ok {
 				query = query.Where("level = ?", v)
+				fmt.Printf("Filtering by level: %d\n", v)
 			}
 		case "tags":
 			if v, ok := value.([]string); ok && len(v) > 0 {
@@ -106,6 +108,8 @@ func (r *hanCharRepository) List(ctx context.Context, offset, limit int, filters
 	if err != nil {
 		return nil, 0, err
 	}
+
+	fmt.Printf("Found %d han chars, total: %d\n", len(hanChars), total)
 
 	return hanChars, total, nil
 }

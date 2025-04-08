@@ -32,14 +32,11 @@ type SectionProgressDTO struct {
 // UnitProgressDTO 单元进度DTO
 type UnitProgressDTO struct {
 	ID          uint       `json:"id"`
-	SectionID   uint       `json:"section_id"`
 	UnitID      uint       `json:"unit_id"`
 	Status      string     `json:"status"`
-	Progress    float64    `json:"progress"`
 	StartedAt   time.Time  `json:"started_at"`
-	CompletedAt *time.Time `json:"completed_at,omitempty"`
-	LastWordID  *uint      `json:"last_word_id,omitempty"`
 	UpdatedAt   time.Time  `json:"updated_at"`
+	CompletedAt *time.Time `json:"completed_at,omitempty"`
 }
 
 // 转换函数
@@ -76,7 +73,6 @@ func UnitProgressToDTO(progress *entity.CourseSectionUnitProgress) *UnitProgress
 		ID:        progress.ID,
 		UnitID:    progress.UnitID,
 		Status:    progress.Status,
-		Progress:  progress.Progress,
 		StartedAt: progress.CreatedAt,
 		UpdatedAt: progress.UpdatedAt,
 	}
