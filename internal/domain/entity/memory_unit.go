@@ -31,9 +31,9 @@ const (
 // 注释：记忆单元表，存储各种类型的学习内容
 type MemoryUnit struct {
 	ID        uint32         `gorm:"primaryKey;comment:主键ID"`
-	UserID    uint32         `gorm:"not null;index:idx_user_content,unique;comment:用户ID"`
-	Type      MemoryUnitType `gorm:"not null;comment:记忆单元类型，0-未指定，1-汉字，2-单词"`
-	ContentID uint32         `gorm:"not null;index:idx_user_content,unique;comment:内容ID，关联到具体的内容表（如汉字表、单词表等）"`
+	UserID    uint32         `gorm:"not null;index:idx_user_content_type,unique;comment:用户ID"`
+	Type      MemoryUnitType `gorm:"not null;index:idx_user_content_type,unique;comment:记忆单元类型，0-未指定，1-汉字，2-单词"`
+	ContentID uint32         `gorm:"not null;index:idx_user_content_type,unique;comment:内容ID，关联到具体的内容表（如汉字表、单词表等）"`
 	CreatedAt time.Time      `gorm:"not null;comment:记录创建时间，由数据库自动维护"`
 	UpdatedAt time.Time      `gorm:"not null;comment:记录更新时间，由数据库自动维护"`
 

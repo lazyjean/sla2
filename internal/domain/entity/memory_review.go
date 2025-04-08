@@ -14,7 +14,7 @@ const (
 	ReviewResultSkip        ReviewResult = 3 // 跳过
 )
 
-// MemoryReview 记忆复习记录
+// MemoryReview 记忆复习记录, todo: 这个记录保留一年即可
 // 用于记录用户对记忆单元的复习情况，包括复习结果、响应时间等信息
 // 表名：memory_reviews
 // 注释：记忆复习记录表，记录用户对记忆单元的复习情况
