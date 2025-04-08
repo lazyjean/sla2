@@ -26,7 +26,8 @@ const (
 	LearningService_UpdateMemoryStatus_FullMethodName    = "/proto.v1.LearningService/UpdateMemoryStatus"
 	LearningService_ListMemoriesForReview_FullMethodName = "/proto.v1.LearningService/ListMemoriesForReview"
 	LearningService_GetMemoryStats_FullMethodName        = "/proto.v1.LearningService/GetMemoryStats"
-	LearningService_RecordLearningResult_FullMethodName  = "/proto.v1.LearningService/RecordLearningResult"
+	LearningService_ReviewWord_FullMethodName            = "/proto.v1.LearningService/ReviewWord"
+	LearningService_ReviewHanChar_FullMethodName         = "/proto.v1.LearningService/ReviewHanChar"
 )
 
 // LearningServiceClient is the client API for LearningService service.
@@ -49,8 +50,10 @@ type LearningServiceClient interface {
 	ListMemoriesForReview(ctx context.Context, in *ListMemoriesForReviewRequest, opts ...grpc.CallOption) (*ListMemoriesForReviewResponse, error)
 	// 获取记忆单元学习统计
 	GetMemoryStats(ctx context.Context, in *GetMemoryStatsRequest, opts ...grpc.CallOption) (*GetMemoryStatsResponse, error)
-	// 记录学习结果
-	RecordLearningResult(ctx context.Context, in *RecordLearningResultRequest, opts ...grpc.CallOption) (*RecordLearningResultResponse, error)
+	// 复习单词
+	ReviewWord(ctx context.Context, in *ReviewWordRequest, opts ...grpc.CallOption) (*ReviewWordResponse, error)
+	// 复习汉字
+	ReviewHanChar(ctx context.Context, in *ReviewHanCharRequest, opts ...grpc.CallOption) (*ReviewHanCharResponse, error)
 }
 
 type learningServiceClient struct {
@@ -131,10 +134,20 @@ func (c *learningServiceClient) GetMemoryStats(ctx context.Context, in *GetMemor
 	return out, nil
 }
 
-func (c *learningServiceClient) RecordLearningResult(ctx context.Context, in *RecordLearningResultRequest, opts ...grpc.CallOption) (*RecordLearningResultResponse, error) {
+func (c *learningServiceClient) ReviewWord(ctx context.Context, in *ReviewWordRequest, opts ...grpc.CallOption) (*ReviewWordResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(RecordLearningResultResponse)
-	err := c.cc.Invoke(ctx, LearningService_RecordLearningResult_FullMethodName, in, out, cOpts...)
+	out := new(ReviewWordResponse)
+	err := c.cc.Invoke(ctx, LearningService_ReviewWord_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *learningServiceClient) ReviewHanChar(ctx context.Context, in *ReviewHanCharRequest, opts ...grpc.CallOption) (*ReviewHanCharResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReviewHanCharResponse)
+	err := c.cc.Invoke(ctx, LearningService_ReviewHanChar_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -161,8 +174,10 @@ type LearningServiceServer interface {
 	ListMemoriesForReview(context.Context, *ListMemoriesForReviewRequest) (*ListMemoriesForReviewResponse, error)
 	// 获取记忆单元学习统计
 	GetMemoryStats(context.Context, *GetMemoryStatsRequest) (*GetMemoryStatsResponse, error)
-	// 记录学习结果
-	RecordLearningResult(context.Context, *RecordLearningResultRequest) (*RecordLearningResultResponse, error)
+	// 复习单词
+	ReviewWord(context.Context, *ReviewWordRequest) (*ReviewWordResponse, error)
+	// 复习汉字
+	ReviewHanChar(context.Context, *ReviewHanCharRequest) (*ReviewHanCharResponse, error)
 	mustEmbedUnimplementedLearningServiceServer()
 }
 
@@ -194,8 +209,11 @@ func (UnimplementedLearningServiceServer) ListMemoriesForReview(context.Context,
 func (UnimplementedLearningServiceServer) GetMemoryStats(context.Context, *GetMemoryStatsRequest) (*GetMemoryStatsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMemoryStats not implemented")
 }
-func (UnimplementedLearningServiceServer) RecordLearningResult(context.Context, *RecordLearningResultRequest) (*RecordLearningResultResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RecordLearningResult not implemented")
+func (UnimplementedLearningServiceServer) ReviewWord(context.Context, *ReviewWordRequest) (*ReviewWordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReviewWord not implemented")
+}
+func (UnimplementedLearningServiceServer) ReviewHanChar(context.Context, *ReviewHanCharRequest) (*ReviewHanCharResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReviewHanChar not implemented")
 }
 func (UnimplementedLearningServiceServer) mustEmbedUnimplementedLearningServiceServer() {}
 func (UnimplementedLearningServiceServer) testEmbeddedByValue()                         {}
@@ -344,20 +362,38 @@ func _LearningService_GetMemoryStats_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
-func _LearningService_RecordLearningResult_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RecordLearningResultRequest)
+func _LearningService_ReviewWord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReviewWordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(LearningServiceServer).RecordLearningResult(ctx, in)
+		return srv.(LearningServiceServer).ReviewWord(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: LearningService_RecordLearningResult_FullMethodName,
+		FullMethod: LearningService_ReviewWord_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LearningServiceServer).RecordLearningResult(ctx, req.(*RecordLearningResultRequest))
+		return srv.(LearningServiceServer).ReviewWord(ctx, req.(*ReviewWordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LearningService_ReviewHanChar_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReviewHanCharRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LearningServiceServer).ReviewHanChar(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LearningService_ReviewHanChar_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LearningServiceServer).ReviewHanChar(ctx, req.(*ReviewHanCharRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -398,8 +434,12 @@ var LearningService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _LearningService_GetMemoryStats_Handler,
 		},
 		{
-			MethodName: "RecordLearningResult",
-			Handler:    _LearningService_RecordLearningResult_Handler,
+			MethodName: "ReviewWord",
+			Handler:    _LearningService_ReviewWord_Handler,
+		},
+		{
+			MethodName: "ReviewHanChar",
+			Handler:    _LearningService_ReviewHanChar_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

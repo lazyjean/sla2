@@ -151,11 +151,6 @@ func (s *LearningService) UpdateUnitProgress(ctx context.Context, unitID uint, s
 	return nil
 }
 
-// RecordLearningResult 记录学习结果
-func (s *LearningService) RecordLearningResult(ctx context.Context, memoryUnitID uint32, result bool, responseTime uint32, userNotes []string) error {
-	return s.memoryService.RecordLearningResult(ctx, memoryUnitID, result, responseTime, userNotes)
-}
-
 // GetCourseProgressWithStats 获取课程学习进度及统计信息
 func (s *LearningService) GetCourseProgressWithStats(ctx context.Context, courseID uint) (float64, int, int, error) {
 	// 获取课程进度

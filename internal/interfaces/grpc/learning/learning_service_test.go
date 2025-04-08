@@ -2,6 +2,8 @@ package learning
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"testing"
 	"time"
 
@@ -10,47 +12,73 @@ import (
 	"github.com/lazyjean/sla2/internal/domain/entity"
 	"github.com/lazyjean/sla2/internal/domain/repository"
 	pg "github.com/lazyjean/sla2/internal/infrastructure/persistence/postgres"
+	"github.com/lazyjean/sla2/pkg/logger"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
 var (
-	db              *gorm.DB
-	learningRepo    repository.LearningRepository
-	memoryUnitRepo  repository.MemoryUnitRepository
-	wordRepo        repository.WordRepository
-	learningService *service.LearningService
-	memoryService   service.MemoryService
-	grpcService     *LearningService
+	grpcService    *LearningService
+	memoryUnitRepo repository.MemoryUnitRepository
+	learningRepo   repository.LearningRepository
+	db             *gorm.DB
 )
 
+// ensureLogger 初始化基础 logger (如果尚未初始化)
+func ensureLogger() {
+	if logger.Log == nil {
+		logger.InitBaseLogger()
+		logger.Log.Info("Initialized base logger for testing.")
+	}
+}
+
+// SetupTestDB 设置测试数据库并初始化必要的 repo
 func SetupTestDB(t *testing.T) error {
+	ensureLogger() // Initialize logger here
+
 	var cleanup func()
-	db, cleanup = pg.SetupTestDB(t)
+	db, cleanup = pg.SetupTestDB(t) // Assuming pg.SetupTestDB is the correct package and function
 	t.Cleanup(cleanup)
 
-	// 清理测试数据
-	if err := db.Exec("TRUNCATE TABLE course_learning_progresses CASCADE").Error; err != nil {
-		return err
+	// Run migrations to ensure schema matches entities
+	err := db.AutoMigrate(
+		&entity.MemoryUnit{}, // Add other entities if needed for tests in this package
+		// &entity.CourseLearningProgress{}, // Example
+		// &entity.CourseSectionProgress{}, // Example
+		// &entity.CourseSectionUnitProgress{}, // Example
+	)
+	if err != nil {
+		logger.Log.Error("AutoMigrate failed", zap.Error(err))
+		return fmt.Errorf("automigrate failed: %w", err)
 	}
-	if err := db.Exec("TRUNCATE TABLE course_section_progresses CASCADE").Error; err != nil {
-		return err
-	}
-	if err := db.Exec("TRUNCATE TABLE course_section_unit_progresses CASCADE").Error; err != nil {
-		return err
-	}
-	if err := db.Exec("TRUNCATE TABLE memory_units CASCADE").Error; err != nil {
-		return err
-	}
+	logger.Log.Info("AutoMigrate completed for learning tests.")
 
+	// 清理测试数据 (Truncate after migration)
+	logger.Log.Info("Truncating memory_units table...")
+	if err := db.Exec("TRUNCATE TABLE memory_units CASCADE").Error; err != nil {
+		logger.Log.Error("Failed to truncate memory_units", zap.Error(err))
+		return err
+	}
+	// ... add other TRUNCATE statements if needed ...
+
+	// Initialize repositories used in tests
 	learningRepo = pg.NewLearningRepository(db)
 	memoryUnitRepo = pg.NewMemoryUnitRepository(db)
-	wordRepo = pg.NewWordRepository(db)
-	learningService = service.NewLearningService(learningRepo, memoryService)
-	memoryService = service.NewMemoryService(wordRepo, memoryUnitRepo)
+
+	// Initialize services needed for tests (can be done here or in TestMain/specific tests)
+	memoryService := service.NewMemoryService(nil, memoryUnitRepo)             // wordRepo is nil, adjust if needed
+	learningService := service.NewLearningService(learningRepo, memoryService) // Use initialized learningRepo
 	grpcService = NewLearningService(learningService, memoryService)
 
 	return nil
+}
+
+func TestMain(m *testing.M) {
+	// TestMain can be simplified or removed if SetupTestDB handles all setup
+	// Or, it can handle setup not specific to individual tests
+	code := m.Run()
+	os.Exit(code)
 }
 
 func TestGetCourseProgress(t *testing.T) {
@@ -210,76 +238,106 @@ func TestUpdateMemoryStatus(t *testing.T) {
 	assert.Equal(t, uint32(100), updatedUnit.StudyDuration)
 }
 
-func TestRecordLearningResult(t *testing.T) {
+func TestReviewWord(t *testing.T) {
 	if err := SetupTestDB(t); err != nil {
 		t.Fatalf("Failed to setup test DB: %v", err)
 	}
 
-	// 准备测试数据
-	unit := &entity.MemoryUnit{
-		UserID:             1,
-		Type:               entity.MemoryUnitTypeWord,
-		ContentID:          1,
-		MasteryLevel:       entity.MasteryLevelBeginner,
-		ReviewCount:        0,
-		StudyDuration:      0,
-		RetentionRate:      0,
-		ConsecutiveCorrect: 0,
-		ConsecutiveWrong:   0,
-	}
-	if err := memoryUnitRepo.Create(context.Background(), unit); err != nil {
-		t.Fatalf("Failed to save test data: %v", err)
-	}
-	t.Logf("Created memory unit: ID=%d", unit.ID)
+	ctx := context.Background()
+	wordID := uint32(99999) // Use an ID unlikely to exist
 
-	// 记录第一次学习结果（正确）
-	req1 := &pb.RecordLearningResultRequest{
-		MemoryUnitId: unit.ID,
+	// 1. First review (Correct) - Should create the MemoryUnit
+	req1 := &pb.ReviewWordRequest{
+		WordId:       wordID,
 		Result:       pb.ReviewResult_REVIEW_RESULT_CORRECT,
-		ResponseTime: 100,
-		UserNotes:    []string{"note1"},
+		ResponseTime: 1500, // 1.5 seconds
 	}
-	resp1, err := grpcService.RecordLearningResult(context.Background(), req1)
-	if err != nil {
-		t.Fatalf("Failed to record first learning result: %v", err)
-	}
+	resp1, err := grpcService.ReviewWord(ctx, req1)
+	assert.NoError(t, err)
 	assert.NotNil(t, resp1)
 
-	// 记录第二次学习结果（错误）
-	req2 := &pb.RecordLearningResultRequest{
-		MemoryUnitId: unit.ID,
+	// Verify creation and initial state in DB
+	unit1, err := memoryUnitRepo.GetByTypeAndContentID(ctx, entity.MemoryUnitTypeWord, wordID)
+	assert.NoError(t, err)
+	assert.NotNil(t, unit1, "MemoryUnit should have been created")
+	t.Logf("[Review 1] LastReviewAt: %s, NextReviewAt: %s", unit1.LastReviewAt, unit1.NextReviewAt)
+	assert.True(t, unit1.NextReviewAt.After(unit1.LastReviewAt), "Next review time must be after last review")
+	initialNextReviewAt := unit1.NextReviewAt
+
+	// 2. Second review (Wrong)
+	time.Sleep(10 * time.Millisecond)              // Ensure timestamp changes
+	lastReviewAtBeforeUpdate := unit1.LastReviewAt // Record time before the update
+	req2 := &pb.ReviewWordRequest{
+		WordId:       wordID,
 		Result:       pb.ReviewResult_REVIEW_RESULT_WRONG,
-		ResponseTime: 150,
-		UserNotes:    []string{"note2"},
+		ResponseTime: 2100, // 2.1 seconds
 	}
-	resp2, err := grpcService.RecordLearningResult(context.Background(), req2)
-	if err != nil {
-		t.Fatalf("Failed to record second learning result: %v", err)
-	}
+	resp2, err := grpcService.ReviewWord(ctx, req2)
+	assert.NoError(t, err)
 	assert.NotNil(t, resp2)
 
-	// 记录第三次学习结果（正确）
-	req3 := &pb.RecordLearningResultRequest{
-		MemoryUnitId: unit.ID,
-		Result:       pb.ReviewResult_REVIEW_RESULT_CORRECT,
-		ResponseTime: 80,
-		UserNotes:    []string{"note3"},
-	}
-	resp3, err := grpcService.RecordLearningResult(context.Background(), req3)
-	if err != nil {
-		t.Fatalf("Failed to record third learning result: %v", err)
-	}
-	assert.NotNil(t, resp3)
+	// Verify updated state in DB
+	unit2, err := memoryUnitRepo.GetByID(ctx, unit1.ID)
+	assert.NoError(t, err)
+	assert.NotNil(t, unit2)
+	t.Logf("[Review 2] LastReviewAt: %s, NextReviewAt: %s", unit2.LastReviewAt, unit2.NextReviewAt)
+	assert.True(t, unit2.LastReviewAt.After(lastReviewAtBeforeUpdate), "Last review time should be updated")
+	assert.True(t, unit2.NextReviewAt.After(unit2.LastReviewAt), "Next review time must be after last review")
+	assert.True(t, unit2.NextReviewAt.Before(initialNextReviewAt.Add(time.Hour)), "Next review time after wrong should be sooner than initial next review plus buffer")
+}
 
-	// 获取最终状态
-	getReq := &pb.GetMemoryStatusRequest{
-		MemoryUnitId: unit.ID,
+func TestReviewHanChar(t *testing.T) {
+	if err := SetupTestDB(t); err != nil {
+		t.Fatalf("Failed to setup test DB: %v", err)
 	}
-	getResp, err := grpcService.GetMemoryStatus(context.Background(), getReq)
-	if err != nil {
-		t.Fatalf("Failed to get final status: %v", err)
+
+	ctx := context.Background()
+	hanCharID := uint32(88888) // Use an ID unlikely to exist
+
+	// 1. First review (Correct) - Should create the MemoryUnit
+	req1 := &pb.ReviewHanCharRequest{
+		HanCharId:    hanCharID,
+		Result:       pb.ReviewResult_REVIEW_RESULT_CORRECT,
+		ResponseTime: 1800, // 1.8 seconds
 	}
-	t.Logf("Final status: ReviewCount=%d, ConsecutiveCorrect=%d, ConsecutiveWrong=%d, RetentionRate=%f",
-		getResp.Status.ReviewCount, getResp.Status.ConsecutiveCorrect, getResp.Status.ConsecutiveWrong,
-		getResp.Status.RetentionRate)
+	resp1, err := grpcService.ReviewHanChar(ctx, req1)
+	assert.NoError(t, err)
+	assert.NotNil(t, resp1)
+
+	// Verify creation and initial state in DB
+	unit1, err := memoryUnitRepo.GetByTypeAndContentID(ctx, entity.MemoryUnitTypeHanChar, hanCharID)
+	assert.NoError(t, err)
+	assert.NotNil(t, unit1, "MemoryUnit should have been created")
+	assert.Equal(t, uint32(1), unit1.ReviewCount)
+	assert.Equal(t, entity.MasteryLevelBeginner, unit1.MasteryLevel)
+	assert.Equal(t, uint32(1), unit1.ConsecutiveCorrect)
+	assert.Equal(t, uint32(0), unit1.ConsecutiveWrong)
+	assert.Equal(t, uint32(1), unit1.StudyDuration) // 1800ms / 1000 = 1s
+	assert.True(t, unit1.NextReviewAt.After(unit1.LastReviewAt), "Next review time must be after last review")
+	initialNextReviewAt2 := unit1.NextReviewAt
+
+	// 2. Second review (Correct)
+	time.Sleep(10 * time.Millisecond)
+	lastReviewAtBeforeUpdate2 := unit1.LastReviewAt
+	req2 := &pb.ReviewHanCharRequest{
+		HanCharId:    hanCharID,
+		Result:       pb.ReviewResult_REVIEW_RESULT_CORRECT,
+		ResponseTime: 1200, // 1.2 seconds
+	}
+	resp2, err := grpcService.ReviewHanChar(ctx, req2)
+	assert.NoError(t, err)
+	assert.NotNil(t, resp2)
+
+	// Verify updated state in DB
+	unit2, err := memoryUnitRepo.GetByID(ctx, unit1.ID)
+	assert.NoError(t, err)
+	assert.NotNil(t, unit2)
+	assert.Equal(t, uint32(2), unit2.ReviewCount)
+	assert.Equal(t, entity.MasteryLevelBeginner, unit2.MasteryLevel) // 2 correct -> still Beginner (needs 3 for Familiar)
+	assert.Equal(t, uint32(2), unit2.ConsecutiveCorrect)
+	assert.Equal(t, uint32(0), unit2.ConsecutiveWrong)
+	assert.Equal(t, uint32(1+1), unit2.StudyDuration) // 1s + 1s = 2s
+	assert.True(t, unit2.LastReviewAt.After(lastReviewAtBeforeUpdate2), "Last review time should be updated")
+	assert.True(t, unit2.NextReviewAt.After(unit2.LastReviewAt), "Next review time must be after last review")
+	assert.True(t, unit2.NextReviewAt.After(initialNextReviewAt2), "Next review time should be further out after second correct")
 }

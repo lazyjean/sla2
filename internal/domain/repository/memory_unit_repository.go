@@ -17,8 +17,12 @@ type MemoryUnitRepository interface {
 	GetByID(ctx context.Context, id uint32) (*entity.MemoryUnit, error)
 	// GetByTypeAndContentID 通过类型和内容ID获取记忆单元
 	GetByTypeAndContentID(ctx context.Context, unitType entity.MemoryUnitType, contentID uint32) (*entity.MemoryUnit, error)
-	// ListNeedReview 获取需要复习的记忆单元列表
+	// ListNeedReview 获取需要复习的记忆单元列表 (DEPRECATED? Consider removing if ListNeedReviewByTypes covers all cases)
 	ListNeedReview(ctx context.Context, unitType entity.MemoryUnitType, before time.Time, limit int) ([]*entity.MemoryUnit, error)
+	// ListNeedReviewByTypes 根据类型列表获取需要复习的记忆单元列表（分页）
+	ListNeedReviewByTypes(ctx context.Context, types []entity.MemoryUnitType, before time.Time, offset uint32, limit int) ([]*entity.MemoryUnit, error)
+	// CountNeedReviewByTypes 根据类型列表计算需要复习的记忆单元总数
+	CountNeedReviewByTypes(ctx context.Context, types []entity.MemoryUnitType, before time.Time) (int64, error)
 	// ListByUserID 获取用户的所有记忆单元
 	ListByUserID(ctx context.Context, userID uint32) ([]*entity.MemoryUnit, error)
 	// ListByUserIDAndType 获取用户指定类型的记忆单元

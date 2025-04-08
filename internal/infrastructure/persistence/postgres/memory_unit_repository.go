@@ -98,6 +98,45 @@ func (r *memoryUnitRepository) ListByUserIDAndType(ctx context.Context, userID u
 	return units, nil
 }
 
+// ListNeedReviewByTypes 根据类型列表获取需要复习的记忆单元列表（分页）
+func (r *memoryUnitRepository) ListNeedReviewByTypes(ctx context.Context, types []entity.MemoryUnitType, before time.Time, offset uint32, limit int) ([]*entity.MemoryUnit, error) {
+	var units []*entity.MemoryUnit
+	query := r.db.WithContext(ctx).
+		Where("next_review_at <= ?", before)
+
+	if len(types) > 0 {
+		query = query.Where("type IN ?", types)
+	}
+
+	err := query.Order("next_review_at ASC").
+		Offset(int(offset)).
+		Limit(limit).
+		Find(&units).Error
+
+	if err != nil {
+		return nil, err
+	}
+	return units, nil
+}
+
+// CountNeedReviewByTypes 根据类型列表计算需要复习的记忆单元总数
+func (r *memoryUnitRepository) CountNeedReviewByTypes(ctx context.Context, types []entity.MemoryUnitType, before time.Time) (int64, error) {
+	var count int64
+	query := r.db.WithContext(ctx).
+		Model(&entity.MemoryUnit{}).
+		Where("next_review_at <= ?", before)
+
+	if len(types) > 0 {
+		query = query.Where("type IN ?", types)
+	}
+
+	err := query.Count(&count).Error
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
 // GetStats 获取统计信息
 func (r *memoryUnitRepository) GetStats(ctx context.Context, unitType entity.MemoryUnitType) (*repository.MemoryUnitStats, error) {
 	var stats repository.MemoryUnitStats

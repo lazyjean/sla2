@@ -590,15 +590,15 @@
         ]
       }
     },
-    "/api/v1/learning/memories/result": {
+    "/api/v1/learning/han_chars/review": {
       "post": {
-        "summary": "记录学习结果",
-        "operationId": "LearningService_RecordLearningResult",
+        "summary": "复习汉字",
+        "operationId": "LearningService_ReviewHanChar",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1RecordLearningResultResponse"
+              "$ref": "#/definitions/v1ReviewHanCharResponse"
             }
           },
           "default": {
@@ -614,7 +614,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/v1RecordLearningResultRequest"
+              "$ref": "#/definitions/v1ReviewHanCharRequest"
             }
           }
         ],
@@ -886,6 +886,39 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/LearningServiceUpdateUnitProgressBody"
+            }
+          }
+        ],
+        "tags": [
+          "LearningService"
+        ]
+      }
+    },
+    "/api/v1/learning/words/review": {
+      "post": {
+        "summary": "复习单词",
+        "operationId": "LearningService_ReviewWord",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ReviewWordResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1ReviewWordRequest"
             }
           }
         ],
@@ -1833,7 +1866,7 @@
             "format": "int64"
           },
           {
-            "name": "difficulty",
+            "name": "level",
             "description": " - WORD_DIFFICULTY_LEVEL_UNSPECIFIED: 未指定难度，用于处理未知的新难度级别，客户端应该显示为\"未知难度\"\n - WORD_DIFFICULTY_LEVEL_A1: CEFR 标准 (英语)\n\n基础入门\n - WORD_DIFFICULTY_LEVEL_A2: 基础进阶\n - WORD_DIFFICULTY_LEVEL_B1: 中级\n - WORD_DIFFICULTY_LEVEL_B2: 中高级\n - WORD_DIFFICULTY_LEVEL_C1: 高级\n - WORD_DIFFICULTY_LEVEL_C2: 精通\n - WORD_DIFFICULTY_LEVEL_HSK1: HSK 标准 (汉语)\n\nHSK1级 - 入门\n - WORD_DIFFICULTY_LEVEL_HSK2: HSK2级 - 基础\n - WORD_DIFFICULTY_LEVEL_HSK3: HSK3级 - 初级\n - WORD_DIFFICULTY_LEVEL_HSK4: HSK4级 - 中级\n - WORD_DIFFICULTY_LEVEL_HSK5: HSK5级 - 高级\n - WORD_DIFFICULTY_LEVEL_HSK6: HSK6级 - 精通",
             "in": "query",
             "required": false,
@@ -3849,34 +3882,6 @@
       "default": "QUESTION_TYPE_UNSPECIFIED",
       "title": "- QUESTION_TYPE_UNSPECIFIED: 未指定类型，用于处理未知的新题型，客户端应该显示为\"未知题型\"\n - QUESTION_TYPE_LISTEN_AND_SELECT: 听力选择题：听音频选择正确选项\n - QUESTION_TYPE_MULTIPLE_CHOICE: 多项选择题：从多个选项中选择正确答案\n - QUESTION_TYPE_FILL_IN_BLANK: 填空题：在句子或段落中填写适当的词语\n - QUESTION_TYPE_TRANSLATION: 翻译题：将一种语言翻译成另一种语言\n - QUESTION_TYPE_MATCHING: 匹配题：将相关的项目配对\n - QUESTION_TYPE_ORDERING: 排序题：句子或段落按正确顺序排列\n - QUESTION_TYPE_READING_COMPREHENSION: 阅读理解：阅读文章回答问题\n - QUESTION_TYPE_SPEAKING_TEST: 口语测试：录音回答问题\n - QUESTION_TYPE_WRITING_TEST: 写作测试：写作文或短文\n - QUESTION_TYPE_DICTATION: 听写题：听音频写出内容\n - QUESTION_TYPE_PICTURE_DESCRIPTION: 看图说话：描述图片内容\n - QUESTION_TYPE_CLOZE: 完形填空：选择合适的词填空\n - QUESTION_TYPE_ESSAY: 问答题：回答问题\n - QUESTION_TYPE_SINGLE_CHOICE: 单选题：从多个选项中选择正确答案\n - QUESTION_TYPE_TRUE_FALSE: 判断题：判断对错"
     },
-    "v1RecordLearningResultRequest": {
-      "type": "object",
-      "properties": {
-        "memoryUnitId": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "result": {
-          "$ref": "#/definitions/v1ReviewResult",
-          "title": "复习结果"
-        },
-        "responseTime": {
-          "type": "integer",
-          "format": "int64",
-          "title": "响应时间（毫秒）"
-        },
-        "userNotes": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "title": "用户笔记"
-        }
-      }
-    },
-    "v1RecordLearningResultResponse": {
-      "type": "object"
-    },
     "v1RefreshTokenRequest": {
       "type": "object",
       "properties": {
@@ -3965,6 +3970,31 @@
       "type": "object",
       "title": "ResetPasswordResponse 重置密码响应"
     },
+    "v1ReviewHanCharRequest": {
+      "type": "object",
+      "properties": {
+        "hanCharId": {
+          "type": "integer",
+          "format": "int64",
+          "title": "汉字ID (对应 MemoryUnit 的 ContentID)"
+        },
+        "result": {
+          "$ref": "#/definitions/v1ReviewResult",
+          "title": "复习结果"
+        },
+        "responseTime": {
+          "type": "integer",
+          "format": "int64",
+          "title": "响应时间（毫秒）"
+        }
+      },
+      "title": "ReviewHanCharRequest 复习汉字请求"
+    },
+    "v1ReviewHanCharResponse": {
+      "type": "object",
+      "description": "可以考虑返回更新后的 MemoryUnit 状态\n MemoryUnit updated_status = 1;",
+      "title": "ReviewHanCharResponse 复习汉字响应"
+    },
     "v1ReviewResult": {
       "type": "string",
       "enum": [
@@ -3976,6 +4006,31 @@
       "default": "REVIEW_RESULT_UNSPECIFIED",
       "description": "- REVIEW_RESULT_UNSPECIFIED: 未指定\n - REVIEW_RESULT_CORRECT: 正确\n - REVIEW_RESULT_WRONG: 错误\n - REVIEW_RESULT_SKIP: 跳过",
       "title": "ReviewResult 复习结果"
+    },
+    "v1ReviewWordRequest": {
+      "type": "object",
+      "properties": {
+        "wordId": {
+          "type": "integer",
+          "format": "int64",
+          "title": "单词ID (对应 MemoryUnit 的 ContentID)"
+        },
+        "result": {
+          "$ref": "#/definitions/v1ReviewResult",
+          "title": "复习结果"
+        },
+        "responseTime": {
+          "type": "integer",
+          "format": "int64",
+          "title": "响应时间（毫秒）"
+        }
+      },
+      "title": "ReviewWordRequest 复习单词请求"
+    },
+    "v1ReviewWordResponse": {
+      "type": "object",
+      "description": "可以考虑返回更新后的 MemoryUnit 状态\n MemoryUnit updated_status = 1;",
+      "title": "ReviewWordResponse 复习单词响应"
     },
     "v1SimpleCourse": {
       "type": "object",
@@ -4268,7 +4323,7 @@
         "audioUrl": {
           "type": "string"
         },
-        "difficulty": {
+        "level": {
           "$ref": "#/definitions/v1WordDifficultyLevel"
         },
         "definitions": {

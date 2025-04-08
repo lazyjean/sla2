@@ -21,8 +21,8 @@ type MockMemoryService struct {
 	mock.Mock
 }
 
-func (m *MockMemoryService) RecordLearningResult(ctx context.Context, memoryUnitID uint32, result bool, responseTime uint32, userNotes []string) error {
-	args := m.Called(ctx, memoryUnitID, result, responseTime, userNotes)
+func (m *MockMemoryService) RecordLearningResult(ctx context.Context, memoryUnitID uint32, result bool, responseTime uint32) error {
+	args := m.Called(ctx, memoryUnitID, result, responseTime)
 	return args.Error(0)
 }
 
@@ -68,9 +68,21 @@ func (m *MockMemoryService) ReviewWord(ctx context.Context, wordID entity.WordID
 	return args.Error(0)
 }
 
+func (m *MockMemoryService) ReviewHanChar(ctx context.Context, hanCharID uint32, result bool, responseTime uint32) error {
+	args := m.Called(ctx, hanCharID, result, responseTime)
+	return args.Error(0)
+}
+
 func (m *MockMemoryService) UpdateMemoryStatus(ctx context.Context, memoryUnitID uint32, masteryLevel entity.MasteryLevel, studyDuration uint32) error {
 	args := m.Called(ctx, memoryUnitID, masteryLevel, studyDuration)
 	return args.Error(0)
+}
+
+func (m *MockMemoryService) ListMemoriesForReview(ctx context.Context, page, pageSize uint32, types []entity.MemoryUnitType) ([]*entity.MemoryUnit, int, error) {
+	args := m.Called(ctx, page, pageSize, types)
+	units, _ := args.Get(0).([]*entity.MemoryUnit)
+	total, _ := args.Get(1).(int)
+	return units, total, args.Error(2)
 }
 
 func (m *MockLearningRepository) SaveCourseProgress(ctx context.Context, progress *entity.CourseLearningProgress) error {

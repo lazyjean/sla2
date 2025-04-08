@@ -2212,48 +2212,48 @@ var _ interface {
 	ErrorName() string
 } = GetMemoryStatsResponseValidationError{}
 
-// Validate checks the field values on RecordLearningResultRequest with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *RecordLearningResultRequest) Validate() error {
+// Validate checks the field values on ReviewWordRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *ReviewWordRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on RecordLearningResultRequest with the
-// rules defined in the proto definition for this message. If any rules are
+// ValidateAll checks the field values on ReviewWordRequest with the rules
+// defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// RecordLearningResultRequestMultiError, or nil if none found.
-func (m *RecordLearningResultRequest) ValidateAll() error {
+// ReviewWordRequestMultiError, or nil if none found.
+func (m *ReviewWordRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *RecordLearningResultRequest) validate(all bool) error {
+func (m *ReviewWordRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
-	// no validation rules for MemoryUnitId
+	// no validation rules for WordId
 
 	// no validation rules for Result
 
 	// no validation rules for ResponseTime
 
 	if len(errors) > 0 {
-		return RecordLearningResultRequestMultiError(errors)
+		return ReviewWordRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// RecordLearningResultRequestMultiError is an error wrapping multiple
-// validation errors returned by RecordLearningResultRequest.ValidateAll() if
-// the designated constraints aren't met.
-type RecordLearningResultRequestMultiError []error
+// ReviewWordRequestMultiError is an error wrapping multiple validation errors
+// returned by ReviewWordRequest.ValidateAll() if the designated constraints
+// aren't met.
+type ReviewWordRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m RecordLearningResultRequestMultiError) Error() string {
+func (m ReviewWordRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -2262,12 +2262,11 @@ func (m RecordLearningResultRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m RecordLearningResultRequestMultiError) AllErrors() []error { return m }
+func (m ReviewWordRequestMultiError) AllErrors() []error { return m }
 
-// RecordLearningResultRequestValidationError is the validation error returned
-// by RecordLearningResultRequest.Validate if the designated constraints
-// aren't met.
-type RecordLearningResultRequestValidationError struct {
+// ReviewWordRequestValidationError is the validation error returned by
+// ReviewWordRequest.Validate if the designated constraints aren't met.
+type ReviewWordRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -2275,24 +2274,24 @@ type RecordLearningResultRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e RecordLearningResultRequestValidationError) Field() string { return e.field }
+func (e ReviewWordRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e RecordLearningResultRequestValidationError) Reason() string { return e.reason }
+func (e ReviewWordRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e RecordLearningResultRequestValidationError) Cause() error { return e.cause }
+func (e ReviewWordRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e RecordLearningResultRequestValidationError) Key() bool { return e.key }
+func (e ReviewWordRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e RecordLearningResultRequestValidationError) ErrorName() string {
-	return "RecordLearningResultRequestValidationError"
+func (e ReviewWordRequestValidationError) ErrorName() string {
+	return "ReviewWordRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e RecordLearningResultRequestValidationError) Error() string {
+func (e ReviewWordRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -2304,14 +2303,14 @@ func (e RecordLearningResultRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sRecordLearningResultRequest.%s: %s%s",
+		"invalid %sReviewWordRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = RecordLearningResultRequestValidationError{}
+var _ error = ReviewWordRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -2319,24 +2318,24 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = RecordLearningResultRequestValidationError{}
+} = ReviewWordRequestValidationError{}
 
-// Validate checks the field values on RecordLearningResultResponse with the
-// rules defined in the proto definition for this message. If any rules are
+// Validate checks the field values on ReviewWordResponse with the rules
+// defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *RecordLearningResultResponse) Validate() error {
+func (m *ReviewWordResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on RecordLearningResultResponse with the
-// rules defined in the proto definition for this message. If any rules are
+// ValidateAll checks the field values on ReviewWordResponse with the rules
+// defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// RecordLearningResultResponseMultiError, or nil if none found.
-func (m *RecordLearningResultResponse) ValidateAll() error {
+// ReviewWordResponseMultiError, or nil if none found.
+func (m *ReviewWordResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *RecordLearningResultResponse) validate(all bool) error {
+func (m *ReviewWordResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -2344,19 +2343,19 @@ func (m *RecordLearningResultResponse) validate(all bool) error {
 	var errors []error
 
 	if len(errors) > 0 {
-		return RecordLearningResultResponseMultiError(errors)
+		return ReviewWordResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// RecordLearningResultResponseMultiError is an error wrapping multiple
-// validation errors returned by RecordLearningResultResponse.ValidateAll() if
-// the designated constraints aren't met.
-type RecordLearningResultResponseMultiError []error
+// ReviewWordResponseMultiError is an error wrapping multiple validation errors
+// returned by ReviewWordResponse.ValidateAll() if the designated constraints
+// aren't met.
+type ReviewWordResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m RecordLearningResultResponseMultiError) Error() string {
+func (m ReviewWordResponseMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -2365,12 +2364,11 @@ func (m RecordLearningResultResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m RecordLearningResultResponseMultiError) AllErrors() []error { return m }
+func (m ReviewWordResponseMultiError) AllErrors() []error { return m }
 
-// RecordLearningResultResponseValidationError is the validation error returned
-// by RecordLearningResultResponse.Validate if the designated constraints
-// aren't met.
-type RecordLearningResultResponseValidationError struct {
+// ReviewWordResponseValidationError is the validation error returned by
+// ReviewWordResponse.Validate if the designated constraints aren't met.
+type ReviewWordResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -2378,24 +2376,24 @@ type RecordLearningResultResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e RecordLearningResultResponseValidationError) Field() string { return e.field }
+func (e ReviewWordResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e RecordLearningResultResponseValidationError) Reason() string { return e.reason }
+func (e ReviewWordResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e RecordLearningResultResponseValidationError) Cause() error { return e.cause }
+func (e ReviewWordResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e RecordLearningResultResponseValidationError) Key() bool { return e.key }
+func (e ReviewWordResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e RecordLearningResultResponseValidationError) ErrorName() string {
-	return "RecordLearningResultResponseValidationError"
+func (e ReviewWordResponseValidationError) ErrorName() string {
+	return "ReviewWordResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e RecordLearningResultResponseValidationError) Error() string {
+func (e ReviewWordResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -2407,14 +2405,14 @@ func (e RecordLearningResultResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sRecordLearningResultResponse.%s: %s%s",
+		"invalid %sReviewWordResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = RecordLearningResultResponseValidationError{}
+var _ error = ReviewWordResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -2422,7 +2420,217 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = RecordLearningResultResponseValidationError{}
+} = ReviewWordResponseValidationError{}
+
+// Validate checks the field values on ReviewHanCharRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ReviewHanCharRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ReviewHanCharRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ReviewHanCharRequestMultiError, or nil if none found.
+func (m *ReviewHanCharRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ReviewHanCharRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for HanCharId
+
+	// no validation rules for Result
+
+	// no validation rules for ResponseTime
+
+	if len(errors) > 0 {
+		return ReviewHanCharRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// ReviewHanCharRequestMultiError is an error wrapping multiple validation
+// errors returned by ReviewHanCharRequest.ValidateAll() if the designated
+// constraints aren't met.
+type ReviewHanCharRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ReviewHanCharRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ReviewHanCharRequestMultiError) AllErrors() []error { return m }
+
+// ReviewHanCharRequestValidationError is the validation error returned by
+// ReviewHanCharRequest.Validate if the designated constraints aren't met.
+type ReviewHanCharRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ReviewHanCharRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ReviewHanCharRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ReviewHanCharRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ReviewHanCharRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ReviewHanCharRequestValidationError) ErrorName() string {
+	return "ReviewHanCharRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ReviewHanCharRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sReviewHanCharRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ReviewHanCharRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ReviewHanCharRequestValidationError{}
+
+// Validate checks the field values on ReviewHanCharResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ReviewHanCharResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ReviewHanCharResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ReviewHanCharResponseMultiError, or nil if none found.
+func (m *ReviewHanCharResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ReviewHanCharResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return ReviewHanCharResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ReviewHanCharResponseMultiError is an error wrapping multiple validation
+// errors returned by ReviewHanCharResponse.ValidateAll() if the designated
+// constraints aren't met.
+type ReviewHanCharResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ReviewHanCharResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ReviewHanCharResponseMultiError) AllErrors() []error { return m }
+
+// ReviewHanCharResponseValidationError is the validation error returned by
+// ReviewHanCharResponse.Validate if the designated constraints aren't met.
+type ReviewHanCharResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ReviewHanCharResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ReviewHanCharResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ReviewHanCharResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ReviewHanCharResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ReviewHanCharResponseValidationError) ErrorName() string {
+	return "ReviewHanCharResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ReviewHanCharResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sReviewHanCharResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ReviewHanCharResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ReviewHanCharResponseValidationError{}
 
 // Validate checks the field values on MemoryReview with the rules defined in
 // the proto definition for this message. If any rules are violated, the first
