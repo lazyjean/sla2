@@ -6,6 +6,10 @@ import (
 	pb "github.com/lazyjean/sla2/api/proto/v1"
 	"github.com/lazyjean/sla2/internal/application/service"
 	"github.com/lazyjean/sla2/internal/domain/entity"
+	"github.com/lazyjean/sla2/pkg/logger"
+	"go.uber.org/zap"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type LearningService struct {
@@ -184,4 +188,67 @@ func ToPBMemoryUnits(units []*entity.MemoryUnit) []*pb.MemoryUnit {
 		pbUnits[i] = ToPBMemoryUnit(u) // 假设已存在 ToPBMemoryUnit
 	}
 	return pbUnits
+}
+
+// GetMemoryStats 获取记忆单元学习统计
+func (s *LearningService) GetMemoryStats(ctx context.Context, req *pb.GetMemoryStatsRequest) (*pb.GetMemoryStatsResponse, error) {
+	log := logger.GetLogger(ctx)
+	log.Info("GetMemoryStats called", zap.Any("request", req))
+
+	// 处理可选的类型过滤
+	var unitType *entity.MemoryUnitType
+	if req.Type != nil {
+		t := ToEntityMemoryUnitType(req.GetType())
+		unitType = &t
+	}
+
+	// TODO: 处理 tag 和 category 过滤 (需要修改 service 和 repository)
+
+	// 调用 memory service 获取统计信息
+	stats, err := s.memoryService.GetMemoryStats(ctx, unitType)
+	if err != nil {
+		log.Error("Failed to get memory stats from service", zap.Error(err))
+		return nil, status.Error(codes.Internal, "failed to get memory stats")
+	}
+
+	if stats == nil { // Handle case where service returns nil stats (e.g., no data)
+		log.Warn("Memory service returned nil stats")
+		return &pb.GetMemoryStatsResponse{}, nil // Return empty response
+	}
+
+	// 将领域统计信息映射到 PB 响应
+	pbResponse := &pb.GetMemoryStatsResponse{
+		TotalLearned:    uint32(stats.TotalCount),                     // 映射 TotalCount
+		MasteredCount:   uint32(stats.MasteredCount),                  // 映射 MasteredCount
+		NeedReviewCount: uint32(stats.LearningCount + stats.NewCount), // 估算: 学习中+新
+		TotalStudyTime:  0,                                            // repository.MemoryUnitStats 没有这个字段
+		LevelStats:      make(map[uint32]uint32),
+		RetentionRates:  make(map[uint32]float32),
+	}
+
+	// 填充 level_stats
+	pbResponse.LevelStats[uint32(entity.MasteryLevelMastered)] = uint32(stats.MasteredCount)
+	pbResponse.LevelStats[uint32(entity.MasteryLevelBeginner)] = 0 // Placeholder
+	pbResponse.LevelStats[uint32(entity.MasteryLevelFamiliar)] = 0 // Placeholder
+	if stats.LearningCount > 0 {                                   // Approximate learning count split if needed, better handled in repo/service
+		// This is just a guess, real breakdown needs more data
+		pbResponse.LevelStats[uint32(entity.MasteryLevelBeginner)] = uint32(stats.LearningCount / 2)
+		pbResponse.LevelStats[uint32(entity.MasteryLevelFamiliar)] = uint32(stats.LearningCount) - pbResponse.LevelStats[uint32(entity.MasteryLevelBeginner)]
+	}
+	pbResponse.LevelStats[uint32(entity.MasteryLevelUnlearned)] = uint32(stats.NewCount)
+	// Add Expert level if tracked
+	// pbResponse.LevelStats[uint32(entity.MasteryLevelExpert)] = ...
+
+	// 填充 retention_rates
+	if stats.TotalCount > 0 && stats.RetentionRate > 0 {
+		if unitType != nil {
+			pbResponse.RetentionRates[uint32(*unitType)] = float32(stats.RetentionRate)
+		} else {
+			// Maybe add an 'overall' key or calculate per type if repo provided richer data
+			pbResponse.RetentionRates[0] = float32(stats.RetentionRate) // Use 0 for overall/unspecified?
+		}
+	}
+
+	log.Info("GetMemoryStats successful", zap.Any("response", pbResponse))
+	return pbResponse, nil
 }

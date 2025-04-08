@@ -138,14 +138,14 @@ func (r *memoryUnitRepository) CountNeedReviewByTypes(ctx context.Context, types
 }
 
 // GetStats 获取统计信息
-func (r *memoryUnitRepository) GetStats(ctx context.Context, unitType entity.MemoryUnitType) (*repository.MemoryUnitStats, error) {
+func (r *memoryUnitRepository) GetStats(ctx context.Context, userID entity.UID, unitType entity.MemoryUnitType) (*repository.MemoryUnitStats, error) {
 	var stats repository.MemoryUnitStats
 	var totalCount, masteredCount, learningCount, newCount int64
 
 	// 获取总数
 	if err := r.db.WithContext(ctx).
 		Model(&entity.MemoryUnit{}).
-		Where("type = ?", unitType).
+		Where("user_id = ? AND type = ?", userID, unitType).
 		Count(&totalCount).Error; err != nil {
 		return nil, err
 	}
@@ -154,7 +154,7 @@ func (r *memoryUnitRepository) GetStats(ctx context.Context, unitType entity.Mem
 	// 获取已掌握数量（掌握和精通）
 	if err := r.db.WithContext(ctx).
 		Model(&entity.MemoryUnit{}).
-		Where("type = ? AND mastery_level IN ?", unitType, []entity.MasteryLevel{entity.MasteryLevelMastered, entity.MasteryLevelExpert}).
+		Where("user_id = ? AND type = ? AND mastery_level IN ?", userID, unitType, []entity.MasteryLevel{entity.MasteryLevelMastered, entity.MasteryLevelExpert}).
 		Count(&masteredCount).Error; err != nil {
 		return nil, err
 	}
@@ -163,7 +163,7 @@ func (r *memoryUnitRepository) GetStats(ctx context.Context, unitType entity.Mem
 	// 获取学习中数量（初学和熟悉）
 	if err := r.db.WithContext(ctx).
 		Model(&entity.MemoryUnit{}).
-		Where("type = ? AND mastery_level IN ?", unitType, []entity.MasteryLevel{entity.MasteryLevelBeginner, entity.MasteryLevelFamiliar}).
+		Where("user_id = ? AND type = ? AND mastery_level IN ?", userID, unitType, []entity.MasteryLevel{entity.MasteryLevelBeginner, entity.MasteryLevelFamiliar}).
 		Count(&learningCount).Error; err != nil {
 		return nil, err
 	}
@@ -172,7 +172,7 @@ func (r *memoryUnitRepository) GetStats(ctx context.Context, unitType entity.Mem
 	// 获取新内容数量（未学习）
 	if err := r.db.WithContext(ctx).
 		Model(&entity.MemoryUnit{}).
-		Where("type = ? AND mastery_level = ?", unitType, entity.MasteryLevelUnlearned).
+		Where("user_id = ? AND type = ? AND mastery_level = ?", userID, unitType, entity.MasteryLevelUnlearned).
 		Count(&newCount).Error; err != nil {
 		return nil, err
 	}

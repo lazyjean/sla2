@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/lazyjean/sla2/internal/domain/entity"
+	"github.com/lazyjean/sla2/internal/domain/repository"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -83,6 +84,14 @@ func (m *MockMemoryService) ListMemoriesForReview(ctx context.Context, page, pag
 	units, _ := args.Get(0).([]*entity.MemoryUnit)
 	total, _ := args.Get(1).(int)
 	return units, total, args.Error(2)
+}
+
+func (m *MockMemoryService) GetMemoryStats(ctx context.Context, unitType *entity.MemoryUnitType) (*repository.MemoryUnitStats, error) {
+	args := m.Called(ctx, unitType)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*repository.MemoryUnitStats), args.Error(1)
 }
 
 func (m *MockLearningRepository) SaveCourseProgress(ctx context.Context, progress *entity.CourseLearningProgress) error {

@@ -29,6 +29,8 @@ type MemoryService interface {
 	GetMemoryUnit(ctx context.Context, memoryUnitID uint32) (*entity.MemoryUnit, error)
 	// ListMemoriesForReview 获取需要复习的记忆单元列表
 	ListMemoriesForReview(ctx context.Context, page, pageSize uint32, types []entity.MemoryUnitType) ([]*entity.MemoryUnit, int, error)
+	// GetMemoryStats 获取记忆统计信息
+	GetMemoryStats(ctx context.Context, unitType *entity.MemoryUnitType) (*repository.MemoryUnitStats, error)
 }
 
 // WordStats 单词学习统计信息
@@ -324,6 +326,38 @@ func (s *MemoryServiceImpl) calculateNextReviewInterval(unit *entity.MemoryUnit)
 		Hours:   hours,
 		Minutes: minutes,
 	}
+}
+
+// GetMemoryStats 获取记忆统计信息
+func (s *MemoryServiceImpl) GetMemoryStats(ctx context.Context, unitType *entity.MemoryUnitType) (*repository.MemoryUnitStats, error) {
+	log := logger.GetLogger(ctx)
+
+	// 从 context 获取 userID
+	userID, err := GetUserID(ctx) // Use the function from the same package
+	if err != nil {
+		log.Error("Failed to get userID from context for GetMemoryStats", zap.Error(err))
+		// 根据实际错误类型返回，例如 ErrNoUserInContext 可能映射为 Unauthenticated
+		return nil, err // Or: status.Error(codes.Unauthenticated, "user not found in context")
+	}
+
+	// 如果未指定类型，我们需要决定是返回错误、所有类型的聚合，还是某种默认类型。
+	// 当前 repository.GetStats 只接受一个明确的类型。
+	// 暂时：如果 unitType 为 nil，我们返回错误或默认类型（例如 HanChar）。
+	// TODO: 明确处理 unitType == nil 的情况。
+	if unitType == nil {
+		log.Warn("GetMemoryStats called without specific unit type, using default", zap.Uint32("userID", uint32(userID)))
+		// 选项 B: 使用默认类型 (例如 HanChar)
+		defaultType := entity.MemoryUnitTypeHanChar
+		unitType = &defaultType
+	}
+
+	// 直接使用 entity.UID 类型调用 repository
+	stats, err := s.memoryRepo.GetStats(ctx, userID, *unitType)
+	if err != nil {
+		log.Error("Failed to get stats from repository", zap.Error(err), zap.Uint32("userID", uint32(userID)), zap.Any("unitType", *unitType))
+		return nil, err
+	}
+	return stats, nil
 }
 
 var _ MemoryService = (*MemoryServiceImpl)(nil)

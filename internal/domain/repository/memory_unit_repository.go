@@ -27,8 +27,8 @@ type MemoryUnitRepository interface {
 	ListByUserID(ctx context.Context, userID uint32) ([]*entity.MemoryUnit, error)
 	// ListByUserIDAndType 获取用户指定类型的记忆单元
 	ListByUserIDAndType(ctx context.Context, userID uint32, unitType entity.MemoryUnitType) ([]*entity.MemoryUnit, error)
-	// GetStats 获取统计信息
-	GetStats(ctx context.Context, unitType entity.MemoryUnitType) (*MemoryUnitStats, error)
+	// GetStats 获取指定用户的统计信息
+	GetStats(ctx context.Context, userID entity.UID, unitType entity.MemoryUnitType) (*MemoryUnitStats, error)
 }
 
 // MemoryUnitStats 记忆单元统计信息
