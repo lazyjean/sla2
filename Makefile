@@ -228,7 +228,7 @@ update-chart-version:
 
 # 修改 ci target
 .PHONY: ci
-ci: fmt proto generate test bump-version update-chart-version docker-build docker-push deploy
+ci: fmt proto generate test bump-version docker-build docker-push deploy
 
 # gRPC 接口调试
 .PHONY: run-grpcui-local run-grpcui-remote
