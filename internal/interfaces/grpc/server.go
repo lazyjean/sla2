@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -24,7 +25,6 @@ import (
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/admin"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/course"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/learning"
-	"github.com/lazyjean/sla2/internal/interfaces/grpc/middleware"
 	grpcmiddleware "github.com/lazyjean/sla2/internal/interfaces/grpc/middleware"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/question"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/user"
@@ -35,9 +35,9 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health/grpc_health_v1"
-	"google.golang.org/grpc/metadata"
+
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
-	"google.golang.org/protobuf/proto"
 )
 
 // GRPCServer gRPC 服务器
@@ -105,58 +105,10 @@ func NewGRPCServer(
 ) *GRPCServer {
 	ctx := context.Background()
 	mux := runtime.NewServeMux(
-		runtime.WithMetadata(func(ctx context.Context, req *http.Request) metadata.MD {
-			log := logger.GetLogger(ctx)
-			log.Info("gRPC-Gateway request",
-				zap.String("method", req.Method),
-				zap.String("path", req.URL.Path),
-				zap.String("query", req.URL.RawQuery),
-				zap.String("remote_addr", req.RemoteAddr),
-				zap.String("user_agent", req.UserAgent()),
-			)
-
-			md := metadata.MD{}
-
-			// 从 Authorization header 获取 token
-			if auth := req.Header.Get("Authorization"); auth != "" {
-				md = metadata.Join(md, metadata.Pairs("authorization", auth))
-			}
-
-			// 从 cookie 获取 token
-			if cookie, err := req.Cookie(grpcmiddleware.TokenCookieName); err == nil {
-				md = metadata.Join(md, metadata.Pairs("authorization", "Bearer "+cookie.Value))
-			}
-
-			return md
-		}),
-		runtime.WithForwardResponseOption(func(ctx context.Context, w http.ResponseWriter, resp proto.Message) error {
-			log := logger.GetLogger(ctx)
-			md, ok := runtime.ServerMetadataFromContext(ctx)
-			if !ok {
-				log.Warn("No server metadata in context")
-				return nil
-			}
-
-			// 处理 cookie 设置
-			if vals := md.HeaderMD.Get(middleware.MDHeaderAccessToken); len(vals) > 0 {
-				grpcmiddleware.SetTokenCookie(ctx, w, vals[0])
-			}
-
-			return nil
-		}),
-		runtime.WithErrorHandler(func(ctx context.Context, mux *runtime.ServeMux, marshaler runtime.Marshaler, w http.ResponseWriter, r *http.Request, err error) {
-			log := logger.GetLogger(ctx)
-			log.Error("gRPC-Gateway error",
-				zap.String("method", r.Method),
-				zap.String("path", r.URL.Path),
-				zap.Error(err),
-			)
-			runtime.DefaultHTTPErrorHandler(ctx, mux, marshaler, w, r, err)
-		}),
-		runtime.WithOutgoingHeaderMatcher(func(key string) (string, bool) {
-			// 不需要转换任何 metadata 为 header，因为我们使用 SetCookie 直接设置
-			return "", false
-		}),
+		runtime.WithMetadata(WithMetadata),
+		runtime.WithForwardResponseOption(WithForwardResponseOption),
+		runtime.WithErrorHandler(WithErrorHandler),
+		runtime.WithOutgoingHeaderMatcher(WithOutgoingHeaderMatcher),
 	)
 
 	// 创建拦截器链
@@ -185,7 +137,7 @@ func NewGRPCServer(
 	)
 
 	// 注册 gRPC-Gateway 路由
-	opts := []grpc.DialOption{grpc.WithInsecure()}
+	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 	endpoint := fmt.Sprintf("localhost:%d", config.GetConfig().GRPC.Port)
 
 	// 注册 HTTP 处理器

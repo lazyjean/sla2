@@ -57,6 +57,7 @@ func (s *UserService) Register(ctx context.Context, req *pb.RegisterRequest) (*p
 	}, nil
 }
 
+// Login 处理用户登录请求
 func (s *UserService) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResponse, error) {
 	result, err := s.userService.Login(ctx, &dto.LoginRequest{
 		Account:  req.Account,
@@ -66,7 +67,7 @@ func (s *UserService) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Logi
 		return nil, err
 	}
 
-	// 设置 cookie
+	// 设置 token
 	if err := grpc.SetHeader(ctx, metadata.Pairs(
 		middleware.MDHeaderAccessToken, result.Token,
 		middleware.MDHeaderRefreshToken, result.RefreshToken,
@@ -155,8 +156,11 @@ func (s *UserService) AppleLogin(ctx context.Context, req *pb.AppleLoginRequest)
 		return nil, err
 	}
 
-	// 设置 token 到响应头，用于设置 cookie
-	if err := grpc.SetHeader(ctx, metadata.Pairs(middleware.MDHeaderAccessToken, resp.Token)); err != nil {
+	// 设置 token
+	if err := grpc.SetHeader(ctx, metadata.Pairs(
+		middleware.MDHeaderAccessToken, resp.Token,
+		middleware.MDHeaderRefreshToken, resp.RefreshToken,
+	)); err != nil {
 		return nil, err
 	}
 

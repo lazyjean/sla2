@@ -9,25 +9,25 @@ import (
 )
 
 const (
-	// TokenCookieName 是用于存储访问令牌的 cookie 名称
-	TokenCookieName = "access_token"
+	// HTTPCookieAccessTokenName 是用于存储访问令牌的 cookie 名称
+	HTTPCookieAccessTokenName = "access_token"
 
-	// MDHeaderRefreshToken 是用于存储刷新令牌的 cookie 名称
-	MDHeaderRefreshToken = "refresh_token"
+	// MDHeaderAccessToken 是 gRPC metadata 中用于设置访问令牌的 header 名称
+	MDHeaderAccessToken = "x-access-token"
 
-	// MDHeaderAccessToken 是 gRPC metadata 中用于设置 cookie 的 header 名称
-	MDHeaderAccessToken = "access_token"
+	// MDHeaderRefreshToken 是 gRPC metadata 中用于设置刷新令牌的 header 名称
+	MDHeaderRefreshToken = "x-refresh-token"
 )
 
-// SetTokenCookie sets the token cookie in the response
-func SetTokenCookie(ctx context.Context, w http.ResponseWriter, token string) {
+// SetAccessTokenInHTTPResponseCookie sets the token cookie in the response
+func SetAccessTokenInHTTPResponseCookie(ctx context.Context, w http.ResponseWriter, token string) {
 	// todo: 这里使用了全局配置, 其它地方都是使用的注入方式
 	// 获取环境配置
 	cfg := config.GetConfig()
 	isDev := cfg.Server.Mode == "debug" // 使用 Server.Mode 判断环境
 
 	cookie := &http.Cookie{
-		Name:     TokenCookieName,
+		Name:     HTTPCookieAccessTokenName,
 		Value:    token,
 		Path:     "/",
 		Domain:   "",           // 让浏览器自动设置为当前域名

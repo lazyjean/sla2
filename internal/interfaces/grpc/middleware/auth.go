@@ -70,28 +70,12 @@ func extractToken(ctx context.Context) (string, error) {
 	}
 
 	// 从 Authorization 头中获取 token
-	values := md.Get("authorization")
+	values := md.Get(MDHeaderAccessToken)
 	if len(values) == 0 {
 		return "", status.Error(codes.Unauthenticated, "未授权")
 	}
 
-	token := values[0]
-	if !strings.HasPrefix(token, "Bearer ") {
-		return "", status.Error(codes.Unauthenticated, "无效的认证方式")
-	}
-
-	return strings.TrimPrefix(token, "Bearer "), nil
-}
-
-// wrappedServerStream 包装 ServerStream 以支持修改上下文
-type wrappedServerStream struct {
-	grpc.ServerStream
-	ctx context.Context
-}
-
-// Context 返回包装的上下文
-func (w *wrappedServerStream) Context() context.Context {
-	return w.ctx
+	return values[0], nil
 }
 
 // StreamServerInterceptor 流式 RPC 认证中间件
