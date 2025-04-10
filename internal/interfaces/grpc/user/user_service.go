@@ -6,6 +6,7 @@ import (
 	pb "github.com/lazyjean/sla2/api/proto/v1"
 	"github.com/lazyjean/sla2/internal/application/dto"
 	"github.com/lazyjean/sla2/internal/application/service"
+	"github.com/lazyjean/sla2/internal/interfaces/grpc/middleware"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -35,8 +36,11 @@ func (s *UserService) Register(ctx context.Context, req *pb.RegisterRequest) (*p
 		return nil, err
 	}
 
-	// 设置 token 到响应头，用于设置 cookie
-	if err := grpc.SetHeader(ctx, metadata.Pairs("set-cookie-token", result.Token)); err != nil {
+	// 设置 cookie
+	if err := grpc.SetHeader(ctx, metadata.Pairs(
+		middleware.MDHeaderJwtToken, result.Token,
+		middleware.MDHeaderJwtRefreshToken, result.RefreshToken,
+	)); err != nil {
 		return nil, err
 	}
 
@@ -62,7 +66,11 @@ func (s *UserService) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Logi
 		return nil, err
 	}
 
-	if err := grpc.SetHeader(ctx, metadata.Pairs("set-cookie-token", result.Token)); err != nil {
+	// 设置 cookie
+	if err := grpc.SetHeader(ctx, metadata.Pairs(
+		middleware.MDHeaderJwtToken, result.Token,
+		middleware.MDHeaderJwtRefreshToken, result.RefreshToken,
+	)); err != nil {
 		return nil, err
 	}
 
@@ -148,7 +156,7 @@ func (s *UserService) AppleLogin(ctx context.Context, req *pb.AppleLoginRequest)
 	}
 
 	// 设置 token 到响应头，用于设置 cookie
-	if err := grpc.SetHeader(ctx, metadata.Pairs("set-cookie-token", resp.Token)); err != nil {
+	if err := grpc.SetHeader(ctx, metadata.Pairs(middleware.MDHeaderJwtToken, resp.Token)); err != nil {
 		return nil, err
 	}
 
@@ -180,8 +188,11 @@ func (s *UserService) RefreshToken(ctx context.Context, req *pb.RefreshTokenRequ
 		return nil, err
 	}
 
-	// 设置新的 token 到响应头，用于设置 cookie
-	if err := grpc.SetHeader(ctx, metadata.Pairs("set-cookie-token", resp.AccessToken)); err != nil {
+	// 设置 cookie
+	if err := grpc.SetHeader(ctx, metadata.Pairs(
+		middleware.MDHeaderJwtToken, resp.AccessToken,
+		middleware.MDHeaderJwtRefreshToken, resp.RefreshToken,
+	)); err != nil {
 		return nil, err
 	}
 
@@ -193,8 +204,11 @@ func (s *UserService) RefreshToken(ctx context.Context, req *pb.RefreshTokenRequ
 
 // Logout 登出
 func (s *UserService) Logout(ctx context.Context, req *pb.LogoutRequest) (*pb.LogoutResponse, error) {
-	// 设置空的 token 到响应头，用于清除 cookie
-	if err := grpc.SetHeader(ctx, metadata.Pairs("set-cookie-token", "")); err != nil {
+	// 清除 cookie
+	if err := grpc.SetHeader(ctx, metadata.Pairs(
+		middleware.MDHeaderJwtToken, "",
+		middleware.MDHeaderJwtRefreshToken, "",
+	)); err != nil {
 		return nil, err
 	}
 

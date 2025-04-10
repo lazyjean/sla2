@@ -24,6 +24,7 @@ import (
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/admin"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/course"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/learning"
+	"github.com/lazyjean/sla2/internal/interfaces/grpc/middleware"
 	grpcmiddleware "github.com/lazyjean/sla2/internal/interfaces/grpc/middleware"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/question"
 	"github.com/lazyjean/sla2/internal/interfaces/grpc/user"
@@ -137,7 +138,7 @@ func NewGRPCServer(
 			}
 
 			// 处理 cookie 设置
-			if vals := md.HeaderMD.Get("set-cookie-token"); len(vals) > 0 {
+			if vals := md.HeaderMD.Get(middleware.MDHeaderJwtToken); len(vals) > 0 {
 				grpcmiddleware.SetTokenCookie(ctx, w, vals[0])
 			}
 

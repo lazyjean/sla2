@@ -6,6 +6,7 @@ import (
 	pb "github.com/lazyjean/sla2/api/proto/v1"
 	"github.com/lazyjean/sla2/internal/application/dto"
 	"github.com/lazyjean/sla2/internal/application/service"
+	"github.com/lazyjean/sla2/internal/interfaces/grpc/middleware"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
@@ -49,9 +50,12 @@ func (s *AdminService) InitializeSystem(ctx context.Context, req *pb.AdminServic
 
 	// set cookie token to metadata, grpc-gateway will convert it to http set-cookie header
 	md := metadata.Pairs(
-		"set-cookie-token", resp.AccessToken,
+		middleware.MDHeaderJwtToken, resp.AccessToken,
+		middleware.MDHeaderJwtRefreshToken, resp.RefreshToken,
 	)
-	grpc.SetHeader(ctx, md)
+	if err := grpc.SetHeader(ctx, md); err != nil {
+		return nil, err
+	}
 
 	return &pb.AdminServiceInitializeSystemResponse{
 		Admin: &pb.AdminInfo{
@@ -80,9 +84,12 @@ func (s *AdminService) AdminLogin(ctx context.Context, req *pb.AdminServiceAdmin
 
 	// set cookie token to metadata, grpc-gateway will convert it to http set-cookie header
 	md := metadata.Pairs(
-		"set-cookie-token", resp.AccessToken,
+		middleware.MDHeaderJwtToken, resp.AccessToken,
+		middleware.MDHeaderJwtRefreshToken, resp.RefreshToken,
 	)
-	grpc.SetHeader(ctx, md)
+	if err := grpc.SetHeader(ctx, md); err != nil {
+		return nil, err
+	}
 
 	return &pb.AdminServiceAdminLoginResponse{
 		Admin: &pb.AdminInfo{

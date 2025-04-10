@@ -9,7 +9,14 @@ import (
 )
 
 const (
+	// TokenCookieName 是用于存储访问令牌的 cookie 名称
 	TokenCookieName = "access_token"
+
+	// MDHeaderJwtRefreshToken 是用于存储刷新令牌的 cookie 名称
+	MDHeaderJwtRefreshToken = "jwt_refresh_token"
+
+	// MDHeaderJwtToken 是 gRPC metadata 中用于设置 cookie 的 header 名称
+	MDHeaderJwtToken = "jwt_token"
 )
 
 // SetTokenCookie sets the token cookie in the response
