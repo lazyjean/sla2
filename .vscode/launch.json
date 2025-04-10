@@ -14,7 +14,8 @@
                 "ACTIVE_PROFILE": "local"
             },
             "args": [],
-            "showLog": true
+            "showLog": true,
+            "showRegisters": false
         },
         {
             "name": "Launch with gRPC UI",
@@ -64,6 +65,15 @@
                 "-test.v"
             ],
             "showLog": true
+        },
+        {
+            "name": "Launch",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "showRegisters": false,
+            "showGlobalVariables": false
         }
     ]
 }
