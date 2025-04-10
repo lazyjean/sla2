@@ -38,8 +38,8 @@ func (s *UserService) Register(ctx context.Context, req *pb.RegisterRequest) (*p
 
 	// 设置 cookie
 	if err := grpc.SetHeader(ctx, metadata.Pairs(
-		middleware.MDHeaderJwtToken, result.Token,
-		middleware.MDHeaderJwtRefreshToken, result.RefreshToken,
+		middleware.MDHeaderAccessToken, result.Token,
+		middleware.MDHeaderRefreshToken, result.RefreshToken,
 	)); err != nil {
 		return nil, err
 	}
@@ -68,8 +68,8 @@ func (s *UserService) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Logi
 
 	// 设置 cookie
 	if err := grpc.SetHeader(ctx, metadata.Pairs(
-		middleware.MDHeaderJwtToken, result.Token,
-		middleware.MDHeaderJwtRefreshToken, result.RefreshToken,
+		middleware.MDHeaderAccessToken, result.Token,
+		middleware.MDHeaderRefreshToken, result.RefreshToken,
 	)); err != nil {
 		return nil, err
 	}
@@ -156,7 +156,7 @@ func (s *UserService) AppleLogin(ctx context.Context, req *pb.AppleLoginRequest)
 	}
 
 	// 设置 token 到响应头，用于设置 cookie
-	if err := grpc.SetHeader(ctx, metadata.Pairs(middleware.MDHeaderJwtToken, resp.Token)); err != nil {
+	if err := grpc.SetHeader(ctx, metadata.Pairs(middleware.MDHeaderAccessToken, resp.Token)); err != nil {
 		return nil, err
 	}
 
@@ -190,8 +190,8 @@ func (s *UserService) RefreshToken(ctx context.Context, req *pb.RefreshTokenRequ
 
 	// 设置 cookie
 	if err := grpc.SetHeader(ctx, metadata.Pairs(
-		middleware.MDHeaderJwtToken, resp.AccessToken,
-		middleware.MDHeaderJwtRefreshToken, resp.RefreshToken,
+		middleware.MDHeaderAccessToken, resp.AccessToken,
+		middleware.MDHeaderRefreshToken, resp.RefreshToken,
 	)); err != nil {
 		return nil, err
 	}
@@ -206,8 +206,8 @@ func (s *UserService) RefreshToken(ctx context.Context, req *pb.RefreshTokenRequ
 func (s *UserService) Logout(ctx context.Context, req *pb.LogoutRequest) (*pb.LogoutResponse, error) {
 	// 清除 cookie
 	if err := grpc.SetHeader(ctx, metadata.Pairs(
-		middleware.MDHeaderJwtToken, "",
-		middleware.MDHeaderJwtRefreshToken, "",
+		middleware.MDHeaderAccessToken, "",
+		middleware.MDHeaderRefreshToken, "",
 	)); err != nil {
 		return nil, err
 	}

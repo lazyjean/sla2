@@ -138,7 +138,7 @@ func NewGRPCServer(
 			}
 
 			// 处理 cookie 设置
-			if vals := md.HeaderMD.Get(middleware.MDHeaderJwtToken); len(vals) > 0 {
+			if vals := md.HeaderMD.Get(middleware.MDHeaderAccessToken); len(vals) > 0 {
 				grpcmiddleware.SetTokenCookie(ctx, w, vals[0])
 			}
 

@@ -50,8 +50,8 @@ func (s *AdminService) InitializeSystem(ctx context.Context, req *pb.AdminServic
 
 	// set cookie token to metadata, grpc-gateway will convert it to http set-cookie header
 	md := metadata.Pairs(
-		middleware.MDHeaderJwtToken, resp.AccessToken,
-		middleware.MDHeaderJwtRefreshToken, resp.RefreshToken,
+		middleware.MDHeaderAccessToken, resp.AccessToken,
+		middleware.MDHeaderRefreshToken, resp.RefreshToken,
 	)
 	if err := grpc.SetHeader(ctx, md); err != nil {
 		return nil, err
@@ -84,8 +84,8 @@ func (s *AdminService) AdminLogin(ctx context.Context, req *pb.AdminServiceAdmin
 
 	// set cookie token to metadata, grpc-gateway will convert it to http set-cookie header
 	md := metadata.Pairs(
-		middleware.MDHeaderJwtToken, resp.AccessToken,
-		middleware.MDHeaderJwtRefreshToken, resp.RefreshToken,
+		middleware.MDHeaderAccessToken, resp.AccessToken,
+		middleware.MDHeaderRefreshToken, resp.RefreshToken,
 	)
 	if err := grpc.SetHeader(ctx, md); err != nil {
 		return nil, err
