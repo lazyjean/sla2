@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/lazyjean/sla2/internal/domain/entity"
+	domainErrors "github.com/lazyjean/sla2/internal/domain/errors"
 )
 
 // contextKey 是用于context的键类型
@@ -43,12 +44,12 @@ func GetUserID(ctx context.Context) (entity.UID, error) {
 		}
 
 		// 如果都获取不到，返回错误
-		return 0, ErrNoUserInContext
+		return 0, domainErrors.ErrUnauthenticated
 	}
 
 	// 如果用户ID为0，也视为未登录
 	if userID == 0 {
-		return 0, ErrNoUserInContext
+		return 0, domainErrors.ErrUnauthenticated
 	}
 
 	return userID, nil

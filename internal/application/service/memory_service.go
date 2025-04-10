@@ -6,9 +6,11 @@ import (
 	"time"
 
 	"github.com/lazyjean/sla2/internal/domain/entity"
+	domainErrors "github.com/lazyjean/sla2/internal/domain/errors" // Alias for domain errors
 	"github.com/lazyjean/sla2/internal/domain/repository"
 	"github.com/lazyjean/sla2/pkg/logger"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 )
 
 // MemoryService 记忆服务接口
@@ -67,21 +69,45 @@ type ReviewInterval struct {
 
 // MemoryServiceImpl 记忆服务实现
 type MemoryServiceImpl struct {
-	wordRepo   repository.WordRepository
-	memoryRepo repository.MemoryUnitRepository
+	wordRepo    repository.WordRepository
+	memoryRepo  repository.MemoryUnitRepository
+	hanCharRepo repository.HanCharRepository // Add HanCharRepository
 }
 
 // NewMemoryService 创建记忆服务实例
-func NewMemoryService(wordRepo repository.WordRepository, memoryRepo repository.MemoryUnitRepository) MemoryService {
+func NewMemoryService(wordRepo repository.WordRepository, memoryRepo repository.MemoryUnitRepository, hanCharRepo repository.HanCharRepository) MemoryService { // Add hanCharRepo param
 	return &MemoryServiceImpl{
-		wordRepo:   wordRepo,
-		memoryRepo: memoryRepo,
+		wordRepo:    wordRepo,
+		memoryRepo:  memoryRepo,
+		hanCharRepo: hanCharRepo, // Store hanCharRepo
 	}
 }
 
 // ReviewWord 复习单词
 func (s *MemoryServiceImpl) ReviewWord(ctx context.Context, wordID entity.WordID, result bool, responseTime uint32) error {
 	log := logger.GetLogger(ctx)
+
+	// Check if Word exists
+	_, err := s.wordRepo.GetByID(ctx, wordID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			log.Warn("Attempted to review non-existent word", zap.Uint32("wordID", uint32(wordID)))
+			return &domainErrors.Error{
+				Code:    domainErrors.CodeWordNotFound,
+				Message: "单词不存在",
+			}
+		}
+		log.Error("Failed to check word existence", zap.Error(err), zap.Uint32("wordID", uint32(wordID)))
+		return err // Return other DB errors
+	}
+
+	// Get UserID from context - Placeholder, needs interceptor fix
+	userID, err := GetUserID(ctx)
+	if err != nil {
+		log.Error("Failed to get UserID in ReviewWord", zap.Error(err))
+		// Returning error here because creating a unit without a user doesn't make sense
+		return err
+	}
 
 	// 获取或创建记忆单元
 	memoryUnit, err := s.memoryRepo.GetByTypeAndContentID(ctx, entity.MemoryUnitTypeWord, uint32(wordID))
@@ -91,11 +117,9 @@ func (s *MemoryServiceImpl) ReviewWord(ctx context.Context, wordID entity.WordID
 	}
 
 	if memoryUnit == nil {
-		// TODO: 需要确定 UserID 的来源，暂时使用 0
-		userID := uint32(0)
-		memoryUnit = entity.NewMemoryUnit(userID, entity.MemoryUnitTypeWord, uint32(wordID))
+		memoryUnit = entity.NewMemoryUnit(uint32(userID), entity.MemoryUnitTypeWord, uint32(wordID))
 		if err := s.memoryRepo.Create(ctx, memoryUnit); err != nil {
-			log.Error("Failed to create new memory unit for word", zap.Error(err), zap.Uint32("wordID", uint32(wordID)), zap.Uint32("userID", userID))
+			log.Error("Failed to create new memory unit for word", zap.Error(err), zap.Uint32("wordID", uint32(wordID)), zap.Uint32("userID", uint32(userID)))
 			return err
 		}
 		log.Info("Created new memory unit for word", zap.Uint32("unitID", memoryUnit.ID), zap.Uint32("wordID", uint32(wordID)))
@@ -132,7 +156,28 @@ func (s *MemoryServiceImpl) ReviewWord(ctx context.Context, wordID entity.WordID
 func (s *MemoryServiceImpl) ReviewHanChar(ctx context.Context, hanCharID uint32, result bool, responseTime uint32) error {
 	log := logger.GetLogger(ctx)
 
-	// 获取或创建记忆单元
+	// 1. Check if HanChar exists
+	_, err := s.hanCharRepo.GetByID(ctx, entity.HanCharID(hanCharID))
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			log.Warn("Attempted to review non-existent HanChar", zap.Uint32("hanCharID", hanCharID))
+			// Use a standard domain error or return gRPC status directly from handler
+			// For now, returning a domain error that the gRPC handler should convert.
+			return domainErrors.ErrNotFound // Return specific domain error
+		}
+		log.Error("Failed to check HanChar existence", zap.Error(err), zap.Uint32("hanCharID", hanCharID))
+		return err // Return other DB errors
+	}
+
+	// 2. Get UserID from context - Placeholder, needs interceptor fix
+	userID, err := GetUserID(ctx)
+	if err != nil {
+		log.Error("Failed to get UserID in ReviewHanChar", zap.Error(err))
+		// Returning error here because creating a unit without a user doesn't make sense
+		return err
+	}
+
+	// 3. Get or Create MemoryUnit (only if HanChar exists)
 	memoryUnit, err := s.memoryRepo.GetByTypeAndContentID(ctx, entity.MemoryUnitTypeHanChar, hanCharID)
 	if err != nil {
 		log.Error("Failed to get memory unit by type and content ID", zap.Error(err), zap.Uint32("hanCharID", hanCharID))
@@ -140,20 +185,18 @@ func (s *MemoryServiceImpl) ReviewHanChar(ctx context.Context, hanCharID uint32,
 	}
 
 	if memoryUnit == nil {
-		// TODO: 需要确定 UserID 的来源，暂时使用 0
-		userID := uint32(0)
-		memoryUnit = entity.NewMemoryUnit(userID, entity.MemoryUnitTypeHanChar, hanCharID)
+		memoryUnit = entity.NewMemoryUnit(uint32(userID), entity.MemoryUnitTypeHanChar, hanCharID)
 		if err := s.memoryRepo.Create(ctx, memoryUnit); err != nil {
-			log.Error("Failed to create new memory unit for han char", zap.Error(err), zap.Uint32("hanCharID", hanCharID), zap.Uint32("userID", userID))
+			log.Error("Failed to create new memory unit for han char", zap.Error(err), zap.Uint32("hanCharID", hanCharID), zap.Uint32("userID", uint32(userID)))
 			return err
 		}
 		log.Info("Created new memory unit for han char", zap.Uint32("unitID", memoryUnit.ID), zap.Uint32("hanCharID", hanCharID))
 	}
 
-	// 更新记忆统计
+	// 4. Update memory stats
 	memoryUnit.UpdateReviewStats(result, responseTime)
 
-	// 计算下次复习时间
+	// 5. Calculate next review time
 	interval := s.calculateNextReviewInterval(memoryUnit)
 	now := time.Now()
 	nextReviewAt := now.Add(time.Duration(interval.Days)*24*time.Hour +
@@ -161,7 +204,6 @@ func (s *MemoryServiceImpl) ReviewHanChar(ctx context.Context, hanCharID uint32,
 		time.Duration(interval.Minutes)*time.Minute)
 	memoryUnit.NextReviewAt = nextReviewAt
 
-	// 添加日志
 	log.Info("[Service ReviewHanChar] Calculated review interval",
 		zap.Uint32("UnitID", memoryUnit.ID),
 		zap.Any("Interval", interval),
@@ -169,7 +211,7 @@ func (s *MemoryServiceImpl) ReviewHanChar(ctx context.Context, hanCharID uint32,
 		zap.Time("CalculatedNextReviewAt", nextReviewAt),
 	)
 
-	// 保存更新
+	// 6. Save updated memory unit
 	if err := s.memoryRepo.Update(ctx, memoryUnit); err != nil {
 		log.Error("Failed to update memory unit after han char review", zap.Error(err), zap.Uint32("unitID", memoryUnit.ID))
 		return err

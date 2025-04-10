@@ -3,9 +3,13 @@ package learning
 import (
 	"context"
 
+	"errors"
+	"fmt"
+
 	pb "github.com/lazyjean/sla2/api/proto/v1"
 	"github.com/lazyjean/sla2/internal/application/service"
 	"github.com/lazyjean/sla2/internal/domain/entity"
+	domainErrors "github.com/lazyjean/sla2/internal/domain/errors"
 	"github.com/lazyjean/sla2/pkg/logger"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
@@ -99,29 +103,48 @@ func (s *LearningService) UpdateMemoryStatus(ctx context.Context, req *pb.Update
 
 // ReviewWord 复习单词
 func (s *LearningService) ReviewWord(ctx context.Context, req *pb.ReviewWordRequest) (*pb.ReviewWordResponse, error) {
-	// 将 ReviewResult 转换为 bool
-	result := req.Result == pb.ReviewResult_REVIEW_RESULT_CORRECT
-
-	// 调用 memory service 的 ReviewWord
-	err := s.memoryService.ReviewWord(ctx, entity.WordID(req.WordId), result, req.ResponseTime)
+	log := logger.GetLogger(ctx)
+	err := s.memoryService.ReviewWord(ctx, entity.WordID(req.WordId), req.Result == pb.ReviewResult_REVIEW_RESULT_CORRECT, req.ResponseTime)
 	if err != nil {
-		return nil, err
-	}
+		log.Error("[Debug] ReviewWord service returned error", zap.Error(err), zap.String("errorType", fmt.Sprintf("%T", err)))
+		// Check if the error is a domain Error
+		var domainErr *domainErrors.Error
+		if errors.As(err, &domainErr) {
+			log.Info("[Debug] Error is domainErrors.Error", zap.Int("code", domainErr.Code))
+			switch domainErr.Code {
+			case domainErrors.CodeWordNotFound:
+				log.Info("[Debug] Matched CodeWordNotFound")
+				return nil, status.Errorf(codes.NotFound, "word with id %d not found: %v", req.WordId, err)
+			case domainErrors.CodeInvalidUserID:
+				log.Info("[Debug] Matched CodeInvalidUserID")
+				return nil, status.Errorf(codes.Unauthenticated, "invalid user context: %v", err)
+			default:
+				log.Warn("[Debug] Unknown domain error code", zap.Int("code", domainErr.Code))
+				return nil, status.Errorf(codes.Internal, "failed to review word: %v", err)
+			}
+		}
 
+		// Handle other potential errors
+		log.Error("[Debug] Returning Internal error")
+		return nil, status.Errorf(codes.Internal, "failed to review word: %v", err)
+	}
 	return &pb.ReviewWordResponse{}, nil
 }
 
 // ReviewHanChar 复习汉字
 func (s *LearningService) ReviewHanChar(ctx context.Context, req *pb.ReviewHanCharRequest) (*pb.ReviewHanCharResponse, error) {
-	// 将 ReviewResult 转换为 bool
-	result := req.Result == pb.ReviewResult_REVIEW_RESULT_CORRECT
-
-	// 调用 memory service 的 ReviewHanChar
-	err := s.memoryService.ReviewHanChar(ctx, req.HanCharId, result, req.ResponseTime)
+	err := s.memoryService.ReviewHanChar(ctx, req.HanCharId, req.Result == pb.ReviewResult_REVIEW_RESULT_CORRECT, req.ResponseTime)
 	if err != nil {
-		return nil, err
+		// Check if the error is a domain Error with CodeNotFound
+		var domainErr *domainErrors.Error
+		if errors.As(err, &domainErr) && domainErr.Code == domainErrors.CodeNotFound {
+			return nil, status.Errorf(codes.NotFound, "han char with id %d not found: %v", req.HanCharId, err)
+		} else if errors.As(err, &domainErr) && domainErr.Code == domainErrors.CodeInvalidUserID {
+			return nil, status.Errorf(codes.Unauthenticated, "invalid user context: %v", err)
+		}
+		// Handle other potential errors
+		return nil, status.Errorf(codes.Internal, "failed to review han char: %v", err)
 	}
-
 	return &pb.ReviewHanCharResponse{}, nil
 }
 

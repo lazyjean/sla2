@@ -2,6 +2,38 @@ package errors
 
 import "errors"
 
+// Error codes
+// const (
+// 	CodeInvalidInput = iota + 1
+// 	CodeNotFound
+// 	CodeEmptyWordText
+// 	CodeWordNotFound
+// 	CodeWordAlreadyExists
+// 	CodeInvalidDifficulty
+// 	CodeInvalidMasteryLevel
+// 	CodeDuplicateTag
+// 	CodeEmptyDefinition
+// 	CodeFailedToSave
+// 	CodeFailedToUpdate
+// 	CodeFailedToDelete
+// 	CodeFailedToQuery
+// 	CodeUserNotFound
+// 	CodeUserAlreadyExists
+// 	CodeInvalidPhoneFormat
+// 	CodeInvalidEmailFormat
+// 	CodeInvalidUsernameFormat
+// 	CodeInvalidUserID
+// 	CodeEmptyTranslation
+// 	CodeEmptyExample
+// 	CodeEmptyTag
+// 	CodeUnauthenticated
+// 	CodeInvalidCredentials
+// 	CodeProgressNotFound
+// 	CodeHanCharAlreadyExists
+// 	CodeNotImplemented
+// 	CodeInvalidDifficultyLevel
+// )
+
 // Common errors
 var (
 	ErrInvalidInput = NewError(CodeInvalidInput, "输入错误")
@@ -38,6 +70,7 @@ var (
 	ErrEmptyTranslation      = NewError(CodeEmptyTranslation, "翻译不能为空")
 	ErrEmptyExample          = NewError(CodeEmptyExample, "例句不能为空")
 	ErrEmptyTag              = NewError(CodeEmptyTag, "标签不能为空")
+	ErrUnauthenticated       = NewError(CodeUnauthenticated, "用户未认证或认证无效")
 )
 
 var (

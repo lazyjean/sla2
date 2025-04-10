@@ -48,7 +48,7 @@ func InitializeApp() (*Application, error) {
 	courseService := service.NewCourseService(courseRepository, courseSectionRepository)
 	learningRepository := postgres.NewLearningRepository(db)
 	memoryUnitRepository := postgres.NewMemoryUnitRepository(db)
-	memoryService := service.NewMemoryService(wordRepository, memoryUnitRepository)
+	memoryService := service.NewMemoryService(wordRepository, memoryUnitRepository, hanCharRepository)
 	learningService := service.NewLearningService(learningRepository, memoryService)
 	adminRepository := postgres.NewAdminRepository(db)
 	rbacConfig := &configConfig.RBAC
