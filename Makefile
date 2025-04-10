@@ -101,10 +101,20 @@ release: test docker-build docker-push
 # 更新线上服务（使用 Helm）
 .PHONY: deploy
 deploy:
-	helm upgrade --install $(IMAGE_NAME) ./chart \
-		--set image.repository=$(DOCKER_REGISTRY)/$(IMAGE_NAME) \
-		--set image.tag=$(GET_LATEST_TAG) \
-		-n default
+	@if [ -n "$(VERSION)" ]; then \
+		echo "Deploying version $(VERSION)..."; \
+		helm upgrade --install $(IMAGE_NAME) ./chart \
+			--set image.repository=$(DOCKER_REGISTRY)/$(IMAGE_NAME) \
+			--set image.tag=$(VERSION) \
+			--set appVersion=$(VERSION) \
+			-n default; \
+	else \
+		echo "Deploying latest version..."; \
+		helm upgrade --install $(IMAGE_NAME) ./chart \
+			--set image.repository=$(DOCKER_REGISTRY)/$(IMAGE_NAME) \
+			--set image.tag=$(GET_LATEST_TAG) \
+			-n default; \
+	fi
 
 # 验证 Swagger 文档
 .PHONY: swagger-validate
@@ -204,9 +214,21 @@ bump-version:
 		git push origin $$NEW_TAG; \
 	fi
 
+# 更新 chart 版本
+.PHONY: update-chart-version
+update-chart-version:
+	@echo "Updating chart version..."
+	@LATEST_TAG=$$(git tag -l | sort -V | tail -n1); \
+	if [ -n "$$LATEST_TAG" ]; then \
+		sed -i '' "s/appVersion:.*/appVersion: \"$${LATEST_TAG#v}\"/" chart/Chart.yaml; \
+		echo "Updated chart appVersion to $${LATEST_TAG#v}"; \
+	else \
+		echo "No tags found, skipping chart version update"; \
+	fi
+
 # 修改 ci target
 .PHONY: ci
-ci: fmt proto generate test bump-version docker-build docker-push deploy
+ci: fmt proto generate test bump-version update-chart-version docker-build docker-push deploy
 
 # gRPC 接口调试
 .PHONY: run-grpcui-local run-grpcui-remote
