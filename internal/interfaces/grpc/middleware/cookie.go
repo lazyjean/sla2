@@ -13,10 +13,10 @@ const (
 	HTTPCookieAccessTokenName = "access_token"
 
 	// MDHeaderAccessToken 是 gRPC metadata 中用于设置访问令牌的 header 名称
-	MDHeaderAccessToken = "x-access-token"
+	MDHeaderAccessToken = "x-access_token"
 
 	// MDHeaderRefreshToken 是 gRPC metadata 中用于设置刷新令牌的 header 名称
-	MDHeaderRefreshToken = "x-refresh-token"
+	MDHeaderRefreshToken = "x-refresh_token"
 )
 
 // SetAccessTokenInHTTPResponseCookie sets the token cookie in the response
