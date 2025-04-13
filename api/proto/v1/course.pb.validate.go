@@ -60,11 +60,15 @@ func (m *Course) validate(all bool) error {
 
 	// no validation rules for Title
 
+	// no validation rules for Subtitle
+
 	// no validation rules for Desc
 
 	// no validation rules for CoverUrl
 
 	// no validation rules for Level
+
+	// no validation rules for Category
 
 	// no validation rules for Status
 
@@ -271,11 +275,15 @@ func (m *SimpleCourse) validate(all bool) error {
 
 	// no validation rules for Title
 
+	// no validation rules for Subtitle
+
 	// no validation rules for Desc
 
 	// no validation rules for CoverUrl
 
 	// no validation rules for Level
+
+	// no validation rules for Category
 
 	// no validation rules for RecommendedAge
 
@@ -438,6 +446,17 @@ func (m *CourseServiceCreateRequest) validate(all bool) error {
 		err := CourseServiceCreateRequestValidationError{
 			field:  "Level",
 			reason: "value must not be in list [COURSE_LEVEL_UNSPECIFIED]",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if _, ok := _CourseServiceCreateRequest_Category_NotInLookup[m.GetCategory()]; ok {
+		err := CourseServiceCreateRequestValidationError{
+			field:  "Category",
+			reason: "value must not be in list [COURSE_CATEGORY_UNSPECIFIED]",
 		}
 		if !all {
 			return err
@@ -629,6 +648,10 @@ var _CourseServiceCreateRequest_Title_NotInLookup = map[string]struct{}{
 }
 
 var _CourseServiceCreateRequest_Level_NotInLookup = map[CourseLevel]struct{}{
+	0: {},
+}
+
+var _CourseServiceCreateRequest_Category_NotInLookup = map[CourseCategory]struct{}{
 	0: {},
 }
 
@@ -835,6 +858,17 @@ func (m *CourseServiceUpdateRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
+	if _, ok := _CourseServiceUpdateRequest_Category_NotInLookup[m.GetCategory()]; ok {
+		err := CourseServiceUpdateRequestValidationError{
+			field:  "Category",
+			reason: "value must not be in list [COURSE_CATEGORY_UNSPECIFIED]",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
 	if len(m.GetTags()) > 100 {
 		err := CourseServiceUpdateRequestValidationError{
 			field:  "Tags",
@@ -1030,6 +1064,10 @@ var _CourseServiceUpdateRequest_Title_NotInLookup = map[string]struct{}{
 }
 
 var _CourseServiceUpdateRequest_Level_NotInLookup = map[CourseLevel]struct{}{
+	0: {},
+}
+
+var _CourseServiceUpdateRequest_Category_NotInLookup = map[CourseCategory]struct{}{
 	0: {},
 }
 
@@ -1627,6 +1665,8 @@ func (m *CourseServiceSearchRequest) validate(all bool) error {
 	// no validation rules for Keyword
 
 	// no validation rules for Level
+
+	// no validation rules for Category
 
 	// no validation rules for Page
 
@@ -3626,6 +3666,8 @@ func (m *CourseServiceListRequest) validate(all bool) error {
 
 	// no validation rules for Level
 
+	// no validation rules for Category
+
 	if len(errors) > 0 {
 		return CourseServiceListRequestMultiError(errors)
 	}
@@ -4265,6 +4307,17 @@ func (m *BatchCourse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
+	if _, ok := _BatchCourse_Category_NotInLookup[m.GetCategory()]; ok {
+		err := BatchCourseValidationError{
+			field:  "Category",
+			reason: "value must not be in list [COURSE_CATEGORY_UNSPECIFIED]",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
 	if len(m.GetTags()) > 20 {
 		err := BatchCourseValidationError{
 			field:  "Tags",
@@ -4459,6 +4512,10 @@ var _BatchCourse_Title_NotInLookup = map[string]struct{}{
 }
 
 var _BatchCourse_Level_NotInLookup = map[CourseLevel]struct{}{
+	0: {},
+}
+
+var _BatchCourse_Category_NotInLookup = map[CourseCategory]struct{}{
 	0: {},
 }
 

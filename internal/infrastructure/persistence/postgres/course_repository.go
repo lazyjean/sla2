@@ -59,6 +59,10 @@ func (r *courseRepository) List(ctx context.Context, offset, limit int, filters 
 			if v, ok := value.(string); ok && v != "" {
 				query = query.Where("level = ?", v)
 			}
+		case "category":
+			if v, ok := value.(string); ok && v != "" {
+				query = query.Where("category = ?", v)
+			}
 		case "status":
 			if v, ok := value.(string); ok && v != "" {
 				query = query.Where("status = ?", v)
@@ -96,7 +100,7 @@ func (r *courseRepository) Search(ctx context.Context, keyword string, offset, l
 	// 应用过滤条件
 	for key, value := range filters {
 		switch key {
-		case "level", "status":
+		case "level", "status", "category":
 			if v, ok := value.(string); ok && v != "" {
 				query = query.Where(key+" = ?", v)
 			}

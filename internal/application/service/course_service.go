@@ -28,12 +28,13 @@ func NewCourseService(
 }
 
 // CreateCourse 创建课程
-func (s *CourseService) CreateCourse(ctx context.Context, title, description, coverURL, level string, tags []string, prompt string, resources []string, recommendedAge string, studyPlan string) (*entity.Course, error) {
+func (s *CourseService) CreateCourse(ctx context.Context, title, description, coverURL, level string, category entity.CourseCategory, tags []string, prompt string, resources []string, recommendedAge string, studyPlan string) (*entity.Course, error) {
 	course := &entity.Course{
 		Title:          title,
 		Description:    description,
 		CoverURL:       coverURL,
 		Level:          level,
+		Category:       category,
 		Tags:           tags,
 		Status:         "draft",
 		Prompt:         prompt,
@@ -52,7 +53,7 @@ func (s *CourseService) CreateCourse(ctx context.Context, title, description, co
 }
 
 // UpdateCourse 更新课程
-func (s *CourseService) UpdateCourse(ctx context.Context, id uint, title, description, coverURL, level string, tags []string, status string, prompt string, resources []string, recommendedAge string, studyPlan string) (*entity.Course, error) {
+func (s *CourseService) UpdateCourse(ctx context.Context, id uint, title, description, coverURL, level string, category entity.CourseCategory, tags []string, status string, prompt string, resources []string, recommendedAge string, studyPlan string) (*entity.Course, error) {
 	course, err := s.courseRepository.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -62,6 +63,7 @@ func (s *CourseService) UpdateCourse(ctx context.Context, id uint, title, descri
 	course.Description = description
 	course.CoverURL = coverURL
 	course.Level = level
+	course.Category = category
 	course.Tags = tags
 	course.Status = status
 	course.Prompt = prompt
@@ -105,12 +107,15 @@ func (s *CourseService) GetCourse(ctx context.Context, id uint) (*entity.Course,
 }
 
 // ListCourses 获取课程列表
-func (s *CourseService) ListCourses(ctx context.Context, page, pageSize int, level uint, tags []string, status string) ([]*entity.Course, int64, error) {
+func (s *CourseService) ListCourses(ctx context.Context, page, pageSize int, level uint, category entity.CourseCategory, tags []string, status string) ([]*entity.Course, int64, error) {
 	offset := (page - 1) * pageSize
 
 	filters := make(map[string]interface{})
 	if level != 0 {
 		filters["level"] = level
+	}
+	if category != "" {
+		filters["category"] = category
 	}
 	if len(tags) > 0 {
 		filters["tags"] = tags
@@ -128,11 +133,14 @@ func (s *CourseService) DeleteCourse(ctx context.Context, id uint) error {
 }
 
 // SearchCourse 搜索课程
-func (s *CourseService) SearchCourse(ctx context.Context, keyword string, page, pageSize int, level uint, tags []string) ([]*entity.Course, int64, error) {
+func (s *CourseService) SearchCourse(ctx context.Context, keyword string, page, pageSize int, level uint, category entity.CourseCategory, tags []string) ([]*entity.Course, int64, error) {
 	offset := (page - 1) * pageSize
 	filters := make(map[string]interface{})
 	if level != 0 {
 		filters["level"] = level
+	}
+	if category != "" {
+		filters["category"] = category
 	}
 	if len(tags) > 0 {
 		filters["tags"] = tags
@@ -296,6 +304,7 @@ func (s *CourseService) BatchCreateCourse(ctx context.Context, courses []struct 
 	Description    string
 	CoverURL       string
 	Level          string
+	Category       entity.CourseCategory
 	Tags           []string
 	Prompt         string   // AI 提示词
 	Resources      []string // 推荐学习资源 URL 列表
@@ -326,6 +335,7 @@ func (s *CourseService) BatchCreateCourse(ctx context.Context, courses []struct 
 			Description:    courseData.Description,
 			CoverURL:       courseData.CoverURL,
 			Level:          courseData.Level,
+			Category:       courseData.Category,
 			Tags:           courseData.Tags,
 			Status:         "draft",
 			Prompt:         courseData.Prompt,

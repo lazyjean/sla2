@@ -122,6 +122,7 @@ func (s *CourseService) Create(ctx context.Context, req *pb.CourseServiceCreateR
 		req.Desc,
 		req.CoverUrl,
 		convertLevelToString(req.Level),
+		convertCategoryToString(req.Category),
 		req.Tags,
 		req.Prompt,
 		req.Resources,
@@ -146,6 +147,7 @@ func (s *CourseService) Update(ctx context.Context, req *pb.CourseServiceUpdateR
 		req.Desc,
 		req.CoverUrl,
 		convertLevelToString(req.Level),
+		convertCategoryToString(req.Category),
 		req.Tags,
 		convertStatusToString(req.Status),
 		req.Prompt,
@@ -181,6 +183,7 @@ func (s *CourseService) List(ctx context.Context, req *pb.CourseServiceListReque
 		int(req.Page),
 		int(req.PageSize),
 		uint(req.Level),
+		convertCategoryToString(req.Category),
 		req.Tags,
 		convertStatusToString(req.Status),
 	)
@@ -188,21 +191,13 @@ func (s *CourseService) List(ctx context.Context, req *pb.CourseServiceListReque
 		return nil, err
 	}
 
-	var pbCourses []*pb.SimpleCourse
+	coursesPb := make([]*pb.SimpleCourse, 0, len(courses))
 	for _, course := range courses {
-		pbCourses = append(pbCourses, &pb.SimpleCourse{
-			Id:        uint32(course.ID),
-			Title:     course.Title,
-			CoverUrl:  course.CoverURL,
-			Level:     convertStringToLevel(course.Level),
-			Tags:      course.Tags,
-			Desc:      course.Description,
-			Resources: course.Resources,
-		})
+		coursesPb = append(coursesPb, convertToSimpleCourseProto(course))
 	}
 
 	return &pb.CourseServiceListResponse{
-		Courses: pbCourses,
+		Courses: coursesPb,
 		Total:   uint32(total),
 	}, nil
 }
@@ -227,16 +222,15 @@ func convertToPbCourse(course *entity.Course) *pb.Course {
 		Desc:           course.Description,
 		CoverUrl:       course.CoverURL,
 		Level:          convertStringToLevel(course.Level),
+		Category:       convertStringToCategory(course.Category),
 		Tags:           course.Tags,
 		Status:         convertStringToStatus(course.Status),
-		Version:        0, // 添加版本号字段
-		Sections:       convertToPbCourseSections(course.Sections),
-		CreatedAt:      timestamppb.New(course.CreatedAt),
-		UpdatedAt:      timestamppb.New(course.UpdatedAt),
 		Prompt:         course.Prompt,
 		Resources:      course.Resources,
 		RecommendedAge: course.RecommendedAge,
 		StudyPlan:      course.StudyPlan,
+		CreatedAt:      timestamppb.New(course.CreatedAt),
+		UpdatedAt:      timestamppb.New(course.UpdatedAt),
 	}
 }
 
@@ -330,11 +324,12 @@ func (s *CourseService) DeleteUnit(ctx context.Context, req *pb.CourseServiceDel
 
 // BatchCreate 批量创建课程
 func (s *CourseService) BatchCreate(ctx context.Context, req *pb.CourseServiceBatchCreateRequest) (*pb.CourseServiceBatchCreateResponse, error) {
-	var courses []struct {
+	courses := make([]struct {
 		Title          string
 		Description    string
 		CoverURL       string
 		Level          string
+		Category       entity.CourseCategory
 		Tags           []string
 		Prompt         string
 		Resources      []string
@@ -353,15 +348,76 @@ func (s *CourseService) BatchCreate(ctx context.Context, req *pb.CourseServiceBa
 				Prompt      string
 			}
 		}
-	}
+	}, 0, len(req.Courses))
 
-	// 转换请求数据
 	for _, coursePb := range req.Courses {
-		course := struct {
+		sections := make([]struct {
+			Title      string
+			Desc       string
+			OrderIndex int32
+			Units      []struct {
+				Title       string
+				Desc        string
+				QuestionIds []uint32
+				OrderIndex  int32
+				Tags        []string
+				Prompt      string
+			}
+		}, 0, len(coursePb.Sections))
+
+		for _, sectionPb := range coursePb.Sections {
+			units := make([]struct {
+				Title       string
+				Desc        string
+				QuestionIds []uint32
+				OrderIndex  int32
+				Tags        []string
+				Prompt      string
+			}, 0, len(sectionPb.Units))
+
+			for _, unitPb := range sectionPb.Units {
+				units = append(units, struct {
+					Title       string
+					Desc        string
+					QuestionIds []uint32
+					OrderIndex  int32
+					Tags        []string
+					Prompt      string
+				}{
+					Title:      unitPb.Title,
+					Desc:       unitPb.Desc,
+					OrderIndex: unitPb.OrderIndex,
+					Tags:       unitPb.Labels,
+					Prompt:     unitPb.Prompt,
+				})
+			}
+
+			sections = append(sections, struct {
+				Title      string
+				Desc       string
+				OrderIndex int32
+				Units      []struct {
+					Title       string
+					Desc        string
+					QuestionIds []uint32
+					OrderIndex  int32
+					Tags        []string
+					Prompt      string
+				}
+			}{
+				Title:      sectionPb.Title,
+				Desc:       sectionPb.Desc,
+				OrderIndex: sectionPb.OrderIndex,
+				Units:      units,
+			})
+		}
+
+		courses = append(courses, struct {
 			Title          string
 			Description    string
 			CoverURL       string
 			Level          string
+			Category       entity.CourseCategory
 			Tags           []string
 			Prompt         string
 			Resources      []string
@@ -385,59 +441,16 @@ func (s *CourseService) BatchCreate(ctx context.Context, req *pb.CourseServiceBa
 			Description:    coursePb.Desc,
 			CoverURL:       coursePb.CoverUrl,
 			Level:          convertLevelToString(coursePb.Level),
+			Category:       convertCategoryToString(coursePb.Category),
 			Tags:           coursePb.Tags,
 			Prompt:         coursePb.Prompt,
 			Resources:      coursePb.Resources,
 			RecommendedAge: coursePb.RecommendedAge,
 			StudyPlan:      coursePb.StudyPlan,
-		}
-
-		// 转换章节数据
-		for _, sectionPb := range coursePb.Sections {
-			section := struct {
-				Title      string
-				Desc       string
-				OrderIndex int32
-				Units      []struct {
-					Title       string
-					Desc        string
-					QuestionIds []uint32
-					OrderIndex  int32
-					Tags        []string
-					Prompt      string
-				}
-			}{
-				Title:      sectionPb.Title,
-				Desc:       sectionPb.Desc,
-				OrderIndex: sectionPb.OrderIndex,
-			}
-
-			// 转换单元数据
-			for _, unitPb := range sectionPb.Units {
-				unit := struct {
-					Title       string
-					Desc        string
-					QuestionIds []uint32
-					OrderIndex  int32
-					Tags        []string
-					Prompt      string
-				}{
-					Title:      unitPb.Title,
-					Desc:       unitPb.Desc,
-					OrderIndex: unitPb.OrderIndex,
-					Tags:       unitPb.Labels,
-					Prompt:     unitPb.Prompt,
-				}
-				section.Units = append(section.Units, unit)
-			}
-
-			course.Sections = append(course.Sections, section)
-		}
-
-		courses = append(courses, course)
+			Sections:       sections,
+		})
 	}
 
-	// 调用服务层方法
 	ids, err := s.courseService.BatchCreateCourse(ctx, courses)
 	if err != nil {
 		return nil, err
@@ -456,6 +469,76 @@ func convertToPbSimpleCourse(course *entity.Course) *pb.SimpleCourse {
 		Desc:           course.Description,
 		CoverUrl:       course.CoverURL,
 		Level:          convertStringToLevel(course.Level),
+		Tags:           course.Tags,
+		Resources:      course.Resources,
+		RecommendedAge: course.RecommendedAge,
+		StudyPlan:      course.StudyPlan,
+	}
+}
+
+// convertCategoryToString 将 protobuf 枚举类型转换为领域实体的 CourseCategory
+func convertCategoryToString(category pb.CourseCategory) entity.CourseCategory {
+	switch category {
+	case pb.CourseCategory_COURSE_CATEGORY_ENGLISH:
+		return entity.CourseCategoryEnglish
+	case pb.CourseCategory_COURSE_CATEGORY_CHINESE:
+		return entity.CourseCategoryChinese
+	case pb.CourseCategory_COURSE_CATEGORY_OTHER:
+		return entity.CourseCategoryOther
+	default:
+		return entity.CourseCategoryUnspecified
+	}
+}
+
+// convertStringToCategory 将领域实体的 CourseCategory 转换为 protobuf 枚举类型
+func convertStringToCategory(category entity.CourseCategory) pb.CourseCategory {
+	switch category {
+	case entity.CourseCategoryEnglish:
+		return pb.CourseCategory_COURSE_CATEGORY_ENGLISH
+	case entity.CourseCategoryChinese:
+		return pb.CourseCategory_COURSE_CATEGORY_CHINESE
+	case entity.CourseCategoryOther:
+		return pb.CourseCategory_COURSE_CATEGORY_OTHER
+	default:
+		return pb.CourseCategory_COURSE_CATEGORY_UNSPECIFIED
+	}
+}
+
+// Search 搜索课程
+func (s *CourseService) Search(ctx context.Context, req *pb.CourseServiceSearchRequest) (*pb.CourseServiceSearchResponse, error) {
+	courses, total, err := s.courseService.SearchCourse(
+		ctx,
+		req.Keyword,
+		int(req.Page),
+		int(req.PageSize),
+		uint(req.Level),
+		convertCategoryToString(req.Category),
+		req.Tags,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	coursesPb := make([]*pb.SimpleCourse, 0, len(courses))
+	for _, course := range courses {
+		coursesPb = append(coursesPb, convertToSimpleCourseProto(course))
+	}
+
+	return &pb.CourseServiceSearchResponse{
+		Courses: coursesPb,
+		Total:   uint32(total),
+	}, nil
+}
+
+// convertToSimpleCourseProto 将实体转换为简化的 protobuf 消息
+func convertToSimpleCourseProto(course *entity.Course) *pb.SimpleCourse {
+	return &pb.SimpleCourse{
+		Id:             uint32(course.ID),
+		Title:          course.Title,
+		Desc:           course.Description,
+		CoverUrl:       course.CoverURL,
+		Level:          convertStringToLevel(course.Level),
+		Category:       convertStringToCategory(course.Category),
 		Tags:           course.Tags,
 		Resources:      course.Resources,
 		RecommendedAge: course.RecommendedAge,

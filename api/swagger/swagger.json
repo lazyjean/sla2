@@ -252,6 +252,20 @@
             "default": "COURSE_LEVEL_UNSPECIFIED"
           },
           {
+            "name": "category",
+            "description": "课程分类过滤\n\n - COURSE_CATEGORY_UNSPECIFIED: 未指定\n - COURSE_CATEGORY_ENGLISH: 英语类\n - COURSE_CATEGORY_CHINESE: 汉语类\n - COURSE_CATEGORY_OTHER: 其他类型",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "COURSE_CATEGORY_UNSPECIFIED",
+              "COURSE_CATEGORY_ENGLISH",
+              "COURSE_CATEGORY_CHINESE",
+              "COURSE_CATEGORY_OTHER"
+            ],
+            "default": "COURSE_CATEGORY_UNSPECIFIED"
+          },
+          {
             "name": "tags",
             "description": "标签过滤",
             "in": "query",
@@ -380,6 +394,20 @@
               "COURSE_LEVEL_HSK6"
             ],
             "default": "COURSE_LEVEL_UNSPECIFIED"
+          },
+          {
+            "name": "category",
+            "description": "课程分类（可选）\n\n - COURSE_CATEGORY_UNSPECIFIED: 未指定\n - COURSE_CATEGORY_ENGLISH: 英语类\n - COURSE_CATEGORY_CHINESE: 汉语类\n - COURSE_CATEGORY_OTHER: 其他类型",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "COURSE_CATEGORY_UNSPECIFIED",
+              "COURSE_CATEGORY_ENGLISH",
+              "COURSE_CATEGORY_CHINESE",
+              "COURSE_CATEGORY_OTHER"
+            ],
+            "default": "COURSE_CATEGORY_UNSPECIFIED"
           },
           {
             "name": "tags",
@@ -2488,6 +2516,10 @@
           "$ref": "#/definitions/v1CourseLevel",
           "title": "难度级别"
         },
+        "category": {
+          "$ref": "#/definitions/v1CourseCategory",
+          "title": "课程分类"
+        },
         "tags": {
           "type": "array",
           "items": {
@@ -2609,6 +2641,10 @@
           "type": "string",
           "title": "课程标题"
         },
+        "subtitle": {
+          "type": "string",
+          "title": "课程副标题"
+        },
         "desc": {
           "type": "string",
           "title": "课程描述"
@@ -2620,6 +2656,10 @@
         "level": {
           "$ref": "#/definitions/v1CourseLevel",
           "title": "难度级别"
+        },
+        "category": {
+          "$ref": "#/definitions/v1CourseCategory",
+          "title": "课程分类"
         },
         "tags": {
           "type": "array",
@@ -2676,6 +2716,18 @@
         }
       },
       "title": "Course 课程信息"
+    },
+    "v1CourseCategory": {
+      "type": "string",
+      "enum": [
+        "COURSE_CATEGORY_UNSPECIFIED",
+        "COURSE_CATEGORY_ENGLISH",
+        "COURSE_CATEGORY_CHINESE",
+        "COURSE_CATEGORY_OTHER"
+      ],
+      "default": "COURSE_CATEGORY_UNSPECIFIED",
+      "description": "- COURSE_CATEGORY_UNSPECIFIED: 未指定\n - COURSE_CATEGORY_ENGLISH: 英语类\n - COURSE_CATEGORY_CHINESE: 汉语类\n - COURSE_CATEGORY_OTHER: 其他类型",
+      "title": "CourseCategory 课程分类"
     },
     "v1CourseLevel": {
       "type": "string",
@@ -2849,6 +2901,10 @@
           "$ref": "#/definitions/v1CourseLevel",
           "title": "难度级别"
         },
+        "category": {
+          "$ref": "#/definitions/v1CourseCategory",
+          "title": "课程分类"
+        },
         "tags": {
           "type": "array",
           "items": {
@@ -2985,6 +3041,10 @@
         "level": {
           "$ref": "#/definitions/v1CourseLevel",
           "title": "难度级别"
+        },
+        "category": {
+          "$ref": "#/definitions/v1CourseCategory",
+          "title": "课程分类"
         },
         "tags": {
           "type": "array",
@@ -4044,6 +4104,10 @@
           "type": "string",
           "title": "课程标题"
         },
+        "subtitle": {
+          "type": "string",
+          "title": "课程副标题"
+        },
         "desc": {
           "type": "string",
           "title": "课程描述"
@@ -4055,6 +4119,10 @@
         "level": {
           "$ref": "#/definitions/v1CourseLevel",
           "title": "难度级别"
+        },
+        "category": {
+          "$ref": "#/definitions/v1CourseCategory",
+          "title": "课程分类"
         },
         "tags": {
           "type": "array",

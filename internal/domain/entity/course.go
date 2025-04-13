@@ -6,6 +6,16 @@ import (
 
 type CourseID uint32
 
+// CourseCategory 课程分类
+type CourseCategory string
+
+const (
+	CourseCategoryUnspecified CourseCategory = "unspecified" // 未指定
+	CourseCategoryEnglish     CourseCategory = "english"     // 英语类
+	CourseCategoryChinese     CourseCategory = "chinese"     // 汉语类
+	CourseCategoryOther       CourseCategory = "other"       // 其他类型
+)
+
 // Course 课程实体
 type Course struct {
 	ID             CourseID         `gorm:"primaryKey"`
@@ -13,6 +23,7 @@ type Course struct {
 	Description    string           `gorm:"type:text"`
 	CoverURL       string           `gorm:"type:varchar(255)"`
 	Level          string           `gorm:"type:varchar(50);not null"`
+	Category       CourseCategory   `gorm:"type:varchar(50);not null;default:'unspecified'"` // 课程分类
 	Tags           []string         `gorm:"type:jsonb;serializer:json;not null;default:'[]'"`
 	Status         string           `gorm:"type:varchar(50);not null;default:'draft'"`
 	Prompt         string           `gorm:"type:text"`                                        // AI 提示词
