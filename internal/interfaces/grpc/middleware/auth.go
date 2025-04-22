@@ -66,13 +66,13 @@ func UnaryServerInterceptor(tokenService security.TokenService) grpc.UnaryServer
 func extractToken(ctx context.Context) (string, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
-		return "", status.Error(codes.Unauthenticated, "未授权")
+		return "", status.Error(codes.Unauthenticated, "未授权(从grpc metadata中获取token失败)")
 	}
 
 	// 从 Authorization 头中获取 token
 	values := md.Get(MDHeaderAccessToken)
 	if len(values) == 0 {
-		return "", status.Error(codes.Unauthenticated, "未授权")
+		return "", status.Error(codes.Unauthenticated, "未授权(从Authorization头中获取token失败)")
 	}
 
 	return values[0], nil
