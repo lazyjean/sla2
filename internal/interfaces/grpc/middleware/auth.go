@@ -115,7 +115,7 @@ func extractToken(ctx context.Context) (string, error) {
 	if len(values) == 0 {
 		log := logger.GetLogger(ctx)
 		log.Error("Failed to extract token", zap.String("metadata", fmt.Sprintf("%v", md)))
-		return "", status.Error(codes.Unauthenticated, "未授权(从Authorization头中获取token失败)")
+		return "", status.Error(codes.Unauthenticated, "未授权")
 	}
 
 	return values[0], nil
