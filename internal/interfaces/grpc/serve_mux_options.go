@@ -47,6 +47,7 @@ func WithMetadata(ctx context.Context, req *http.Request) metadata.MD {
 		)
 	}
 
+	log.Info("Received metadata", zap.Any("metadata", md))
 	return md
 }
 
