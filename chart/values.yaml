@@ -89,6 +89,13 @@ ingress:
       nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
       cert-manager.io/cluster-issuer: lets-encrypt
       nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/grpc-backend: "true"
+      nginx.ingress.kubernetes.io/proxy-set-headers: "default"
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        grpc_set_header Authorization $http_authorization;
+        grpc_set_header X-Access-Token $http_x_access_token;
+        grpc_set_header X-Refresh-Token $http_x_refresh_token;
+        grpc_set_header JWT $http_jwt;
 
 resources:
   limits:
