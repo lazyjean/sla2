@@ -72,6 +72,30 @@ func extractToken(ctx context.Context) (string, error) {
 	// 从 Authorization 头中获取 token
 	values := md.Get(MDHeaderAccessToken)
 	if len(values) == 0 {
+		// 尝试从其他可能的头部获取 token
+		headers := []string{
+			"authorization",  // Bearer token
+			"jwt",            // JWT token
+			"access-token",   // Access token
+			"x-access-token", // X-Access-Token
+		}
+
+		for _, header := range headers {
+			values = md.Get(header)
+			if len(values) > 0 {
+				// 如果是 authorization 头，需要提取 Bearer token
+				if header == "authorization" {
+					authValue := values[0]
+					if strings.HasPrefix(authValue, "Bearer ") {
+						values[0] = strings.TrimPrefix(authValue, "Bearer ")
+					}
+				}
+				break
+			}
+		}
+	}
+
+	if len(values) == 0 {
 		log := logger.GetLogger(ctx)
 		log.Error("Failed to extract token", zap.String("metadata", fmt.Sprintf("%v", md)))
 		return "", status.Error(codes.Unauthenticated, "未授权(从Authorization头中获取token失败)")
