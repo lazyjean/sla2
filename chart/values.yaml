@@ -97,6 +97,8 @@ ingress:
         grpc_set_header X-Refresh-Token $http_x_refresh_token;
         grpc_set_header JWT $http_jwt;
       nginx.ingress.kubernetes.io/rewrite-target: /
+      nginx.ingress.kubernetes.io/enable-underscores-in-headers: "true"
+      nginx.ingress.kubernetes.io/http2: "true"
 
 resources:
   limits:
