@@ -72,6 +72,8 @@ func extractToken(ctx context.Context) (string, error) {
 	// 从 Authorization 头中获取 token
 	values := md.Get(MDHeaderAccessToken)
 	if len(values) == 0 {
+		log := logger.GetLogger(ctx)
+		log.Error("Failed to extract token", zap.String("metadata", fmt.Sprintf("%v", md)))
 		return "", status.Error(codes.Unauthenticated, "未授权(从Authorization头中获取token失败)")
 	}
 
