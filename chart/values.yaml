@@ -96,6 +96,7 @@ ingress:
         grpc_set_header X-Access-Token $http_x_access_token;
         grpc_set_header X-Refresh-Token $http_x_refresh_token;
         grpc_set_header JWT $http_jwt;
+      nginx.ingress.kubernetes.io/rewrite-target: /
 
 resources:
   limits:
