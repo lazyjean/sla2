@@ -13,6 +13,9 @@ const (
 	MemoryUnitTypeWord        MemoryUnitType = 2 // 单词
 )
 
+// MemoryUnitID 记忆单元ID类型
+type MemoryUnitID uint32
+
 // MasteryLevel 掌握程度
 type MasteryLevel uint8
 
@@ -30,8 +33,8 @@ const (
 // 表名：memory_units
 // 注释：记忆单元表，存储各种类型的学习内容
 type MemoryUnit struct {
-	ID        uint32         `gorm:"primaryKey;comment:主键ID"`
-	UserID    uint32         `gorm:"not null;index:idx_user_content_type,unique;comment:用户ID"`
+	ID        MemoryUnitID   `gorm:"primaryKey;comment:主键ID"`
+	UserID    UID            `gorm:"not null;index:idx_user_content_type,unique;comment:用户ID"`
 	Type      MemoryUnitType `gorm:"not null;index:idx_user_content_type,unique;comment:记忆单元类型，0-未指定，1-汉字，2-单词"`
 	ContentID uint32         `gorm:"not null;index:idx_user_content_type,unique;comment:内容ID，关联到具体的内容表（如汉字表、单词表等）"`
 	CreatedAt time.Time      `gorm:"not null;comment:记录创建时间，由数据库自动维护"`
@@ -49,7 +52,7 @@ type MemoryUnit struct {
 }
 
 // NewMemoryUnit 创建新的记忆单元
-func NewMemoryUnit(userID uint32, unitType MemoryUnitType, contentID uint32) *MemoryUnit {
+func NewMemoryUnit(userID UID, unitType MemoryUnitType, contentID uint32) *MemoryUnit {
 	now := time.Now()
 	return &MemoryUnit{
 		UserID:        userID,
