@@ -19,15 +19,20 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	LearningService_GetCourseProgress_FullMethodName     = "/proto.v1.LearningService/GetCourseProgress"
-	LearningService_GetSectionProgress_FullMethodName    = "/proto.v1.LearningService/GetSectionProgress"
-	LearningService_UpdateUnitProgress_FullMethodName    = "/proto.v1.LearningService/UpdateUnitProgress"
-	LearningService_GetMemoryStatus_FullMethodName       = "/proto.v1.LearningService/GetMemoryStatus"
-	LearningService_UpdateMemoryStatus_FullMethodName    = "/proto.v1.LearningService/UpdateMemoryStatus"
-	LearningService_ListMemoriesForReview_FullMethodName = "/proto.v1.LearningService/ListMemoriesForReview"
-	LearningService_GetMemoryStats_FullMethodName        = "/proto.v1.LearningService/GetMemoryStats"
-	LearningService_ReviewWord_FullMethodName            = "/proto.v1.LearningService/ReviewWord"
-	LearningService_ReviewHanChar_FullMethodName         = "/proto.v1.LearningService/ReviewHanChar"
+	LearningService_GetCourseProgress_FullMethodName              = "/proto.v1.LearningService/GetCourseProgress"
+	LearningService_GetSectionProgress_FullMethodName             = "/proto.v1.LearningService/GetSectionProgress"
+	LearningService_UpdateUnitProgress_FullMethodName             = "/proto.v1.LearningService/UpdateUnitProgress"
+	LearningService_GetMemoryStatus_FullMethodName                = "/proto.v1.LearningService/GetMemoryStatus"
+	LearningService_UpdateMemoryStatus_FullMethodName             = "/proto.v1.LearningService/UpdateMemoryStatus"
+	LearningService_ListMemoriesForReview_FullMethodName          = "/proto.v1.LearningService/ListMemoriesForReview"
+	LearningService_GetMemoryStats_FullMethodName                 = "/proto.v1.LearningService/GetMemoryStats"
+	LearningService_ReviewWord_FullMethodName                     = "/proto.v1.LearningService/ReviewWord"
+	LearningService_ReviewHanChar_FullMethodName                  = "/proto.v1.LearningService/ReviewHanChar"
+	LearningService_SubmitHanCharReview_FullMethodName            = "/proto.v1.LearningService/SubmitHanCharReview"
+	LearningService_GetHanCharTest_FullMethodName                 = "/proto.v1.LearningService/GetHanCharTest"
+	LearningService_SubmitHanCharTestResult_FullMethodName        = "/proto.v1.LearningService/SubmitHanCharTestResult"
+	LearningService_GetNewHanCharLearning_FullMethodName          = "/proto.v1.LearningService/GetNewHanCharLearning"
+	LearningService_SubmitNewHanCharLearningResult_FullMethodName = "/proto.v1.LearningService/SubmitNewHanCharLearningResult"
 )
 
 // LearningServiceClient is the client API for LearningService service.
@@ -52,8 +57,18 @@ type LearningServiceClient interface {
 	GetMemoryStats(ctx context.Context, in *GetMemoryStatsRequest, opts ...grpc.CallOption) (*GetMemoryStatsResponse, error)
 	// 复习单词
 	ReviewWord(ctx context.Context, in *ReviewWordRequest, opts ...grpc.CallOption) (*ReviewWordResponse, error)
-	// 复习汉字
+	// 待复习汉字
 	ReviewHanChar(ctx context.Context, in *ReviewHanCharRequest, opts ...grpc.CallOption) (*ReviewHanCharResponse, error)
+	// 提交复习结果
+	SubmitHanCharReview(ctx context.Context, in *SubmitHanCharReviewRequest, opts ...grpc.CallOption) (*SubmitHanCharReviewResponse, error)
+	// 获取汉字测试
+	GetHanCharTest(ctx context.Context, in *GetHanCharTestRequest, opts ...grpc.CallOption) (*GetHanCharTestResponse, error)
+	// 提交测试结果
+	SubmitHanCharTestResult(ctx context.Context, in *SubmitHanCharTestResultRequest, opts ...grpc.CallOption) (*SubmitHanCharTestResultResponse, error)
+	// 获取生字学习内容
+	GetNewHanCharLearning(ctx context.Context, in *GetNewHanCharLearningRequest, opts ...grpc.CallOption) (*GetNewHanCharLearningResponse, error)
+	// 提交生字学习结果
+	SubmitNewHanCharLearningResult(ctx context.Context, in *SubmitNewHanCharLearningResultRequest, opts ...grpc.CallOption) (*SubmitNewHanCharLearningResultResponse, error)
 }
 
 type learningServiceClient struct {
@@ -154,6 +169,56 @@ func (c *learningServiceClient) ReviewHanChar(ctx context.Context, in *ReviewHan
 	return out, nil
 }
 
+func (c *learningServiceClient) SubmitHanCharReview(ctx context.Context, in *SubmitHanCharReviewRequest, opts ...grpc.CallOption) (*SubmitHanCharReviewResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SubmitHanCharReviewResponse)
+	err := c.cc.Invoke(ctx, LearningService_SubmitHanCharReview_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *learningServiceClient) GetHanCharTest(ctx context.Context, in *GetHanCharTestRequest, opts ...grpc.CallOption) (*GetHanCharTestResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetHanCharTestResponse)
+	err := c.cc.Invoke(ctx, LearningService_GetHanCharTest_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *learningServiceClient) SubmitHanCharTestResult(ctx context.Context, in *SubmitHanCharTestResultRequest, opts ...grpc.CallOption) (*SubmitHanCharTestResultResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SubmitHanCharTestResultResponse)
+	err := c.cc.Invoke(ctx, LearningService_SubmitHanCharTestResult_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *learningServiceClient) GetNewHanCharLearning(ctx context.Context, in *GetNewHanCharLearningRequest, opts ...grpc.CallOption) (*GetNewHanCharLearningResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetNewHanCharLearningResponse)
+	err := c.cc.Invoke(ctx, LearningService_GetNewHanCharLearning_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *learningServiceClient) SubmitNewHanCharLearningResult(ctx context.Context, in *SubmitNewHanCharLearningResultRequest, opts ...grpc.CallOption) (*SubmitNewHanCharLearningResultResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SubmitNewHanCharLearningResultResponse)
+	err := c.cc.Invoke(ctx, LearningService_SubmitNewHanCharLearningResult_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // LearningServiceServer is the server API for LearningService service.
 // All implementations must embed UnimplementedLearningServiceServer
 // for forward compatibility.
@@ -176,8 +241,18 @@ type LearningServiceServer interface {
 	GetMemoryStats(context.Context, *GetMemoryStatsRequest) (*GetMemoryStatsResponse, error)
 	// 复习单词
 	ReviewWord(context.Context, *ReviewWordRequest) (*ReviewWordResponse, error)
-	// 复习汉字
+	// 待复习汉字
 	ReviewHanChar(context.Context, *ReviewHanCharRequest) (*ReviewHanCharResponse, error)
+	// 提交复习结果
+	SubmitHanCharReview(context.Context, *SubmitHanCharReviewRequest) (*SubmitHanCharReviewResponse, error)
+	// 获取汉字测试
+	GetHanCharTest(context.Context, *GetHanCharTestRequest) (*GetHanCharTestResponse, error)
+	// 提交测试结果
+	SubmitHanCharTestResult(context.Context, *SubmitHanCharTestResultRequest) (*SubmitHanCharTestResultResponse, error)
+	// 获取生字学习内容
+	GetNewHanCharLearning(context.Context, *GetNewHanCharLearningRequest) (*GetNewHanCharLearningResponse, error)
+	// 提交生字学习结果
+	SubmitNewHanCharLearningResult(context.Context, *SubmitNewHanCharLearningResultRequest) (*SubmitNewHanCharLearningResultResponse, error)
 	mustEmbedUnimplementedLearningServiceServer()
 }
 
@@ -214,6 +289,21 @@ func (UnimplementedLearningServiceServer) ReviewWord(context.Context, *ReviewWor
 }
 func (UnimplementedLearningServiceServer) ReviewHanChar(context.Context, *ReviewHanCharRequest) (*ReviewHanCharResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReviewHanChar not implemented")
+}
+func (UnimplementedLearningServiceServer) SubmitHanCharReview(context.Context, *SubmitHanCharReviewRequest) (*SubmitHanCharReviewResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubmitHanCharReview not implemented")
+}
+func (UnimplementedLearningServiceServer) GetHanCharTest(context.Context, *GetHanCharTestRequest) (*GetHanCharTestResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetHanCharTest not implemented")
+}
+func (UnimplementedLearningServiceServer) SubmitHanCharTestResult(context.Context, *SubmitHanCharTestResultRequest) (*SubmitHanCharTestResultResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubmitHanCharTestResult not implemented")
+}
+func (UnimplementedLearningServiceServer) GetNewHanCharLearning(context.Context, *GetNewHanCharLearningRequest) (*GetNewHanCharLearningResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetNewHanCharLearning not implemented")
+}
+func (UnimplementedLearningServiceServer) SubmitNewHanCharLearningResult(context.Context, *SubmitNewHanCharLearningResultRequest) (*SubmitNewHanCharLearningResultResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubmitNewHanCharLearningResult not implemented")
 }
 func (UnimplementedLearningServiceServer) mustEmbedUnimplementedLearningServiceServer() {}
 func (UnimplementedLearningServiceServer) testEmbeddedByValue()                         {}
@@ -398,6 +488,96 @@ func _LearningService_ReviewHanChar_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _LearningService_SubmitHanCharReview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubmitHanCharReviewRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LearningServiceServer).SubmitHanCharReview(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LearningService_SubmitHanCharReview_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LearningServiceServer).SubmitHanCharReview(ctx, req.(*SubmitHanCharReviewRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LearningService_GetHanCharTest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetHanCharTestRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LearningServiceServer).GetHanCharTest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LearningService_GetHanCharTest_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LearningServiceServer).GetHanCharTest(ctx, req.(*GetHanCharTestRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LearningService_SubmitHanCharTestResult_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubmitHanCharTestResultRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LearningServiceServer).SubmitHanCharTestResult(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LearningService_SubmitHanCharTestResult_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LearningServiceServer).SubmitHanCharTestResult(ctx, req.(*SubmitHanCharTestResultRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LearningService_GetNewHanCharLearning_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetNewHanCharLearningRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LearningServiceServer).GetNewHanCharLearning(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LearningService_GetNewHanCharLearning_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LearningServiceServer).GetNewHanCharLearning(ctx, req.(*GetNewHanCharLearningRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LearningService_SubmitNewHanCharLearningResult_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubmitNewHanCharLearningResultRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LearningServiceServer).SubmitNewHanCharLearningResult(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LearningService_SubmitNewHanCharLearningResult_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LearningServiceServer).SubmitNewHanCharLearningResult(ctx, req.(*SubmitNewHanCharLearningResultRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // LearningService_ServiceDesc is the grpc.ServiceDesc for LearningService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -440,6 +620,26 @@ var LearningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ReviewHanChar",
 			Handler:    _LearningService_ReviewHanChar_Handler,
+		},
+		{
+			MethodName: "SubmitHanCharReview",
+			Handler:    _LearningService_SubmitHanCharReview_Handler,
+		},
+		{
+			MethodName: "GetHanCharTest",
+			Handler:    _LearningService_GetHanCharTest_Handler,
+		},
+		{
+			MethodName: "SubmitHanCharTestResult",
+			Handler:    _LearningService_SubmitHanCharTestResult_Handler,
+		},
+		{
+			MethodName: "GetNewHanCharLearning",
+			Handler:    _LearningService_GetNewHanCharLearning_Handler,
+		},
+		{
+			MethodName: "SubmitNewHanCharLearningResult",
+			Handler:    _LearningService_SubmitNewHanCharLearningResult_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

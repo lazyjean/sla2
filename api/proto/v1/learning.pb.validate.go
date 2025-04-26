@@ -2798,3 +2798,1733 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = MemoryReviewValidationError{}
+
+// Validate checks the field values on SubmitHanCharReviewRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *SubmitHanCharReviewRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on SubmitHanCharReviewRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// SubmitHanCharReviewRequestMultiError, or nil if none found.
+func (m *SubmitHanCharReviewRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *SubmitHanCharReviewRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for HanCharId
+
+	// no validation rules for IsRecognized
+
+	if all {
+		switch v := interface{}(m.GetReviewTime()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, SubmitHanCharReviewRequestValidationError{
+					field:  "ReviewTime",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, SubmitHanCharReviewRequestValidationError{
+					field:  "ReviewTime",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetReviewTime()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return SubmitHanCharReviewRequestValidationError{
+				field:  "ReviewTime",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return SubmitHanCharReviewRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// SubmitHanCharReviewRequestMultiError is an error wrapping multiple
+// validation errors returned by SubmitHanCharReviewRequest.ValidateAll() if
+// the designated constraints aren't met.
+type SubmitHanCharReviewRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m SubmitHanCharReviewRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m SubmitHanCharReviewRequestMultiError) AllErrors() []error { return m }
+
+// SubmitHanCharReviewRequestValidationError is the validation error returned
+// by SubmitHanCharReviewRequest.Validate if the designated constraints aren't met.
+type SubmitHanCharReviewRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e SubmitHanCharReviewRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e SubmitHanCharReviewRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e SubmitHanCharReviewRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e SubmitHanCharReviewRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e SubmitHanCharReviewRequestValidationError) ErrorName() string {
+	return "SubmitHanCharReviewRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e SubmitHanCharReviewRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sSubmitHanCharReviewRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = SubmitHanCharReviewRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = SubmitHanCharReviewRequestValidationError{}
+
+// Validate checks the field values on SubmitHanCharReviewResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *SubmitHanCharReviewResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on SubmitHanCharReviewResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// SubmitHanCharReviewResponseMultiError, or nil if none found.
+func (m *SubmitHanCharReviewResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *SubmitHanCharReviewResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetNextReviewTime()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, SubmitHanCharReviewResponseValidationError{
+					field:  "NextReviewTime",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, SubmitHanCharReviewResponseValidationError{
+					field:  "NextReviewTime",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetNextReviewTime()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return SubmitHanCharReviewResponseValidationError{
+				field:  "NextReviewTime",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return SubmitHanCharReviewResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// SubmitHanCharReviewResponseMultiError is an error wrapping multiple
+// validation errors returned by SubmitHanCharReviewResponse.ValidateAll() if
+// the designated constraints aren't met.
+type SubmitHanCharReviewResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m SubmitHanCharReviewResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m SubmitHanCharReviewResponseMultiError) AllErrors() []error { return m }
+
+// SubmitHanCharReviewResponseValidationError is the validation error returned
+// by SubmitHanCharReviewResponse.Validate if the designated constraints
+// aren't met.
+type SubmitHanCharReviewResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e SubmitHanCharReviewResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e SubmitHanCharReviewResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e SubmitHanCharReviewResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e SubmitHanCharReviewResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e SubmitHanCharReviewResponseValidationError) ErrorName() string {
+	return "SubmitHanCharReviewResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e SubmitHanCharReviewResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sSubmitHanCharReviewResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = SubmitHanCharReviewResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = SubmitHanCharReviewResponseValidationError{}
+
+// Validate checks the field values on GetHanCharTestRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetHanCharTestRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetHanCharTestRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetHanCharTestRequestMultiError, or nil if none found.
+func (m *GetHanCharTestRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetHanCharTestRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Count
+
+	// no validation rules for DifficultyLevel
+
+	if len(errors) > 0 {
+		return GetHanCharTestRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetHanCharTestRequestMultiError is an error wrapping multiple validation
+// errors returned by GetHanCharTestRequest.ValidateAll() if the designated
+// constraints aren't met.
+type GetHanCharTestRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetHanCharTestRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetHanCharTestRequestMultiError) AllErrors() []error { return m }
+
+// GetHanCharTestRequestValidationError is the validation error returned by
+// GetHanCharTestRequest.Validate if the designated constraints aren't met.
+type GetHanCharTestRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetHanCharTestRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetHanCharTestRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetHanCharTestRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetHanCharTestRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetHanCharTestRequestValidationError) ErrorName() string {
+	return "GetHanCharTestRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetHanCharTestRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetHanCharTestRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetHanCharTestRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetHanCharTestRequestValidationError{}
+
+// Validate checks the field values on GetHanCharTestResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetHanCharTestResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetHanCharTestResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetHanCharTestResponseMultiError, or nil if none found.
+func (m *GetHanCharTestResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetHanCharTestResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetHanChars() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, GetHanCharTestResponseValidationError{
+						field:  fmt.Sprintf("HanChars[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, GetHanCharTestResponseValidationError{
+						field:  fmt.Sprintf("HanChars[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return GetHanCharTestResponseValidationError{
+					field:  fmt.Sprintf("HanChars[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return GetHanCharTestResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetHanCharTestResponseMultiError is an error wrapping multiple validation
+// errors returned by GetHanCharTestResponse.ValidateAll() if the designated
+// constraints aren't met.
+type GetHanCharTestResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetHanCharTestResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetHanCharTestResponseMultiError) AllErrors() []error { return m }
+
+// GetHanCharTestResponseValidationError is the validation error returned by
+// GetHanCharTestResponse.Validate if the designated constraints aren't met.
+type GetHanCharTestResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetHanCharTestResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetHanCharTestResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetHanCharTestResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetHanCharTestResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetHanCharTestResponseValidationError) ErrorName() string {
+	return "GetHanCharTestResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetHanCharTestResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetHanCharTestResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetHanCharTestResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetHanCharTestResponseValidationError{}
+
+// Validate checks the field values on SubmitHanCharTestResultRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *SubmitHanCharTestResultRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on SubmitHanCharTestResultRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// SubmitHanCharTestResultRequestMultiError, or nil if none found.
+func (m *SubmitHanCharTestResultRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *SubmitHanCharTestResultRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetResults() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, SubmitHanCharTestResultRequestValidationError{
+						field:  fmt.Sprintf("Results[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, SubmitHanCharTestResultRequestValidationError{
+						field:  fmt.Sprintf("Results[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return SubmitHanCharTestResultRequestValidationError{
+					field:  fmt.Sprintf("Results[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return SubmitHanCharTestResultRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// SubmitHanCharTestResultRequestMultiError is an error wrapping multiple
+// validation errors returned by SubmitHanCharTestResultRequest.ValidateAll()
+// if the designated constraints aren't met.
+type SubmitHanCharTestResultRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m SubmitHanCharTestResultRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m SubmitHanCharTestResultRequestMultiError) AllErrors() []error { return m }
+
+// SubmitHanCharTestResultRequestValidationError is the validation error
+// returned by SubmitHanCharTestResultRequest.Validate if the designated
+// constraints aren't met.
+type SubmitHanCharTestResultRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e SubmitHanCharTestResultRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e SubmitHanCharTestResultRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e SubmitHanCharTestResultRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e SubmitHanCharTestResultRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e SubmitHanCharTestResultRequestValidationError) ErrorName() string {
+	return "SubmitHanCharTestResultRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e SubmitHanCharTestResultRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sSubmitHanCharTestResultRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = SubmitHanCharTestResultRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = SubmitHanCharTestResultRequestValidationError{}
+
+// Validate checks the field values on HanCharTestResult with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *HanCharTestResult) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on HanCharTestResult with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// HanCharTestResultMultiError, or nil if none found.
+func (m *HanCharTestResult) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *HanCharTestResult) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for HanCharId
+
+	// no validation rules for IsRecognized
+
+	if len(errors) > 0 {
+		return HanCharTestResultMultiError(errors)
+	}
+
+	return nil
+}
+
+// HanCharTestResultMultiError is an error wrapping multiple validation errors
+// returned by HanCharTestResult.ValidateAll() if the designated constraints
+// aren't met.
+type HanCharTestResultMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m HanCharTestResultMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m HanCharTestResultMultiError) AllErrors() []error { return m }
+
+// HanCharTestResultValidationError is the validation error returned by
+// HanCharTestResult.Validate if the designated constraints aren't met.
+type HanCharTestResultValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e HanCharTestResultValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e HanCharTestResultValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e HanCharTestResultValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e HanCharTestResultValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e HanCharTestResultValidationError) ErrorName() string {
+	return "HanCharTestResultValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e HanCharTestResultValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sHanCharTestResult.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = HanCharTestResultValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = HanCharTestResultValidationError{}
+
+// Validate checks the field values on SubmitHanCharTestResultResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *SubmitHanCharTestResultResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on SubmitHanCharTestResultResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// SubmitHanCharTestResultResponseMultiError, or nil if none found.
+func (m *SubmitHanCharTestResultResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *SubmitHanCharTestResultResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return SubmitHanCharTestResultResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// SubmitHanCharTestResultResponseMultiError is an error wrapping multiple
+// validation errors returned by SubmitHanCharTestResultResponse.ValidateAll()
+// if the designated constraints aren't met.
+type SubmitHanCharTestResultResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m SubmitHanCharTestResultResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m SubmitHanCharTestResultResponseMultiError) AllErrors() []error { return m }
+
+// SubmitHanCharTestResultResponseValidationError is the validation error
+// returned by SubmitHanCharTestResultResponse.Validate if the designated
+// constraints aren't met.
+type SubmitHanCharTestResultResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e SubmitHanCharTestResultResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e SubmitHanCharTestResultResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e SubmitHanCharTestResultResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e SubmitHanCharTestResultResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e SubmitHanCharTestResultResponseValidationError) ErrorName() string {
+	return "SubmitHanCharTestResultResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e SubmitHanCharTestResultResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sSubmitHanCharTestResultResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = SubmitHanCharTestResultResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = SubmitHanCharTestResultResponseValidationError{}
+
+// Validate checks the field values on GetNewHanCharLearningRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetNewHanCharLearningRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetNewHanCharLearningRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetNewHanCharLearningRequestMultiError, or nil if none found.
+func (m *GetNewHanCharLearningRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetNewHanCharLearningRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Count
+
+	if len(errors) > 0 {
+		return GetNewHanCharLearningRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetNewHanCharLearningRequestMultiError is an error wrapping multiple
+// validation errors returned by GetNewHanCharLearningRequest.ValidateAll() if
+// the designated constraints aren't met.
+type GetNewHanCharLearningRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetNewHanCharLearningRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetNewHanCharLearningRequestMultiError) AllErrors() []error { return m }
+
+// GetNewHanCharLearningRequestValidationError is the validation error returned
+// by GetNewHanCharLearningRequest.Validate if the designated constraints
+// aren't met.
+type GetNewHanCharLearningRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetNewHanCharLearningRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetNewHanCharLearningRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetNewHanCharLearningRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetNewHanCharLearningRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetNewHanCharLearningRequestValidationError) ErrorName() string {
+	return "GetNewHanCharLearningRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetNewHanCharLearningRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetNewHanCharLearningRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetNewHanCharLearningRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetNewHanCharLearningRequestValidationError{}
+
+// Validate checks the field values on GetNewHanCharLearningResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetNewHanCharLearningResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetNewHanCharLearningResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// GetNewHanCharLearningResponseMultiError, or nil if none found.
+func (m *GetNewHanCharLearningResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetNewHanCharLearningResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetContents() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, GetNewHanCharLearningResponseValidationError{
+						field:  fmt.Sprintf("Contents[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, GetNewHanCharLearningResponseValidationError{
+						field:  fmt.Sprintf("Contents[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return GetNewHanCharLearningResponseValidationError{
+					field:  fmt.Sprintf("Contents[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return GetNewHanCharLearningResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetNewHanCharLearningResponseMultiError is an error wrapping multiple
+// validation errors returned by GetNewHanCharLearningResponse.ValidateAll()
+// if the designated constraints aren't met.
+type GetNewHanCharLearningResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetNewHanCharLearningResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetNewHanCharLearningResponseMultiError) AllErrors() []error { return m }
+
+// GetNewHanCharLearningResponseValidationError is the validation error
+// returned by GetNewHanCharLearningResponse.Validate if the designated
+// constraints aren't met.
+type GetNewHanCharLearningResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetNewHanCharLearningResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetNewHanCharLearningResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetNewHanCharLearningResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetNewHanCharLearningResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetNewHanCharLearningResponseValidationError) ErrorName() string {
+	return "GetNewHanCharLearningResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetNewHanCharLearningResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetNewHanCharLearningResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetNewHanCharLearningResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetNewHanCharLearningResponseValidationError{}
+
+// Validate checks the field values on HanCharLearningContent with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *HanCharLearningContent) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on HanCharLearningContent with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// HanCharLearningContentMultiError, or nil if none found.
+func (m *HanCharLearningContent) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *HanCharLearningContent) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for HanCharId
+
+	// no validation rules for HanChar
+
+	// no validation rules for Pinyin
+
+	// no validation rules for Meaning
+
+	if len(errors) > 0 {
+		return HanCharLearningContentMultiError(errors)
+	}
+
+	return nil
+}
+
+// HanCharLearningContentMultiError is an error wrapping multiple validation
+// errors returned by HanCharLearningContent.ValidateAll() if the designated
+// constraints aren't met.
+type HanCharLearningContentMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m HanCharLearningContentMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m HanCharLearningContentMultiError) AllErrors() []error { return m }
+
+// HanCharLearningContentValidationError is the validation error returned by
+// HanCharLearningContent.Validate if the designated constraints aren't met.
+type HanCharLearningContentValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e HanCharLearningContentValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e HanCharLearningContentValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e HanCharLearningContentValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e HanCharLearningContentValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e HanCharLearningContentValidationError) ErrorName() string {
+	return "HanCharLearningContentValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e HanCharLearningContentValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sHanCharLearningContent.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = HanCharLearningContentValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = HanCharLearningContentValidationError{}
+
+// Validate checks the field values on SubmitNewHanCharLearningResultRequest
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the first error encountered is returned, or nil if
+// there are no violations.
+func (m *SubmitNewHanCharLearningResultRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on SubmitNewHanCharLearningResultRequest
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// SubmitNewHanCharLearningResultRequestMultiError, or nil if none found.
+func (m *SubmitNewHanCharLearningResultRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *SubmitNewHanCharLearningResultRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetLearningTime()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, SubmitNewHanCharLearningResultRequestValidationError{
+					field:  "LearningTime",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, SubmitNewHanCharLearningResultRequestValidationError{
+					field:  "LearningTime",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetLearningTime()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return SubmitNewHanCharLearningResultRequestValidationError{
+				field:  "LearningTime",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for StudyDuration
+
+	for idx, item := range m.GetResults() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, SubmitNewHanCharLearningResultRequestValidationError{
+						field:  fmt.Sprintf("Results[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, SubmitNewHanCharLearningResultRequestValidationError{
+						field:  fmt.Sprintf("Results[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return SubmitNewHanCharLearningResultRequestValidationError{
+					field:  fmt.Sprintf("Results[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return SubmitNewHanCharLearningResultRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// SubmitNewHanCharLearningResultRequestMultiError is an error wrapping
+// multiple validation errors returned by
+// SubmitNewHanCharLearningResultRequest.ValidateAll() if the designated
+// constraints aren't met.
+type SubmitNewHanCharLearningResultRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m SubmitNewHanCharLearningResultRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m SubmitNewHanCharLearningResultRequestMultiError) AllErrors() []error { return m }
+
+// SubmitNewHanCharLearningResultRequestValidationError is the validation error
+// returned by SubmitNewHanCharLearningResultRequest.Validate if the
+// designated constraints aren't met.
+type SubmitNewHanCharLearningResultRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e SubmitNewHanCharLearningResultRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e SubmitNewHanCharLearningResultRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e SubmitNewHanCharLearningResultRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e SubmitNewHanCharLearningResultRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e SubmitNewHanCharLearningResultRequestValidationError) ErrorName() string {
+	return "SubmitNewHanCharLearningResultRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e SubmitNewHanCharLearningResultRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sSubmitNewHanCharLearningResultRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = SubmitNewHanCharLearningResultRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = SubmitNewHanCharLearningResultRequestValidationError{}
+
+// Validate checks the field values on HanCharLearningResultItem with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *HanCharLearningResultItem) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on HanCharLearningResultItem with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// HanCharLearningResultItemMultiError, or nil if none found.
+func (m *HanCharLearningResultItem) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *HanCharLearningResultItem) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for NewHanCharId
+
+	if all {
+		switch v := interface{}(m.GetResult()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, HanCharLearningResultItemValidationError{
+					field:  "Result",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, HanCharLearningResultItemValidationError{
+					field:  "Result",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetResult()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return HanCharLearningResultItemValidationError{
+				field:  "Result",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return HanCharLearningResultItemMultiError(errors)
+	}
+
+	return nil
+}
+
+// HanCharLearningResultItemMultiError is an error wrapping multiple validation
+// errors returned by HanCharLearningResultItem.ValidateAll() if the
+// designated constraints aren't met.
+type HanCharLearningResultItemMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m HanCharLearningResultItemMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m HanCharLearningResultItemMultiError) AllErrors() []error { return m }
+
+// HanCharLearningResultItemValidationError is the validation error returned by
+// HanCharLearningResultItem.Validate if the designated constraints aren't met.
+type HanCharLearningResultItemValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e HanCharLearningResultItemValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e HanCharLearningResultItemValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e HanCharLearningResultItemValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e HanCharLearningResultItemValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e HanCharLearningResultItemValidationError) ErrorName() string {
+	return "HanCharLearningResultItemValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e HanCharLearningResultItemValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sHanCharLearningResultItem.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = HanCharLearningResultItemValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = HanCharLearningResultItemValidationError{}
+
+// Validate checks the field values on SubmitNewHanCharLearningResultResponse
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the first error encountered is returned, or nil if
+// there are no violations.
+func (m *SubmitNewHanCharLearningResultResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// SubmitNewHanCharLearningResultResponse with the rules defined in the proto
+// definition for this message. If any rules are violated, the result is a
+// list of violation errors wrapped in
+// SubmitNewHanCharLearningResultResponseMultiError, or nil if none found.
+func (m *SubmitNewHanCharLearningResultResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *SubmitNewHanCharLearningResultResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return SubmitNewHanCharLearningResultResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// SubmitNewHanCharLearningResultResponseMultiError is an error wrapping
+// multiple validation errors returned by
+// SubmitNewHanCharLearningResultResponse.ValidateAll() if the designated
+// constraints aren't met.
+type SubmitNewHanCharLearningResultResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m SubmitNewHanCharLearningResultResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m SubmitNewHanCharLearningResultResponseMultiError) AllErrors() []error { return m }
+
+// SubmitNewHanCharLearningResultResponseValidationError is the validation
+// error returned by SubmitNewHanCharLearningResultResponse.Validate if the
+// designated constraints aren't met.
+type SubmitNewHanCharLearningResultResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e SubmitNewHanCharLearningResultResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e SubmitNewHanCharLearningResultResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e SubmitNewHanCharLearningResultResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e SubmitNewHanCharLearningResultResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e SubmitNewHanCharLearningResultResponseValidationError) ErrorName() string {
+	return "SubmitNewHanCharLearningResultResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e SubmitNewHanCharLearningResultResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sSubmitNewHanCharLearningResultResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = SubmitNewHanCharLearningResultResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = SubmitNewHanCharLearningResultResponseValidationError{}
+
+// Validate checks the field values on HanCharLearningResult with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *HanCharLearningResult) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on HanCharLearningResult with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// HanCharLearningResultMultiError, or nil if none found.
+func (m *HanCharLearningResult) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *HanCharLearningResult) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for FirstTryCorrect
+
+	// no validation rules for SecondTryCorrect
+
+	// no validation rules for ThirdTryCorrect
+
+	// no validation rules for Mastered
+
+	// no validation rules for ErrorCount
+
+	// no validation rules for CorrectCount
+
+	if len(errors) > 0 {
+		return HanCharLearningResultMultiError(errors)
+	}
+
+	return nil
+}
+
+// HanCharLearningResultMultiError is an error wrapping multiple validation
+// errors returned by HanCharLearningResult.ValidateAll() if the designated
+// constraints aren't met.
+type HanCharLearningResultMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m HanCharLearningResultMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m HanCharLearningResultMultiError) AllErrors() []error { return m }
+
+// HanCharLearningResultValidationError is the validation error returned by
+// HanCharLearningResult.Validate if the designated constraints aren't met.
+type HanCharLearningResultValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e HanCharLearningResultValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e HanCharLearningResultValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e HanCharLearningResultValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e HanCharLearningResultValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e HanCharLearningResultValidationError) ErrorName() string {
+	return "HanCharLearningResultValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e HanCharLearningResultValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sHanCharLearningResult.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = HanCharLearningResultValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = HanCharLearningResultValidationError{}
