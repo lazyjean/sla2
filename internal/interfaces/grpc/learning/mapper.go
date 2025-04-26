@@ -19,8 +19,8 @@ func ToPBLearningProgress(progress float64, completedItems, totalItems int) *pb.
 // ToPBMemoryUnit 将领域实体转换为 PB 记忆单元
 func ToPBMemoryUnit(memoryUnit *entity.MemoryUnit) *pb.MemoryUnit {
 	return &pb.MemoryUnit{
-		Id:                 memoryUnit.ID,
-		UserId:             memoryUnit.UserID,
+		Id:                 uint32(memoryUnit.ID),
+		UserId:             uint32(memoryUnit.UserID),
 		Type:               pb.MemoryUnitType(memoryUnit.Type),
 		ContentId:          memoryUnit.ContentID,
 		CreatedAt:          timestamppb.New(memoryUnit.CreatedAt),

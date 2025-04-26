@@ -28,7 +28,7 @@ type MemoryService interface {
 	// UpdateMemoryStatus 更新记忆单元状态
 	UpdateMemoryStatus(ctx context.Context, memoryUnitID uint32, masteryLevel entity.MasteryLevel, studyDuration uint32) error
 	// GetMemoryUnit 获取记忆单元
-	GetMemoryUnit(ctx context.Context, memoryUnitID uint32) (*entity.MemoryUnit, error)
+	GetMemoryUnit(ctx context.Context, id uint32) (*entity.MemoryUnit, error)
 	// ListMemoriesForReview 获取需要复习的记忆单元列表
 	ListMemoriesForReview(ctx context.Context, page, pageSize uint32, types []entity.MemoryUnitType) ([]*entity.MemoryUnit, int, error)
 	// GetMemoryStats 获取记忆统计信息
@@ -117,12 +117,12 @@ func (s *MemoryServiceImpl) ReviewWord(ctx context.Context, wordID entity.WordID
 	}
 
 	if memoryUnit == nil {
-		memoryUnit = entity.NewMemoryUnit(uint32(userID), entity.MemoryUnitTypeWord, uint32(wordID))
+		memoryUnit = entity.NewMemoryUnit(entity.UID(userID), entity.MemoryUnitTypeWord, uint32(wordID))
 		if err := s.memoryRepo.Create(ctx, memoryUnit); err != nil {
 			log.Error("Failed to create new memory unit for word", zap.Error(err), zap.Uint32("wordID", uint32(wordID)), zap.Uint32("userID", uint32(userID)))
 			return err
 		}
-		log.Info("Created new memory unit for word", zap.Uint32("unitID", memoryUnit.ID), zap.Uint32("wordID", uint32(wordID)))
+		log.Info("Created new memory unit for word", zap.Uint32("unitID", uint32(memoryUnit.ID)), zap.Uint32("wordID", uint32(wordID)))
 	}
 
 	// 更新记忆统计
@@ -138,7 +138,7 @@ func (s *MemoryServiceImpl) ReviewWord(ctx context.Context, wordID entity.WordID
 
 	// 添加日志
 	log.Info("[Service ReviewWord] Calculated review interval",
-		zap.Uint32("UnitID", memoryUnit.ID),
+		zap.Uint32("UnitID", uint32(memoryUnit.ID)),
 		zap.Any("Interval", interval),
 		zap.Time("LastReviewAt", memoryUnit.LastReviewAt),
 		zap.Time("CalculatedNextReviewAt", nextReviewAt),
@@ -146,7 +146,7 @@ func (s *MemoryServiceImpl) ReviewWord(ctx context.Context, wordID entity.WordID
 
 	// 保存更新
 	if err := s.memoryRepo.Update(ctx, memoryUnit); err != nil {
-		log.Error("Failed to update memory unit after word review", zap.Error(err), zap.Uint32("unitID", memoryUnit.ID))
+		log.Error("Failed to update memory unit after word review", zap.Error(err), zap.Uint32("unitID", uint32(memoryUnit.ID)))
 		return err
 	}
 	return nil
@@ -185,12 +185,12 @@ func (s *MemoryServiceImpl) ReviewHanChar(ctx context.Context, hanCharID uint32,
 	}
 
 	if memoryUnit == nil {
-		memoryUnit = entity.NewMemoryUnit(uint32(userID), entity.MemoryUnitTypeHanChar, hanCharID)
+		memoryUnit = entity.NewMemoryUnit(entity.UID(userID), entity.MemoryUnitTypeHanChar, hanCharID)
 		if err := s.memoryRepo.Create(ctx, memoryUnit); err != nil {
 			log.Error("Failed to create new memory unit for han char", zap.Error(err), zap.Uint32("hanCharID", hanCharID), zap.Uint32("userID", uint32(userID)))
 			return err
 		}
-		log.Info("Created new memory unit for han char", zap.Uint32("unitID", memoryUnit.ID), zap.Uint32("hanCharID", hanCharID))
+		log.Info("Created new memory unit for han char", zap.Uint32("unitID", uint32(memoryUnit.ID)), zap.Uint32("hanCharID", hanCharID))
 	}
 
 	// 4. Update memory stats
@@ -205,7 +205,7 @@ func (s *MemoryServiceImpl) ReviewHanChar(ctx context.Context, hanCharID uint32,
 	memoryUnit.NextReviewAt = nextReviewAt
 
 	log.Info("[Service ReviewHanChar] Calculated review interval",
-		zap.Uint32("UnitID", memoryUnit.ID),
+		zap.Uint32("UnitID", uint32(memoryUnit.ID)),
 		zap.Any("Interval", interval),
 		zap.Time("LastReviewAt", memoryUnit.LastReviewAt),
 		zap.Time("CalculatedNextReviewAt", nextReviewAt),
@@ -213,7 +213,7 @@ func (s *MemoryServiceImpl) ReviewHanChar(ctx context.Context, hanCharID uint32,
 
 	// 6. Save updated memory unit
 	if err := s.memoryRepo.Update(ctx, memoryUnit); err != nil {
-		log.Error("Failed to update memory unit after han char review", zap.Error(err), zap.Uint32("unitID", memoryUnit.ID))
+		log.Error("Failed to update memory unit after han char review", zap.Error(err), zap.Uint32("unitID", uint32(memoryUnit.ID)))
 		return err
 	}
 	return nil
