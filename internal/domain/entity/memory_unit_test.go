@@ -8,8 +8,8 @@ import (
 )
 
 func TestNewMemoryUnit(t *testing.T) {
-	userID := uint32(1)
-	unitType := MemoryUnitTypeHanChar
+	userID := UID(1)
+	unitType := MemoryUnitTypeWord
 	contentID := uint32(100)
 	now := time.Now()
 

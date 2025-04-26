@@ -319,7 +319,8 @@ func TestUpdateMemoryStatus(t *testing.T) {
 	// 准备测试数据
 	now := time.Now()
 	unit := &entity.MemoryUnit{
-		UserID:             1,
+		ID:                 entity.MemoryUnitID(1),
+		UserID:             entity.UID(1),
 		Type:               entity.MemoryUnitTypeWord,
 		ContentID:          1,
 		CreatedAt:          now,
@@ -339,7 +340,7 @@ func TestUpdateMemoryStatus(t *testing.T) {
 
 	// 执行测试
 	req := &pb.UpdateMemoryStatusRequest{
-		MemoryUnitId:  unit.ID,
+		MemoryUnitId:  uint32(unit.ID),
 		MasteryLevel:  pb.MasteryLevel_MASTERY_LEVEL_FAMILIAR,
 		StudyDuration: 100,
 	}
@@ -352,7 +353,7 @@ func TestUpdateMemoryStatus(t *testing.T) {
 	assert.NotNil(t, resp)
 
 	// 验证数据库中的更新
-	updatedUnit, err := memoryUnitRepo.GetByID(context.Background(), unit.ID)
+	updatedUnit, err := memoryUnitRepo.GetByID(context.Background(), uint32(unit.ID))
 	if err != nil {
 		t.Fatalf("Failed to get updated unit: %v", err)
 	}
