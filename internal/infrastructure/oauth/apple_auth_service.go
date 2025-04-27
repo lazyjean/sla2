@@ -16,6 +16,7 @@ import (
 
 	"github.com/golang-jwt/jwt"
 	"github.com/lazyjean/sla2/config"
+	domainOauth "github.com/lazyjean/sla2/internal/domain/oauth"
 )
 
 const (
@@ -73,7 +74,7 @@ type AppleAuthService struct {
 	httpClient  *http.Client
 }
 
-func NewAppleAuthService(cfg *AppleConfig) *AppleAuthService {
+func NewAppleAuthService(cfg *AppleConfig) domainOauth.AppleAuthService {
 	return &AppleAuthService{
 		clientID:   cfg.ClientID,
 		teamID:     cfg.TeamID,
@@ -203,7 +204,7 @@ func (s *AppleAuthService) getAppleClientSecret() (string, error) {
 }
 
 // verifyIDToken 验证 Apple ID Token
-func (s *AppleAuthService) verifyIDToken(ctx context.Context, idToken string) (*AppleIDToken, error) {
+func (s *AppleAuthService) verifyIDToken(ctx context.Context, idToken string) (*domainOauth.AppleIDToken, error) {
 	// 解析 ID Token
 	token, err := jwt.Parse(idToken, func(token *jwt.Token) (interface{}, error) {
 		// 验证签名算法
@@ -244,7 +245,7 @@ func (s *AppleAuthService) verifyIDToken(ctx context.Context, idToken string) (*
 
 	email, _ := claims["email"].(string)
 
-	return &AppleIDToken{
+	return &domainOauth.AppleIDToken{
 		Subject: sub,
 		Email:   email,
 		Name:    "", // Apple 不会在 ID Token 中返回用户名，需要在前端获取
@@ -252,7 +253,7 @@ func (s *AppleAuthService) verifyIDToken(ctx context.Context, idToken string) (*
 }
 
 // AuthCodeWithApple 使用 authorization code 获取 Apple ID Token
-func (s *AppleAuthService) AuthCodeWithApple(ctx context.Context, authorizationCode string) (*AppleIDToken, error) {
+func (s *AppleAuthService) AuthCodeWithApple(ctx context.Context, authorizationCode string) (*domainOauth.AppleIDToken, error) {
 	// 1. 构建请求 Apple 的 token 请求
 	tokenURL := "https://appleid.apple.com/auth/token"
 	data := url.Values{}
@@ -298,3 +299,5 @@ func (s *AppleAuthService) AuthCodeWithApple(ctx context.Context, authorizationC
 	// 4. 验证 ID Token
 	return s.verifyIDToken(ctx, tokenResp.IDToken)
 }
+
+var _ domainOauth.AppleAuthService = (*AppleAuthService)(nil)

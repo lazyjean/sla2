@@ -28,6 +28,7 @@ func SetupTestDB(t *testing.T) (*gorm.DB, func()) {
 
 	// 确保表结构正确
 	err = db.AutoMigrate(
+		&entity.User{},
 		&entity.Word{},
 		&entity.CourseLearningProgress{},
 		&entity.CourseSectionProgress{},
@@ -57,6 +58,7 @@ func getEnvOrDefault(key, defaultValue string) string {
 func cleanTestData(t *testing.T, db *gorm.DB) {
 	// 清理所有相关表的数据
 	tables := []string{
+		"users",
 		"words",
 		"course_learning_progresses",
 		"course_section_progresses",

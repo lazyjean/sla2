@@ -22,7 +22,7 @@ type User struct {
 	Email         string     `gorm:"type:varchar(100);uniqueIndex"`
 	Nickname      string     `gorm:"type:varchar(50)"`
 	Avatar        string     `gorm:"type:varchar(255)"`
-	Phone         string     `gorm:"type:varchar(20);uniqueIndex"`  // 手机号
+	Phone         *string    `gorm:"type:varchar(20);uniqueIndex"`  // 手机号，可以为 NULL
 	AppleID       string     `gorm:"type:varchar(100);uniqueIndex"` // 苹果用户ID
 	Status        UserStatus `gorm:"type:int;not null;default:1"`
 	EmailVerified bool       `gorm:"type:boolean;default:false"`

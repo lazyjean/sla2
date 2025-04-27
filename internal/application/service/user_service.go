@@ -8,9 +8,9 @@ import (
 	"github.com/lazyjean/sla2/internal/application/dto"
 	"github.com/lazyjean/sla2/internal/domain/entity"
 	"github.com/lazyjean/sla2/internal/domain/errors"
+	"github.com/lazyjean/sla2/internal/domain/oauth"
 	"github.com/lazyjean/sla2/internal/domain/repository"
 	"github.com/lazyjean/sla2/internal/domain/security"
-	"github.com/lazyjean/sla2/internal/infrastructure/oauth"
 	"github.com/lazyjean/sla2/pkg/logger"
 	"github.com/lazyjean/sla2/pkg/utils"
 	"go.uber.org/zap"
@@ -22,14 +22,14 @@ type UserService struct {
 	userRepo        repository.UserRepository
 	tokenService    security.TokenService
 	passwordService security.PasswordService
-	appleAuth       *oauth.AppleAuthService
+	appleAuth       oauth.AppleAuthService
 }
 
 func NewUserService(
 	userRepo repository.UserRepository,
 	tokenService security.TokenService,
 	passwordService security.PasswordService,
-	appleAuth *oauth.AppleAuthService,
+	appleAuth oauth.AppleAuthService,
 ) *UserService {
 	return &UserService{
 		userRepo:        userRepo,
@@ -439,4 +439,21 @@ func (s *UserService) LoginWithApple(ctx context.Context, appleToken string) (st
 	}
 
 	return token, refreshToken, nil
+}
+
+// Logout handles user logout
+func (s *UserService) Logout(ctx context.Context, req *dto.LogoutRequest) (*dto.LogoutResponse, error) {
+	// Get user ID from context
+	userID, err := utils.GetUserIDFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// Log the logout action
+	log := logger.GetLogger(ctx)
+	log.Info("User logged out",
+		zap.Int64("user_id", int64(userID)),
+	)
+
+	return &dto.LogoutResponse{}, nil
 }

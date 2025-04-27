@@ -71,6 +71,9 @@ type ChangePasswordRequest struct {
 type ChangePasswordResponse struct {
 }
 
+type LogoutRequest struct {
+}
+
 type LogoutResponse struct {
 }
 

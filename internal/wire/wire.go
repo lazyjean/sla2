@@ -65,8 +65,7 @@ var serviceSet = wire.NewSet(
 	provideAdminService,
 	service.NewQuestionService,
 	service.NewQuestionTagService,
-	// Provide MemoryServiceImpl using its constructor NewMemoryService
-	service.NewMemoryService, // Wire will provide dependencies to this function
+	service.NewMemoryService,
 )
 
 // provideAdminService 提供管理员服务
