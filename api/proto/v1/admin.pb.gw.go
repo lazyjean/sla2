@@ -40,6 +40,7 @@ func request_AdminService_CheckSystemStatus_0(ctx context.Context, marshaler run
 		protoReq AdminServiceCheckSystemStatusRequest
 		metadata runtime.ServerMetadata
 	)
+	io.Copy(io.Discard, req.Body)
 	msg, err := client.CheckSystemStatus(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
@@ -130,6 +131,7 @@ func request_AdminService_GetCurrentAdminInfo_0(ctx context.Context, marshaler r
 		protoReq AdminServiceGetCurrentAdminInfoRequest
 		metadata runtime.ServerMetadata
 	)
+	io.Copy(io.Discard, req.Body)
 	msg, err := client.GetCurrentAdminInfo(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }

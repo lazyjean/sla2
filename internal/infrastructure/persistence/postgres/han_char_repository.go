@@ -94,6 +94,10 @@ func (r *hanCharRepository) List(ctx context.Context, offset, limit int, filters
 			if v, ok := value.([]string); ok && len(v) > 0 {
 				query = query.Where("categories @> ?", v)
 			}
+		case "exclude_ids":
+			if v, ok := value.([]uint); ok && len(v) > 0 {
+				query = query.Where("id NOT IN ?", v)
+			}
 		}
 	}
 

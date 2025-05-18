@@ -16,9 +16,9 @@ import (
 // MemoryService 记忆服务接口
 type MemoryService interface {
 	// ReviewWord 复习单词
-	ReviewWord(ctx context.Context, wordID entity.WordID, result bool, responseTime uint32) error
+	ReviewWord(ctx context.Context, wordID entity.WordID, result bool, reviewDuration uint32) error
 	// ReviewHanChar 复习汉字
-	ReviewHanChar(ctx context.Context, hanCharID uint32, result bool, responseTime uint32) error
+	ReviewHanChar(ctx context.Context, hanCharID uint32, result bool, reviewDuration uint32) error
 	// GetNextReviewWords 获取下一批需要复习的单词
 	GetNextReviewWords(ctx context.Context, limit int) ([]*entity.Word, error)
 	// GetWordStats 获取单词的学习统计信息
@@ -30,9 +30,19 @@ type MemoryService interface {
 	// GetMemoryUnit 获取记忆单元
 	GetMemoryUnit(ctx context.Context, id uint32) (*entity.MemoryUnit, error)
 	// ListMemoriesForReview 获取需要复习的记忆单元列表
-	ListMemoriesForReview(ctx context.Context, page, pageSize uint32, types []entity.MemoryUnitType) ([]*entity.MemoryUnit, int, error)
+	ListMemoriesForReview(ctx context.Context, page, pageSize uint32, types []entity.MemoryUnitType, masteryLevels []entity.MasteryLevel) ([]*entity.MemoryUnit, int, error)
 	// GetMemoryStats 获取记忆统计信息
 	GetMemoryStats(ctx context.Context, unitType *entity.MemoryUnitType) (*repository.MemoryUnitStats, error)
+	// CreateMemoryUnit 创建记忆单元
+	CreateMemoryUnit(ctx context.Context, unit *entity.MemoryUnit) error
+	// CreateMemoryUnits 批量创建记忆单元
+	CreateMemoryUnits(ctx context.Context, units []*entity.MemoryUnit) ([]uint32, error)
+	// UpdateMemoryUnit 更新记忆单元
+	UpdateMemoryUnit(ctx context.Context, unit *entity.MemoryUnit) error
+	// ListMemoriesForStrengthening 获取需要加强的记忆单元列表
+	ListMemoriesForStrengthening(ctx context.Context, page, pageSize uint32, types []entity.MemoryUnitType, levels []entity.MasteryLevel) ([]*entity.MemoryUnit, int, error)
+	// CalculateNextReviewInterval 计算下次复习间隔
+	CalculateNextReviewInterval(unit *entity.MemoryUnit) *ReviewInterval
 }
 
 // WordStats 单词学习统计信息
@@ -84,7 +94,7 @@ func NewMemoryService(wordRepo repository.WordRepository, memoryRepo repository.
 }
 
 // ReviewWord 复习单词
-func (s *MemoryServiceImpl) ReviewWord(ctx context.Context, wordID entity.WordID, result bool, responseTime uint32) error {
+func (s *MemoryServiceImpl) ReviewWord(ctx context.Context, wordID entity.WordID, result bool, reviewDuration uint32) error {
 	log := logger.GetLogger(ctx)
 
 	// Check if Word exists
@@ -110,7 +120,7 @@ func (s *MemoryServiceImpl) ReviewWord(ctx context.Context, wordID entity.WordID
 	}
 
 	// 获取或创建记忆单元
-	memoryUnit, err := s.memoryRepo.GetByTypeAndContentID(ctx, entity.MemoryUnitTypeWord, uint32(wordID))
+	memoryUnit, err := s.memoryRepo.GetByTypeAndContentID(ctx, userID, entity.MemoryUnitTypeWord, uint32(wordID))
 	if err != nil {
 		log.Error("Failed to get memory unit by type and content ID", zap.Error(err), zap.Uint32("wordID", uint32(wordID)))
 		return err
@@ -125,12 +135,20 @@ func (s *MemoryServiceImpl) ReviewWord(ctx context.Context, wordID entity.WordID
 		log.Info("Created new memory unit for word", zap.Uint32("unitID", uint32(memoryUnit.ID)), zap.Uint32("wordID", uint32(wordID)))
 	}
 
-	// 更新记忆统计
-	memoryUnit.UpdateReviewStats(result, responseTime)
+	// 更新复习状态
+	now := time.Now()
+	memoryUnit.LastReviewAt = now
+	memoryUnit.ReviewCount++
+	if result {
+		memoryUnit.ConsecutiveCorrect++
+		memoryUnit.ConsecutiveWrong = 0
+	} else {
+		memoryUnit.ConsecutiveCorrect = 0
+		memoryUnit.ConsecutiveWrong++
+	}
 
 	// 计算下次复习时间
 	interval := s.calculateNextReviewInterval(memoryUnit)
-	now := time.Now()
 	nextReviewAt := now.Add(time.Duration(interval.Days)*24*time.Hour +
 		time.Duration(interval.Hours)*time.Hour +
 		time.Duration(interval.Minutes)*time.Minute)
@@ -153,7 +171,7 @@ func (s *MemoryServiceImpl) ReviewWord(ctx context.Context, wordID entity.WordID
 }
 
 // ReviewHanChar 复习汉字
-func (s *MemoryServiceImpl) ReviewHanChar(ctx context.Context, hanCharID uint32, result bool, responseTime uint32) error {
+func (s *MemoryServiceImpl) ReviewHanChar(ctx context.Context, hanCharID uint32, result bool, reviewDuration uint32) error {
 	log := logger.GetLogger(ctx)
 
 	// 1. Check if HanChar exists
@@ -178,14 +196,14 @@ func (s *MemoryServiceImpl) ReviewHanChar(ctx context.Context, hanCharID uint32,
 	}
 
 	// 3. Get or Create MemoryUnit (only if HanChar exists)
-	memoryUnit, err := s.memoryRepo.GetByTypeAndContentID(ctx, entity.MemoryUnitTypeHanChar, hanCharID)
+	memoryUnit, err := s.memoryRepo.GetByTypeAndContentID(ctx, userID, entity.MemoryUnitTypeHanChar, hanCharID)
 	if err != nil {
 		log.Error("Failed to get memory unit by type and content ID", zap.Error(err), zap.Uint32("hanCharID", hanCharID))
 		return err
 	}
 
 	if memoryUnit == nil {
-		memoryUnit = entity.NewMemoryUnit(entity.UID(userID), entity.MemoryUnitTypeHanChar, hanCharID)
+		memoryUnit = entity.NewMemoryUnit(userID, entity.MemoryUnitTypeHanChar, hanCharID)
 		if err := s.memoryRepo.Create(ctx, memoryUnit); err != nil {
 			log.Error("Failed to create new memory unit for han char", zap.Error(err), zap.Uint32("hanCharID", hanCharID), zap.Uint32("userID", uint32(userID)))
 			return err
@@ -194,12 +212,19 @@ func (s *MemoryServiceImpl) ReviewHanChar(ctx context.Context, hanCharID uint32,
 	}
 
 	// 4. Update memory stats
-	memoryUnit.UpdateReviewStats(result, responseTime)
+	memoryUnit.LastReviewAt = time.Now()
+	memoryUnit.ReviewCount++
+	if result {
+		memoryUnit.ConsecutiveCorrect++
+		memoryUnit.ConsecutiveWrong = 0
+	} else {
+		memoryUnit.ConsecutiveCorrect = 0
+		memoryUnit.ConsecutiveWrong++
+	}
 
 	// 5. Calculate next review time
 	interval := s.calculateNextReviewInterval(memoryUnit)
-	now := time.Now()
-	nextReviewAt := now.Add(time.Duration(interval.Days)*24*time.Hour +
+	nextReviewAt := time.Now().Add(time.Duration(interval.Days)*24*time.Hour +
 		time.Duration(interval.Hours)*time.Hour +
 		time.Duration(interval.Minutes)*time.Minute)
 	memoryUnit.NextReviewAt = nextReviewAt
@@ -221,8 +246,14 @@ func (s *MemoryServiceImpl) ReviewHanChar(ctx context.Context, hanCharID uint32,
 
 // GetNextReviewWords 获取下一批需要复习的单词
 func (s *MemoryServiceImpl) GetNextReviewWords(ctx context.Context, limit int) ([]*entity.Word, error) {
+	// 从 context 获取 userID
+	userID, err := GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	// 获取需要复习的记忆单元
-	units, err := s.memoryRepo.ListNeedReview(ctx, entity.MemoryUnitTypeWord, time.Now(), limit)
+	units, err := s.memoryRepo.ListNeedReview(ctx, userID, entity.MemoryUnitTypeWord, time.Now(), limit)
 	if err != nil {
 		return nil, err
 	}
@@ -242,6 +273,12 @@ func (s *MemoryServiceImpl) GetNextReviewWords(ctx context.Context, limit int) (
 
 // GetWordStats 获取单词的学习统计信息
 func (s *MemoryServiceImpl) GetWordStats(ctx context.Context, wordID entity.WordID) (*WordStats, error) {
+	// 从 context 获取 userID
+	userID, err := GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	// 获取单词
 	word, err := s.wordRepo.GetByID(ctx, wordID)
 	if err != nil {
@@ -249,12 +286,12 @@ func (s *MemoryServiceImpl) GetWordStats(ctx context.Context, wordID entity.Word
 	}
 
 	// 获取记忆单元
-	unit, err := s.memoryRepo.GetByTypeAndContentID(ctx, entity.MemoryUnitTypeWord, uint32(wordID))
+	unit, err := s.memoryRepo.GetByTypeAndContentID(ctx, userID, entity.MemoryUnitTypeWord, uint32(wordID))
 	if err != nil {
 		return nil, err
 	}
 	if unit == nil {
-		unit = entity.NewMemoryUnit(0, entity.MemoryUnitTypeWord, uint32(wordID))
+		unit = entity.NewMemoryUnit(userID, entity.MemoryUnitTypeWord, uint32(wordID))
 	}
 
 	return &WordStats{
@@ -278,13 +315,19 @@ func (s *MemoryServiceImpl) GetLearningProgress(ctx context.Context) (*LearningP
 
 // UpdateMemoryStatus 更新记忆单元状态
 func (s *MemoryServiceImpl) UpdateMemoryStatus(ctx context.Context, memoryUnitID uint32, masteryLevel entity.MasteryLevel, studyDuration uint32) error {
+	// 从 context 获取 userID
+	userID, err := GetUserID(ctx)
+	if err != nil {
+		return err
+	}
+
 	// 获取记忆单元
-	memoryUnit, err := s.memoryRepo.GetByID(ctx, memoryUnitID)
+	memoryUnit, err := s.memoryRepo.GetByID(ctx, userID, memoryUnitID)
 	if err != nil {
 		return err
 	}
 	if memoryUnit == nil {
-		return errors.New("memory unit not found")
+		return domainErrors.ErrNotFound
 	}
 
 	// 更新状态
@@ -298,30 +341,38 @@ func (s *MemoryServiceImpl) UpdateMemoryStatus(ctx context.Context, memoryUnitID
 
 // GetMemoryUnit 获取记忆单元
 func (s *MemoryServiceImpl) GetMemoryUnit(ctx context.Context, memoryUnitID uint32) (*entity.MemoryUnit, error) {
-	return s.memoryRepo.GetByID(ctx, memoryUnitID)
+	// 从 context 获取 userID
+	userID, err := GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.memoryRepo.GetByID(ctx, userID, memoryUnitID)
 }
 
 // ListMemoriesForReview 获取需要复习的记忆单元列表
-func (s *MemoryServiceImpl) ListMemoriesForReview(ctx context.Context, page, pageSize uint32, types []entity.MemoryUnitType) ([]*entity.MemoryUnit, int, error) {
+func (s *MemoryServiceImpl) ListMemoriesForReview(ctx context.Context, page, pageSize uint32, types []entity.MemoryUnitType, masteryLevels []entity.MasteryLevel) ([]*entity.MemoryUnit, int, error) {
+	// 从 context 获取 userID
+	userID, err := GetUserID(ctx)
+	if err != nil {
+		return nil, 0, err
+	}
+
 	// 计算 offset
 	offset := (page - 1) * pageSize
 	limit := int(pageSize)
 	now := time.Now()
 
 	// 调用 repository 获取数据
-	units, err := s.memoryRepo.ListNeedReviewByTypes(ctx, types, now, offset, limit)
+	units, err := s.memoryRepo.ListNeedReviewByTypes(ctx, userID, types, now, offset, limit, masteryLevels)
 	if err != nil {
-		// 考虑记录日志
-		// log.Printf("Error listing memories for review: %v", err)
-		return nil, 0, err // 直接返回错误
+		return nil, 0, err
 	}
 
 	// 调用 repository 获取总数
-	total, err := s.memoryRepo.CountNeedReviewByTypes(ctx, types, now)
+	total, err := s.memoryRepo.CountNeedReviewByTypes(ctx, userID, types, now, masteryLevels)
 	if err != nil {
-		// 考虑记录日志
-		// log.Printf("Error counting memories for review: %v", err)
-		return nil, 0, err // 直接返回错误
+		return nil, 0, err
 	}
 
 	return units, int(total), nil
@@ -400,6 +451,103 @@ func (s *MemoryServiceImpl) GetMemoryStats(ctx context.Context, unitType *entity
 		return nil, err
 	}
 	return stats, nil
+}
+
+// CreateMemoryUnit 创建记忆单元
+func (s *MemoryServiceImpl) CreateMemoryUnit(ctx context.Context, unit *entity.MemoryUnit) error {
+	return s.memoryRepo.Create(ctx, unit)
+}
+
+// CreateMemoryUnits 批量创建记忆单元
+func (s *MemoryServiceImpl) CreateMemoryUnits(ctx context.Context, units []*entity.MemoryUnit) ([]uint32, error) {
+	// 使用事务批量创建
+	err := s.memoryRepo.CreateBatch(ctx, units)
+	if err != nil {
+		return nil, err
+	}
+
+	// 收集创建的单元ID
+	ids := make([]uint32, len(units))
+	for i, unit := range units {
+		ids[i] = uint32(unit.ID)
+	}
+	return ids, nil
+}
+
+// UpdateMemoryUnit 更新记忆单元
+func (s *MemoryServiceImpl) UpdateMemoryUnit(ctx context.Context, unit *entity.MemoryUnit) error {
+	return s.memoryRepo.Update(ctx, unit)
+}
+
+// ListMemoriesForStrengthening 获取需要加强的记忆单元列表
+func (s *MemoryServiceImpl) ListMemoriesForStrengthening(ctx context.Context, page, pageSize uint32, types []entity.MemoryUnitType, levels []entity.MasteryLevel) ([]*entity.MemoryUnit, int, error) {
+	// 从 context 获取 userID
+	userID, err := GetUserID(ctx)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// 计算 offset
+	offset := (page - 1) * pageSize
+	limit := int(pageSize)
+	now := time.Now()
+
+	// 调用 repository 获取数据
+	units, err := s.memoryRepo.ListNeedReviewByTypes(ctx, userID, types, now, offset, limit, levels)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// 调用 repository 获取总数
+	total, err := s.memoryRepo.CountNeedReviewByTypes(ctx, userID, types, now, levels)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return units, int(total), nil
+}
+
+// CalculateNextReviewInterval 计算下次复习间隔
+func (s *MemoryServiceImpl) CalculateNextReviewInterval(unit *entity.MemoryUnit) *ReviewInterval {
+	// 基础间隔（小时）
+	var baseInterval float64
+	switch unit.MasteryLevel {
+	case entity.MasteryLevelUnlearned:
+		baseInterval = 1 // 1小时
+	case entity.MasteryLevelBeginner:
+		baseInterval = 4 // 4小时
+	case entity.MasteryLevelFamiliar:
+		baseInterval = 24 // 1天
+	case entity.MasteryLevelMastered:
+		baseInterval = 72 // 3天
+	case entity.MasteryLevelExpert:
+		baseInterval = 168 // 7天
+	default:
+		baseInterval = 1
+	}
+
+	// 根据连续正确次数调整间隔
+	if unit.ConsecutiveCorrect > 0 {
+		baseInterval *= 1.2 * float64(unit.ConsecutiveCorrect)
+	}
+
+	// 根据连续错误次数减少间隔
+	if unit.ConsecutiveWrong > 0 {
+		baseInterval /= 2.0 * float64(unit.ConsecutiveWrong)
+	}
+
+	// 转换为天、小时、分钟
+	totalMinutes := int(baseInterval * 60)
+	days := uint32(totalMinutes / (24 * 60))
+	totalMinutes = totalMinutes % (24 * 60)
+	hours := uint32(totalMinutes / 60)
+	minutes := uint32(totalMinutes % 60)
+
+	return &ReviewInterval{
+		Days:    days,
+		Hours:   hours,
+		Minutes: minutes,
+	}
 }
 
 var _ MemoryService = (*MemoryServiceImpl)(nil)

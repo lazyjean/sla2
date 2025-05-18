@@ -41,6 +41,7 @@ func request_LearningService_GetCourseProgress_0(ctx context.Context, marshaler 
 		metadata runtime.ServerMetadata
 		err      error
 	)
+	io.Copy(io.Discard, req.Body)
 	val, ok := pathParams["course_id"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "course_id")
@@ -77,6 +78,7 @@ func request_LearningService_GetSectionProgress_0(ctx context.Context, marshaler
 		metadata runtime.ServerMetadata
 		err      error
 	)
+	io.Copy(io.Discard, req.Body)
 	val, ok := pathParams["section_id"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "section_id")
@@ -149,81 +151,27 @@ func local_request_LearningService_UpdateUnitProgress_0(ctx context.Context, mar
 	return msg, metadata, err
 }
 
-func request_LearningService_GetMemoryStatus_0(ctx context.Context, marshaler runtime.Marshaler, client LearningServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_LearningService_InitializeMemoryUnits_0(ctx context.Context, marshaler runtime.Marshaler, client LearningServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq GetMemoryStatusRequest
+		protoReq LearningServiceInitializeMemoryUnitRequest
 		metadata runtime.ServerMetadata
-		err      error
-	)
-	val, ok := pathParams["memory_unit_id"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "memory_unit_id")
-	}
-	protoReq.MemoryUnitId, err = runtime.Uint32(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "memory_unit_id", err)
-	}
-	msg, err := client.GetMemoryStatus(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
-	return msg, metadata, err
-}
-
-func local_request_LearningService_GetMemoryStatus_0(ctx context.Context, marshaler runtime.Marshaler, server LearningServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq GetMemoryStatusRequest
-		metadata runtime.ServerMetadata
-		err      error
-	)
-	val, ok := pathParams["memory_unit_id"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "memory_unit_id")
-	}
-	protoReq.MemoryUnitId, err = runtime.Uint32(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "memory_unit_id", err)
-	}
-	msg, err := server.GetMemoryStatus(ctx, &protoReq)
-	return msg, metadata, err
-}
-
-func request_LearningService_UpdateMemoryStatus_0(ctx context.Context, marshaler runtime.Marshaler, client LearningServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq UpdateMemoryStatusRequest
-		metadata runtime.ServerMetadata
-		err      error
 	)
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	val, ok := pathParams["memory_unit_id"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "memory_unit_id")
-	}
-	protoReq.MemoryUnitId, err = runtime.Uint32(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "memory_unit_id", err)
-	}
-	msg, err := client.UpdateMemoryStatus(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.InitializeMemoryUnits(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
 
-func local_request_LearningService_UpdateMemoryStatus_0(ctx context.Context, marshaler runtime.Marshaler, server LearningServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_LearningService_InitializeMemoryUnits_0(ctx context.Context, marshaler runtime.Marshaler, server LearningServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq UpdateMemoryStatusRequest
+		protoReq LearningServiceInitializeMemoryUnitRequest
 		metadata runtime.ServerMetadata
-		err      error
 	)
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	val, ok := pathParams["memory_unit_id"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "memory_unit_id")
-	}
-	protoReq.MemoryUnitId, err = runtime.Uint32(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "memory_unit_id", err)
-	}
-	msg, err := server.UpdateMemoryStatus(ctx, &protoReq)
+	msg, err := server.InitializeMemoryUnits(ctx, &protoReq)
 	return msg, metadata, err
 }
 
@@ -231,9 +179,10 @@ var filter_LearningService_ListMemoriesForReview_0 = &utilities.DoubleArray{Enco
 
 func request_LearningService_ListMemoriesForReview_0(ctx context.Context, marshaler runtime.Marshaler, client LearningServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq ListMemoriesForReviewRequest
+		protoReq LearningServiceListMemoriesForReviewRequest
 		metadata runtime.ServerMetadata
 	)
+	io.Copy(io.Discard, req.Body)
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
@@ -246,7 +195,7 @@ func request_LearningService_ListMemoriesForReview_0(ctx context.Context, marsha
 
 func local_request_LearningService_ListMemoriesForReview_0(ctx context.Context, marshaler runtime.Marshaler, server LearningServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq ListMemoriesForReviewRequest
+		protoReq LearningServiceListMemoriesForReviewRequest
 		metadata runtime.ServerMetadata
 	)
 	if err := req.ParseForm(); err != nil {
@@ -259,13 +208,38 @@ func local_request_LearningService_ListMemoriesForReview_0(ctx context.Context, 
 	return msg, metadata, err
 }
 
+func request_LearningService_ReviewMemoryUnits_0(ctx context.Context, marshaler runtime.Marshaler, client LearningServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq LearningServiceReviewMemoryUnitsRequest
+		metadata runtime.ServerMetadata
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := client.ReviewMemoryUnits(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_LearningService_ReviewMemoryUnits_0(ctx context.Context, marshaler runtime.Marshaler, server LearningServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq LearningServiceReviewMemoryUnitsRequest
+		metadata runtime.ServerMetadata
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := server.ReviewMemoryUnits(ctx, &protoReq)
+	return msg, metadata, err
+}
+
 var filter_LearningService_GetMemoryStats_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
 
 func request_LearningService_GetMemoryStats_0(ctx context.Context, marshaler runtime.Marshaler, client LearningServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq GetMemoryStatsRequest
+		protoReq LearningServiceGetMemoryStatsRequest
 		metadata runtime.ServerMetadata
 	)
+	io.Copy(io.Discard, req.Body)
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
@@ -278,7 +252,7 @@ func request_LearningService_GetMemoryStats_0(ctx context.Context, marshaler run
 
 func local_request_LearningService_GetMemoryStats_0(ctx context.Context, marshaler runtime.Marshaler, server LearningServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq GetMemoryStatsRequest
+		protoReq LearningServiceGetMemoryStatsRequest
 		metadata runtime.ServerMetadata
 	)
 	if err := req.ParseForm(); err != nil {
@@ -291,85 +265,14 @@ func local_request_LearningService_GetMemoryStats_0(ctx context.Context, marshal
 	return msg, metadata, err
 }
 
-func request_LearningService_ReviewWord_0(ctx context.Context, marshaler runtime.Marshaler, client LearningServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq ReviewWordRequest
-		metadata runtime.ServerMetadata
-	)
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	msg, err := client.ReviewWord(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
-	return msg, metadata, err
-}
-
-func local_request_LearningService_ReviewWord_0(ctx context.Context, marshaler runtime.Marshaler, server LearningServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq ReviewWordRequest
-		metadata runtime.ServerMetadata
-	)
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	msg, err := server.ReviewWord(ctx, &protoReq)
-	return msg, metadata, err
-}
-
-func request_LearningService_ReviewHanChar_0(ctx context.Context, marshaler runtime.Marshaler, client LearningServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq ReviewHanCharRequest
-		metadata runtime.ServerMetadata
-	)
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	msg, err := client.ReviewHanChar(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
-	return msg, metadata, err
-}
-
-func local_request_LearningService_ReviewHanChar_0(ctx context.Context, marshaler runtime.Marshaler, server LearningServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq ReviewHanCharRequest
-		metadata runtime.ServerMetadata
-	)
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	msg, err := server.ReviewHanChar(ctx, &protoReq)
-	return msg, metadata, err
-}
-
-func request_LearningService_SubmitHanCharReview_0(ctx context.Context, marshaler runtime.Marshaler, client LearningServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq SubmitHanCharReviewRequest
-		metadata runtime.ServerMetadata
-	)
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	msg, err := client.SubmitHanCharReview(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
-	return msg, metadata, err
-}
-
-func local_request_LearningService_SubmitHanCharReview_0(ctx context.Context, marshaler runtime.Marshaler, server LearningServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq SubmitHanCharReviewRequest
-		metadata runtime.ServerMetadata
-	)
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	msg, err := server.SubmitHanCharReview(ctx, &protoReq)
-	return msg, metadata, err
-}
-
 var filter_LearningService_GetHanCharTest_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
 
 func request_LearningService_GetHanCharTest_0(ctx context.Context, marshaler runtime.Marshaler, client LearningServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq GetHanCharTestRequest
+		protoReq LearningServiceGetHanCharTestRequest
 		metadata runtime.ServerMetadata
 	)
+	io.Copy(io.Discard, req.Body)
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
@@ -382,7 +285,7 @@ func request_LearningService_GetHanCharTest_0(ctx context.Context, marshaler run
 
 func local_request_LearningService_GetHanCharTest_0(ctx context.Context, marshaler runtime.Marshaler, server LearningServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq GetHanCharTestRequest
+		protoReq LearningServiceGetHanCharTestRequest
 		metadata runtime.ServerMetadata
 	)
 	if err := req.ParseForm(); err != nil {
@@ -395,83 +298,36 @@ func local_request_LearningService_GetHanCharTest_0(ctx context.Context, marshal
 	return msg, metadata, err
 }
 
-func request_LearningService_SubmitHanCharTestResult_0(ctx context.Context, marshaler runtime.Marshaler, client LearningServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+var filter_LearningService_GetWordTest_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+
+func request_LearningService_GetWordTest_0(ctx context.Context, marshaler runtime.Marshaler, client LearningServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq SubmitHanCharTestResultRequest
+		protoReq LearningServiceGetWordTestRequest
 		metadata runtime.ServerMetadata
 	)
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+	io.Copy(io.Discard, req.Body)
+	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	msg, err := client.SubmitHanCharTestResult(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_LearningService_GetWordTest_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := client.GetWordTest(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
 
-func local_request_LearningService_SubmitHanCharTestResult_0(ctx context.Context, marshaler runtime.Marshaler, server LearningServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_LearningService_GetWordTest_0(ctx context.Context, marshaler runtime.Marshaler, server LearningServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq SubmitHanCharTestResultRequest
-		metadata runtime.ServerMetadata
-	)
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	msg, err := server.SubmitHanCharTestResult(ctx, &protoReq)
-	return msg, metadata, err
-}
-
-var filter_LearningService_GetNewHanCharLearning_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
-
-func request_LearningService_GetNewHanCharLearning_0(ctx context.Context, marshaler runtime.Marshaler, client LearningServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq GetNewHanCharLearningRequest
+		protoReq LearningServiceGetWordTestRequest
 		metadata runtime.ServerMetadata
 	)
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_LearningService_GetNewHanCharLearning_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_LearningService_GetWordTest_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	msg, err := client.GetNewHanCharLearning(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
-	return msg, metadata, err
-}
-
-func local_request_LearningService_GetNewHanCharLearning_0(ctx context.Context, marshaler runtime.Marshaler, server LearningServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq GetNewHanCharLearningRequest
-		metadata runtime.ServerMetadata
-	)
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_LearningService_GetNewHanCharLearning_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	msg, err := server.GetNewHanCharLearning(ctx, &protoReq)
-	return msg, metadata, err
-}
-
-func request_LearningService_SubmitNewHanCharLearningResult_0(ctx context.Context, marshaler runtime.Marshaler, client LearningServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq SubmitNewHanCharLearningResultRequest
-		metadata runtime.ServerMetadata
-	)
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	msg, err := client.SubmitNewHanCharLearningResult(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
-	return msg, metadata, err
-}
-
-func local_request_LearningService_SubmitNewHanCharLearningResult_0(ctx context.Context, marshaler runtime.Marshaler, server LearningServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq SubmitNewHanCharLearningResultRequest
-		metadata runtime.ServerMetadata
-	)
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	msg, err := server.SubmitNewHanCharLearningResult(ctx, &protoReq)
+	msg, err := server.GetWordTest(ctx, &protoReq)
 	return msg, metadata, err
 }
 
@@ -541,45 +397,25 @@ func RegisterLearningServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		}
 		forward_LearningService_UpdateUnitProgress_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodGet, pattern_LearningService_GetMemoryStatus_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodPost, pattern_LearningService_InitializeMemoryUnits_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.LearningService/GetMemoryStatus", runtime.WithHTTPPathPattern("/api/v1/learning/memories/{memory_unit_id}/status"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.LearningService/InitializeMemoryUnits", runtime.WithHTTPPathPattern("/api/v1/learning/memories/initialize"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_LearningService_GetMemoryStatus_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_LearningService_InitializeMemoryUnits_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_LearningService_GetMemoryStatus_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-	})
-	mux.Handle(http.MethodPut, pattern_LearningService_UpdateMemoryStatus_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		var stream runtime.ServerTransportStream
-		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.LearningService/UpdateMemoryStatus", runtime.WithHTTPPathPattern("/api/v1/learning/memories/{memory_unit_id}/status"))
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := local_request_LearningService_UpdateMemoryStatus_0(annotatedContext, inboundMarshaler, server, req, pathParams)
-		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
-		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
-		if err != nil {
-			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		forward_LearningService_UpdateMemoryStatus_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_LearningService_InitializeMemoryUnits_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 	mux.Handle(http.MethodGet, pattern_LearningService_ListMemoriesForReview_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
@@ -601,6 +437,26 @@ func RegisterLearningServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		}
 		forward_LearningService_ListMemoriesForReview_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodPost, pattern_LearningService_ReviewMemoryUnits_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.LearningService/ReviewMemoryUnits", runtime.WithHTTPPathPattern("/api/v1/learning/memories/review"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_LearningService_ReviewMemoryUnits_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_LearningService_ReviewMemoryUnits_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 	mux.Handle(http.MethodGet, pattern_LearningService_GetMemoryStats_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
@@ -620,66 +476,6 @@ func RegisterLearningServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 			return
 		}
 		forward_LearningService_GetMemoryStats_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-	})
-	mux.Handle(http.MethodPost, pattern_LearningService_ReviewWord_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		var stream runtime.ServerTransportStream
-		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.LearningService/ReviewWord", runtime.WithHTTPPathPattern("/api/v1/learning/words/review"))
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := local_request_LearningService_ReviewWord_0(annotatedContext, inboundMarshaler, server, req, pathParams)
-		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
-		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
-		if err != nil {
-			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		forward_LearningService_ReviewWord_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-	})
-	mux.Handle(http.MethodPost, pattern_LearningService_ReviewHanChar_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		var stream runtime.ServerTransportStream
-		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.LearningService/ReviewHanChar", runtime.WithHTTPPathPattern("/api/v1/learning/han_chars/review"))
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := local_request_LearningService_ReviewHanChar_0(annotatedContext, inboundMarshaler, server, req, pathParams)
-		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
-		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
-		if err != nil {
-			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		forward_LearningService_ReviewHanChar_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-	})
-	mux.Handle(http.MethodPost, pattern_LearningService_SubmitHanCharReview_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		var stream runtime.ServerTransportStream
-		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.LearningService/SubmitHanCharReview", runtime.WithHTTPPathPattern("/v1/learning/han_chars/review/submit"))
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := local_request_LearningService_SubmitHanCharReview_0(annotatedContext, inboundMarshaler, server, req, pathParams)
-		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
-		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
-		if err != nil {
-			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		forward_LearningService_SubmitHanCharReview_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 	mux.Handle(http.MethodGet, pattern_LearningService_GetHanCharTest_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
@@ -701,65 +497,25 @@ func RegisterLearningServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		}
 		forward_LearningService_GetHanCharTest_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodPost, pattern_LearningService_SubmitHanCharTestResult_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_LearningService_GetWordTest_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.LearningService/SubmitHanCharTestResult", runtime.WithHTTPPathPattern("/v1/learning/han_chars/test/submit"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.LearningService/GetWordTest", runtime.WithHTTPPathPattern("/v1/learning/words/test"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_LearningService_SubmitHanCharTestResult_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_LearningService_GetWordTest_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_LearningService_SubmitHanCharTestResult_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-	})
-	mux.Handle(http.MethodGet, pattern_LearningService_GetNewHanCharLearning_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		var stream runtime.ServerTransportStream
-		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.LearningService/GetNewHanCharLearning", runtime.WithHTTPPathPattern("/v1/learning/han_chars/new"))
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := local_request_LearningService_GetNewHanCharLearning_0(annotatedContext, inboundMarshaler, server, req, pathParams)
-		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
-		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
-		if err != nil {
-			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		forward_LearningService_GetNewHanCharLearning_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-	})
-	mux.Handle(http.MethodPost, pattern_LearningService_SubmitNewHanCharLearningResult_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		var stream runtime.ServerTransportStream
-		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.LearningService/SubmitNewHanCharLearningResult", runtime.WithHTTPPathPattern("/v1/learning/han_chars/new/learning/submit"))
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := local_request_LearningService_SubmitNewHanCharLearningResult_0(annotatedContext, inboundMarshaler, server, req, pathParams)
-		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
-		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
-		if err != nil {
-			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		forward_LearningService_SubmitNewHanCharLearningResult_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_LearningService_GetWordTest_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 
 	return nil
@@ -852,39 +608,22 @@ func RegisterLearningServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		}
 		forward_LearningService_UpdateUnitProgress_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodGet, pattern_LearningService_GetMemoryStatus_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodPost, pattern_LearningService_InitializeMemoryUnits_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.LearningService/GetMemoryStatus", runtime.WithHTTPPathPattern("/api/v1/learning/memories/{memory_unit_id}/status"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.LearningService/InitializeMemoryUnits", runtime.WithHTTPPathPattern("/api/v1/learning/memories/initialize"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_LearningService_GetMemoryStatus_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_LearningService_InitializeMemoryUnits_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_LearningService_GetMemoryStatus_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-	})
-	mux.Handle(http.MethodPut, pattern_LearningService_UpdateMemoryStatus_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.LearningService/UpdateMemoryStatus", runtime.WithHTTPPathPattern("/api/v1/learning/memories/{memory_unit_id}/status"))
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := request_LearningService_UpdateMemoryStatus_0(annotatedContext, inboundMarshaler, client, req, pathParams)
-		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
-		if err != nil {
-			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		forward_LearningService_UpdateMemoryStatus_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_LearningService_InitializeMemoryUnits_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 	mux.Handle(http.MethodGet, pattern_LearningService_ListMemoriesForReview_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
@@ -903,6 +642,23 @@ func RegisterLearningServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		}
 		forward_LearningService_ListMemoriesForReview_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodPost, pattern_LearningService_ReviewMemoryUnits_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.LearningService/ReviewMemoryUnits", runtime.WithHTTPPathPattern("/api/v1/learning/memories/review"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_LearningService_ReviewMemoryUnits_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_LearningService_ReviewMemoryUnits_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 	mux.Handle(http.MethodGet, pattern_LearningService_GetMemoryStats_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
@@ -919,57 +675,6 @@ func RegisterLearningServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 			return
 		}
 		forward_LearningService_GetMemoryStats_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-	})
-	mux.Handle(http.MethodPost, pattern_LearningService_ReviewWord_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.LearningService/ReviewWord", runtime.WithHTTPPathPattern("/api/v1/learning/words/review"))
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := request_LearningService_ReviewWord_0(annotatedContext, inboundMarshaler, client, req, pathParams)
-		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
-		if err != nil {
-			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		forward_LearningService_ReviewWord_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-	})
-	mux.Handle(http.MethodPost, pattern_LearningService_ReviewHanChar_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.LearningService/ReviewHanChar", runtime.WithHTTPPathPattern("/api/v1/learning/han_chars/review"))
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := request_LearningService_ReviewHanChar_0(annotatedContext, inboundMarshaler, client, req, pathParams)
-		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
-		if err != nil {
-			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		forward_LearningService_ReviewHanChar_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-	})
-	mux.Handle(http.MethodPost, pattern_LearningService_SubmitHanCharReview_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.LearningService/SubmitHanCharReview", runtime.WithHTTPPathPattern("/v1/learning/han_chars/review/submit"))
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := request_LearningService_SubmitHanCharReview_0(annotatedContext, inboundMarshaler, client, req, pathParams)
-		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
-		if err != nil {
-			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		forward_LearningService_SubmitHanCharReview_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 	mux.Handle(http.MethodGet, pattern_LearningService_GetHanCharTest_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
@@ -988,90 +693,46 @@ func RegisterLearningServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		}
 		forward_LearningService_GetHanCharTest_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodPost, pattern_LearningService_SubmitHanCharTestResult_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_LearningService_GetWordTest_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.LearningService/SubmitHanCharTestResult", runtime.WithHTTPPathPattern("/v1/learning/han_chars/test/submit"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.LearningService/GetWordTest", runtime.WithHTTPPathPattern("/v1/learning/words/test"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_LearningService_SubmitHanCharTestResult_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_LearningService_GetWordTest_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_LearningService_SubmitHanCharTestResult_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-	})
-	mux.Handle(http.MethodGet, pattern_LearningService_GetNewHanCharLearning_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.LearningService/GetNewHanCharLearning", runtime.WithHTTPPathPattern("/v1/learning/han_chars/new"))
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := request_LearningService_GetNewHanCharLearning_0(annotatedContext, inboundMarshaler, client, req, pathParams)
-		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
-		if err != nil {
-			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		forward_LearningService_GetNewHanCharLearning_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-	})
-	mux.Handle(http.MethodPost, pattern_LearningService_SubmitNewHanCharLearningResult_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.LearningService/SubmitNewHanCharLearningResult", runtime.WithHTTPPathPattern("/v1/learning/han_chars/new/learning/submit"))
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := request_LearningService_SubmitNewHanCharLearningResult_0(annotatedContext, inboundMarshaler, client, req, pathParams)
-		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
-		if err != nil {
-			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		forward_LearningService_SubmitNewHanCharLearningResult_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_LearningService_GetWordTest_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 	return nil
 }
 
 var (
-	pattern_LearningService_GetCourseProgress_0              = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"api", "v1", "learning", "courses", "course_id", "progress"}, ""))
-	pattern_LearningService_GetSectionProgress_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"api", "v1", "learning", "sections", "section_id", "progress"}, ""))
-	pattern_LearningService_UpdateUnitProgress_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"api", "v1", "learning", "units", "unit_id", "progress"}, ""))
-	pattern_LearningService_GetMemoryStatus_0                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"api", "v1", "learning", "memories", "memory_unit_id", "status"}, ""))
-	pattern_LearningService_UpdateMemoryStatus_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"api", "v1", "learning", "memories", "memory_unit_id", "status"}, ""))
-	pattern_LearningService_ListMemoriesForReview_0          = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "v1", "learning", "memories", "review"}, ""))
-	pattern_LearningService_GetMemoryStats_0                 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "v1", "learning", "memories", "stats"}, ""))
-	pattern_LearningService_ReviewWord_0                     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "v1", "learning", "words", "review"}, ""))
-	pattern_LearningService_ReviewHanChar_0                  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "v1", "learning", "han_chars", "review"}, ""))
-	pattern_LearningService_SubmitHanCharReview_0            = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"v1", "learning", "han_chars", "review", "submit"}, ""))
-	pattern_LearningService_GetHanCharTest_0                 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"v1", "learning", "han_chars", "test"}, ""))
-	pattern_LearningService_SubmitHanCharTestResult_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"v1", "learning", "han_chars", "test", "submit"}, ""))
-	pattern_LearningService_GetNewHanCharLearning_0          = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"v1", "learning", "han_chars", "new"}, ""))
-	pattern_LearningService_SubmitNewHanCharLearningResult_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 1, 2, 4}, []string{"v1", "learning", "han_chars", "new", "submit"}, ""))
+	pattern_LearningService_GetCourseProgress_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"api", "v1", "learning", "courses", "course_id", "progress"}, ""))
+	pattern_LearningService_GetSectionProgress_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"api", "v1", "learning", "sections", "section_id", "progress"}, ""))
+	pattern_LearningService_UpdateUnitProgress_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"api", "v1", "learning", "units", "unit_id", "progress"}, ""))
+	pattern_LearningService_InitializeMemoryUnits_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "v1", "learning", "memories", "initialize"}, ""))
+	pattern_LearningService_ListMemoriesForReview_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "v1", "learning", "memories", "review"}, ""))
+	pattern_LearningService_ReviewMemoryUnits_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "v1", "learning", "memories", "review"}, ""))
+	pattern_LearningService_GetMemoryStats_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "v1", "learning", "memories", "stats"}, ""))
+	pattern_LearningService_GetHanCharTest_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"v1", "learning", "han_chars", "test"}, ""))
+	pattern_LearningService_GetWordTest_0           = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"v1", "learning", "words", "test"}, ""))
 )
 
 var (
-	forward_LearningService_GetCourseProgress_0              = runtime.ForwardResponseMessage
-	forward_LearningService_GetSectionProgress_0             = runtime.ForwardResponseMessage
-	forward_LearningService_UpdateUnitProgress_0             = runtime.ForwardResponseMessage
-	forward_LearningService_GetMemoryStatus_0                = runtime.ForwardResponseMessage
-	forward_LearningService_UpdateMemoryStatus_0             = runtime.ForwardResponseMessage
-	forward_LearningService_ListMemoriesForReview_0          = runtime.ForwardResponseMessage
-	forward_LearningService_GetMemoryStats_0                 = runtime.ForwardResponseMessage
-	forward_LearningService_ReviewWord_0                     = runtime.ForwardResponseMessage
-	forward_LearningService_ReviewHanChar_0                  = runtime.ForwardResponseMessage
-	forward_LearningService_SubmitHanCharReview_0            = runtime.ForwardResponseMessage
-	forward_LearningService_GetHanCharTest_0                 = runtime.ForwardResponseMessage
-	forward_LearningService_SubmitHanCharTestResult_0        = runtime.ForwardResponseMessage
-	forward_LearningService_GetNewHanCharLearning_0          = runtime.ForwardResponseMessage
-	forward_LearningService_SubmitNewHanCharLearningResult_0 = runtime.ForwardResponseMessage
+	forward_LearningService_GetCourseProgress_0     = runtime.ForwardResponseMessage
+	forward_LearningService_GetSectionProgress_0    = runtime.ForwardResponseMessage
+	forward_LearningService_UpdateUnitProgress_0    = runtime.ForwardResponseMessage
+	forward_LearningService_InitializeMemoryUnits_0 = runtime.ForwardResponseMessage
+	forward_LearningService_ListMemoriesForReview_0 = runtime.ForwardResponseMessage
+	forward_LearningService_ReviewMemoryUnits_0     = runtime.ForwardResponseMessage
+	forward_LearningService_GetMemoryStats_0        = runtime.ForwardResponseMessage
+	forward_LearningService_GetHanCharTest_0        = runtime.ForwardResponseMessage
+	forward_LearningService_GetWordTest_0           = runtime.ForwardResponseMessage
 )

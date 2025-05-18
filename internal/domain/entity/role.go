@@ -9,8 +9,8 @@ type Role struct {
 	ID          UID       `gorm:"primaryKey;autoIncrement"`
 	Name        string    `gorm:"type:varchar(50);uniqueIndex;not null"` // 角色名称
 	Description string    `gorm:"type:varchar(255)"`                     // 角色描述
-	CreatedAt   time.Time `gorm:"not null"`                              // 创建时间
-	UpdatedAt   time.Time `gorm:"not null"`                              // 更新时间
+	CreatedAt   time.Time `gorm:"type:timestamptz;not null"`             // 创建时间
+	UpdatedAt   time.Time `gorm:"type:timestamptz;not null"`             // 更新时间
 }
 
 // NewRole 创建新角色

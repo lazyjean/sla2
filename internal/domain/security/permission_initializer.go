@@ -24,7 +24,8 @@ func NewPermissionInitializer(permissionManager PermissionManager) *PermissionIn
 
 // Initialize 初始化权限数据
 func (pi *PermissionInitializer) Initialize(ctx context.Context) error {
-	logger.Log.Info("Initializing RBAC permissions...")
+	log := logger.GetLogger(ctx)
+	log.Info("Initializing RBAC permissions...")
 
 	// 初始化角色
 	if err := pi.initializeRoles(ctx); err != nil {
@@ -36,7 +37,7 @@ func (pi *PermissionInitializer) Initialize(ctx context.Context) error {
 		return fmt.Errorf("failed to initialize policies: %w", err)
 	}
 
-	logger.Log.Info("RBAC permissions initialized successfully")
+	log.Info("RBAC permissions initialized successfully")
 	return nil
 }
 
@@ -49,6 +50,7 @@ func (pi *PermissionInitializer) initializeRoles(ctx context.Context) error {
 
 // initializePolicies 初始化权限策略
 func (pi *PermissionInitializer) initializePolicies(ctx context.Context) error {
+	log := logger.GetLogger(ctx)
 	// 定义角色权限策略
 	policies := [][]string{
 		// 管理员角色拥有所有权限
@@ -62,7 +64,7 @@ func (pi *PermissionInitializer) initializePolicies(ctx context.Context) error {
 	// 添加权限策略
 	for _, policy := range policies {
 		if len(policy) != 3 {
-			logger.Log.Warn("Invalid policy format", zap.Strings("policy", policy))
+			log.Warn("Invalid policy format", zap.Strings("policy", policy))
 			continue
 		}
 
@@ -89,7 +91,7 @@ func (pi *PermissionInitializer) initializePolicies(ctx context.Context) error {
 			if err != nil {
 				return err
 			}
-			logger.Log.Info("Added permission policy",
+			log.Info("Added permission policy",
 				zap.String("subject", sub),
 				zap.String("object", obj),
 				zap.String("action", act))

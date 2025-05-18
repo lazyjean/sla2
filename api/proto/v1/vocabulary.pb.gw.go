@@ -41,6 +41,7 @@ func request_VocabularyService_Get_0(ctx context.Context, marshaler runtime.Mars
 		metadata runtime.ServerMetadata
 		err      error
 	)
+	io.Copy(io.Discard, req.Body)
 	val, ok := pathParams["id"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
@@ -78,6 +79,7 @@ func request_VocabularyService_List_0(ctx context.Context, marshaler runtime.Mar
 		protoReq VocabularyServiceListRequest
 		metadata runtime.ServerMetadata
 	)
+	io.Copy(io.Discard, req.Body)
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
@@ -108,6 +110,7 @@ func request_VocabularyService_GetAllMetadata_0(ctx context.Context, marshaler r
 		protoReq VocabularyServiceGetAllMetadataRequest
 		metadata runtime.ServerMetadata
 	)
+	io.Copy(io.Discard, req.Body)
 	msg, err := client.GetAllMetadata(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
@@ -128,6 +131,7 @@ func request_VocabularyService_ListHanChar_0(ctx context.Context, marshaler runt
 		protoReq VocabularyServiceListHanCharRequest
 		metadata runtime.ServerMetadata
 	)
+	io.Copy(io.Discard, req.Body)
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}

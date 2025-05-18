@@ -27,11 +27,11 @@ func NewMemoryStatsService(
 }
 
 // CalculateUserStats 计算用户记忆统计
-func (s *MemoryStatsService) CalculateUserStats(ctx context.Context, userID uint32) (*entity.MemoryStats, error) {
+func (s *MemoryStatsService) CalculateUserStats(ctx context.Context, userID entity.UID) (*entity.MemoryStats, error) {
 	stats := entity.NewMemoryStats()
 
 	// 1. 获取用户的所有记忆单元
-	units, err := s.memoryUnitRepo.ListByUserID(ctx, userID)
+	units, err := s.memoryUnitRepo.ListByUserID(ctx, entity.UID(userID))
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +94,7 @@ func (s *MemoryStatsService) CalculateDailyStats(ctx context.Context, userID uin
 	var stats []*entity.DailyStat
 
 	// 获取日期范围内的所有复习记录
-	reviews, err := s.memoryReviewRepo.ListByUserIDAndTimeRange(ctx, userID, startDate, endDate)
+	reviews, err := s.memoryReviewRepo.ListByUserIDAndTimeRange(ctx, entity.UID(userID), startDate, endDate)
 	if err != nil {
 		return nil, err
 	}
@@ -143,7 +143,7 @@ func (s *MemoryStatsService) CalculateDailyStats(ctx context.Context, userID uin
 }
 
 // CalculateRetentionRate 计算记忆保持率
-func (s *MemoryStatsService) CalculateRetentionRate(ctx context.Context, userID uint32, unitType entity.MemoryUnitType) (float32, error) {
+func (s *MemoryStatsService) CalculateRetentionRate(ctx context.Context, userID entity.UID, unitType entity.MemoryUnitType) (float32, error) {
 	// 1. 获取指定类型的所有记忆单元
 	units, err := s.memoryUnitRepo.ListByUserIDAndType(ctx, userID, unitType)
 	if err != nil {

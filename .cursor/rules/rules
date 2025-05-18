@@ -1,0 +1,13 @@
+// 时间处理规则
+// 1. 在数据库查询中涉及时间比较时，必须显式指定时间类型为 timestamptz，并确保时间字符串包含时区信息
+// 示例：
+// 正确：
+// Where("next_review_at <= ?::timestamptz", time.Now().Format("2006-01-02 15:04:05.999999-07:00"))
+// 错误：
+// Where("next_review_at <= ?", time.Now())
+//
+// 原因：
+// - PostgreSQL 中的时间戳类型分为 timestamp 和 timestamptz
+// - timestamptz 会自动处理时区转换，而 timestamp 不会
+// - 如果不指定类型，可能会导致时区转换问题
+// - 时间字符串必须包含时区信息（如 +08:00），否则会被当作 UTC 时间处理 

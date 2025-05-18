@@ -59,69 +59,9 @@ func (m *MemoryUnit) validate(all bool) error {
 
 	// no validation rules for Id
 
-	// no validation rules for UserId
-
 	// no validation rules for Type
 
 	// no validation rules for ContentId
-
-	if all {
-		switch v := interface{}(m.GetCreatedAt()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, MemoryUnitValidationError{
-					field:  "CreatedAt",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, MemoryUnitValidationError{
-					field:  "CreatedAt",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return MemoryUnitValidationError{
-				field:  "CreatedAt",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if all {
-		switch v := interface{}(m.GetUpdatedAt()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, MemoryUnitValidationError{
-					field:  "UpdatedAt",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, MemoryUnitValidationError{
-					field:  "UpdatedAt",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return MemoryUnitValidationError{
-				field:  "UpdatedAt",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
 
 	// no validation rules for MasteryLevel
 
@@ -376,6 +316,119 @@ var _ interface {
 	ErrorName() string
 } = ReviewIntervalValidationError{}
 
+// Validate checks the field values on LearningServiceMemoryUnitInitItem with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *LearningServiceMemoryUnitInitItem) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on LearningServiceMemoryUnitInitItem
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// LearningServiceMemoryUnitInitItemMultiError, or nil if none found.
+func (m *LearningServiceMemoryUnitInitItem) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *LearningServiceMemoryUnitInitItem) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Type
+
+	// no validation rules for ContentId
+
+	// no validation rules for MasteryLevel
+
+	// no validation rules for LearningDuration
+
+	if len(errors) > 0 {
+		return LearningServiceMemoryUnitInitItemMultiError(errors)
+	}
+
+	return nil
+}
+
+// LearningServiceMemoryUnitInitItemMultiError is an error wrapping multiple
+// validation errors returned by
+// LearningServiceMemoryUnitInitItem.ValidateAll() if the designated
+// constraints aren't met.
+type LearningServiceMemoryUnitInitItemMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m LearningServiceMemoryUnitInitItemMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m LearningServiceMemoryUnitInitItemMultiError) AllErrors() []error { return m }
+
+// LearningServiceMemoryUnitInitItemValidationError is the validation error
+// returned by LearningServiceMemoryUnitInitItem.Validate if the designated
+// constraints aren't met.
+type LearningServiceMemoryUnitInitItemValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e LearningServiceMemoryUnitInitItemValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e LearningServiceMemoryUnitInitItemValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e LearningServiceMemoryUnitInitItemValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e LearningServiceMemoryUnitInitItemValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e LearningServiceMemoryUnitInitItemValidationError) ErrorName() string {
+	return "LearningServiceMemoryUnitInitItemValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e LearningServiceMemoryUnitInitItemValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sLearningServiceMemoryUnitInitItem.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = LearningServiceMemoryUnitInitItemValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = LearningServiceMemoryUnitInitItemValidationError{}
+
 // Validate checks the field values on LearningProgress with the rules defined
 // in the proto definition for this message. If any rules are violated, the
 // first error encountered is returned, or nil if there are no violations.
@@ -481,6 +534,115 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = LearningProgressValidationError{}
+
+// Validate checks the field values on LearningServiceHanCharTestResult with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *LearningServiceHanCharTestResult) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on LearningServiceHanCharTestResult with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// LearningServiceHanCharTestResultMultiError, or nil if none found.
+func (m *LearningServiceHanCharTestResult) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *LearningServiceHanCharTestResult) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for HanCharId
+
+	// no validation rules for IsRecognized
+
+	if len(errors) > 0 {
+		return LearningServiceHanCharTestResultMultiError(errors)
+	}
+
+	return nil
+}
+
+// LearningServiceHanCharTestResultMultiError is an error wrapping multiple
+// validation errors returned by
+// LearningServiceHanCharTestResult.ValidateAll() if the designated
+// constraints aren't met.
+type LearningServiceHanCharTestResultMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m LearningServiceHanCharTestResultMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m LearningServiceHanCharTestResultMultiError) AllErrors() []error { return m }
+
+// LearningServiceHanCharTestResultValidationError is the validation error
+// returned by LearningServiceHanCharTestResult.Validate if the designated
+// constraints aren't met.
+type LearningServiceHanCharTestResultValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e LearningServiceHanCharTestResultValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e LearningServiceHanCharTestResultValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e LearningServiceHanCharTestResultValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e LearningServiceHanCharTestResultValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e LearningServiceHanCharTestResultValidationError) ErrorName() string {
+	return "LearningServiceHanCharTestResultValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e LearningServiceHanCharTestResultValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sLearningServiceHanCharTestResult.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = LearningServiceHanCharTestResultValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = LearningServiceHanCharTestResultValidationError{}
 
 // Validate checks the field values on LearningServiceGetCourseProgressRequest
 // with the rules defined in the proto definition for this message. If any
@@ -968,113 +1130,6 @@ var _ interface {
 	ErrorName() string
 } = LearningServiceGetSectionProgressResponseValidationError{}
 
-// Validate checks the field values on LearningServiceGetUnitProgressRequest
-// with the rules defined in the proto definition for this message. If any
-// rules are violated, the first error encountered is returned, or nil if
-// there are no violations.
-func (m *LearningServiceGetUnitProgressRequest) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on LearningServiceGetUnitProgressRequest
-// with the rules defined in the proto definition for this message. If any
-// rules are violated, the result is a list of violation errors wrapped in
-// LearningServiceGetUnitProgressRequestMultiError, or nil if none found.
-func (m *LearningServiceGetUnitProgressRequest) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *LearningServiceGetUnitProgressRequest) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for UnitId
-
-	if len(errors) > 0 {
-		return LearningServiceGetUnitProgressRequestMultiError(errors)
-	}
-
-	return nil
-}
-
-// LearningServiceGetUnitProgressRequestMultiError is an error wrapping
-// multiple validation errors returned by
-// LearningServiceGetUnitProgressRequest.ValidateAll() if the designated
-// constraints aren't met.
-type LearningServiceGetUnitProgressRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m LearningServiceGetUnitProgressRequestMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m LearningServiceGetUnitProgressRequestMultiError) AllErrors() []error { return m }
-
-// LearningServiceGetUnitProgressRequestValidationError is the validation error
-// returned by LearningServiceGetUnitProgressRequest.Validate if the
-// designated constraints aren't met.
-type LearningServiceGetUnitProgressRequestValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e LearningServiceGetUnitProgressRequestValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e LearningServiceGetUnitProgressRequestValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e LearningServiceGetUnitProgressRequestValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e LearningServiceGetUnitProgressRequestValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e LearningServiceGetUnitProgressRequestValidationError) ErrorName() string {
-	return "LearningServiceGetUnitProgressRequestValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e LearningServiceGetUnitProgressRequestValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sLearningServiceGetUnitProgressRequest.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = LearningServiceGetUnitProgressRequestValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = LearningServiceGetUnitProgressRequestValidationError{}
-
 // Validate checks the field values on LearningServiceUpdateUnitProgressRequest
 // with the rules defined in the proto definition for this message. If any
 // rules are violated, the first error encountered is returned, or nil if
@@ -1293,467 +1348,24 @@ var _ interface {
 	ErrorName() string
 } = LearningServiceUpdateUnitProgressResponseValidationError{}
 
-// Validate checks the field values on GetMemoryStatusRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *GetMemoryStatusRequest) Validate() error {
+// Validate checks the field values on
+// LearningServiceListMemoriesForReviewRequest with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *LearningServiceListMemoriesForReviewRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on GetMemoryStatusRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// GetMemoryStatusRequestMultiError, or nil if none found.
-func (m *GetMemoryStatusRequest) ValidateAll() error {
+// ValidateAll checks the field values on
+// LearningServiceListMemoriesForReviewRequest with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in
+// LearningServiceListMemoriesForReviewRequestMultiError, or nil if none found.
+func (m *LearningServiceListMemoriesForReviewRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *GetMemoryStatusRequest) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for MemoryUnitId
-
-	if len(errors) > 0 {
-		return GetMemoryStatusRequestMultiError(errors)
-	}
-
-	return nil
-}
-
-// GetMemoryStatusRequestMultiError is an error wrapping multiple validation
-// errors returned by GetMemoryStatusRequest.ValidateAll() if the designated
-// constraints aren't met.
-type GetMemoryStatusRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m GetMemoryStatusRequestMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m GetMemoryStatusRequestMultiError) AllErrors() []error { return m }
-
-// GetMemoryStatusRequestValidationError is the validation error returned by
-// GetMemoryStatusRequest.Validate if the designated constraints aren't met.
-type GetMemoryStatusRequestValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e GetMemoryStatusRequestValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e GetMemoryStatusRequestValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e GetMemoryStatusRequestValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e GetMemoryStatusRequestValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e GetMemoryStatusRequestValidationError) ErrorName() string {
-	return "GetMemoryStatusRequestValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e GetMemoryStatusRequestValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sGetMemoryStatusRequest.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = GetMemoryStatusRequestValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = GetMemoryStatusRequestValidationError{}
-
-// Validate checks the field values on GetMemoryStatusResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *GetMemoryStatusResponse) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on GetMemoryStatusResponse with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// GetMemoryStatusResponseMultiError, or nil if none found.
-func (m *GetMemoryStatusResponse) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *GetMemoryStatusResponse) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if all {
-		switch v := interface{}(m.GetStatus()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, GetMemoryStatusResponseValidationError{
-					field:  "Status",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, GetMemoryStatusResponseValidationError{
-					field:  "Status",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetStatus()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return GetMemoryStatusResponseValidationError{
-				field:  "Status",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if len(errors) > 0 {
-		return GetMemoryStatusResponseMultiError(errors)
-	}
-
-	return nil
-}
-
-// GetMemoryStatusResponseMultiError is an error wrapping multiple validation
-// errors returned by GetMemoryStatusResponse.ValidateAll() if the designated
-// constraints aren't met.
-type GetMemoryStatusResponseMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m GetMemoryStatusResponseMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m GetMemoryStatusResponseMultiError) AllErrors() []error { return m }
-
-// GetMemoryStatusResponseValidationError is the validation error returned by
-// GetMemoryStatusResponse.Validate if the designated constraints aren't met.
-type GetMemoryStatusResponseValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e GetMemoryStatusResponseValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e GetMemoryStatusResponseValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e GetMemoryStatusResponseValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e GetMemoryStatusResponseValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e GetMemoryStatusResponseValidationError) ErrorName() string {
-	return "GetMemoryStatusResponseValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e GetMemoryStatusResponseValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sGetMemoryStatusResponse.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = GetMemoryStatusResponseValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = GetMemoryStatusResponseValidationError{}
-
-// Validate checks the field values on UpdateMemoryStatusRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *UpdateMemoryStatusRequest) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on UpdateMemoryStatusRequest with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// UpdateMemoryStatusRequestMultiError, or nil if none found.
-func (m *UpdateMemoryStatusRequest) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *UpdateMemoryStatusRequest) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for MemoryUnitId
-
-	// no validation rules for MasteryLevel
-
-	// no validation rules for StudyDuration
-
-	if len(errors) > 0 {
-		return UpdateMemoryStatusRequestMultiError(errors)
-	}
-
-	return nil
-}
-
-// UpdateMemoryStatusRequestMultiError is an error wrapping multiple validation
-// errors returned by UpdateMemoryStatusRequest.ValidateAll() if the
-// designated constraints aren't met.
-type UpdateMemoryStatusRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m UpdateMemoryStatusRequestMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m UpdateMemoryStatusRequestMultiError) AllErrors() []error { return m }
-
-// UpdateMemoryStatusRequestValidationError is the validation error returned by
-// UpdateMemoryStatusRequest.Validate if the designated constraints aren't met.
-type UpdateMemoryStatusRequestValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e UpdateMemoryStatusRequestValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e UpdateMemoryStatusRequestValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e UpdateMemoryStatusRequestValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e UpdateMemoryStatusRequestValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e UpdateMemoryStatusRequestValidationError) ErrorName() string {
-	return "UpdateMemoryStatusRequestValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e UpdateMemoryStatusRequestValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sUpdateMemoryStatusRequest.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = UpdateMemoryStatusRequestValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = UpdateMemoryStatusRequestValidationError{}
-
-// Validate checks the field values on UpdateMemoryStatusResponse with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *UpdateMemoryStatusResponse) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on UpdateMemoryStatusResponse with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// UpdateMemoryStatusResponseMultiError, or nil if none found.
-func (m *UpdateMemoryStatusResponse) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *UpdateMemoryStatusResponse) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if len(errors) > 0 {
-		return UpdateMemoryStatusResponseMultiError(errors)
-	}
-
-	return nil
-}
-
-// UpdateMemoryStatusResponseMultiError is an error wrapping multiple
-// validation errors returned by UpdateMemoryStatusResponse.ValidateAll() if
-// the designated constraints aren't met.
-type UpdateMemoryStatusResponseMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m UpdateMemoryStatusResponseMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m UpdateMemoryStatusResponseMultiError) AllErrors() []error { return m }
-
-// UpdateMemoryStatusResponseValidationError is the validation error returned
-// by UpdateMemoryStatusResponse.Validate if the designated constraints aren't met.
-type UpdateMemoryStatusResponseValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e UpdateMemoryStatusResponseValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e UpdateMemoryStatusResponseValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e UpdateMemoryStatusResponseValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e UpdateMemoryStatusResponseValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e UpdateMemoryStatusResponseValidationError) ErrorName() string {
-	return "UpdateMemoryStatusResponseValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e UpdateMemoryStatusResponseValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sUpdateMemoryStatusResponse.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = UpdateMemoryStatusResponseValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = UpdateMemoryStatusResponseValidationError{}
-
-// Validate checks the field values on ListMemoriesForReviewRequest with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *ListMemoriesForReviewRequest) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on ListMemoriesForReviewRequest with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// ListMemoriesForReviewRequestMultiError, or nil if none found.
-func (m *ListMemoriesForReviewRequest) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *ListMemoriesForReviewRequest) validate(all bool) error {
+func (m *LearningServiceListMemoriesForReviewRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -1765,19 +1377,20 @@ func (m *ListMemoriesForReviewRequest) validate(all bool) error {
 	// no validation rules for PageSize
 
 	if len(errors) > 0 {
-		return ListMemoriesForReviewRequestMultiError(errors)
+		return LearningServiceListMemoriesForReviewRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// ListMemoriesForReviewRequestMultiError is an error wrapping multiple
-// validation errors returned by ListMemoriesForReviewRequest.ValidateAll() if
-// the designated constraints aren't met.
-type ListMemoriesForReviewRequestMultiError []error
+// LearningServiceListMemoriesForReviewRequestMultiError is an error wrapping
+// multiple validation errors returned by
+// LearningServiceListMemoriesForReviewRequest.ValidateAll() if the designated
+// constraints aren't met.
+type LearningServiceListMemoriesForReviewRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m ListMemoriesForReviewRequestMultiError) Error() string {
+func (m LearningServiceListMemoriesForReviewRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -1786,12 +1399,12 @@ func (m ListMemoriesForReviewRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m ListMemoriesForReviewRequestMultiError) AllErrors() []error { return m }
+func (m LearningServiceListMemoriesForReviewRequestMultiError) AllErrors() []error { return m }
 
-// ListMemoriesForReviewRequestValidationError is the validation error returned
-// by ListMemoriesForReviewRequest.Validate if the designated constraints
-// aren't met.
-type ListMemoriesForReviewRequestValidationError struct {
+// LearningServiceListMemoriesForReviewRequestValidationError is the validation
+// error returned by LearningServiceListMemoriesForReviewRequest.Validate if
+// the designated constraints aren't met.
+type LearningServiceListMemoriesForReviewRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -1799,24 +1412,24 @@ type ListMemoriesForReviewRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e ListMemoriesForReviewRequestValidationError) Field() string { return e.field }
+func (e LearningServiceListMemoriesForReviewRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ListMemoriesForReviewRequestValidationError) Reason() string { return e.reason }
+func (e LearningServiceListMemoriesForReviewRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ListMemoriesForReviewRequestValidationError) Cause() error { return e.cause }
+func (e LearningServiceListMemoriesForReviewRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ListMemoriesForReviewRequestValidationError) Key() bool { return e.key }
+func (e LearningServiceListMemoriesForReviewRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ListMemoriesForReviewRequestValidationError) ErrorName() string {
-	return "ListMemoriesForReviewRequestValidationError"
+func (e LearningServiceListMemoriesForReviewRequestValidationError) ErrorName() string {
+	return "LearningServiceListMemoriesForReviewRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e ListMemoriesForReviewRequestValidationError) Error() string {
+func (e LearningServiceListMemoriesForReviewRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -1828,14 +1441,14 @@ func (e ListMemoriesForReviewRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sListMemoriesForReviewRequest.%s: %s%s",
+		"invalid %sLearningServiceListMemoriesForReviewRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ListMemoriesForReviewRequestValidationError{}
+var _ error = LearningServiceListMemoriesForReviewRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -1843,47 +1456,49 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ListMemoriesForReviewRequestValidationError{}
+} = LearningServiceListMemoriesForReviewRequestValidationError{}
 
-// Validate checks the field values on ListMemoriesForReviewResponse with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *ListMemoriesForReviewResponse) Validate() error {
+// Validate checks the field values on
+// LearningServiceListMemoriesForReviewResponse with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *LearningServiceListMemoriesForReviewResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on ListMemoriesForReviewResponse with
-// the rules defined in the proto definition for this message. If any rules
-// are violated, the result is a list of violation errors wrapped in
-// ListMemoriesForReviewResponseMultiError, or nil if none found.
-func (m *ListMemoriesForReviewResponse) ValidateAll() error {
+// ValidateAll checks the field values on
+// LearningServiceListMemoriesForReviewResponse with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in
+// LearningServiceListMemoriesForReviewResponseMultiError, or nil if none found.
+func (m *LearningServiceListMemoriesForReviewResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *ListMemoriesForReviewResponse) validate(all bool) error {
+func (m *LearningServiceListMemoriesForReviewResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
-	for idx, item := range m.GetStatuses() {
+	for idx, item := range m.GetMemoryUnits() {
 		_, _ = idx, item
 
 		if all {
 			switch v := interface{}(item).(type) {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, ListMemoriesForReviewResponseValidationError{
-						field:  fmt.Sprintf("Statuses[%v]", idx),
+					errors = append(errors, LearningServiceListMemoriesForReviewResponseValidationError{
+						field:  fmt.Sprintf("MemoryUnits[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
 					})
 				}
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
-					errors = append(errors, ListMemoriesForReviewResponseValidationError{
-						field:  fmt.Sprintf("Statuses[%v]", idx),
+					errors = append(errors, LearningServiceListMemoriesForReviewResponseValidationError{
+						field:  fmt.Sprintf("MemoryUnits[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
 					})
@@ -1891,8 +1506,8 @@ func (m *ListMemoriesForReviewResponse) validate(all bool) error {
 			}
 		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				return ListMemoriesForReviewResponseValidationError{
-					field:  fmt.Sprintf("Statuses[%v]", idx),
+				return LearningServiceListMemoriesForReviewResponseValidationError{
+					field:  fmt.Sprintf("MemoryUnits[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
 				}
@@ -1904,19 +1519,20 @@ func (m *ListMemoriesForReviewResponse) validate(all bool) error {
 	// no validation rules for Total
 
 	if len(errors) > 0 {
-		return ListMemoriesForReviewResponseMultiError(errors)
+		return LearningServiceListMemoriesForReviewResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// ListMemoriesForReviewResponseMultiError is an error wrapping multiple
-// validation errors returned by ListMemoriesForReviewResponse.ValidateAll()
-// if the designated constraints aren't met.
-type ListMemoriesForReviewResponseMultiError []error
+// LearningServiceListMemoriesForReviewResponseMultiError is an error wrapping
+// multiple validation errors returned by
+// LearningServiceListMemoriesForReviewResponse.ValidateAll() if the
+// designated constraints aren't met.
+type LearningServiceListMemoriesForReviewResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m ListMemoriesForReviewResponseMultiError) Error() string {
+func (m LearningServiceListMemoriesForReviewResponseMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -1925,12 +1541,13 @@ func (m ListMemoriesForReviewResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m ListMemoriesForReviewResponseMultiError) AllErrors() []error { return m }
+func (m LearningServiceListMemoriesForReviewResponseMultiError) AllErrors() []error { return m }
 
-// ListMemoriesForReviewResponseValidationError is the validation error
-// returned by ListMemoriesForReviewResponse.Validate if the designated
+// LearningServiceListMemoriesForReviewResponseValidationError is the
+// validation error returned by
+// LearningServiceListMemoriesForReviewResponse.Validate if the designated
 // constraints aren't met.
-type ListMemoriesForReviewResponseValidationError struct {
+type LearningServiceListMemoriesForReviewResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -1938,24 +1555,24 @@ type ListMemoriesForReviewResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e ListMemoriesForReviewResponseValidationError) Field() string { return e.field }
+func (e LearningServiceListMemoriesForReviewResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ListMemoriesForReviewResponseValidationError) Reason() string { return e.reason }
+func (e LearningServiceListMemoriesForReviewResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ListMemoriesForReviewResponseValidationError) Cause() error { return e.cause }
+func (e LearningServiceListMemoriesForReviewResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ListMemoriesForReviewResponseValidationError) Key() bool { return e.key }
+func (e LearningServiceListMemoriesForReviewResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ListMemoriesForReviewResponseValidationError) ErrorName() string {
-	return "ListMemoriesForReviewResponseValidationError"
+func (e LearningServiceListMemoriesForReviewResponseValidationError) ErrorName() string {
+	return "LearningServiceListMemoriesForReviewResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e ListMemoriesForReviewResponseValidationError) Error() string {
+func (e LearningServiceListMemoriesForReviewResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -1967,14 +1584,14 @@ func (e ListMemoriesForReviewResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sListMemoriesForReviewResponse.%s: %s%s",
+		"invalid %sLearningServiceListMemoriesForReviewResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ListMemoriesForReviewResponseValidationError{}
+var _ error = LearningServiceListMemoriesForReviewResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -1982,24 +1599,25 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ListMemoriesForReviewResponseValidationError{}
+} = LearningServiceListMemoriesForReviewResponseValidationError{}
 
-// Validate checks the field values on GetMemoryStatsRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *GetMemoryStatsRequest) Validate() error {
+// Validate checks the field values on LearningServiceGetMemoryStatsRequest
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the first error encountered is returned, or nil if
+// there are no violations.
+func (m *LearningServiceGetMemoryStatsRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on GetMemoryStatsRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// GetMemoryStatsRequestMultiError, or nil if none found.
-func (m *GetMemoryStatsRequest) ValidateAll() error {
+// ValidateAll checks the field values on LearningServiceGetMemoryStatsRequest
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// LearningServiceGetMemoryStatsRequestMultiError, or nil if none found.
+func (m *LearningServiceGetMemoryStatsRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *GetMemoryStatsRequest) validate(all bool) error {
+func (m *LearningServiceGetMemoryStatsRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -2019,19 +1637,20 @@ func (m *GetMemoryStatsRequest) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return GetMemoryStatsRequestMultiError(errors)
+		return LearningServiceGetMemoryStatsRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// GetMemoryStatsRequestMultiError is an error wrapping multiple validation
-// errors returned by GetMemoryStatsRequest.ValidateAll() if the designated
+// LearningServiceGetMemoryStatsRequestMultiError is an error wrapping multiple
+// validation errors returned by
+// LearningServiceGetMemoryStatsRequest.ValidateAll() if the designated
 // constraints aren't met.
-type GetMemoryStatsRequestMultiError []error
+type LearningServiceGetMemoryStatsRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m GetMemoryStatsRequestMultiError) Error() string {
+func (m LearningServiceGetMemoryStatsRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -2040,11 +1659,12 @@ func (m GetMemoryStatsRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m GetMemoryStatsRequestMultiError) AllErrors() []error { return m }
+func (m LearningServiceGetMemoryStatsRequestMultiError) AllErrors() []error { return m }
 
-// GetMemoryStatsRequestValidationError is the validation error returned by
-// GetMemoryStatsRequest.Validate if the designated constraints aren't met.
-type GetMemoryStatsRequestValidationError struct {
+// LearningServiceGetMemoryStatsRequestValidationError is the validation error
+// returned by LearningServiceGetMemoryStatsRequest.Validate if the designated
+// constraints aren't met.
+type LearningServiceGetMemoryStatsRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -2052,24 +1672,24 @@ type GetMemoryStatsRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e GetMemoryStatsRequestValidationError) Field() string { return e.field }
+func (e LearningServiceGetMemoryStatsRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e GetMemoryStatsRequestValidationError) Reason() string { return e.reason }
+func (e LearningServiceGetMemoryStatsRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e GetMemoryStatsRequestValidationError) Cause() error { return e.cause }
+func (e LearningServiceGetMemoryStatsRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e GetMemoryStatsRequestValidationError) Key() bool { return e.key }
+func (e LearningServiceGetMemoryStatsRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e GetMemoryStatsRequestValidationError) ErrorName() string {
-	return "GetMemoryStatsRequestValidationError"
+func (e LearningServiceGetMemoryStatsRequestValidationError) ErrorName() string {
+	return "LearningServiceGetMemoryStatsRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e GetMemoryStatsRequestValidationError) Error() string {
+func (e LearningServiceGetMemoryStatsRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -2081,14 +1701,14 @@ func (e GetMemoryStatsRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sGetMemoryStatsRequest.%s: %s%s",
+		"invalid %sLearningServiceGetMemoryStatsRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = GetMemoryStatsRequestValidationError{}
+var _ error = LearningServiceGetMemoryStatsRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -2096,24 +1716,25 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = GetMemoryStatsRequestValidationError{}
+} = LearningServiceGetMemoryStatsRequestValidationError{}
 
-// Validate checks the field values on GetMemoryStatsResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *GetMemoryStatsResponse) Validate() error {
+// Validate checks the field values on LearningServiceGetMemoryStatsResponse
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the first error encountered is returned, or nil if
+// there are no violations.
+func (m *LearningServiceGetMemoryStatsResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on GetMemoryStatsResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// GetMemoryStatsResponseMultiError, or nil if none found.
-func (m *GetMemoryStatsResponse) ValidateAll() error {
+// ValidateAll checks the field values on LearningServiceGetMemoryStatsResponse
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// LearningServiceGetMemoryStatsResponseMultiError, or nil if none found.
+func (m *LearningServiceGetMemoryStatsResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *GetMemoryStatsResponse) validate(all bool) error {
+func (m *LearningServiceGetMemoryStatsResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -2133,19 +1754,20 @@ func (m *GetMemoryStatsResponse) validate(all bool) error {
 	// no validation rules for RetentionRates
 
 	if len(errors) > 0 {
-		return GetMemoryStatsResponseMultiError(errors)
+		return LearningServiceGetMemoryStatsResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// GetMemoryStatsResponseMultiError is an error wrapping multiple validation
-// errors returned by GetMemoryStatsResponse.ValidateAll() if the designated
+// LearningServiceGetMemoryStatsResponseMultiError is an error wrapping
+// multiple validation errors returned by
+// LearningServiceGetMemoryStatsResponse.ValidateAll() if the designated
 // constraints aren't met.
-type GetMemoryStatsResponseMultiError []error
+type LearningServiceGetMemoryStatsResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m GetMemoryStatsResponseMultiError) Error() string {
+func (m LearningServiceGetMemoryStatsResponseMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -2154,11 +1776,12 @@ func (m GetMemoryStatsResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m GetMemoryStatsResponseMultiError) AllErrors() []error { return m }
+func (m LearningServiceGetMemoryStatsResponseMultiError) AllErrors() []error { return m }
 
-// GetMemoryStatsResponseValidationError is the validation error returned by
-// GetMemoryStatsResponse.Validate if the designated constraints aren't met.
-type GetMemoryStatsResponseValidationError struct {
+// LearningServiceGetMemoryStatsResponseValidationError is the validation error
+// returned by LearningServiceGetMemoryStatsResponse.Validate if the
+// designated constraints aren't met.
+type LearningServiceGetMemoryStatsResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -2166,24 +1789,24 @@ type GetMemoryStatsResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e GetMemoryStatsResponseValidationError) Field() string { return e.field }
+func (e LearningServiceGetMemoryStatsResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e GetMemoryStatsResponseValidationError) Reason() string { return e.reason }
+func (e LearningServiceGetMemoryStatsResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e GetMemoryStatsResponseValidationError) Cause() error { return e.cause }
+func (e LearningServiceGetMemoryStatsResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e GetMemoryStatsResponseValidationError) Key() bool { return e.key }
+func (e LearningServiceGetMemoryStatsResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e GetMemoryStatsResponseValidationError) ErrorName() string {
-	return "GetMemoryStatsResponseValidationError"
+func (e LearningServiceGetMemoryStatsResponseValidationError) ErrorName() string {
+	return "LearningServiceGetMemoryStatsResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e GetMemoryStatsResponseValidationError) Error() string {
+func (e LearningServiceGetMemoryStatsResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -2195,14 +1818,14 @@ func (e GetMemoryStatsResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sGetMemoryStatsResponse.%s: %s%s",
+		"invalid %sLearningServiceGetMemoryStatsResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = GetMemoryStatsResponseValidationError{}
+var _ error = LearningServiceGetMemoryStatsResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -2210,878 +1833,25 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = GetMemoryStatsResponseValidationError{}
+} = LearningServiceGetMemoryStatsResponseValidationError{}
 
-// Validate checks the field values on ReviewWordRequest with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// first error encountered is returned, or nil if there are no violations.
-func (m *ReviewWordRequest) Validate() error {
+// Validate checks the field values on LearningServiceGetHanCharTestRequest
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the first error encountered is returned, or nil if
+// there are no violations.
+func (m *LearningServiceGetHanCharTestRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on ReviewWordRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// ReviewWordRequestMultiError, or nil if none found.
-func (m *ReviewWordRequest) ValidateAll() error {
+// ValidateAll checks the field values on LearningServiceGetHanCharTestRequest
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// LearningServiceGetHanCharTestRequestMultiError, or nil if none found.
+func (m *LearningServiceGetHanCharTestRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *ReviewWordRequest) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for WordId
-
-	// no validation rules for Result
-
-	// no validation rules for ResponseTime
-
-	if len(errors) > 0 {
-		return ReviewWordRequestMultiError(errors)
-	}
-
-	return nil
-}
-
-// ReviewWordRequestMultiError is an error wrapping multiple validation errors
-// returned by ReviewWordRequest.ValidateAll() if the designated constraints
-// aren't met.
-type ReviewWordRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m ReviewWordRequestMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m ReviewWordRequestMultiError) AllErrors() []error { return m }
-
-// ReviewWordRequestValidationError is the validation error returned by
-// ReviewWordRequest.Validate if the designated constraints aren't met.
-type ReviewWordRequestValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e ReviewWordRequestValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e ReviewWordRequestValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e ReviewWordRequestValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e ReviewWordRequestValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e ReviewWordRequestValidationError) ErrorName() string {
-	return "ReviewWordRequestValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e ReviewWordRequestValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sReviewWordRequest.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = ReviewWordRequestValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = ReviewWordRequestValidationError{}
-
-// Validate checks the field values on ReviewWordResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *ReviewWordResponse) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on ReviewWordResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// ReviewWordResponseMultiError, or nil if none found.
-func (m *ReviewWordResponse) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *ReviewWordResponse) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if len(errors) > 0 {
-		return ReviewWordResponseMultiError(errors)
-	}
-
-	return nil
-}
-
-// ReviewWordResponseMultiError is an error wrapping multiple validation errors
-// returned by ReviewWordResponse.ValidateAll() if the designated constraints
-// aren't met.
-type ReviewWordResponseMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m ReviewWordResponseMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m ReviewWordResponseMultiError) AllErrors() []error { return m }
-
-// ReviewWordResponseValidationError is the validation error returned by
-// ReviewWordResponse.Validate if the designated constraints aren't met.
-type ReviewWordResponseValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e ReviewWordResponseValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e ReviewWordResponseValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e ReviewWordResponseValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e ReviewWordResponseValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e ReviewWordResponseValidationError) ErrorName() string {
-	return "ReviewWordResponseValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e ReviewWordResponseValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sReviewWordResponse.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = ReviewWordResponseValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = ReviewWordResponseValidationError{}
-
-// Validate checks the field values on ReviewHanCharRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *ReviewHanCharRequest) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on ReviewHanCharRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// ReviewHanCharRequestMultiError, or nil if none found.
-func (m *ReviewHanCharRequest) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *ReviewHanCharRequest) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for HanCharId
-
-	// no validation rules for Result
-
-	// no validation rules for ResponseTime
-
-	if len(errors) > 0 {
-		return ReviewHanCharRequestMultiError(errors)
-	}
-
-	return nil
-}
-
-// ReviewHanCharRequestMultiError is an error wrapping multiple validation
-// errors returned by ReviewHanCharRequest.ValidateAll() if the designated
-// constraints aren't met.
-type ReviewHanCharRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m ReviewHanCharRequestMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m ReviewHanCharRequestMultiError) AllErrors() []error { return m }
-
-// ReviewHanCharRequestValidationError is the validation error returned by
-// ReviewHanCharRequest.Validate if the designated constraints aren't met.
-type ReviewHanCharRequestValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e ReviewHanCharRequestValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e ReviewHanCharRequestValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e ReviewHanCharRequestValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e ReviewHanCharRequestValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e ReviewHanCharRequestValidationError) ErrorName() string {
-	return "ReviewHanCharRequestValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e ReviewHanCharRequestValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sReviewHanCharRequest.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = ReviewHanCharRequestValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = ReviewHanCharRequestValidationError{}
-
-// Validate checks the field values on ReviewHanCharResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *ReviewHanCharResponse) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on ReviewHanCharResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// ReviewHanCharResponseMultiError, or nil if none found.
-func (m *ReviewHanCharResponse) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *ReviewHanCharResponse) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if len(errors) > 0 {
-		return ReviewHanCharResponseMultiError(errors)
-	}
-
-	return nil
-}
-
-// ReviewHanCharResponseMultiError is an error wrapping multiple validation
-// errors returned by ReviewHanCharResponse.ValidateAll() if the designated
-// constraints aren't met.
-type ReviewHanCharResponseMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m ReviewHanCharResponseMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m ReviewHanCharResponseMultiError) AllErrors() []error { return m }
-
-// ReviewHanCharResponseValidationError is the validation error returned by
-// ReviewHanCharResponse.Validate if the designated constraints aren't met.
-type ReviewHanCharResponseValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e ReviewHanCharResponseValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e ReviewHanCharResponseValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e ReviewHanCharResponseValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e ReviewHanCharResponseValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e ReviewHanCharResponseValidationError) ErrorName() string {
-	return "ReviewHanCharResponseValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e ReviewHanCharResponseValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sReviewHanCharResponse.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = ReviewHanCharResponseValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = ReviewHanCharResponseValidationError{}
-
-// Validate checks the field values on MemoryReview with the rules defined in
-// the proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *MemoryReview) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on MemoryReview with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in MemoryReviewMultiError, or
-// nil if none found.
-func (m *MemoryReview) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *MemoryReview) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for Id
-
-	// no validation rules for MemoryUnitId
-
-	// no validation rules for UserId
-
-	// no validation rules for Result
-
-	// no validation rules for ResponseTime
-
-	if all {
-		switch v := interface{}(m.GetReviewTime()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, MemoryReviewValidationError{
-					field:  "ReviewTime",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, MemoryReviewValidationError{
-					field:  "ReviewTime",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetReviewTime()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return MemoryReviewValidationError{
-				field:  "ReviewTime",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if all {
-		switch v := interface{}(m.GetCreatedAt()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, MemoryReviewValidationError{
-					field:  "CreatedAt",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, MemoryReviewValidationError{
-					field:  "CreatedAt",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return MemoryReviewValidationError{
-				field:  "CreatedAt",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if len(errors) > 0 {
-		return MemoryReviewMultiError(errors)
-	}
-
-	return nil
-}
-
-// MemoryReviewMultiError is an error wrapping multiple validation errors
-// returned by MemoryReview.ValidateAll() if the designated constraints aren't met.
-type MemoryReviewMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m MemoryReviewMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m MemoryReviewMultiError) AllErrors() []error { return m }
-
-// MemoryReviewValidationError is the validation error returned by
-// MemoryReview.Validate if the designated constraints aren't met.
-type MemoryReviewValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e MemoryReviewValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e MemoryReviewValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e MemoryReviewValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e MemoryReviewValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e MemoryReviewValidationError) ErrorName() string { return "MemoryReviewValidationError" }
-
-// Error satisfies the builtin error interface
-func (e MemoryReviewValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sMemoryReview.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = MemoryReviewValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = MemoryReviewValidationError{}
-
-// Validate checks the field values on SubmitHanCharReviewRequest with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *SubmitHanCharReviewRequest) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on SubmitHanCharReviewRequest with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// SubmitHanCharReviewRequestMultiError, or nil if none found.
-func (m *SubmitHanCharReviewRequest) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *SubmitHanCharReviewRequest) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for HanCharId
-
-	// no validation rules for IsRecognized
-
-	if all {
-		switch v := interface{}(m.GetReviewTime()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, SubmitHanCharReviewRequestValidationError{
-					field:  "ReviewTime",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, SubmitHanCharReviewRequestValidationError{
-					field:  "ReviewTime",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetReviewTime()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return SubmitHanCharReviewRequestValidationError{
-				field:  "ReviewTime",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if len(errors) > 0 {
-		return SubmitHanCharReviewRequestMultiError(errors)
-	}
-
-	return nil
-}
-
-// SubmitHanCharReviewRequestMultiError is an error wrapping multiple
-// validation errors returned by SubmitHanCharReviewRequest.ValidateAll() if
-// the designated constraints aren't met.
-type SubmitHanCharReviewRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m SubmitHanCharReviewRequestMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m SubmitHanCharReviewRequestMultiError) AllErrors() []error { return m }
-
-// SubmitHanCharReviewRequestValidationError is the validation error returned
-// by SubmitHanCharReviewRequest.Validate if the designated constraints aren't met.
-type SubmitHanCharReviewRequestValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e SubmitHanCharReviewRequestValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e SubmitHanCharReviewRequestValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e SubmitHanCharReviewRequestValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e SubmitHanCharReviewRequestValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e SubmitHanCharReviewRequestValidationError) ErrorName() string {
-	return "SubmitHanCharReviewRequestValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e SubmitHanCharReviewRequestValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sSubmitHanCharReviewRequest.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = SubmitHanCharReviewRequestValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = SubmitHanCharReviewRequestValidationError{}
-
-// Validate checks the field values on SubmitHanCharReviewResponse with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *SubmitHanCharReviewResponse) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on SubmitHanCharReviewResponse with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// SubmitHanCharReviewResponseMultiError, or nil if none found.
-func (m *SubmitHanCharReviewResponse) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *SubmitHanCharReviewResponse) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if all {
-		switch v := interface{}(m.GetNextReviewTime()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, SubmitHanCharReviewResponseValidationError{
-					field:  "NextReviewTime",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, SubmitHanCharReviewResponseValidationError{
-					field:  "NextReviewTime",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetNextReviewTime()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return SubmitHanCharReviewResponseValidationError{
-				field:  "NextReviewTime",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if len(errors) > 0 {
-		return SubmitHanCharReviewResponseMultiError(errors)
-	}
-
-	return nil
-}
-
-// SubmitHanCharReviewResponseMultiError is an error wrapping multiple
-// validation errors returned by SubmitHanCharReviewResponse.ValidateAll() if
-// the designated constraints aren't met.
-type SubmitHanCharReviewResponseMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m SubmitHanCharReviewResponseMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m SubmitHanCharReviewResponseMultiError) AllErrors() []error { return m }
-
-// SubmitHanCharReviewResponseValidationError is the validation error returned
-// by SubmitHanCharReviewResponse.Validate if the designated constraints
-// aren't met.
-type SubmitHanCharReviewResponseValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e SubmitHanCharReviewResponseValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e SubmitHanCharReviewResponseValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e SubmitHanCharReviewResponseValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e SubmitHanCharReviewResponseValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e SubmitHanCharReviewResponseValidationError) ErrorName() string {
-	return "SubmitHanCharReviewResponseValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e SubmitHanCharReviewResponseValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sSubmitHanCharReviewResponse.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = SubmitHanCharReviewResponseValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = SubmitHanCharReviewResponseValidationError{}
-
-// Validate checks the field values on GetHanCharTestRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *GetHanCharTestRequest) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on GetHanCharTestRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// GetHanCharTestRequestMultiError, or nil if none found.
-func (m *GetHanCharTestRequest) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *GetHanCharTestRequest) validate(all bool) error {
+func (m *LearningServiceGetHanCharTestRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -3093,19 +1863,20 @@ func (m *GetHanCharTestRequest) validate(all bool) error {
 	// no validation rules for DifficultyLevel
 
 	if len(errors) > 0 {
-		return GetHanCharTestRequestMultiError(errors)
+		return LearningServiceGetHanCharTestRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// GetHanCharTestRequestMultiError is an error wrapping multiple validation
-// errors returned by GetHanCharTestRequest.ValidateAll() if the designated
+// LearningServiceGetHanCharTestRequestMultiError is an error wrapping multiple
+// validation errors returned by
+// LearningServiceGetHanCharTestRequest.ValidateAll() if the designated
 // constraints aren't met.
-type GetHanCharTestRequestMultiError []error
+type LearningServiceGetHanCharTestRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m GetHanCharTestRequestMultiError) Error() string {
+func (m LearningServiceGetHanCharTestRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -3114,11 +1885,12 @@ func (m GetHanCharTestRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m GetHanCharTestRequestMultiError) AllErrors() []error { return m }
+func (m LearningServiceGetHanCharTestRequestMultiError) AllErrors() []error { return m }
 
-// GetHanCharTestRequestValidationError is the validation error returned by
-// GetHanCharTestRequest.Validate if the designated constraints aren't met.
-type GetHanCharTestRequestValidationError struct {
+// LearningServiceGetHanCharTestRequestValidationError is the validation error
+// returned by LearningServiceGetHanCharTestRequest.Validate if the designated
+// constraints aren't met.
+type LearningServiceGetHanCharTestRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -3126,24 +1898,24 @@ type GetHanCharTestRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e GetHanCharTestRequestValidationError) Field() string { return e.field }
+func (e LearningServiceGetHanCharTestRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e GetHanCharTestRequestValidationError) Reason() string { return e.reason }
+func (e LearningServiceGetHanCharTestRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e GetHanCharTestRequestValidationError) Cause() error { return e.cause }
+func (e LearningServiceGetHanCharTestRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e GetHanCharTestRequestValidationError) Key() bool { return e.key }
+func (e LearningServiceGetHanCharTestRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e GetHanCharTestRequestValidationError) ErrorName() string {
-	return "GetHanCharTestRequestValidationError"
+func (e LearningServiceGetHanCharTestRequestValidationError) ErrorName() string {
+	return "LearningServiceGetHanCharTestRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e GetHanCharTestRequestValidationError) Error() string {
+func (e LearningServiceGetHanCharTestRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -3155,14 +1927,14 @@ func (e GetHanCharTestRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sGetHanCharTestRequest.%s: %s%s",
+		"invalid %sLearningServiceGetHanCharTestRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = GetHanCharTestRequestValidationError{}
+var _ error = LearningServiceGetHanCharTestRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -3170,24 +1942,25 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = GetHanCharTestRequestValidationError{}
+} = LearningServiceGetHanCharTestRequestValidationError{}
 
-// Validate checks the field values on GetHanCharTestResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *GetHanCharTestResponse) Validate() error {
+// Validate checks the field values on LearningServiceGetHanCharTestResponse
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the first error encountered is returned, or nil if
+// there are no violations.
+func (m *LearningServiceGetHanCharTestResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on GetHanCharTestResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// GetHanCharTestResponseMultiError, or nil if none found.
-func (m *GetHanCharTestResponse) ValidateAll() error {
+// ValidateAll checks the field values on LearningServiceGetHanCharTestResponse
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// LearningServiceGetHanCharTestResponseMultiError, or nil if none found.
+func (m *LearningServiceGetHanCharTestResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *GetHanCharTestResponse) validate(all bool) error {
+func (m *LearningServiceGetHanCharTestResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -3201,7 +1974,7 @@ func (m *GetHanCharTestResponse) validate(all bool) error {
 			switch v := interface{}(item).(type) {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, GetHanCharTestResponseValidationError{
+					errors = append(errors, LearningServiceGetHanCharTestResponseValidationError{
 						field:  fmt.Sprintf("HanChars[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -3209,7 +1982,7 @@ func (m *GetHanCharTestResponse) validate(all bool) error {
 				}
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
-					errors = append(errors, GetHanCharTestResponseValidationError{
+					errors = append(errors, LearningServiceGetHanCharTestResponseValidationError{
 						field:  fmt.Sprintf("HanChars[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -3218,7 +1991,7 @@ func (m *GetHanCharTestResponse) validate(all bool) error {
 			}
 		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				return GetHanCharTestResponseValidationError{
+				return LearningServiceGetHanCharTestResponseValidationError{
 					field:  fmt.Sprintf("HanChars[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -3229,19 +2002,20 @@ func (m *GetHanCharTestResponse) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return GetHanCharTestResponseMultiError(errors)
+		return LearningServiceGetHanCharTestResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// GetHanCharTestResponseMultiError is an error wrapping multiple validation
-// errors returned by GetHanCharTestResponse.ValidateAll() if the designated
+// LearningServiceGetHanCharTestResponseMultiError is an error wrapping
+// multiple validation errors returned by
+// LearningServiceGetHanCharTestResponse.ValidateAll() if the designated
 // constraints aren't met.
-type GetHanCharTestResponseMultiError []error
+type LearningServiceGetHanCharTestResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m GetHanCharTestResponseMultiError) Error() string {
+func (m LearningServiceGetHanCharTestResponseMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -3250,11 +2024,12 @@ func (m GetHanCharTestResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m GetHanCharTestResponseMultiError) AllErrors() []error { return m }
+func (m LearningServiceGetHanCharTestResponseMultiError) AllErrors() []error { return m }
 
-// GetHanCharTestResponseValidationError is the validation error returned by
-// GetHanCharTestResponse.Validate if the designated constraints aren't met.
-type GetHanCharTestResponseValidationError struct {
+// LearningServiceGetHanCharTestResponseValidationError is the validation error
+// returned by LearningServiceGetHanCharTestResponse.Validate if the
+// designated constraints aren't met.
+type LearningServiceGetHanCharTestResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -3262,24 +2037,24 @@ type GetHanCharTestResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e GetHanCharTestResponseValidationError) Field() string { return e.field }
+func (e LearningServiceGetHanCharTestResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e GetHanCharTestResponseValidationError) Reason() string { return e.reason }
+func (e LearningServiceGetHanCharTestResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e GetHanCharTestResponseValidationError) Cause() error { return e.cause }
+func (e LearningServiceGetHanCharTestResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e GetHanCharTestResponseValidationError) Key() bool { return e.key }
+func (e LearningServiceGetHanCharTestResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e GetHanCharTestResponseValidationError) ErrorName() string {
-	return "GetHanCharTestResponseValidationError"
+func (e LearningServiceGetHanCharTestResponseValidationError) ErrorName() string {
+	return "LearningServiceGetHanCharTestResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e GetHanCharTestResponseValidationError) Error() string {
+func (e LearningServiceGetHanCharTestResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -3291,14 +2066,14 @@ func (e GetHanCharTestResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sGetHanCharTestResponse.%s: %s%s",
+		"invalid %sLearningServiceGetHanCharTestResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = GetHanCharTestResponseValidationError{}
+var _ error = LearningServiceGetHanCharTestResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -3306,24 +2081,26 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = GetHanCharTestResponseValidationError{}
+} = LearningServiceGetHanCharTestResponseValidationError{}
 
-// Validate checks the field values on SubmitHanCharTestResultRequest with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *SubmitHanCharTestResultRequest) Validate() error {
+// Validate checks the field values on
+// LearningServiceSubmitHanCharTestResultRequest with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *LearningServiceSubmitHanCharTestResultRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on SubmitHanCharTestResultRequest with
-// the rules defined in the proto definition for this message. If any rules
-// are violated, the result is a list of violation errors wrapped in
-// SubmitHanCharTestResultRequestMultiError, or nil if none found.
-func (m *SubmitHanCharTestResultRequest) ValidateAll() error {
+// ValidateAll checks the field values on
+// LearningServiceSubmitHanCharTestResultRequest with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in
+// LearningServiceSubmitHanCharTestResultRequestMultiError, or nil if none found.
+func (m *LearningServiceSubmitHanCharTestResultRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *SubmitHanCharTestResultRequest) validate(all bool) error {
+func (m *LearningServiceSubmitHanCharTestResultRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -3337,7 +2114,7 @@ func (m *SubmitHanCharTestResultRequest) validate(all bool) error {
 			switch v := interface{}(item).(type) {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, SubmitHanCharTestResultRequestValidationError{
+					errors = append(errors, LearningServiceSubmitHanCharTestResultRequestValidationError{
 						field:  fmt.Sprintf("Results[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -3345,7 +2122,7 @@ func (m *SubmitHanCharTestResultRequest) validate(all bool) error {
 				}
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
-					errors = append(errors, SubmitHanCharTestResultRequestValidationError{
+					errors = append(errors, LearningServiceSubmitHanCharTestResultRequestValidationError{
 						field:  fmt.Sprintf("Results[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -3354,7 +2131,7 @@ func (m *SubmitHanCharTestResultRequest) validate(all bool) error {
 			}
 		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				return SubmitHanCharTestResultRequestValidationError{
+				return LearningServiceSubmitHanCharTestResultRequestValidationError{
 					field:  fmt.Sprintf("Results[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -3365,19 +2142,20 @@ func (m *SubmitHanCharTestResultRequest) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return SubmitHanCharTestResultRequestMultiError(errors)
+		return LearningServiceSubmitHanCharTestResultRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// SubmitHanCharTestResultRequestMultiError is an error wrapping multiple
-// validation errors returned by SubmitHanCharTestResultRequest.ValidateAll()
-// if the designated constraints aren't met.
-type SubmitHanCharTestResultRequestMultiError []error
+// LearningServiceSubmitHanCharTestResultRequestMultiError is an error wrapping
+// multiple validation errors returned by
+// LearningServiceSubmitHanCharTestResultRequest.ValidateAll() if the
+// designated constraints aren't met.
+type LearningServiceSubmitHanCharTestResultRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m SubmitHanCharTestResultRequestMultiError) Error() string {
+func (m LearningServiceSubmitHanCharTestResultRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -3386,12 +2164,13 @@ func (m SubmitHanCharTestResultRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m SubmitHanCharTestResultRequestMultiError) AllErrors() []error { return m }
+func (m LearningServiceSubmitHanCharTestResultRequestMultiError) AllErrors() []error { return m }
 
-// SubmitHanCharTestResultRequestValidationError is the validation error
-// returned by SubmitHanCharTestResultRequest.Validate if the designated
+// LearningServiceSubmitHanCharTestResultRequestValidationError is the
+// validation error returned by
+// LearningServiceSubmitHanCharTestResultRequest.Validate if the designated
 // constraints aren't met.
-type SubmitHanCharTestResultRequestValidationError struct {
+type LearningServiceSubmitHanCharTestResultRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -3399,24 +2178,26 @@ type SubmitHanCharTestResultRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e SubmitHanCharTestResultRequestValidationError) Field() string { return e.field }
+func (e LearningServiceSubmitHanCharTestResultRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e SubmitHanCharTestResultRequestValidationError) Reason() string { return e.reason }
+func (e LearningServiceSubmitHanCharTestResultRequestValidationError) Reason() string {
+	return e.reason
+}
 
 // Cause function returns cause value.
-func (e SubmitHanCharTestResultRequestValidationError) Cause() error { return e.cause }
+func (e LearningServiceSubmitHanCharTestResultRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e SubmitHanCharTestResultRequestValidationError) Key() bool { return e.key }
+func (e LearningServiceSubmitHanCharTestResultRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e SubmitHanCharTestResultRequestValidationError) ErrorName() string {
-	return "SubmitHanCharTestResultRequestValidationError"
+func (e LearningServiceSubmitHanCharTestResultRequestValidationError) ErrorName() string {
+	return "LearningServiceSubmitHanCharTestResultRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e SubmitHanCharTestResultRequestValidationError) Error() string {
+func (e LearningServiceSubmitHanCharTestResultRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -3428,14 +2209,14 @@ func (e SubmitHanCharTestResultRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sSubmitHanCharTestResultRequest.%s: %s%s",
+		"invalid %sLearningServiceSubmitHanCharTestResultRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = SubmitHanCharTestResultRequestValidationError{}
+var _ error = LearningServiceSubmitHanCharTestResultRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -3443,130 +2224,26 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = SubmitHanCharTestResultRequestValidationError{}
+} = LearningServiceSubmitHanCharTestResultRequestValidationError{}
 
-// Validate checks the field values on HanCharTestResult with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// first error encountered is returned, or nil if there are no violations.
-func (m *HanCharTestResult) Validate() error {
+// Validate checks the field values on
+// LearningServiceSubmitHanCharTestResultResponse with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *LearningServiceSubmitHanCharTestResultResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on HanCharTestResult with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// HanCharTestResultMultiError, or nil if none found.
-func (m *HanCharTestResult) ValidateAll() error {
+// ValidateAll checks the field values on
+// LearningServiceSubmitHanCharTestResultResponse with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in
+// LearningServiceSubmitHanCharTestResultResponseMultiError, or nil if none found.
+func (m *LearningServiceSubmitHanCharTestResultResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *HanCharTestResult) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for HanCharId
-
-	// no validation rules for IsRecognized
-
-	if len(errors) > 0 {
-		return HanCharTestResultMultiError(errors)
-	}
-
-	return nil
-}
-
-// HanCharTestResultMultiError is an error wrapping multiple validation errors
-// returned by HanCharTestResult.ValidateAll() if the designated constraints
-// aren't met.
-type HanCharTestResultMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m HanCharTestResultMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m HanCharTestResultMultiError) AllErrors() []error { return m }
-
-// HanCharTestResultValidationError is the validation error returned by
-// HanCharTestResult.Validate if the designated constraints aren't met.
-type HanCharTestResultValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e HanCharTestResultValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e HanCharTestResultValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e HanCharTestResultValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e HanCharTestResultValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e HanCharTestResultValidationError) ErrorName() string {
-	return "HanCharTestResultValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e HanCharTestResultValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sHanCharTestResult.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = HanCharTestResultValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = HanCharTestResultValidationError{}
-
-// Validate checks the field values on SubmitHanCharTestResultResponse with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *SubmitHanCharTestResultResponse) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on SubmitHanCharTestResultResponse with
-// the rules defined in the proto definition for this message. If any rules
-// are violated, the result is a list of violation errors wrapped in
-// SubmitHanCharTestResultResponseMultiError, or nil if none found.
-func (m *SubmitHanCharTestResultResponse) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *SubmitHanCharTestResultResponse) validate(all bool) error {
+func (m *LearningServiceSubmitHanCharTestResultResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -3574,19 +2251,20 @@ func (m *SubmitHanCharTestResultResponse) validate(all bool) error {
 	var errors []error
 
 	if len(errors) > 0 {
-		return SubmitHanCharTestResultResponseMultiError(errors)
+		return LearningServiceSubmitHanCharTestResultResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// SubmitHanCharTestResultResponseMultiError is an error wrapping multiple
-// validation errors returned by SubmitHanCharTestResultResponse.ValidateAll()
-// if the designated constraints aren't met.
-type SubmitHanCharTestResultResponseMultiError []error
+// LearningServiceSubmitHanCharTestResultResponseMultiError is an error
+// wrapping multiple validation errors returned by
+// LearningServiceSubmitHanCharTestResultResponse.ValidateAll() if the
+// designated constraints aren't met.
+type LearningServiceSubmitHanCharTestResultResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m SubmitHanCharTestResultResponseMultiError) Error() string {
+func (m LearningServiceSubmitHanCharTestResultResponseMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -3595,12 +2273,13 @@ func (m SubmitHanCharTestResultResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m SubmitHanCharTestResultResponseMultiError) AllErrors() []error { return m }
+func (m LearningServiceSubmitHanCharTestResultResponseMultiError) AllErrors() []error { return m }
 
-// SubmitHanCharTestResultResponseValidationError is the validation error
-// returned by SubmitHanCharTestResultResponse.Validate if the designated
+// LearningServiceSubmitHanCharTestResultResponseValidationError is the
+// validation error returned by
+// LearningServiceSubmitHanCharTestResultResponse.Validate if the designated
 // constraints aren't met.
-type SubmitHanCharTestResultResponseValidationError struct {
+type LearningServiceSubmitHanCharTestResultResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -3608,24 +2287,26 @@ type SubmitHanCharTestResultResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e SubmitHanCharTestResultResponseValidationError) Field() string { return e.field }
+func (e LearningServiceSubmitHanCharTestResultResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e SubmitHanCharTestResultResponseValidationError) Reason() string { return e.reason }
+func (e LearningServiceSubmitHanCharTestResultResponseValidationError) Reason() string {
+	return e.reason
+}
 
 // Cause function returns cause value.
-func (e SubmitHanCharTestResultResponseValidationError) Cause() error { return e.cause }
+func (e LearningServiceSubmitHanCharTestResultResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e SubmitHanCharTestResultResponseValidationError) Key() bool { return e.key }
+func (e LearningServiceSubmitHanCharTestResultResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e SubmitHanCharTestResultResponseValidationError) ErrorName() string {
-	return "SubmitHanCharTestResultResponseValidationError"
+func (e LearningServiceSubmitHanCharTestResultResponseValidationError) ErrorName() string {
+	return "LearningServiceSubmitHanCharTestResultResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e SubmitHanCharTestResultResponseValidationError) Error() string {
+func (e LearningServiceSubmitHanCharTestResultResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -3637,14 +2318,14 @@ func (e SubmitHanCharTestResultResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sSubmitHanCharTestResultResponse.%s: %s%s",
+		"invalid %sLearningServiceSubmitHanCharTestResultResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = SubmitHanCharTestResultResponseValidationError{}
+var _ error = LearningServiceSubmitHanCharTestResultResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -3652,24 +2333,26 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = SubmitHanCharTestResultResponseValidationError{}
+} = LearningServiceSubmitHanCharTestResultResponseValidationError{}
 
-// Validate checks the field values on GetNewHanCharLearningRequest with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *GetNewHanCharLearningRequest) Validate() error {
+// Validate checks the field values on
+// LearningServiceGetNewHanCharLearningRequest with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *LearningServiceGetNewHanCharLearningRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on GetNewHanCharLearningRequest with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// GetNewHanCharLearningRequestMultiError, or nil if none found.
-func (m *GetNewHanCharLearningRequest) ValidateAll() error {
+// ValidateAll checks the field values on
+// LearningServiceGetNewHanCharLearningRequest with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in
+// LearningServiceGetNewHanCharLearningRequestMultiError, or nil if none found.
+func (m *LearningServiceGetNewHanCharLearningRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *GetNewHanCharLearningRequest) validate(all bool) error {
+func (m *LearningServiceGetNewHanCharLearningRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -3679,19 +2362,20 @@ func (m *GetNewHanCharLearningRequest) validate(all bool) error {
 	// no validation rules for Count
 
 	if len(errors) > 0 {
-		return GetNewHanCharLearningRequestMultiError(errors)
+		return LearningServiceGetNewHanCharLearningRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// GetNewHanCharLearningRequestMultiError is an error wrapping multiple
-// validation errors returned by GetNewHanCharLearningRequest.ValidateAll() if
-// the designated constraints aren't met.
-type GetNewHanCharLearningRequestMultiError []error
+// LearningServiceGetNewHanCharLearningRequestMultiError is an error wrapping
+// multiple validation errors returned by
+// LearningServiceGetNewHanCharLearningRequest.ValidateAll() if the designated
+// constraints aren't met.
+type LearningServiceGetNewHanCharLearningRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m GetNewHanCharLearningRequestMultiError) Error() string {
+func (m LearningServiceGetNewHanCharLearningRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -3700,12 +2384,12 @@ func (m GetNewHanCharLearningRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m GetNewHanCharLearningRequestMultiError) AllErrors() []error { return m }
+func (m LearningServiceGetNewHanCharLearningRequestMultiError) AllErrors() []error { return m }
 
-// GetNewHanCharLearningRequestValidationError is the validation error returned
-// by GetNewHanCharLearningRequest.Validate if the designated constraints
-// aren't met.
-type GetNewHanCharLearningRequestValidationError struct {
+// LearningServiceGetNewHanCharLearningRequestValidationError is the validation
+// error returned by LearningServiceGetNewHanCharLearningRequest.Validate if
+// the designated constraints aren't met.
+type LearningServiceGetNewHanCharLearningRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -3713,24 +2397,24 @@ type GetNewHanCharLearningRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e GetNewHanCharLearningRequestValidationError) Field() string { return e.field }
+func (e LearningServiceGetNewHanCharLearningRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e GetNewHanCharLearningRequestValidationError) Reason() string { return e.reason }
+func (e LearningServiceGetNewHanCharLearningRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e GetNewHanCharLearningRequestValidationError) Cause() error { return e.cause }
+func (e LearningServiceGetNewHanCharLearningRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e GetNewHanCharLearningRequestValidationError) Key() bool { return e.key }
+func (e LearningServiceGetNewHanCharLearningRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e GetNewHanCharLearningRequestValidationError) ErrorName() string {
-	return "GetNewHanCharLearningRequestValidationError"
+func (e LearningServiceGetNewHanCharLearningRequestValidationError) ErrorName() string {
+	return "LearningServiceGetNewHanCharLearningRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e GetNewHanCharLearningRequestValidationError) Error() string {
+func (e LearningServiceGetNewHanCharLearningRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -3742,14 +2426,14 @@ func (e GetNewHanCharLearningRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sGetNewHanCharLearningRequest.%s: %s%s",
+		"invalid %sLearningServiceGetNewHanCharLearningRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = GetNewHanCharLearningRequestValidationError{}
+var _ error = LearningServiceGetNewHanCharLearningRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -3757,24 +2441,26 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = GetNewHanCharLearningRequestValidationError{}
+} = LearningServiceGetNewHanCharLearningRequestValidationError{}
 
-// Validate checks the field values on GetNewHanCharLearningResponse with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *GetNewHanCharLearningResponse) Validate() error {
+// Validate checks the field values on
+// LearningServiceGetNewHanCharLearningResponse with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *LearningServiceGetNewHanCharLearningResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on GetNewHanCharLearningResponse with
-// the rules defined in the proto definition for this message. If any rules
-// are violated, the result is a list of violation errors wrapped in
-// GetNewHanCharLearningResponseMultiError, or nil if none found.
-func (m *GetNewHanCharLearningResponse) ValidateAll() error {
+// ValidateAll checks the field values on
+// LearningServiceGetNewHanCharLearningResponse with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in
+// LearningServiceGetNewHanCharLearningResponseMultiError, or nil if none found.
+func (m *LearningServiceGetNewHanCharLearningResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *GetNewHanCharLearningResponse) validate(all bool) error {
+func (m *LearningServiceGetNewHanCharLearningResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -3788,7 +2474,7 @@ func (m *GetNewHanCharLearningResponse) validate(all bool) error {
 			switch v := interface{}(item).(type) {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, GetNewHanCharLearningResponseValidationError{
+					errors = append(errors, LearningServiceGetNewHanCharLearningResponseValidationError{
 						field:  fmt.Sprintf("Contents[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -3796,7 +2482,7 @@ func (m *GetNewHanCharLearningResponse) validate(all bool) error {
 				}
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
-					errors = append(errors, GetNewHanCharLearningResponseValidationError{
+					errors = append(errors, LearningServiceGetNewHanCharLearningResponseValidationError{
 						field:  fmt.Sprintf("Contents[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -3805,7 +2491,7 @@ func (m *GetNewHanCharLearningResponse) validate(all bool) error {
 			}
 		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				return GetNewHanCharLearningResponseValidationError{
+				return LearningServiceGetNewHanCharLearningResponseValidationError{
 					field:  fmt.Sprintf("Contents[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -3816,19 +2502,20 @@ func (m *GetNewHanCharLearningResponse) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return GetNewHanCharLearningResponseMultiError(errors)
+		return LearningServiceGetNewHanCharLearningResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// GetNewHanCharLearningResponseMultiError is an error wrapping multiple
-// validation errors returned by GetNewHanCharLearningResponse.ValidateAll()
-// if the designated constraints aren't met.
-type GetNewHanCharLearningResponseMultiError []error
+// LearningServiceGetNewHanCharLearningResponseMultiError is an error wrapping
+// multiple validation errors returned by
+// LearningServiceGetNewHanCharLearningResponse.ValidateAll() if the
+// designated constraints aren't met.
+type LearningServiceGetNewHanCharLearningResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m GetNewHanCharLearningResponseMultiError) Error() string {
+func (m LearningServiceGetNewHanCharLearningResponseMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -3837,12 +2524,13 @@ func (m GetNewHanCharLearningResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m GetNewHanCharLearningResponseMultiError) AllErrors() []error { return m }
+func (m LearningServiceGetNewHanCharLearningResponseMultiError) AllErrors() []error { return m }
 
-// GetNewHanCharLearningResponseValidationError is the validation error
-// returned by GetNewHanCharLearningResponse.Validate if the designated
+// LearningServiceGetNewHanCharLearningResponseValidationError is the
+// validation error returned by
+// LearningServiceGetNewHanCharLearningResponse.Validate if the designated
 // constraints aren't met.
-type GetNewHanCharLearningResponseValidationError struct {
+type LearningServiceGetNewHanCharLearningResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -3850,24 +2538,24 @@ type GetNewHanCharLearningResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e GetNewHanCharLearningResponseValidationError) Field() string { return e.field }
+func (e LearningServiceGetNewHanCharLearningResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e GetNewHanCharLearningResponseValidationError) Reason() string { return e.reason }
+func (e LearningServiceGetNewHanCharLearningResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e GetNewHanCharLearningResponseValidationError) Cause() error { return e.cause }
+func (e LearningServiceGetNewHanCharLearningResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e GetNewHanCharLearningResponseValidationError) Key() bool { return e.key }
+func (e LearningServiceGetNewHanCharLearningResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e GetNewHanCharLearningResponseValidationError) ErrorName() string {
-	return "GetNewHanCharLearningResponseValidationError"
+func (e LearningServiceGetNewHanCharLearningResponseValidationError) ErrorName() string {
+	return "LearningServiceGetNewHanCharLearningResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e GetNewHanCharLearningResponseValidationError) Error() string {
+func (e LearningServiceGetNewHanCharLearningResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -3879,14 +2567,14 @@ func (e GetNewHanCharLearningResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sGetNewHanCharLearningResponse.%s: %s%s",
+		"invalid %sLearningServiceGetNewHanCharLearningResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = GetNewHanCharLearningResponseValidationError{}
+var _ error = LearningServiceGetNewHanCharLearningResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -3894,24 +2582,25 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = GetNewHanCharLearningResponseValidationError{}
+} = LearningServiceGetNewHanCharLearningResponseValidationError{}
 
-// Validate checks the field values on HanCharLearningContent with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *HanCharLearningContent) Validate() error {
+// Validate checks the field values on LearningServiceHanCharLearningContent
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the first error encountered is returned, or nil if
+// there are no violations.
+func (m *LearningServiceHanCharLearningContent) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on HanCharLearningContent with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// HanCharLearningContentMultiError, or nil if none found.
-func (m *HanCharLearningContent) ValidateAll() error {
+// ValidateAll checks the field values on LearningServiceHanCharLearningContent
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// LearningServiceHanCharLearningContentMultiError, or nil if none found.
+func (m *LearningServiceHanCharLearningContent) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *HanCharLearningContent) validate(all bool) error {
+func (m *LearningServiceHanCharLearningContent) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -3927,19 +2616,20 @@ func (m *HanCharLearningContent) validate(all bool) error {
 	// no validation rules for Meaning
 
 	if len(errors) > 0 {
-		return HanCharLearningContentMultiError(errors)
+		return LearningServiceHanCharLearningContentMultiError(errors)
 	}
 
 	return nil
 }
 
-// HanCharLearningContentMultiError is an error wrapping multiple validation
-// errors returned by HanCharLearningContent.ValidateAll() if the designated
+// LearningServiceHanCharLearningContentMultiError is an error wrapping
+// multiple validation errors returned by
+// LearningServiceHanCharLearningContent.ValidateAll() if the designated
 // constraints aren't met.
-type HanCharLearningContentMultiError []error
+type LearningServiceHanCharLearningContentMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m HanCharLearningContentMultiError) Error() string {
+func (m LearningServiceHanCharLearningContentMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -3948,11 +2638,12 @@ func (m HanCharLearningContentMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m HanCharLearningContentMultiError) AllErrors() []error { return m }
+func (m LearningServiceHanCharLearningContentMultiError) AllErrors() []error { return m }
 
-// HanCharLearningContentValidationError is the validation error returned by
-// HanCharLearningContent.Validate if the designated constraints aren't met.
-type HanCharLearningContentValidationError struct {
+// LearningServiceHanCharLearningContentValidationError is the validation error
+// returned by LearningServiceHanCharLearningContent.Validate if the
+// designated constraints aren't met.
+type LearningServiceHanCharLearningContentValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -3960,24 +2651,24 @@ type HanCharLearningContentValidationError struct {
 }
 
 // Field function returns field value.
-func (e HanCharLearningContentValidationError) Field() string { return e.field }
+func (e LearningServiceHanCharLearningContentValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e HanCharLearningContentValidationError) Reason() string { return e.reason }
+func (e LearningServiceHanCharLearningContentValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e HanCharLearningContentValidationError) Cause() error { return e.cause }
+func (e LearningServiceHanCharLearningContentValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e HanCharLearningContentValidationError) Key() bool { return e.key }
+func (e LearningServiceHanCharLearningContentValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e HanCharLearningContentValidationError) ErrorName() string {
-	return "HanCharLearningContentValidationError"
+func (e LearningServiceHanCharLearningContentValidationError) ErrorName() string {
+	return "LearningServiceHanCharLearningContentValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e HanCharLearningContentValidationError) Error() string {
+func (e LearningServiceHanCharLearningContentValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -3989,14 +2680,14 @@ func (e HanCharLearningContentValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sHanCharLearningContent.%s: %s%s",
+		"invalid %sLearningServiceHanCharLearningContent.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = HanCharLearningContentValidationError{}
+var _ error = LearningServiceHanCharLearningContentValidationError{}
 
 var _ interface {
 	Field() string
@@ -4004,25 +2695,27 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = HanCharLearningContentValidationError{}
+} = LearningServiceHanCharLearningContentValidationError{}
 
-// Validate checks the field values on SubmitNewHanCharLearningResultRequest
-// with the rules defined in the proto definition for this message. If any
-// rules are violated, the first error encountered is returned, or nil if
-// there are no violations.
-func (m *SubmitNewHanCharLearningResultRequest) Validate() error {
+// Validate checks the field values on
+// LearningServiceSubmitNewHanCharLearningResultRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *LearningServiceSubmitNewHanCharLearningResultRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on SubmitNewHanCharLearningResultRequest
-// with the rules defined in the proto definition for this message. If any
-// rules are violated, the result is a list of violation errors wrapped in
-// SubmitNewHanCharLearningResultRequestMultiError, or nil if none found.
-func (m *SubmitNewHanCharLearningResultRequest) ValidateAll() error {
+// ValidateAll checks the field values on
+// LearningServiceSubmitNewHanCharLearningResultRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in
+// LearningServiceSubmitNewHanCharLearningResultRequestMultiError, or nil if
+// none found.
+func (m *LearningServiceSubmitNewHanCharLearningResultRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *SubmitNewHanCharLearningResultRequest) validate(all bool) error {
+func (m *LearningServiceSubmitNewHanCharLearningResultRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -4033,7 +2726,7 @@ func (m *SubmitNewHanCharLearningResultRequest) validate(all bool) error {
 		switch v := interface{}(m.GetLearningTime()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, SubmitNewHanCharLearningResultRequestValidationError{
+				errors = append(errors, LearningServiceSubmitNewHanCharLearningResultRequestValidationError{
 					field:  "LearningTime",
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -4041,7 +2734,7 @@ func (m *SubmitNewHanCharLearningResultRequest) validate(all bool) error {
 			}
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
-				errors = append(errors, SubmitNewHanCharLearningResultRequestValidationError{
+				errors = append(errors, LearningServiceSubmitNewHanCharLearningResultRequestValidationError{
 					field:  "LearningTime",
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -4050,7 +2743,7 @@ func (m *SubmitNewHanCharLearningResultRequest) validate(all bool) error {
 		}
 	} else if v, ok := interface{}(m.GetLearningTime()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
-			return SubmitNewHanCharLearningResultRequestValidationError{
+			return LearningServiceSubmitNewHanCharLearningResultRequestValidationError{
 				field:  "LearningTime",
 				reason: "embedded message failed validation",
 				cause:  err,
@@ -4067,7 +2760,7 @@ func (m *SubmitNewHanCharLearningResultRequest) validate(all bool) error {
 			switch v := interface{}(item).(type) {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, SubmitNewHanCharLearningResultRequestValidationError{
+					errors = append(errors, LearningServiceSubmitNewHanCharLearningResultRequestValidationError{
 						field:  fmt.Sprintf("Results[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -4075,7 +2768,7 @@ func (m *SubmitNewHanCharLearningResultRequest) validate(all bool) error {
 				}
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
-					errors = append(errors, SubmitNewHanCharLearningResultRequestValidationError{
+					errors = append(errors, LearningServiceSubmitNewHanCharLearningResultRequestValidationError{
 						field:  fmt.Sprintf("Results[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -4084,7 +2777,7 @@ func (m *SubmitNewHanCharLearningResultRequest) validate(all bool) error {
 			}
 		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				return SubmitNewHanCharLearningResultRequestValidationError{
+				return LearningServiceSubmitNewHanCharLearningResultRequestValidationError{
 					field:  fmt.Sprintf("Results[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -4095,20 +2788,20 @@ func (m *SubmitNewHanCharLearningResultRequest) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return SubmitNewHanCharLearningResultRequestMultiError(errors)
+		return LearningServiceSubmitNewHanCharLearningResultRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// SubmitNewHanCharLearningResultRequestMultiError is an error wrapping
-// multiple validation errors returned by
-// SubmitNewHanCharLearningResultRequest.ValidateAll() if the designated
-// constraints aren't met.
-type SubmitNewHanCharLearningResultRequestMultiError []error
+// LearningServiceSubmitNewHanCharLearningResultRequestMultiError is an error
+// wrapping multiple validation errors returned by
+// LearningServiceSubmitNewHanCharLearningResultRequest.ValidateAll() if the
+// designated constraints aren't met.
+type LearningServiceSubmitNewHanCharLearningResultRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m SubmitNewHanCharLearningResultRequestMultiError) Error() string {
+func (m LearningServiceSubmitNewHanCharLearningResultRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -4117,12 +2810,13 @@ func (m SubmitNewHanCharLearningResultRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m SubmitNewHanCharLearningResultRequestMultiError) AllErrors() []error { return m }
+func (m LearningServiceSubmitNewHanCharLearningResultRequestMultiError) AllErrors() []error { return m }
 
-// SubmitNewHanCharLearningResultRequestValidationError is the validation error
-// returned by SubmitNewHanCharLearningResultRequest.Validate if the
+// LearningServiceSubmitNewHanCharLearningResultRequestValidationError is the
+// validation error returned by
+// LearningServiceSubmitNewHanCharLearningResultRequest.Validate if the
 // designated constraints aren't met.
-type SubmitNewHanCharLearningResultRequestValidationError struct {
+type LearningServiceSubmitNewHanCharLearningResultRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -4130,24 +2824,30 @@ type SubmitNewHanCharLearningResultRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e SubmitNewHanCharLearningResultRequestValidationError) Field() string { return e.field }
+func (e LearningServiceSubmitNewHanCharLearningResultRequestValidationError) Field() string {
+	return e.field
+}
 
 // Reason function returns reason value.
-func (e SubmitNewHanCharLearningResultRequestValidationError) Reason() string { return e.reason }
+func (e LearningServiceSubmitNewHanCharLearningResultRequestValidationError) Reason() string {
+	return e.reason
+}
 
 // Cause function returns cause value.
-func (e SubmitNewHanCharLearningResultRequestValidationError) Cause() error { return e.cause }
+func (e LearningServiceSubmitNewHanCharLearningResultRequestValidationError) Cause() error {
+	return e.cause
+}
 
 // Key function returns key value.
-func (e SubmitNewHanCharLearningResultRequestValidationError) Key() bool { return e.key }
+func (e LearningServiceSubmitNewHanCharLearningResultRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e SubmitNewHanCharLearningResultRequestValidationError) ErrorName() string {
-	return "SubmitNewHanCharLearningResultRequestValidationError"
+func (e LearningServiceSubmitNewHanCharLearningResultRequestValidationError) ErrorName() string {
+	return "LearningServiceSubmitNewHanCharLearningResultRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e SubmitNewHanCharLearningResultRequestValidationError) Error() string {
+func (e LearningServiceSubmitNewHanCharLearningResultRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -4159,14 +2859,14 @@ func (e SubmitNewHanCharLearningResultRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sSubmitNewHanCharLearningResultRequest.%s: %s%s",
+		"invalid %sLearningServiceSubmitNewHanCharLearningResultRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = SubmitNewHanCharLearningResultRequestValidationError{}
+var _ error = LearningServiceSubmitNewHanCharLearningResultRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -4174,24 +2874,26 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = SubmitNewHanCharLearningResultRequestValidationError{}
+} = LearningServiceSubmitNewHanCharLearningResultRequestValidationError{}
 
-// Validate checks the field values on HanCharLearningResultItem with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *HanCharLearningResultItem) Validate() error {
+// Validate checks the field values on LearningServiceHanCharLearningResultItem
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the first error encountered is returned, or nil if
+// there are no violations.
+func (m *LearningServiceHanCharLearningResultItem) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on HanCharLearningResultItem with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// HanCharLearningResultItemMultiError, or nil if none found.
-func (m *HanCharLearningResultItem) ValidateAll() error {
+// ValidateAll checks the field values on
+// LearningServiceHanCharLearningResultItem with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in
+// LearningServiceHanCharLearningResultItemMultiError, or nil if none found.
+func (m *LearningServiceHanCharLearningResultItem) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *HanCharLearningResultItem) validate(all bool) error {
+func (m *LearningServiceHanCharLearningResultItem) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -4204,7 +2906,7 @@ func (m *HanCharLearningResultItem) validate(all bool) error {
 		switch v := interface{}(m.GetResult()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, HanCharLearningResultItemValidationError{
+				errors = append(errors, LearningServiceHanCharLearningResultItemValidationError{
 					field:  "Result",
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -4212,7 +2914,7 @@ func (m *HanCharLearningResultItem) validate(all bool) error {
 			}
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
-				errors = append(errors, HanCharLearningResultItemValidationError{
+				errors = append(errors, LearningServiceHanCharLearningResultItemValidationError{
 					field:  "Result",
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -4221,7 +2923,7 @@ func (m *HanCharLearningResultItem) validate(all bool) error {
 		}
 	} else if v, ok := interface{}(m.GetResult()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
-			return HanCharLearningResultItemValidationError{
+			return LearningServiceHanCharLearningResultItemValidationError{
 				field:  "Result",
 				reason: "embedded message failed validation",
 				cause:  err,
@@ -4230,19 +2932,20 @@ func (m *HanCharLearningResultItem) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return HanCharLearningResultItemMultiError(errors)
+		return LearningServiceHanCharLearningResultItemMultiError(errors)
 	}
 
 	return nil
 }
 
-// HanCharLearningResultItemMultiError is an error wrapping multiple validation
-// errors returned by HanCharLearningResultItem.ValidateAll() if the
-// designated constraints aren't met.
-type HanCharLearningResultItemMultiError []error
+// LearningServiceHanCharLearningResultItemMultiError is an error wrapping
+// multiple validation errors returned by
+// LearningServiceHanCharLearningResultItem.ValidateAll() if the designated
+// constraints aren't met.
+type LearningServiceHanCharLearningResultItemMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m HanCharLearningResultItemMultiError) Error() string {
+func (m LearningServiceHanCharLearningResultItemMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -4251,11 +2954,12 @@ func (m HanCharLearningResultItemMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m HanCharLearningResultItemMultiError) AllErrors() []error { return m }
+func (m LearningServiceHanCharLearningResultItemMultiError) AllErrors() []error { return m }
 
-// HanCharLearningResultItemValidationError is the validation error returned by
-// HanCharLearningResultItem.Validate if the designated constraints aren't met.
-type HanCharLearningResultItemValidationError struct {
+// LearningServiceHanCharLearningResultItemValidationError is the validation
+// error returned by LearningServiceHanCharLearningResultItem.Validate if the
+// designated constraints aren't met.
+type LearningServiceHanCharLearningResultItemValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -4263,24 +2967,24 @@ type HanCharLearningResultItemValidationError struct {
 }
 
 // Field function returns field value.
-func (e HanCharLearningResultItemValidationError) Field() string { return e.field }
+func (e LearningServiceHanCharLearningResultItemValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e HanCharLearningResultItemValidationError) Reason() string { return e.reason }
+func (e LearningServiceHanCharLearningResultItemValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e HanCharLearningResultItemValidationError) Cause() error { return e.cause }
+func (e LearningServiceHanCharLearningResultItemValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e HanCharLearningResultItemValidationError) Key() bool { return e.key }
+func (e LearningServiceHanCharLearningResultItemValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e HanCharLearningResultItemValidationError) ErrorName() string {
-	return "HanCharLearningResultItemValidationError"
+func (e LearningServiceHanCharLearningResultItemValidationError) ErrorName() string {
+	return "LearningServiceHanCharLearningResultItemValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e HanCharLearningResultItemValidationError) Error() string {
+func (e LearningServiceHanCharLearningResultItemValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -4292,14 +2996,14 @@ func (e HanCharLearningResultItemValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sHanCharLearningResultItem.%s: %s%s",
+		"invalid %sLearningServiceHanCharLearningResultItem.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = HanCharLearningResultItemValidationError{}
+var _ error = LearningServiceHanCharLearningResultItemValidationError{}
 
 var _ interface {
 	Field() string
@@ -4307,7 +3011,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = HanCharLearningResultItemValidationError{}
+} = LearningServiceHanCharLearningResultItemValidationError{}
 
 // Validate checks the field values on SubmitNewHanCharLearningResultResponse
 // with the rules defined in the proto definition for this message. If any
@@ -4415,22 +3119,23 @@ var _ interface {
 	ErrorName() string
 } = SubmitNewHanCharLearningResultResponseValidationError{}
 
-// Validate checks the field values on HanCharLearningResult with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *HanCharLearningResult) Validate() error {
+// Validate checks the field values on LearningServiceHanCharLearningResult
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the first error encountered is returned, or nil if
+// there are no violations.
+func (m *LearningServiceHanCharLearningResult) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on HanCharLearningResult with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// HanCharLearningResultMultiError, or nil if none found.
-func (m *HanCharLearningResult) ValidateAll() error {
+// ValidateAll checks the field values on LearningServiceHanCharLearningResult
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// LearningServiceHanCharLearningResultMultiError, or nil if none found.
+func (m *LearningServiceHanCharLearningResult) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *HanCharLearningResult) validate(all bool) error {
+func (m *LearningServiceHanCharLearningResult) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -4450,19 +3155,20 @@ func (m *HanCharLearningResult) validate(all bool) error {
 	// no validation rules for CorrectCount
 
 	if len(errors) > 0 {
-		return HanCharLearningResultMultiError(errors)
+		return LearningServiceHanCharLearningResultMultiError(errors)
 	}
 
 	return nil
 }
 
-// HanCharLearningResultMultiError is an error wrapping multiple validation
-// errors returned by HanCharLearningResult.ValidateAll() if the designated
+// LearningServiceHanCharLearningResultMultiError is an error wrapping multiple
+// validation errors returned by
+// LearningServiceHanCharLearningResult.ValidateAll() if the designated
 // constraints aren't met.
-type HanCharLearningResultMultiError []error
+type LearningServiceHanCharLearningResultMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m HanCharLearningResultMultiError) Error() string {
+func (m LearningServiceHanCharLearningResultMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -4471,11 +3177,12 @@ func (m HanCharLearningResultMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m HanCharLearningResultMultiError) AllErrors() []error { return m }
+func (m LearningServiceHanCharLearningResultMultiError) AllErrors() []error { return m }
 
-// HanCharLearningResultValidationError is the validation error returned by
-// HanCharLearningResult.Validate if the designated constraints aren't met.
-type HanCharLearningResultValidationError struct {
+// LearningServiceHanCharLearningResultValidationError is the validation error
+// returned by LearningServiceHanCharLearningResult.Validate if the designated
+// constraints aren't met.
+type LearningServiceHanCharLearningResultValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -4483,24 +3190,24 @@ type HanCharLearningResultValidationError struct {
 }
 
 // Field function returns field value.
-func (e HanCharLearningResultValidationError) Field() string { return e.field }
+func (e LearningServiceHanCharLearningResultValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e HanCharLearningResultValidationError) Reason() string { return e.reason }
+func (e LearningServiceHanCharLearningResultValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e HanCharLearningResultValidationError) Cause() error { return e.cause }
+func (e LearningServiceHanCharLearningResultValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e HanCharLearningResultValidationError) Key() bool { return e.key }
+func (e LearningServiceHanCharLearningResultValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e HanCharLearningResultValidationError) ErrorName() string {
-	return "HanCharLearningResultValidationError"
+func (e LearningServiceHanCharLearningResultValidationError) ErrorName() string {
+	return "LearningServiceHanCharLearningResultValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e HanCharLearningResultValidationError) Error() string {
+func (e LearningServiceHanCharLearningResultValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -4512,14 +3219,14 @@ func (e HanCharLearningResultValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sHanCharLearningResult.%s: %s%s",
+		"invalid %sLearningServiceHanCharLearningResult.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = HanCharLearningResultValidationError{}
+var _ error = LearningServiceHanCharLearningResultValidationError{}
 
 var _ interface {
 	Field() string
@@ -4527,4 +3234,855 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = HanCharLearningResultValidationError{}
+} = LearningServiceHanCharLearningResultValidationError{}
+
+// Validate checks the field values on
+// LearningServiceInitializeMemoryUnitRequest with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *LearningServiceInitializeMemoryUnitRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// LearningServiceInitializeMemoryUnitRequest with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in
+// LearningServiceInitializeMemoryUnitRequestMultiError, or nil if none found.
+func (m *LearningServiceInitializeMemoryUnitRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *LearningServiceInitializeMemoryUnitRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetItems() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, LearningServiceInitializeMemoryUnitRequestValidationError{
+						field:  fmt.Sprintf("Items[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, LearningServiceInitializeMemoryUnitRequestValidationError{
+						field:  fmt.Sprintf("Items[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return LearningServiceInitializeMemoryUnitRequestValidationError{
+					field:  fmt.Sprintf("Items[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return LearningServiceInitializeMemoryUnitRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// LearningServiceInitializeMemoryUnitRequestMultiError is an error wrapping
+// multiple validation errors returned by
+// LearningServiceInitializeMemoryUnitRequest.ValidateAll() if the designated
+// constraints aren't met.
+type LearningServiceInitializeMemoryUnitRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m LearningServiceInitializeMemoryUnitRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m LearningServiceInitializeMemoryUnitRequestMultiError) AllErrors() []error { return m }
+
+// LearningServiceInitializeMemoryUnitRequestValidationError is the validation
+// error returned by LearningServiceInitializeMemoryUnitRequest.Validate if
+// the designated constraints aren't met.
+type LearningServiceInitializeMemoryUnitRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e LearningServiceInitializeMemoryUnitRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e LearningServiceInitializeMemoryUnitRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e LearningServiceInitializeMemoryUnitRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e LearningServiceInitializeMemoryUnitRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e LearningServiceInitializeMemoryUnitRequestValidationError) ErrorName() string {
+	return "LearningServiceInitializeMemoryUnitRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e LearningServiceInitializeMemoryUnitRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sLearningServiceInitializeMemoryUnitRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = LearningServiceInitializeMemoryUnitRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = LearningServiceInitializeMemoryUnitRequestValidationError{}
+
+// Validate checks the field values on
+// LearningServiceInitializeMemoryUnitResponse with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *LearningServiceInitializeMemoryUnitResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// LearningServiceInitializeMemoryUnitResponse with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in
+// LearningServiceInitializeMemoryUnitResponseMultiError, or nil if none found.
+func (m *LearningServiceInitializeMemoryUnitResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *LearningServiceInitializeMemoryUnitResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return LearningServiceInitializeMemoryUnitResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// LearningServiceInitializeMemoryUnitResponseMultiError is an error wrapping
+// multiple validation errors returned by
+// LearningServiceInitializeMemoryUnitResponse.ValidateAll() if the designated
+// constraints aren't met.
+type LearningServiceInitializeMemoryUnitResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m LearningServiceInitializeMemoryUnitResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m LearningServiceInitializeMemoryUnitResponseMultiError) AllErrors() []error { return m }
+
+// LearningServiceInitializeMemoryUnitResponseValidationError is the validation
+// error returned by LearningServiceInitializeMemoryUnitResponse.Validate if
+// the designated constraints aren't met.
+type LearningServiceInitializeMemoryUnitResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e LearningServiceInitializeMemoryUnitResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e LearningServiceInitializeMemoryUnitResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e LearningServiceInitializeMemoryUnitResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e LearningServiceInitializeMemoryUnitResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e LearningServiceInitializeMemoryUnitResponseValidationError) ErrorName() string {
+	return "LearningServiceInitializeMemoryUnitResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e LearningServiceInitializeMemoryUnitResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sLearningServiceInitializeMemoryUnitResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = LearningServiceInitializeMemoryUnitResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = LearningServiceInitializeMemoryUnitResponseValidationError{}
+
+// Validate checks the field values on LearningServiceReviewMemoryUnitsRequest
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the first error encountered is returned, or nil if
+// there are no violations.
+func (m *LearningServiceReviewMemoryUnitsRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// LearningServiceReviewMemoryUnitsRequest with the rules defined in the proto
+// definition for this message. If any rules are violated, the result is a
+// list of violation errors wrapped in
+// LearningServiceReviewMemoryUnitsRequestMultiError, or nil if none found.
+func (m *LearningServiceReviewMemoryUnitsRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *LearningServiceReviewMemoryUnitsRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetItems() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, LearningServiceReviewMemoryUnitsRequestValidationError{
+						field:  fmt.Sprintf("Items[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, LearningServiceReviewMemoryUnitsRequestValidationError{
+						field:  fmt.Sprintf("Items[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return LearningServiceReviewMemoryUnitsRequestValidationError{
+					field:  fmt.Sprintf("Items[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return LearningServiceReviewMemoryUnitsRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// LearningServiceReviewMemoryUnitsRequestMultiError is an error wrapping
+// multiple validation errors returned by
+// LearningServiceReviewMemoryUnitsRequest.ValidateAll() if the designated
+// constraints aren't met.
+type LearningServiceReviewMemoryUnitsRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m LearningServiceReviewMemoryUnitsRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m LearningServiceReviewMemoryUnitsRequestMultiError) AllErrors() []error { return m }
+
+// LearningServiceReviewMemoryUnitsRequestValidationError is the validation
+// error returned by LearningServiceReviewMemoryUnitsRequest.Validate if the
+// designated constraints aren't met.
+type LearningServiceReviewMemoryUnitsRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e LearningServiceReviewMemoryUnitsRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e LearningServiceReviewMemoryUnitsRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e LearningServiceReviewMemoryUnitsRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e LearningServiceReviewMemoryUnitsRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e LearningServiceReviewMemoryUnitsRequestValidationError) ErrorName() string {
+	return "LearningServiceReviewMemoryUnitsRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e LearningServiceReviewMemoryUnitsRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sLearningServiceReviewMemoryUnitsRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = LearningServiceReviewMemoryUnitsRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = LearningServiceReviewMemoryUnitsRequestValidationError{}
+
+// Validate checks the field values on LearningServiceMemoryUnitReviewItem with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *LearningServiceMemoryUnitReviewItem) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on LearningServiceMemoryUnitReviewItem
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// LearningServiceMemoryUnitReviewItemMultiError, or nil if none found.
+func (m *LearningServiceMemoryUnitReviewItem) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *LearningServiceMemoryUnitReviewItem) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for MemoryUnitId
+
+	// no validation rules for Result
+
+	// no validation rules for ReviewDuration
+
+	if len(errors) > 0 {
+		return LearningServiceMemoryUnitReviewItemMultiError(errors)
+	}
+
+	return nil
+}
+
+// LearningServiceMemoryUnitReviewItemMultiError is an error wrapping multiple
+// validation errors returned by
+// LearningServiceMemoryUnitReviewItem.ValidateAll() if the designated
+// constraints aren't met.
+type LearningServiceMemoryUnitReviewItemMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m LearningServiceMemoryUnitReviewItemMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m LearningServiceMemoryUnitReviewItemMultiError) AllErrors() []error { return m }
+
+// LearningServiceMemoryUnitReviewItemValidationError is the validation error
+// returned by LearningServiceMemoryUnitReviewItem.Validate if the designated
+// constraints aren't met.
+type LearningServiceMemoryUnitReviewItemValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e LearningServiceMemoryUnitReviewItemValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e LearningServiceMemoryUnitReviewItemValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e LearningServiceMemoryUnitReviewItemValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e LearningServiceMemoryUnitReviewItemValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e LearningServiceMemoryUnitReviewItemValidationError) ErrorName() string {
+	return "LearningServiceMemoryUnitReviewItemValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e LearningServiceMemoryUnitReviewItemValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sLearningServiceMemoryUnitReviewItem.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = LearningServiceMemoryUnitReviewItemValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = LearningServiceMemoryUnitReviewItemValidationError{}
+
+// Validate checks the field values on LearningServiceReviewMemoryUnitsResponse
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the first error encountered is returned, or nil if
+// there are no violations.
+func (m *LearningServiceReviewMemoryUnitsResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// LearningServiceReviewMemoryUnitsResponse with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in
+// LearningServiceReviewMemoryUnitsResponseMultiError, or nil if none found.
+func (m *LearningServiceReviewMemoryUnitsResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *LearningServiceReviewMemoryUnitsResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return LearningServiceReviewMemoryUnitsResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// LearningServiceReviewMemoryUnitsResponseMultiError is an error wrapping
+// multiple validation errors returned by
+// LearningServiceReviewMemoryUnitsResponse.ValidateAll() if the designated
+// constraints aren't met.
+type LearningServiceReviewMemoryUnitsResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m LearningServiceReviewMemoryUnitsResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m LearningServiceReviewMemoryUnitsResponseMultiError) AllErrors() []error { return m }
+
+// LearningServiceReviewMemoryUnitsResponseValidationError is the validation
+// error returned by LearningServiceReviewMemoryUnitsResponse.Validate if the
+// designated constraints aren't met.
+type LearningServiceReviewMemoryUnitsResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e LearningServiceReviewMemoryUnitsResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e LearningServiceReviewMemoryUnitsResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e LearningServiceReviewMemoryUnitsResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e LearningServiceReviewMemoryUnitsResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e LearningServiceReviewMemoryUnitsResponseValidationError) ErrorName() string {
+	return "LearningServiceReviewMemoryUnitsResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e LearningServiceReviewMemoryUnitsResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sLearningServiceReviewMemoryUnitsResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = LearningServiceReviewMemoryUnitsResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = LearningServiceReviewMemoryUnitsResponseValidationError{}
+
+// Validate checks the field values on LearningServiceGetWordTestRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *LearningServiceGetWordTestRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on LearningServiceGetWordTestRequest
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// LearningServiceGetWordTestRequestMultiError, or nil if none found.
+func (m *LearningServiceGetWordTestRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *LearningServiceGetWordTestRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Count
+
+	// no validation rules for DifficultyLevel
+
+	if len(errors) > 0 {
+		return LearningServiceGetWordTestRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// LearningServiceGetWordTestRequestMultiError is an error wrapping multiple
+// validation errors returned by
+// LearningServiceGetWordTestRequest.ValidateAll() if the designated
+// constraints aren't met.
+type LearningServiceGetWordTestRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m LearningServiceGetWordTestRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m LearningServiceGetWordTestRequestMultiError) AllErrors() []error { return m }
+
+// LearningServiceGetWordTestRequestValidationError is the validation error
+// returned by LearningServiceGetWordTestRequest.Validate if the designated
+// constraints aren't met.
+type LearningServiceGetWordTestRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e LearningServiceGetWordTestRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e LearningServiceGetWordTestRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e LearningServiceGetWordTestRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e LearningServiceGetWordTestRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e LearningServiceGetWordTestRequestValidationError) ErrorName() string {
+	return "LearningServiceGetWordTestRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e LearningServiceGetWordTestRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sLearningServiceGetWordTestRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = LearningServiceGetWordTestRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = LearningServiceGetWordTestRequestValidationError{}
+
+// Validate checks the field values on LearningServiceGetWordTestResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *LearningServiceGetWordTestResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on LearningServiceGetWordTestResponse
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// LearningServiceGetWordTestResponseMultiError, or nil if none found.
+func (m *LearningServiceGetWordTestResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *LearningServiceGetWordTestResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetWords() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, LearningServiceGetWordTestResponseValidationError{
+						field:  fmt.Sprintf("Words[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, LearningServiceGetWordTestResponseValidationError{
+						field:  fmt.Sprintf("Words[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return LearningServiceGetWordTestResponseValidationError{
+					field:  fmt.Sprintf("Words[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return LearningServiceGetWordTestResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// LearningServiceGetWordTestResponseMultiError is an error wrapping multiple
+// validation errors returned by
+// LearningServiceGetWordTestResponse.ValidateAll() if the designated
+// constraints aren't met.
+type LearningServiceGetWordTestResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m LearningServiceGetWordTestResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m LearningServiceGetWordTestResponseMultiError) AllErrors() []error { return m }
+
+// LearningServiceGetWordTestResponseValidationError is the validation error
+// returned by LearningServiceGetWordTestResponse.Validate if the designated
+// constraints aren't met.
+type LearningServiceGetWordTestResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e LearningServiceGetWordTestResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e LearningServiceGetWordTestResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e LearningServiceGetWordTestResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e LearningServiceGetWordTestResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e LearningServiceGetWordTestResponseValidationError) ErrorName() string {
+	return "LearningServiceGetWordTestResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e LearningServiceGetWordTestResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sLearningServiceGetWordTestResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = LearningServiceGetWordTestResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = LearningServiceGetWordTestResponseValidationError{}

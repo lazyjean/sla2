@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/lazyjean/sla2/internal/domain/entity"
+	"github.com/lazyjean/sla2/internal/domain/errors"
 	"github.com/lazyjean/sla2/internal/domain/repository"
 	"gorm.io/gorm"
 )
@@ -58,16 +59,75 @@ func (r *questionRepository) Update(ctx context.Context, question *entity.Questi
 	return r.db.WithContext(ctx).Model(question).Updates(question).Error
 }
 
-func NewQuestionRepository(db *gorm.DB) repository.QuestionRepository {
-	return &questionRepository{db: db}
-}
-
+// FindByID implements repository.QuestionRepository.
 func (r *questionRepository) FindByID(ctx context.Context, id entity.UID) (*entity.Question, error) {
 	var question entity.Question
 	if err := r.db.WithContext(ctx).First(&question, "id = ?", id).Error; err != nil {
 		return nil, err
 	}
 	return &question, nil
+}
+
+// CreateTag 创建问题标签
+func (r *questionRepository) CreateTag(ctx context.Context, tag *entity.QuestionTag) (*entity.QuestionTag, error) {
+	err := r.db.WithContext(ctx).Create(tag).Error
+	if err != nil {
+		return nil, err
+	}
+	return tag, nil
+}
+
+// GetTag 根据ID获取问题标签
+func (r *questionRepository) GetTag(ctx context.Context, id string) (*entity.QuestionTag, error) {
+	var tag entity.QuestionTag
+	err := r.db.WithContext(ctx).First(&tag, "id = ?", id).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, errors.ErrNotFound
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &tag, nil
+}
+
+// UpdateTag 更新问题标签
+func (r *questionRepository) UpdateTag(ctx context.Context, tag *entity.QuestionTag) (*entity.QuestionTag, error) {
+	err := r.db.WithContext(ctx).Save(tag).Error
+	if err != nil {
+		return nil, err
+	}
+	return tag, nil
+}
+
+// DeleteTag 删除问题标签
+func (r *questionRepository) DeleteTag(ctx context.Context, id string) error {
+	return r.db.WithContext(ctx).Delete(&entity.QuestionTag{}, "id = ?", id).Error
+}
+
+// FindAllTags 查询所有标签，可以限制返回数量
+func (r *questionRepository) FindAllTags(ctx context.Context, limit int) ([]*entity.QuestionTag, error) {
+	var tags []*entity.QuestionTag
+
+	// 创建查询
+	query := r.db.WithContext(ctx)
+
+	// 如果指定了有效的limit，则限制返回数量
+	if limit > 0 {
+		query = query.Limit(limit)
+	}
+
+	// 执行查询并按名称升序排序
+	err := query.Order("name ASC").Find(&tags).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return tags, nil
+}
+
+// NewQuestionRepository 创建问题仓库实例
+func NewQuestionRepository(db *gorm.DB) repository.QuestionRepository {
+	return &questionRepository{db: db}
 }
 
 // Implement other repository methods as needed

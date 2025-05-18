@@ -41,6 +41,7 @@ func request_QuestionService_Get_0(ctx context.Context, marshaler runtime.Marsha
 		metadata runtime.ServerMetadata
 		err      error
 	)
+	io.Copy(io.Discard, req.Body)
 	val, ok := pathParams["ids"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "ids")
@@ -102,6 +103,7 @@ func request_QuestionService_Search_0(ctx context.Context, marshaler runtime.Mar
 		protoReq QuestionServiceSearchRequest
 		metadata runtime.ServerMetadata
 	)
+	io.Copy(io.Discard, req.Body)
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
@@ -175,6 +177,7 @@ func request_QuestionService_Delete_0(ctx context.Context, marshaler runtime.Mar
 		metadata runtime.ServerMetadata
 		err      error
 	)
+	io.Copy(io.Discard, req.Body)
 	val, ok := pathParams["id"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
@@ -213,6 +216,7 @@ func request_QuestionService_Publish_0(ctx context.Context, marshaler runtime.Ma
 		metadata runtime.ServerMetadata
 		err      error
 	)
+	io.Copy(io.Discard, req.Body)
 	val, ok := pathParams["id"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
@@ -255,24 +259,25 @@ func local_request_QuestionService_Publish_0(ctx context.Context, marshaler runt
 	return msg, metadata, err
 }
 
-var filter_QuestionTagService_ListTag_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+var filter_QuestionService_ListTag_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
 
-func request_QuestionTagService_ListTag_0(ctx context.Context, marshaler runtime.Marshaler, client QuestionTagServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_QuestionService_ListTag_0(ctx context.Context, marshaler runtime.Marshaler, client QuestionServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
 		protoReq QuestionTagServiceListTagRequest
 		metadata runtime.ServerMetadata
 	)
+	io.Copy(io.Discard, req.Body)
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_QuestionTagService_ListTag_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_QuestionService_ListTag_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 	msg, err := client.ListTag(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
 
-func local_request_QuestionTagService_ListTag_0(ctx context.Context, marshaler runtime.Marshaler, server QuestionTagServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_QuestionService_ListTag_0(ctx context.Context, marshaler runtime.Marshaler, server QuestionServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
 		protoReq QuestionTagServiceListTagRequest
 		metadata runtime.ServerMetadata
@@ -280,14 +285,14 @@ func local_request_QuestionTagService_ListTag_0(ctx context.Context, marshaler r
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_QuestionTagService_ListTag_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_QuestionService_ListTag_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 	msg, err := server.ListTag(ctx, &protoReq)
 	return msg, metadata, err
 }
 
-func request_QuestionTagService_CreateTag_0(ctx context.Context, marshaler runtime.Marshaler, client QuestionTagServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_QuestionService_CreateTag_0(ctx context.Context, marshaler runtime.Marshaler, client QuestionServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
 		protoReq QuestionTagServiceCreateTagRequest
 		metadata runtime.ServerMetadata
@@ -299,7 +304,7 @@ func request_QuestionTagService_CreateTag_0(ctx context.Context, marshaler runti
 	return msg, metadata, err
 }
 
-func local_request_QuestionTagService_CreateTag_0(ctx context.Context, marshaler runtime.Marshaler, server QuestionTagServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_QuestionService_CreateTag_0(ctx context.Context, marshaler runtime.Marshaler, server QuestionServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
 		protoReq QuestionTagServiceCreateTagRequest
 		metadata runtime.ServerMetadata
@@ -311,7 +316,7 @@ func local_request_QuestionTagService_CreateTag_0(ctx context.Context, marshaler
 	return msg, metadata, err
 }
 
-func request_QuestionTagService_UpdateTag_0(ctx context.Context, marshaler runtime.Marshaler, client QuestionTagServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_QuestionService_UpdateTag_0(ctx context.Context, marshaler runtime.Marshaler, client QuestionServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
 		protoReq QuestionTagServiceUpdateTagRequest
 		metadata runtime.ServerMetadata
@@ -332,7 +337,7 @@ func request_QuestionTagService_UpdateTag_0(ctx context.Context, marshaler runti
 	return msg, metadata, err
 }
 
-func local_request_QuestionTagService_UpdateTag_0(ctx context.Context, marshaler runtime.Marshaler, server QuestionTagServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_QuestionService_UpdateTag_0(ctx context.Context, marshaler runtime.Marshaler, server QuestionServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
 		protoReq QuestionTagServiceUpdateTagRequest
 		metadata runtime.ServerMetadata
@@ -353,12 +358,13 @@ func local_request_QuestionTagService_UpdateTag_0(ctx context.Context, marshaler
 	return msg, metadata, err
 }
 
-func request_QuestionTagService_DeleteTag_0(ctx context.Context, marshaler runtime.Marshaler, client QuestionTagServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_QuestionService_DeleteTag_0(ctx context.Context, marshaler runtime.Marshaler, client QuestionServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
 		protoReq QuestionTagServiceDeleteTagRequest
 		metadata runtime.ServerMetadata
 		err      error
 	)
+	io.Copy(io.Discard, req.Body)
 	val, ok := pathParams["name"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "name")
@@ -371,7 +377,7 @@ func request_QuestionTagService_DeleteTag_0(ctx context.Context, marshaler runti
 	return msg, metadata, err
 }
 
-func local_request_QuestionTagService_DeleteTag_0(ctx context.Context, marshaler runtime.Marshaler, server QuestionTagServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_QuestionService_DeleteTag_0(ctx context.Context, marshaler runtime.Marshaler, server QuestionServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
 		protoReq QuestionTagServiceDeleteTagRequest
 		metadata runtime.ServerMetadata
@@ -515,95 +521,85 @@ func RegisterQuestionServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		}
 		forward_QuestionService_Publish_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-
-	return nil
-}
-
-// RegisterQuestionTagServiceHandlerServer registers the http handlers for service QuestionTagService to "mux".
-// UnaryRPC     :call QuestionTagServiceServer directly.
-// StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
-// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterQuestionTagServiceHandlerFromEndpoint instead.
-// GRPC interceptors will not work for this type of registration. To use interceptors, you must use the "runtime.WithMiddlewares" option in the "runtime.NewServeMux" call.
-func RegisterQuestionTagServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server QuestionTagServiceServer) error {
-	mux.Handle(http.MethodGet, pattern_QuestionTagService_ListTag_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_QuestionService_ListTag_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.QuestionTagService/ListTag", runtime.WithHTTPPathPattern("/api/v1/question-tags"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.QuestionService/ListTag", runtime.WithHTTPPathPattern("/api/v1/question-tags"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_QuestionTagService_ListTag_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_QuestionService_ListTag_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_QuestionTagService_ListTag_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_QuestionService_ListTag_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodPost, pattern_QuestionTagService_CreateTag_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodPost, pattern_QuestionService_CreateTag_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.QuestionTagService/CreateTag", runtime.WithHTTPPathPattern("/api/v1/question-tags"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.QuestionService/CreateTag", runtime.WithHTTPPathPattern("/api/v1/question-tags"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_QuestionTagService_CreateTag_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_QuestionService_CreateTag_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_QuestionTagService_CreateTag_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_QuestionService_CreateTag_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodPut, pattern_QuestionTagService_UpdateTag_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodPut, pattern_QuestionService_UpdateTag_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.QuestionTagService/UpdateTag", runtime.WithHTTPPathPattern("/api/v1/question-tags/{name}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.QuestionService/UpdateTag", runtime.WithHTTPPathPattern("/api/v1/question-tags/{name}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_QuestionTagService_UpdateTag_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_QuestionService_UpdateTag_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_QuestionTagService_UpdateTag_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_QuestionService_UpdateTag_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodDelete, pattern_QuestionTagService_DeleteTag_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodDelete, pattern_QuestionService_DeleteTag_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.QuestionTagService/DeleteTag", runtime.WithHTTPPathPattern("/api/v1/question-tags/{name}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.QuestionService/DeleteTag", runtime.WithHTTPPathPattern("/api/v1/question-tags/{name}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_QuestionTagService_DeleteTag_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_QuestionService_DeleteTag_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_QuestionTagService_DeleteTag_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_QuestionService_DeleteTag_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 
 	return nil
@@ -747,144 +743,99 @@ func RegisterQuestionServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		}
 		forward_QuestionService_Publish_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	return nil
-}
-
-var (
-	pattern_QuestionService_Get_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "questions", "ids"}, ""))
-	pattern_QuestionService_Create_0  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "questions"}, ""))
-	pattern_QuestionService_Search_0  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "questions", "search"}, ""))
-	pattern_QuestionService_Update_0  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "questions", "id"}, ""))
-	pattern_QuestionService_Delete_0  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "questions", "id"}, ""))
-	pattern_QuestionService_Publish_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"api", "v1", "questions", "id", "publish"}, ""))
-)
-
-var (
-	forward_QuestionService_Get_0     = runtime.ForwardResponseMessage
-	forward_QuestionService_Create_0  = runtime.ForwardResponseMessage
-	forward_QuestionService_Search_0  = runtime.ForwardResponseMessage
-	forward_QuestionService_Update_0  = runtime.ForwardResponseMessage
-	forward_QuestionService_Delete_0  = runtime.ForwardResponseMessage
-	forward_QuestionService_Publish_0 = runtime.ForwardResponseMessage
-)
-
-// RegisterQuestionTagServiceHandlerFromEndpoint is same as RegisterQuestionTagServiceHandler but
-// automatically dials to "endpoint" and closes the connection when "ctx" gets done.
-func RegisterQuestionTagServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
-	conn, err := grpc.NewClient(endpoint, opts...)
-	if err != nil {
-		return err
-	}
-	defer func() {
-		if err != nil {
-			if cerr := conn.Close(); cerr != nil {
-				grpclog.Errorf("Failed to close conn to %s: %v", endpoint, cerr)
-			}
-			return
-		}
-		go func() {
-			<-ctx.Done()
-			if cerr := conn.Close(); cerr != nil {
-				grpclog.Errorf("Failed to close conn to %s: %v", endpoint, cerr)
-			}
-		}()
-	}()
-	return RegisterQuestionTagServiceHandler(ctx, mux, conn)
-}
-
-// RegisterQuestionTagServiceHandler registers the http handlers for service QuestionTagService to "mux".
-// The handlers forward requests to the grpc endpoint over "conn".
-func RegisterQuestionTagServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
-	return RegisterQuestionTagServiceHandlerClient(ctx, mux, NewQuestionTagServiceClient(conn))
-}
-
-// RegisterQuestionTagServiceHandlerClient registers the http handlers for service QuestionTagService
-// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "QuestionTagServiceClient".
-// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "QuestionTagServiceClient"
-// doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
-// "QuestionTagServiceClient" to call the correct interceptors. This client ignores the HTTP middlewares.
-func RegisterQuestionTagServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client QuestionTagServiceClient) error {
-	mux.Handle(http.MethodGet, pattern_QuestionTagService_ListTag_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_QuestionService_ListTag_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.QuestionTagService/ListTag", runtime.WithHTTPPathPattern("/api/v1/question-tags"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.QuestionService/ListTag", runtime.WithHTTPPathPattern("/api/v1/question-tags"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_QuestionTagService_ListTag_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_QuestionService_ListTag_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_QuestionTagService_ListTag_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_QuestionService_ListTag_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodPost, pattern_QuestionTagService_CreateTag_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodPost, pattern_QuestionService_CreateTag_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.QuestionTagService/CreateTag", runtime.WithHTTPPathPattern("/api/v1/question-tags"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.QuestionService/CreateTag", runtime.WithHTTPPathPattern("/api/v1/question-tags"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_QuestionTagService_CreateTag_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_QuestionService_CreateTag_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_QuestionTagService_CreateTag_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_QuestionService_CreateTag_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodPut, pattern_QuestionTagService_UpdateTag_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodPut, pattern_QuestionService_UpdateTag_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.QuestionTagService/UpdateTag", runtime.WithHTTPPathPattern("/api/v1/question-tags/{name}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.QuestionService/UpdateTag", runtime.WithHTTPPathPattern("/api/v1/question-tags/{name}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_QuestionTagService_UpdateTag_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_QuestionService_UpdateTag_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_QuestionTagService_UpdateTag_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_QuestionService_UpdateTag_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodDelete, pattern_QuestionTagService_DeleteTag_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodDelete, pattern_QuestionService_DeleteTag_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.QuestionTagService/DeleteTag", runtime.WithHTTPPathPattern("/api/v1/question-tags/{name}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/proto.v1.QuestionService/DeleteTag", runtime.WithHTTPPathPattern("/api/v1/question-tags/{name}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_QuestionTagService_DeleteTag_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_QuestionService_DeleteTag_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_QuestionTagService_DeleteTag_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_QuestionService_DeleteTag_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 	return nil
 }
 
 var (
-	pattern_QuestionTagService_ListTag_0   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "question-tags"}, ""))
-	pattern_QuestionTagService_CreateTag_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "question-tags"}, ""))
-	pattern_QuestionTagService_UpdateTag_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "question-tags", "name"}, ""))
-	pattern_QuestionTagService_DeleteTag_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "question-tags", "name"}, ""))
+	pattern_QuestionService_Get_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "questions", "ids"}, ""))
+	pattern_QuestionService_Create_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "questions"}, ""))
+	pattern_QuestionService_Search_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "questions", "search"}, ""))
+	pattern_QuestionService_Update_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "questions", "id"}, ""))
+	pattern_QuestionService_Delete_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "questions", "id"}, ""))
+	pattern_QuestionService_Publish_0   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"api", "v1", "questions", "id", "publish"}, ""))
+	pattern_QuestionService_ListTag_0   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "question-tags"}, ""))
+	pattern_QuestionService_CreateTag_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "question-tags"}, ""))
+	pattern_QuestionService_UpdateTag_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "question-tags", "name"}, ""))
+	pattern_QuestionService_DeleteTag_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "question-tags", "name"}, ""))
 )
 
 var (
-	forward_QuestionTagService_ListTag_0   = runtime.ForwardResponseMessage
-	forward_QuestionTagService_CreateTag_0 = runtime.ForwardResponseMessage
-	forward_QuestionTagService_UpdateTag_0 = runtime.ForwardResponseMessage
-	forward_QuestionTagService_DeleteTag_0 = runtime.ForwardResponseMessage
+	forward_QuestionService_Get_0       = runtime.ForwardResponseMessage
+	forward_QuestionService_Create_0    = runtime.ForwardResponseMessage
+	forward_QuestionService_Search_0    = runtime.ForwardResponseMessage
+	forward_QuestionService_Update_0    = runtime.ForwardResponseMessage
+	forward_QuestionService_Delete_0    = runtime.ForwardResponseMessage
+	forward_QuestionService_Publish_0   = runtime.ForwardResponseMessage
+	forward_QuestionService_ListTag_0   = runtime.ForwardResponseMessage
+	forward_QuestionService_CreateTag_0 = runtime.ForwardResponseMessage
+	forward_QuestionService_UpdateTag_0 = runtime.ForwardResponseMessage
+	forward_QuestionService_DeleteTag_0 = runtime.ForwardResponseMessage
 )

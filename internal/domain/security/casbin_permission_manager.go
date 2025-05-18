@@ -26,7 +26,7 @@ type CasbinPermissionManager struct {
 }
 
 // NewCasbinPermissionManager 创建新的Casbin权限管理器
-func NewCasbinPermissionManager(db *gorm.DB, configDir string) (*CasbinPermissionManager, error) {
+func NewCasbinPermissionManager(db *gorm.DB, configDir string, log *zap.Logger) (*CasbinPermissionManager, error) {
 	// 创建数据库适配器
 	adapter, err := gormadapter.NewAdapterByDB(db)
 	if err != nil {
@@ -42,7 +42,7 @@ func NewCasbinPermissionManager(db *gorm.DB, configDir string) (*CasbinPermissio
 		if err != nil {
 			return nil, fmt.Errorf("failed to create model from embedded data: %w", err)
 		}
-		logger.Log.Info("Loaded RBAC model from embedded file")
+		log.Info("Loaded RBAC model from embedded file")
 	} else {
 		// 如果无法从嵌入的文件中加载，尝试从文件系统加载
 		modelPath := filepath.Join(configDir, "rbac", "model.conf")
@@ -50,7 +50,7 @@ func NewCasbinPermissionManager(db *gorm.DB, configDir string) (*CasbinPermissio
 		if err != nil {
 			return nil, fmt.Errorf("failed to load model configuration from file: %w", err)
 		}
-		logger.Log.Info("Loaded RBAC model from file system", zap.String("path", modelPath))
+		log.Info("Loaded RBAC model from file system", zap.String("path", modelPath))
 	}
 
 	// 创建enforcer

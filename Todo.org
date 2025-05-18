@@ -3,3 +3,46 @@ Title: SLA2 开发计划
 * inbox
 ** TODO config 支持多环境
 ** TODO 整理项目的目录结构，采用 DDD 架构, 洋葱架构
+** TODO 捕获 SIGTERM 实现优雅终止
+#+BEGIN_SRC go
+package main
+
+import (
+    "context"
+    "log"
+    "net/http"
+    "os"
+    "os/signal"
+    "syscall"
+    "time"
+)
+
+func main() {
+    // 创建 HTTP 服务器
+    server := &http.Server{
+        Addr: ":8080",
+    }
+
+    // 启动服务器
+    go func() {
+        log.Println("Server starting on :8080")
+        if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+            log.Fatalf("Server failed: %v", err)
+        }
+    }()
+
+    // 捕获终止信号
+    quit := make(chan os.Signal, 1)
+    signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+    <-quit
+    log.Println("Shutting down server...")
+
+    // 优雅关闭
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
+    if err := server.Shutdown(ctx); err != nil {
+        log.Fatalf("Server shutdown failed: %v", err)
+    }
+    log.Println("Server gracefully stopped")
+}
+#+END_SRC

@@ -7,6 +7,8 @@ import (
 	"github.com/lazyjean/sla2/internal/application/dto"
 	"github.com/lazyjean/sla2/internal/domain/entity"
 	"github.com/lazyjean/sla2/internal/domain/repository"
+	"github.com/lazyjean/sla2/pkg/logger"
+	"go.uber.org/zap"
 )
 
 // QuestionService 问题服务
@@ -135,4 +137,44 @@ func (s *QuestionService) Publish(ctx context.Context, id string) (*entity.Quest
 		return nil, err
 	}
 	return question, nil
+}
+
+// FindAllTags 查询所有标签，限制返回数量
+func (s *QuestionService) FindAllTags(ctx context.Context, limit int) ([]*entity.QuestionTag, error) {
+	log := logger.GetLogger(ctx)
+	log.Debug("查询所有标签", zap.Int("limit", limit))
+	return s.questionRepo.FindAllTags(ctx, limit)
+}
+
+// CreateTag 创建标签
+func (s *QuestionService) CreateTag(ctx context.Context, name string) (*entity.QuestionTag, error) {
+	log := logger.GetLogger(ctx)
+	log.Debug("创建标签", zap.String("name", name))
+
+	tag := &entity.QuestionTag{
+		Name: name,
+	}
+
+	return s.questionRepo.CreateTag(ctx, tag)
+}
+
+// UpdateTag 更新标签
+func (s *QuestionService) UpdateTag(ctx context.Context, id string, name string) (*entity.QuestionTag, error) {
+	log := logger.GetLogger(ctx)
+	log.Debug("更新标签", zap.String("id", id), zap.String("name", name))
+
+	tag := &entity.QuestionTag{
+		ID:   id,
+		Name: name,
+	}
+
+	return s.questionRepo.UpdateTag(ctx, tag)
+}
+
+// DeleteTag 删除标签
+func (s *QuestionService) DeleteTag(ctx context.Context, id string) error {
+	log := logger.GetLogger(ctx)
+	log.Debug("删除标签", zap.String("id", id))
+
+	return s.questionRepo.DeleteTag(ctx, id)
 }

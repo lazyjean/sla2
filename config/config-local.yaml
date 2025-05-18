@@ -17,3 +17,7 @@ jwt:
   refresh_secret_key: "kL9mN5vX7pH2jR4wT8cA3fE6bY1iU0qS5nD8mK2p"
   token_expiration: 168
   refresh_expiration: 720
+
+log:
+  level: "info"
+  format: "console"

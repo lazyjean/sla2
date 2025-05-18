@@ -11,7 +11,7 @@ import (
 )
 
 func TestLearningRepository_CourseProgress(t *testing.T) {
-	db, cleanup := SetupTestDB(t)
+	db, cleanup := setupTestDB(t)
 	defer cleanup()
 	repo := NewLearningRepository(db)
 	ctx := context.Background()
@@ -43,7 +43,7 @@ func TestLearningRepository_CourseProgress(t *testing.T) {
 }
 
 func TestLearningRepository_SectionProgress(t *testing.T) {
-	db, cleanup := SetupTestDB(t)
+	db, cleanup := setupTestDB(t)
 	defer cleanup()
 	repo := NewLearningRepository(db)
 	ctx := context.Background()
@@ -74,7 +74,7 @@ func TestLearningRepository_SectionProgress(t *testing.T) {
 }
 
 func TestLearningRepository_UnitProgress(t *testing.T) {
-	db, cleanup := SetupTestDB(t)
+	db, cleanup := setupTestDB(t)
 	defer cleanup()
 	repo := NewLearningRepository(db)
 	ctx := context.Background()
@@ -115,7 +115,7 @@ func TestLearningRepository_UnitProgress(t *testing.T) {
 }
 
 func TestLearningRepository_SaveCourseProgress(t *testing.T) {
-	db, cleanup := SetupTestDB(t)
+	db, cleanup := setupTestDB(t)
 	defer cleanup()
 	repo := NewLearningRepository(db)
 	ctx := context.Background()
@@ -160,7 +160,7 @@ func TestLearningRepository_SaveCourseProgress(t *testing.T) {
 }
 
 func TestLearningRepository_GetCourseProgress(t *testing.T) {
-	db, cleanup := SetupTestDB(t)
+	db, cleanup := setupTestDB(t)
 	defer cleanup()
 	repo := NewLearningRepository(db)
 	ctx := context.Background()
@@ -186,7 +186,7 @@ func TestLearningRepository_GetCourseProgress(t *testing.T) {
 }
 
 func TestLearningRepository_SaveSectionProgress(t *testing.T) {
-	db, cleanup := SetupTestDB(t)
+	db, cleanup := setupTestDB(t)
 	defer cleanup()
 	repo := NewLearningRepository(db)
 	ctx := context.Background()
@@ -204,7 +204,7 @@ func TestLearningRepository_SaveSectionProgress(t *testing.T) {
 }
 
 func TestLearningRepository_GetSectionProgress(t *testing.T) {
-	db, cleanup := SetupTestDB(t)
+	db, cleanup := setupTestDB(t)
 	defer cleanup()
 	repo := NewLearningRepository(db)
 	ctx := context.Background()
@@ -228,7 +228,7 @@ func TestLearningRepository_GetSectionProgress(t *testing.T) {
 }
 
 func TestLearningRepository_ListCourseProgress(t *testing.T) {
-	db, cleanup := SetupTestDB(t)
+	db, cleanup := setupTestDB(t)
 	defer cleanup()
 	repo := NewLearningRepository(db)
 	ctx := context.Background()
@@ -254,7 +254,7 @@ func TestLearningRepository_ListCourseProgress(t *testing.T) {
 }
 
 func TestLearningRepository_ListSectionProgress(t *testing.T) {
-	db, cleanup := SetupTestDB(t)
+	db, cleanup := setupTestDB(t)
 	defer cleanup()
 	repo := NewLearningRepository(db)
 	ctx := context.Background()

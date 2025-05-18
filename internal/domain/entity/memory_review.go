@@ -24,8 +24,8 @@ type MemoryReview struct {
 	UserID       uint32       `gorm:"not null;index;comment:用户ID，关联到用户表"`
 	Result       ReviewResult `gorm:"not null;comment:复习结果，0-未指定，1-正确，2-错误，3-跳过"`
 	ResponseTime uint32       `gorm:"not null;comment:响应时间，单位毫秒，表示用户从看到题目到做出回答的时间"`
-	ReviewTime   time.Time    `gorm:"not null;comment:实际的复习时间，表示用户进行复习的具体时间点"`
-	CreatedAt    time.Time    `gorm:"not null;comment:记录创建时间，由数据库自动维护"`
+	ReviewTime   time.Time    `gorm:"type:timestamptz;not null;comment:实际的复习时间，表示用户进行复习的具体时间点"`
+	CreatedAt    time.Time    `gorm:"type:timestamptz;not null;comment:记录创建时间，由数据库自动维护"`
 }
 
 // NewMemoryReview 创建新的复习记录

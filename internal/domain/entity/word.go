@@ -26,9 +26,9 @@ type Word struct {
 	// Level 难度等级
 	Level valueobject.WordDifficultyLevel `gorm:"type:integer;not null;comment:难度等级"`
 	// CreatedAt 创建时间
-	CreatedAt time.Time `gorm:"not null;default:CURRENT_TIMESTAMP"`
+	CreatedAt time.Time `gorm:"type:timestamptz;not null;default:CURRENT_TIMESTAMP"`
 	// UpdatedAt 更新时间
-	UpdatedAt time.Time `gorm:"not null;default:CURRENT_TIMESTAMP"`
+	UpdatedAt time.Time `gorm:"type:timestamptz;not null;default:CURRENT_TIMESTAMP"`
 }
 
 // Definition 单词释义

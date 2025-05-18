@@ -4,7 +4,8 @@ import (
 	"context"
 
 	"github.com/lazyjean/sla2/config"
-	grpcserver "github.com/lazyjean/sla2/internal/interfaces/grpc"
+	"github.com/lazyjean/sla2/internal/infrastructure/listen"
+	grpcserver "github.com/lazyjean/sla2/internal/transport/grpc"
 )
 
 // Application 应用程序结构体
@@ -26,10 +27,15 @@ func NewApplication(
 
 // Start 启动应用程序
 func (a *Application) Start(ctx context.Context) error {
-	return a.grpcServer.Start()
+	return a.grpcServer.Start(ctx)
 }
 
 // Stop 停止应用程序
 func (a *Application) Stop(ctx context.Context) error {
-	return a.grpcServer.Stop()
+	return a.grpcServer.Stop(ctx)
+}
+
+// GetGRPCListener 获取 gRPC 监听器
+func (a *Application) GetGRPCListener() listen.Listener {
+	return a.grpcServer.GetListener()
 }

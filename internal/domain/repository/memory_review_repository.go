@@ -12,5 +12,5 @@ type MemoryReviewRepository interface {
 	// Create 创建复习记录
 	Create(ctx context.Context, review *entity.MemoryReview) error
 	// ListByUserIDAndTimeRange 获取用户指定时间范围内的复习记录
-	ListByUserIDAndTimeRange(ctx context.Context, userID uint32, startTime, endTime time.Time) ([]*entity.MemoryReview, error)
+	ListByUserIDAndTimeRange(ctx context.Context, userID entity.UID, startTime, endTime time.Time) ([]*entity.MemoryReview, error)
 }

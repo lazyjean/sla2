@@ -4,19 +4,33 @@
 package wire
 
 import (
+	"testing"
+
 	"github.com/google/wire"
+	"go.uber.org/zap"
+
 	"github.com/lazyjean/sla2/config"
+	"github.com/lazyjean/sla2/pkg/logger"
+
 	"github.com/lazyjean/sla2/internal/application/service"
 	"github.com/lazyjean/sla2/internal/domain/repository"
 	domainsecurity "github.com/lazyjean/sla2/internal/domain/security"
+
 	"github.com/lazyjean/sla2/internal/infrastructure/cache/redis"
+	"github.com/lazyjean/sla2/internal/infrastructure/listen"
 	"github.com/lazyjean/sla2/internal/infrastructure/oauth"
 	"github.com/lazyjean/sla2/internal/infrastructure/persistence/postgres"
 	infrasecurity "github.com/lazyjean/sla2/internal/infrastructure/security"
-	grpcserver "github.com/lazyjean/sla2/internal/interfaces/grpc"
-	"github.com/lazyjean/sla2/internal/interfaces/http/ws/handler"
-	"github.com/lazyjean/sla2/pkg/logger"
-	"go.uber.org/zap"
+	"github.com/lazyjean/sla2/internal/infrastructure/test"
+
+	grpcserver "github.com/lazyjean/sla2/internal/transport/grpc"
+	"github.com/lazyjean/sla2/internal/transport/http/ws/handler"
+
+	adminconverter "github.com/lazyjean/sla2/internal/transport/grpc/admin/converter"
+	courseconverter "github.com/lazyjean/sla2/internal/transport/grpc/course/converter"
+	learningconverter "github.com/lazyjean/sla2/internal/transport/grpc/learning/converter"
+	questionconverter "github.com/lazyjean/sla2/internal/transport/grpc/question/converter"
+	vocabularyconverter "github.com/lazyjean/sla2/internal/transport/grpc/vocabulary/converter"
 )
 
 // 提供 Logger 实例
@@ -28,12 +42,16 @@ func ProvideLogger() *zap.Logger {
 // 配置集
 var configSet = wire.NewSet(
 	config.GetConfig,
-	wire.FieldsOf(new(*config.Config), "Database", "Redis", "JWT", "Apple", "RBAC"),
+	wire.FieldsOf(new(*config.Config), "Database", "Redis", "JWT", "Apple", "RBAC", "Log"),
 )
 
 // 数据库集
 var dbSet = wire.NewSet(
 	postgres.NewDB,
+)
+
+var testDBSet = wire.NewSet(
+	test.NewTestDB,
 )
 
 // redis仓库集
@@ -50,10 +68,18 @@ var repositorySet = wire.NewSet(
 	postgres.NewCourseRepository,
 	postgres.NewCourseSectionRepository,
 	postgres.NewAdminRepository,
-	postgres.NewQuestionTagRepository,
 	postgres.NewQuestionRepository,
 	postgres.NewHanCharRepository,
 	postgres.NewMemoryUnitRepository,
+)
+
+// 转换器
+var converterSet = wire.NewSet(
+	courseconverter.NewCourseConverter,
+	vocabularyconverter.NewVocabularyConverter,
+	questionconverter.NewQuestionConverter,
+	adminconverter.NewAdminConverter,
+	learningconverter.NewLearningConverter,
 )
 
 // 服务集
@@ -64,7 +90,6 @@ var serviceSet = wire.NewSet(
 	service.NewCourseService,
 	provideAdminService,
 	service.NewQuestionService,
-	service.NewQuestionTagService,
 	service.NewMemoryService,
 )
 
@@ -89,6 +114,10 @@ var authSet = wire.NewSet(
 	oauth.NewAppleAuthService,
 )
 
+var testAuthSet = wire.NewSet(
+	test.NewMockAppleAuthService,
+)
+
 // 安全服务集
 var securitySet = wire.NewSet(
 	// 密码服务
@@ -105,6 +134,12 @@ var wsSet = wire.NewSet(
 
 // gRPC服务器集
 var grpcSet = wire.NewSet(
+	listen.NewListener,
+	grpcserver.NewGRPCServer,
+)
+
+var bufConnGrpcSet = wire.NewSet(
+	test.NewTestListener,
 	grpcserver.NewGRPCServer,
 )
 
@@ -119,10 +154,20 @@ var rbacSet = wire.NewSet(
 	wire.FieldsOf(new(*domainsecurity.RBACProvider), "PermissionHelper"),
 )
 
+// 测试安全服务集
+var testSecuritySet = wire.NewSet(
+	// 使用 mock token service
+	test.NewMockTokenService,
+	wire.Bind(new(domainsecurity.TokenService), new(*test.MockTokenService)),
+	// 使用真实的密码服务
+	infrasecurity.NewBCryptPasswordService,
+)
+
 // InitializeApp 初始化应用程序
 func InitializeApp() (*Application, error) {
 	wire.Build(
 		NewApplication,
+		logger.NewAppLogger,
 		configSet,
 		dbSet,
 		repositorySet,
@@ -131,6 +176,23 @@ func InitializeApp() (*Application, error) {
 		securitySet,
 		wsSet,
 		grpcSet,
+		rbacSet,
+	)
+	return nil, nil
+}
+
+func InitializeTestApp(t *testing.T) (*Application, error) {
+	wire.Build(
+		NewApplication,
+		logger.NewAppLogger,
+		configSet,
+		testDBSet,
+		repositorySet,
+		serviceSet,
+		testAuthSet,
+		testSecuritySet,
+		wsSet,
+		bufConnGrpcSet,
 		rbacSet,
 	)
 	return nil, nil

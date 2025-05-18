@@ -15,8 +15,8 @@ type Admin struct {
 	Email         string    `gorm:"not null"`                                     // 邮箱
 	EmailVerified bool      `gorm:"column:email_verified;not null;default:false"` // 邮箱是否已验证
 	Roles         []string  `gorm:"type:jsonb;serializer:json"`                   // 权限列表
-	CreatedAt     time.Time `gorm:"not null"`                                     // 创建时间
-	UpdatedAt     time.Time `gorm:"not null"`                                     // 更新时间
+	CreatedAt     time.Time `gorm:"type:timestamptz;not null"`                    // 创建时间
+	UpdatedAt     time.Time `gorm:"type:timestamptz;not null"`                    // 更新时间
 }
 
 // Value 实现 driver.Valuer 接口

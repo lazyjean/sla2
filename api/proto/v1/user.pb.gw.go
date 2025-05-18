@@ -88,6 +88,7 @@ func request_UserService_GetUserInfo_0(ctx context.Context, marshaler runtime.Ma
 		protoReq GetUserInfoRequest
 		metadata runtime.ServerMetadata
 	)
+	io.Copy(io.Discard, req.Body)
 	msg, err := client.GetUserInfo(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
@@ -226,6 +227,7 @@ func request_UserService_Logout_0(ctx context.Context, marshaler runtime.Marshal
 		protoReq LogoutRequest
 		metadata runtime.ServerMetadata
 	)
+	io.Copy(io.Discard, req.Body)
 	msg, err := client.Logout(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }

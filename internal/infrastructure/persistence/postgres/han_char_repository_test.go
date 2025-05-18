@@ -11,7 +11,7 @@ import (
 )
 
 func TestHanCharRepository(t *testing.T) {
-	db, cleanup := SetupTestDB(t)
+	db, cleanup := setupTestDB(t)
 	defer cleanup()
 
 	repo := NewHanCharRepository(db)

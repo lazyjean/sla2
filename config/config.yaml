@@ -1,5 +1,5 @@
 server:
-  mode: "debug"
+  mode: "release"
 
 grpc:
   port: 9100
@@ -29,6 +29,7 @@ redis:
 log:
   level: "info"
   file_path: "./logs/app.log"
+  format: "json"  # 默认使用 json 格式
 
 apple:
   client_id: "leeszi.SLA" # todo: 需要替换为实际的 bundle id & team id

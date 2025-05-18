@@ -21,8 +21,8 @@ type Permission struct {
 	Type        PermissionType `gorm:"type:varchar(20);not null"`              // 权限类型
 	Object      string         `gorm:"type:varchar(100);not null"`             // 权限对象（资源）
 	Action      string         `gorm:"type:varchar(100);not null"`             // 权限操作
-	CreatedAt   time.Time      `gorm:"not null"`                               // 创建时间
-	UpdatedAt   time.Time      `gorm:"not null"`                               // 更新时间
+	CreatedAt   time.Time      `gorm:"type:timestamptz;not null"`              // 创建时间
+	UpdatedAt   time.Time      `gorm:"type:timestamptz;not null"`              // 更新时间
 }
 
 // NewPermission 创建新权限

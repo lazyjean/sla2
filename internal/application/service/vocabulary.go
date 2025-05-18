@@ -11,22 +11,46 @@ import (
 	"github.com/lazyjean/sla2/internal/domain/valueobject"
 )
 
-// VocabularyService 词汇服务
-type VocabularyService struct {
+// VocabularyService 词汇服务接口
+type VocabularyService interface {
+	CreateHanChar(ctx context.Context, character, pinyin string, level valueobject.WordDifficultyLevel, tags, categories, examples []string) (*entity.HanChar, error)
+	UpdateHanChar(ctx context.Context, id entity.HanCharID, character, pinyin string, level valueobject.WordDifficultyLevel, tags, categories, examples []string) (*entity.HanChar, error)
+	DeleteHanChar(ctx context.Context, id entity.HanCharID) error
+	GetHanChar(ctx context.Context, id entity.HanCharID) (*entity.HanChar, error)
+	GetHanCharByCharacter(ctx context.Context, character string) (*entity.HanChar, error)
+	ListHanChars(ctx context.Context, page, pageSize int, level valueobject.WordDifficultyLevel, tags, categories []string, excludeIDs []uint) ([]*entity.HanChar, int64, error)
+	SearchHanChars(ctx context.Context, keyword string, page, pageSize int, level valueobject.WordDifficultyLevel, tags, categories []string) ([]*entity.HanChar, int64, error)
+	GetWord(ctx context.Context, id uint) (*entity.Word, error)
+	ListWords(ctx context.Context, page, pageSize int, level valueobject.WordDifficultyLevel, tags, categories []string) ([]*entity.Word, int64, error)
+	GetAllMetadata(ctx context.Context) ([]string, []string, error)
+	CreateWord(ctx context.Context, req dto.CreateWordRequest) (*entity.Word, error)
+	BatchCreateWords(ctx context.Context, words []dto.BatchCreateWordRequest) error
+	BatchCreateHanChars(ctx context.Context, hanChars []struct {
+		Character  string
+		Pinyin     string
+		Level      valueobject.WordDifficultyLevel
+		Tags       []string
+		Categories []string
+		Examples   []string
+	}) ([]uint, error)
+}
+
+// VocabularyServiceImpl 词汇服务实现
+type VocabularyServiceImpl struct {
 	hanCharRepository repository.HanCharRepository
 	wordRepository    repository.WordRepository
 }
 
 // NewVocabularyService 创建词汇服务实例
-func NewVocabularyService(hanCharRepository repository.HanCharRepository, wordRepository repository.WordRepository) *VocabularyService {
-	return &VocabularyService{
+func NewVocabularyService(hanCharRepository repository.HanCharRepository, wordRepository repository.WordRepository) VocabularyService {
+	return &VocabularyServiceImpl{
 		hanCharRepository: hanCharRepository,
 		wordRepository:    wordRepository,
 	}
 }
 
 // CreateHanChar 创建汉字
-func (s *VocabularyService) CreateHanChar(ctx context.Context, character, pinyin string, level valueobject.WordDifficultyLevel, tags, categories, examples []string) (*entity.HanChar, error) {
+func (s *VocabularyServiceImpl) CreateHanChar(ctx context.Context, character, pinyin string, level valueobject.WordDifficultyLevel, tags, categories, examples []string) (*entity.HanChar, error) {
 	// 检查汉字是否已存在
 	existing, err := s.hanCharRepository.GetByCharacter(ctx, character)
 	if err != nil {
@@ -53,7 +77,7 @@ func (s *VocabularyService) CreateHanChar(ctx context.Context, character, pinyin
 }
 
 // UpdateHanChar 更新汉字
-func (s *VocabularyService) UpdateHanChar(ctx context.Context, id entity.HanCharID, character, pinyin string, level valueobject.WordDifficultyLevel, tags, categories, examples []string) (*entity.HanChar, error) {
+func (s *VocabularyServiceImpl) UpdateHanChar(ctx context.Context, id entity.HanCharID, character, pinyin string, level valueobject.WordDifficultyLevel, tags, categories, examples []string) (*entity.HanChar, error) {
 	// 获取现有汉字
 	hanChar, err := s.hanCharRepository.GetByID(ctx, id)
 	if err != nil {
@@ -75,22 +99,22 @@ func (s *VocabularyService) UpdateHanChar(ctx context.Context, id entity.HanChar
 }
 
 // DeleteHanChar 删除汉字
-func (s *VocabularyService) DeleteHanChar(ctx context.Context, id entity.HanCharID) error {
+func (s *VocabularyServiceImpl) DeleteHanChar(ctx context.Context, id entity.HanCharID) error {
 	return s.hanCharRepository.Delete(ctx, id)
 }
 
 // GetHanChar 获取汉字详情
-func (s *VocabularyService) GetHanChar(ctx context.Context, id entity.HanCharID) (*entity.HanChar, error) {
+func (s *VocabularyServiceImpl) GetHanChar(ctx context.Context, id entity.HanCharID) (*entity.HanChar, error) {
 	return s.hanCharRepository.GetByID(ctx, id)
 }
 
 // GetHanCharByCharacter 根据字符获取汉字
-func (s *VocabularyService) GetHanCharByCharacter(ctx context.Context, character string) (*entity.HanChar, error) {
+func (s *VocabularyServiceImpl) GetHanCharByCharacter(ctx context.Context, character string) (*entity.HanChar, error) {
 	return s.hanCharRepository.GetByCharacter(ctx, character)
 }
 
 // ListHanChars 获取汉字列表
-func (s *VocabularyService) ListHanChars(ctx context.Context, page, pageSize int, level valueobject.WordDifficultyLevel, tags, categories []string) ([]*entity.HanChar, int64, error) {
+func (s *VocabularyServiceImpl) ListHanChars(ctx context.Context, page, pageSize int, level valueobject.WordDifficultyLevel, tags, categories []string, excludeIDs []uint) ([]*entity.HanChar, int64, error) {
 	offset := (page - 1) * pageSize
 
 	filters := make(map[string]interface{})
@@ -103,12 +127,15 @@ func (s *VocabularyService) ListHanChars(ctx context.Context, page, pageSize int
 	if len(categories) > 0 {
 		filters["categories"] = categories
 	}
+	if len(excludeIDs) > 0 {
+		filters["exclude_ids"] = excludeIDs
+	}
 
 	return s.hanCharRepository.List(ctx, offset, pageSize, filters)
 }
 
 // SearchHanChars 搜索汉字
-func (s *VocabularyService) SearchHanChars(ctx context.Context, keyword string, page, pageSize int, level valueobject.WordDifficultyLevel, tags, categories []string) ([]*entity.HanChar, int64, error) {
+func (s *VocabularyServiceImpl) SearchHanChars(ctx context.Context, keyword string, page, pageSize int, level valueobject.WordDifficultyLevel, tags, categories []string) ([]*entity.HanChar, int64, error) {
 	offset := (page - 1) * pageSize
 
 	filters := make(map[string]interface{})
@@ -126,12 +153,12 @@ func (s *VocabularyService) SearchHanChars(ctx context.Context, keyword string, 
 }
 
 // GetWord 获取单词详情
-func (s *VocabularyService) GetWord(ctx context.Context, id uint) (*entity.Word, error) {
+func (s *VocabularyServiceImpl) GetWord(ctx context.Context, id uint) (*entity.Word, error) {
 	return s.wordRepository.GetByID(ctx, entity.WordID(id))
 }
 
 // ListWords 获取单词列表
-func (s *VocabularyService) ListWords(ctx context.Context, page, pageSize int, level valueobject.WordDifficultyLevel, tags, categories []string) ([]*entity.Word, int64, error) {
+func (s *VocabularyServiceImpl) ListWords(ctx context.Context, page, pageSize int, level valueobject.WordDifficultyLevel, tags, categories []string) ([]*entity.Word, int64, error) {
 	offset := (page - 1) * pageSize
 
 	filters := make(map[string]interface{})
@@ -149,7 +176,7 @@ func (s *VocabularyService) ListWords(ctx context.Context, page, pageSize int, l
 }
 
 // GetAllMetadata 获取所有标签和分类信息
-func (s *VocabularyService) GetAllMetadata(ctx context.Context) ([]string, []string, error) {
+func (s *VocabularyServiceImpl) GetAllMetadata(ctx context.Context) ([]string, []string, error) {
 	tags, err := s.wordRepository.GetAllTags(ctx)
 	if err != nil {
 		return nil, nil, err
@@ -164,7 +191,7 @@ func (s *VocabularyService) GetAllMetadata(ctx context.Context) ([]string, []str
 }
 
 // CreateWord 创建单词
-func (s *VocabularyService) CreateWord(ctx context.Context, req dto.CreateWordRequest) (*entity.Word, error) {
+func (s *VocabularyServiceImpl) CreateWord(ctx context.Context, req dto.CreateWordRequest) (*entity.Word, error) {
 	// 检查单词是否已存在
 	existingWord, err := s.wordRepository.GetByWord(ctx, req.Text)
 	if err != nil && !errors.Is(err, errors.ErrWordNotFound) {
@@ -193,7 +220,7 @@ func (s *VocabularyService) CreateWord(ctx context.Context, req dto.CreateWordRe
 }
 
 // BatchCreateWords 批量创建单词
-func (s *VocabularyService) BatchCreateWords(ctx context.Context, words []dto.BatchCreateWordRequest) error {
+func (s *VocabularyServiceImpl) BatchCreateWords(ctx context.Context, words []dto.BatchCreateWordRequest) error {
 	for _, word := range words {
 		// 解析难度等级
 		level := word.Level
@@ -228,7 +255,7 @@ func (s *VocabularyService) BatchCreateWords(ctx context.Context, words []dto.Ba
 }
 
 // BatchCreateHanChars 批量创建汉字
-func (s *VocabularyService) BatchCreateHanChars(ctx context.Context, hanChars []struct {
+func (s *VocabularyServiceImpl) BatchCreateHanChars(ctx context.Context, hanChars []struct {
 	Character  string
 	Pinyin     string
 	Level      valueobject.WordDifficultyLevel
@@ -254,3 +281,6 @@ func (s *VocabularyService) BatchCreateHanChars(ctx context.Context, hanChars []
 	}
 	return ids, nil
 }
+
+// 确保 VocabularyServiceImpl 实现了 VocabularyService 接口
+var _ VocabularyService = (*VocabularyServiceImpl)(nil)

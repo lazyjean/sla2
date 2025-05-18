@@ -18,9 +18,9 @@ type RBACProvider struct {
 }
 
 // NewRBACProvider 创建新的RBAC权限系统供应商
-func NewRBACProvider(db *gorm.DB, cfg *config.RBACConfig) (*RBACProvider, error) {
+func NewRBACProvider(db *gorm.DB, cfg *config.RBACConfig, log *zap.Logger) (*RBACProvider, error) {
 	// 创建Casbin权限管理器
-	permManager, err := NewCasbinPermissionManager(db, cfg.ConfigDir)
+	permManager, err := NewCasbinPermissionManager(db, cfg.ConfigDir, log)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create permission manager: %w", err)
 	}
@@ -32,13 +32,13 @@ func NewRBACProvider(db *gorm.DB, cfg *config.RBACConfig) (*RBACProvider, error)
 	initializer := NewPermissionInitializer(permManager)
 
 	// 如果配置了自动初始化，则初始化权限
-	logger.Log.Info("Auto-initializing RBAC permissions...")
-	if err := initializer.Initialize(context.Background()); err != nil {
-		logger.Log.Error("Failed to initialize permissions", zap.Error(err))
+	log.Info("Auto-initializing RBAC permissions...")
+	if err := initializer.Initialize(logger.WithContext(context.Background(), log)); err != nil {
+		log.Error("Failed to initialize permissions", zap.Error(err))
 		return nil, fmt.Errorf("failed to initialize permissions: %w", err)
 	}
 
-	logger.Log.Info("RBAC permissions initialized successfully")
+	log.Info("RBAC permissions initialized successfully")
 
 	return &RBACProvider{
 		permissionManager: permManager,

@@ -43,28 +43,34 @@
             "type": "go",
             "request": "launch",
             "mode": "test",
-            "program": "${workspaceFolder}/${relativeFileDirname}",
+            "program": "${workspaceFolder}",
             "env": {
                 "ACTIVE_PROFILE": "test"
             },
             "args": [
-                "-test.v"
+                "-test.v",
+                "./${relativeFileDirname}"
             ],
-            "showLog": true
+            "showLog": true,
+            "buildFlags": "-tags=test",
+            "cwd": "${workspaceFolder}"
         },
         {
             "name": "Test Current File",
             "type": "go",
             "request": "launch",
             "mode": "test",
-            "program": "${workspaceFolder}/${relativeFile}",
+            "program": "${workspaceFolder}",
             "env": {
                 "ACTIVE_PROFILE": "test"
             },
             "args": [
-                "-test.v"
+                "-test.v",
+                "${relativeFile}"
             ],
-            "showLog": true
+            "showLog": true,
+            "buildFlags": "-tags=test",
+            "cwd": "${workspaceFolder}"
         },
         {
             "name": "Launch",

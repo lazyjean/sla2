@@ -21,7 +21,7 @@ type MemoryStats struct {
 // DailyStat 每日学习统计
 // 用于记录用户每天的学习情况
 type DailyStat struct {
-	Date           time.Time `json:"date" gorm:"comment:统计日期"`
+	Date           time.Time `json:"date" gorm:"type:timestamptz;comment:统计日期"`
 	NewLearned     uint32    `json:"new_learned" gorm:"comment:新学习数量，当天新学习的记忆单元数量"`
 	ReviewCount    uint32    `json:"review_count" gorm:"comment:复习数量，当天复习的记忆单元数量"`
 	CorrectCount   uint32    `json:"correct_count" gorm:"comment:正确数量，当天复习正确的记忆单元数量"`

@@ -16,8 +16,6 @@ const (
 	ResourceCourse = "course"
 	// ResourceQuestion 问题资源
 	ResourceQuestion = "question"
-	// ResourceQuestionTag 问题标签资源
-	ResourceQuestionTag = "question_tag"
 	// ResourceWord 单词资源
 	ResourceWord = "word"
 	// ResourceAny 任意资源，通配符

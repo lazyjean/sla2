@@ -37,14 +37,14 @@ type MemoryUnit struct {
 	UserID    UID            `gorm:"not null;index:idx_user_content_type,unique;comment:用户ID"`
 	Type      MemoryUnitType `gorm:"not null;index:idx_user_content_type,unique;comment:记忆单元类型，0-未指定，1-汉字，2-单词"`
 	ContentID uint32         `gorm:"not null;index:idx_user_content_type,unique;comment:内容ID，关联到具体的内容表（如汉字表、单词表等）"`
-	CreatedAt time.Time      `gorm:"not null;comment:记录创建时间，由数据库自动维护"`
-	UpdatedAt time.Time      `gorm:"not null;comment:记录更新时间，由数据库自动维护"`
+	CreatedAt time.Time      `gorm:"type:timestamptz;not null;comment:记录创建时间，由数据库自动维护"`
+	UpdatedAt time.Time      `gorm:"type:timestamptz;not null;comment:记录更新时间，由数据库自动维护"`
 
 	// 学习状态
 	MasteryLevel       MasteryLevel `gorm:"not null;default:1;comment:掌握程度，0-未指定，1-未学习，2-初学，3-熟悉，4-掌握，5-精通"`
 	ReviewCount        uint32       `gorm:"not null;default:0;comment:复习次数，累计复习的总次数"`
-	NextReviewAt       time.Time    `gorm:"not null;comment:下次复习时间，根据记忆曲线计算得出"`
-	LastReviewAt       time.Time    `gorm:"not null;comment:上次复习时间，记录最近一次复习的时间"`
+	NextReviewAt       time.Time    `gorm:"type:timestamptz;not null;comment:下次复习时间，根据记忆曲线计算得出"`
+	LastReviewAt       time.Time    `gorm:"type:timestamptz;not null;comment:上次复习时间，记录最近一次复习的时间"`
 	StudyDuration      uint32       `gorm:"not null;default:0;comment:学习时长（秒），累计学习该记忆单元的总时间"`
 	RetentionRate      float32      `gorm:"not null;default:0;comment:记忆保持率（0-1），表示记忆的牢固程度"`
 	ConsecutiveCorrect uint32       `gorm:"not null;default:0;comment:连续正确次数，用于评估记忆稳定性"`

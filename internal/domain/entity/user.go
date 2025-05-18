@@ -26,6 +26,6 @@ type User struct {
 	AppleID       string     `gorm:"type:varchar(100);uniqueIndex"` // 苹果用户ID
 	Status        UserStatus `gorm:"type:int;not null;default:1"`
 	EmailVerified bool       `gorm:"type:boolean;default:false"`
-	CreatedAt     time.Time  `gorm:"not null;default:CURRENT_TIMESTAMP"`
-	UpdatedAt     time.Time  `gorm:"not null;default:CURRENT_TIMESTAMP"`
+	CreatedAt     time.Time  `gorm:"type:timestamptz;not null;default:CURRENT_TIMESTAMP"`
+	UpdatedAt     time.Time  `gorm:"type:timestamptz;not null;default:CURRENT_TIMESTAMP"`
 }

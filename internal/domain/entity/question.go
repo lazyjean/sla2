@@ -60,8 +60,8 @@ type Question struct {
 	Attachments    []string   `gorm:"type:jsonb;serializer:json;not null;default:'[]'"` // 附件列表
 	CorrectRate    float64    `gorm:"type:float8;not null;default:0"`                   // 正确率
 	TimeLimit      uint32     `gorm:"type:int;not null;default:0"`                      // 时间限制，单位秒
-	CreatedAt      time.Time  `gorm:"not null"`
-	UpdatedAt      time.Time  `gorm:"not null"`
+	CreatedAt      time.Time  `gorm:"type:timestamptz;not null"`
+	UpdatedAt      time.Time  `gorm:"type:timestamptz;not null"`
 }
 
 // TableName 指定表名

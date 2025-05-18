@@ -19,8 +19,8 @@ type CourseSection struct {
 	OrderIndex int32                `gorm:"not null;default:0"`                          // 显示顺序
 	Status     string               `gorm:"type:varchar(20);not null;default:'enabled'"` // 状态：enabled-启用，disabled-禁用
 	Units      []*CourseSectionUnit `gorm:"-"`                                           // 章节单元列表，不存储在数据库中
-	CreatedAt  time.Time            `gorm:"not null"`                                    // 创建时间
-	UpdatedAt  time.Time            `gorm:"not null"`                                    // 更新时间
+	CreatedAt  time.Time            `gorm:"type:timestamptz;not null"`                   // 创建时间
+	UpdatedAt  time.Time            `gorm:"type:timestamptz;not null"`                   // 更新时间
 }
 
 // CourseSectionUnit 课程章节单元实体
@@ -34,8 +34,8 @@ type CourseSectionUnit struct {
 	Status      int32               `gorm:"not null;default:1"`         // 状态：0-禁用，1-启用
 	Tags        string              `gorm:"type:text"`                  // 标签，多个标签用逗号分隔
 	Prompt      string              `gorm:"type:text"`                  // AI 提示词
-	CreatedAt   time.Time           `gorm:"not null"`                   // 创建时间
-	UpdatedAt   time.Time           `gorm:"not null"`                   // 更新时间
+	CreatedAt   time.Time           `gorm:"type:timestamptz;not null"`  // 创建时间
+	UpdatedAt   time.Time           `gorm:"type:timestamptz;not null"`  // 更新时间
 }
 
 // TableName 指定表名

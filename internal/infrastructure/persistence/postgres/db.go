@@ -16,7 +16,7 @@ import (
 // NewDB 创建并初始化数据库连接
 func NewDB(cfg *config.DatabaseConfig) (*gorm.DB, error) {
 	dsn := fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable TimeZone=Asia/Shanghai",
 		cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.DBName,
 	)
 
@@ -37,6 +37,9 @@ func NewDB(cfg *config.DatabaseConfig) (*gorm.DB, error) {
 			log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 			logConfig,
 		),
+		NowFunc: func() time.Time {
+			return time.Now().In(time.FixedZone("CST", 8*3600)) // 使用东八区时间
+		},
 	})
 	if err != nil {
 		return nil, err

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"embed"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -64,6 +65,7 @@ type RedisConfig struct {
 type LogConfig struct {
 	Level    string `mapstructure:"level"`
 	FilePath string `mapstructure:"file_path"`
+	Format   string `mapstructure:"format"` // 日志格式：json 或 console
 }
 
 // JWTConfig JWT 配置
@@ -99,6 +101,13 @@ type RBACConfig struct {
 }
 
 var globalConfig *Config
+
+func init() {
+	err := InitConfig()
+	if err != nil {
+		log.Fatalf("failed to initialize config: %v", err)
+	}
+}
 
 func InitConfig() error {
 	v := viper.New()
@@ -197,12 +206,6 @@ func InitConfig() error {
 	if err := v.Unmarshal(&globalConfig); err != nil {
 		return fmt.Errorf("failed to unmarshal config: %w", err)
 	}
-
-	// 打印配置信息
-	fmt.Printf("Config loaded - gRPC port: %d, Gateway port: %d\n",
-		globalConfig.GRPC.Port,
-		globalConfig.GRPC.GatewayPort,
-	)
 
 	return nil
 }

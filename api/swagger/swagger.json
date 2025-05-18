@@ -12,19 +12,16 @@
       "name": "CourseService"
     },
     {
+      "name": "VocabularyService"
+    },
+    {
       "name": "LearningService"
     },
     {
       "name": "QuestionService"
     },
     {
-      "name": "QuestionTagService"
-    },
-    {
       "name": "UserService"
-    },
-    {
-      "name": "VocabularyService"
     }
   ],
   "consumes": [
@@ -588,7 +585,7 @@
     },
     "/api/v1/learning/courses/{courseId}/progress": {
       "get": {
-        "summary": "GetCourseProgress 获取课程学习进度",
+        "summary": "name: 获取课程学习进度\nsummary: 获取指定课程的学习进度信息，包括总体进度、已完成章节数等\nrequired: course_id",
         "operationId": "LearningService_GetCourseProgress",
         "responses": {
           "200": {
@@ -618,15 +615,15 @@
         ]
       }
     },
-    "/api/v1/learning/han_chars/review": {
+    "/api/v1/learning/memories/initialize": {
       "post": {
-        "summary": "复习汉字",
-        "operationId": "LearningService_ReviewHanChar",
+        "summary": "name: 初始化记忆单元\nsummary: 测试或学习过程中, 将未掌握, 或者未学习过的内容, 在这里进行初始化, 后续会追踪记忆状态, 提醒及时复习\nrequired: user_id",
+        "operationId": "LearningService_InitializeMemoryUnits",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1ReviewHanCharResponse"
+              "$ref": "#/definitions/v1LearningServiceInitializeMemoryUnitResponse"
             }
           },
           "default": {
@@ -642,7 +639,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/v1ReviewHanCharRequest"
+              "$ref": "#/definitions/v1LearningServiceInitializeMemoryUnitRequest"
             }
           }
         ],
@@ -653,13 +650,13 @@
     },
     "/api/v1/learning/memories/review": {
       "get": {
-        "summary": "获取需要复习的记忆单元列表",
+        "summary": "name: 获取需要复习的记忆单元列表\nsummary: 获取当前需要复习的记忆单元列表，支持分页和类型过滤\nrequired: user_id\noptional: page, page_size, types, tags, categories",
         "operationId": "LearningService_ListMemoriesForReview",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1ListMemoriesForReviewResponse"
+              "$ref": "#/definitions/v1LearningServiceListMemoriesForReviewResponse"
             }
           },
           "default": {
@@ -686,7 +683,7 @@
           },
           {
             "name": "types",
-            "description": "可选的记忆单元类型过滤\n\n - MEMORY_UNIT_TYPE_HAN_CHAR: 汉字\n - MEMORY_UNIT_TYPE_WORD: 单词",
+            "description": "可选的记忆单元类型过滤\n\n - MEMORY_UNIT_TYPE_HAN_CHAR: 汉字\n - MEMORY_UNIT_TYPE_WORD: 单词\n - MEMORY_UNIT_TYPE_PHRASE: 词组\n - MEMORY_UNIT_TYPE_SENTENCE: 句子",
             "in": "query",
             "required": false,
             "type": "array",
@@ -695,7 +692,9 @@
               "enum": [
                 "MEMORY_UNIT_TYPE_UNSPECIFIED",
                 "MEMORY_UNIT_TYPE_HAN_CHAR",
-                "MEMORY_UNIT_TYPE_WORD"
+                "MEMORY_UNIT_TYPE_WORD",
+                "MEMORY_UNIT_TYPE_PHRASE",
+                "MEMORY_UNIT_TYPE_SENTENCE"
               ]
             },
             "collectionFormat": "multi"
@@ -726,17 +725,48 @@
         "tags": [
           "LearningService"
         ]
+      },
+      "post": {
+        "summary": "name: 复习记忆单元\nsummary: 提交记忆单元的复习结果，系统会根据复习结果更新记忆状态和下次复习时间\nrequired: user_id, items",
+        "operationId": "LearningService_ReviewMemoryUnits",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1LearningServiceReviewMemoryUnitsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1LearningServiceReviewMemoryUnitsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "LearningService"
+        ]
       }
     },
     "/api/v1/learning/memories/stats": {
       "get": {
-        "summary": "获取记忆单元学习统计",
+        "summary": "name: 获取记忆单元学习统计\nsummary: 获取记忆单元的学习统计信息，包括已学习数量、掌握数量、需要复习数量等\nrequired: user_id\noptional: type, tag, category",
         "operationId": "LearningService_GetMemoryStats",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1GetMemoryStatsResponse"
+              "$ref": "#/definitions/v1LearningServiceGetMemoryStatsResponse"
             }
           },
           "default": {
@@ -749,14 +779,16 @@
         "parameters": [
           {
             "name": "type",
-            "description": "可选的记忆单元类型过滤\n\n - MEMORY_UNIT_TYPE_HAN_CHAR: 汉字\n - MEMORY_UNIT_TYPE_WORD: 单词",
+            "description": "可选的记忆单元类型过滤\n\n - MEMORY_UNIT_TYPE_HAN_CHAR: 汉字\n - MEMORY_UNIT_TYPE_WORD: 单词\n - MEMORY_UNIT_TYPE_PHRASE: 词组\n - MEMORY_UNIT_TYPE_SENTENCE: 句子",
             "in": "query",
             "required": false,
             "type": "string",
             "enum": [
               "MEMORY_UNIT_TYPE_UNSPECIFIED",
               "MEMORY_UNIT_TYPE_HAN_CHAR",
-              "MEMORY_UNIT_TYPE_WORD"
+              "MEMORY_UNIT_TYPE_WORD",
+              "MEMORY_UNIT_TYPE_PHRASE",
+              "MEMORY_UNIT_TYPE_SENTENCE"
             ],
             "default": "MEMORY_UNIT_TYPE_UNSPECIFIED"
           },
@@ -780,79 +812,9 @@
         ]
       }
     },
-    "/api/v1/learning/memories/{memoryUnitId}/status": {
-      "get": {
-        "summary": "获取记忆单元状态",
-        "operationId": "LearningService_GetMemoryStatus",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1GetMemoryStatusResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "memoryUnitId",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "format": "int64"
-          }
-        ],
-        "tags": [
-          "LearningService"
-        ]
-      },
-      "put": {
-        "summary": "更新记忆单元状态",
-        "operationId": "LearningService_UpdateMemoryStatus",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1UpdateMemoryStatusResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "memoryUnitId",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/LearningServiceUpdateMemoryStatusBody"
-            }
-          }
-        ],
-        "tags": [
-          "LearningService"
-        ]
-      }
-    },
     "/api/v1/learning/sections/{sectionId}/progress": {
       "get": {
-        "summary": "GetSectionProgress 获取章节学习进度",
+        "summary": "name: 获取章节学习进度\nsummary: 获取指定章节的学习进度信息，包括章节进度、已完成单元列表等\nrequired: section_id",
         "operationId": "LearningService_GetSectionProgress",
         "responses": {
           "200": {
@@ -884,7 +846,7 @@
     },
     "/api/v1/learning/units/{unitId}/progress": {
       "put": {
-        "summary": "UpdateUnitProgress 更新单元学习进度",
+        "summary": "name: 更新单元学习进度\nsummary: 更新指定单元的学习进度状态，标记单元是否完成\nrequired: unit_id, section_id, completed",
         "operationId": "LearningService_UpdateUnitProgress",
         "responses": {
           "200": {
@@ -922,42 +884,10 @@
         ]
       }
     },
-    "/api/v1/learning/words/review": {
-      "post": {
-        "summary": "复习单词",
-        "operationId": "LearningService_ReviewWord",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1ReviewWordResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/v1ReviewWordRequest"
-            }
-          }
-        ],
-        "tags": [
-          "LearningService"
-        ]
-      }
-    },
     "/api/v1/question-tags": {
       "get": {
-        "operationId": "QuestionTagService_ListTag",
+        "summary": "标签相关接口",
+        "operationId": "QuestionService_ListTag",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -975,6 +905,7 @@
         "parameters": [
           {
             "name": "topN",
+            "description": "获取前N个标签",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -982,11 +913,11 @@
           }
         ],
         "tags": [
-          "QuestionTagService"
+          "QuestionService"
         ]
       },
       "post": {
-        "operationId": "QuestionTagService_CreateTag",
+        "operationId": "QuestionService_CreateTag",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -1012,13 +943,13 @@
           }
         ],
         "tags": [
-          "QuestionTagService"
+          "QuestionService"
         ]
       }
     },
     "/api/v1/question-tags/{name}": {
       "delete": {
-        "operationId": "QuestionTagService_DeleteTag",
+        "operationId": "QuestionService_DeleteTag",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -1036,17 +967,18 @@
         "parameters": [
           {
             "name": "name",
+            "description": "标签名",
             "in": "path",
             "required": true,
             "type": "string"
           }
         ],
         "tags": [
-          "QuestionTagService"
+          "QuestionService"
         ]
       },
       "put": {
-        "operationId": "QuestionTagService_UpdateTag",
+        "operationId": "QuestionService_UpdateTag",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -1064,6 +996,7 @@
         "parameters": [
           {
             "name": "name",
+            "description": "标签名",
             "in": "path",
             "required": true,
             "type": "string"
@@ -1073,12 +1006,12 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/QuestionTagServiceUpdateTagBody"
+              "$ref": "#/definitions/QuestionServiceUpdateTagBody"
             }
           }
         ],
         "tags": [
-          "QuestionTagService"
+          "QuestionService"
         ]
       }
     },
@@ -2144,6 +2077,88 @@
           "VocabularyService"
         ]
       }
+    },
+    "/v1/learning/han_chars/test": {
+      "get": {
+        "summary": "name: 获取汉字测试\nsummary: 获取汉字测试内容，支持指定测试数量和难度等级\nrequired: count, difficulty_level",
+        "operationId": "LearningService_GetHanCharTest",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1LearningServiceGetHanCharTestResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "count",
+            "description": "测试数量",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "difficultyLevel",
+            "description": "难度等级（1-5，数字越大难度越高）",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "LearningService"
+        ]
+      }
+    },
+    "/v1/learning/words/test": {
+      "get": {
+        "summary": "name: 获取单词测试\nsummary: 获取单词测试内容，支持指定测试数量和难度等级\nrequired: count, difficulty_level",
+        "operationId": "LearningService_GetWordTest",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1LearningServiceGetWordTestResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "count",
+            "description": "测试数量",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "difficultyLevel",
+            "description": "难度等级（1-5）",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "LearningService"
+        ]
+      }
     }
   },
   "definitions": {
@@ -2242,24 +2257,6 @@
         }
       }
     },
-    "LearningServiceUpdateMemoryStatusBody": {
-      "type": "object",
-      "properties": {
-        "masteryLevel": {
-          "$ref": "#/definitions/v1MasteryLevel"
-        },
-        "notes": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "studyDuration": {
-          "type": "integer",
-          "format": "int64"
-        }
-      }
-    },
     "LearningServiceUpdateUnitProgressBody": {
       "type": "object",
       "properties": {
@@ -2275,14 +2272,16 @@
       },
       "title": "UpdateLearningUnitProgressRequest 更新单元进度请求"
     },
-    "QuestionTagServiceUpdateTagBody": {
+    "QuestionServiceUpdateTagBody": {
       "type": "object",
       "properties": {
         "weight": {
           "type": "integer",
-          "format": "int64"
+          "format": "int64",
+          "title": "标签权重"
         }
-      }
+      },
+      "title": "QuestionTagServiceUpdateTagRequest 更新标签服务请求"
     },
     "protobufAny": {
       "type": "object",
@@ -3121,55 +3120,6 @@
       "default": "COURSE_STATUS_UNSPECIFIED",
       "title": "CourseStatus 课程状态"
     },
-    "v1GetMemoryStatsResponse": {
-      "type": "object",
-      "properties": {
-        "totalLearned": {
-          "type": "integer",
-          "format": "int64",
-          "title": "已学习总数"
-        },
-        "masteredCount": {
-          "type": "integer",
-          "format": "int64",
-          "title": "已掌握数量"
-        },
-        "needReviewCount": {
-          "type": "integer",
-          "format": "int64",
-          "title": "需要复习数量"
-        },
-        "totalStudyTime": {
-          "type": "integer",
-          "format": "int64",
-          "title": "总学习时长（秒）"
-        },
-        "levelStats": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "title": "各掌握程度统计"
-        },
-        "retentionRates": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "number",
-            "format": "float"
-          },
-          "title": "各类型记忆保持率"
-        }
-      }
-    },
-    "v1GetMemoryStatusResponse": {
-      "type": "object",
-      "properties": {
-        "status": {
-          "$ref": "#/definitions/v1MemoryUnit"
-        }
-      }
-    },
     "v1GetUserInfoResponse": {
       "type": "object",
       "properties": {
@@ -3285,6 +3235,61 @@
       },
       "title": "GetLearningCourseProgressResponse 获取课程进度响应"
     },
+    "v1LearningServiceGetHanCharTestResponse": {
+      "type": "object",
+      "properties": {
+        "hanChars": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1HanChar"
+          },
+          "title": "测试汉字列表"
+        }
+      },
+      "title": "获取汉字测试响应"
+    },
+    "v1LearningServiceGetMemoryStatsResponse": {
+      "type": "object",
+      "properties": {
+        "totalLearned": {
+          "type": "integer",
+          "format": "int64",
+          "title": "已学习总数"
+        },
+        "masteredCount": {
+          "type": "integer",
+          "format": "int64",
+          "title": "已掌握数量"
+        },
+        "needReviewCount": {
+          "type": "integer",
+          "format": "int64",
+          "title": "需要复习数量"
+        },
+        "totalStudyTime": {
+          "type": "integer",
+          "format": "int64",
+          "title": "总学习时长（秒）"
+        },
+        "levelStats": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "title": "各掌握程度统计"
+        },
+        "retentionRates": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number",
+            "format": "float"
+          },
+          "title": "各类型记忆保持率"
+        }
+      }
+    },
     "v1LearningServiceGetSectionProgressResponse": {
       "type": "object",
       "properties": {
@@ -3302,14 +3307,52 @@
       },
       "title": "GetLearningSectionProgressResponse 获取章节进度响应"
     },
-    "v1LearningServiceUpdateUnitProgressResponse": {
-      "type": "object",
-      "title": "UpdateLearningUnitProgressResponse 更新单元进度响应"
-    },
-    "v1ListMemoriesForReviewResponse": {
+    "v1LearningServiceGetWordTestResponse": {
       "type": "object",
       "properties": {
-        "statuses": {
+        "words": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Word"
+          },
+          "title": "测试单词列表"
+        }
+      },
+      "title": "获取单词测试响应"
+    },
+    "v1LearningServiceInitializeMemoryUnitRequest": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1LearningServiceMemoryUnitInitItem"
+          },
+          "title": "批量初始化项"
+        }
+      },
+      "title": "初始化记忆单元请求"
+    },
+    "v1LearningServiceInitializeMemoryUnitResponse": {
+      "type": "object",
+      "properties": {
+        "memoryUnitIds": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "title": "批量初始化结果"
+        }
+      },
+      "title": "初始化记忆单元响应"
+    },
+    "v1LearningServiceListMemoriesForReviewResponse": {
+      "type": "object",
+      "properties": {
+        "memoryUnits": {
           "type": "array",
           "items": {
             "type": "object",
@@ -3320,7 +3363,74 @@
           "type": "integer",
           "format": "int64"
         }
-      }
+      },
+      "title": "获取需要复习的记忆单元列表响应"
+    },
+    "v1LearningServiceMemoryUnitInitItem": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/v1MemoryUnitType",
+          "title": "记忆单元类型"
+        },
+        "contentId": {
+          "type": "integer",
+          "format": "int64",
+          "title": "内容ID"
+        },
+        "masteryLevel": {
+          "$ref": "#/definitions/v1MasteryLevel",
+          "title": "掌握程度"
+        },
+        "learningDuration": {
+          "type": "integer",
+          "format": "int64",
+          "title": "学习时长（秒）"
+        }
+      },
+      "title": "单个记忆单元初始化项"
+    },
+    "v1LearningServiceMemoryUnitReviewItem": {
+      "type": "object",
+      "properties": {
+        "memoryUnitId": {
+          "type": "integer",
+          "format": "int64",
+          "title": "记忆单元ID"
+        },
+        "result": {
+          "$ref": "#/definitions/v1ReviewResult",
+          "title": "复习结果"
+        },
+        "reviewDuration": {
+          "type": "integer",
+          "format": "int64",
+          "title": "复习时长（秒）"
+        }
+      },
+      "title": "单个记忆单元复习项"
+    },
+    "v1LearningServiceReviewMemoryUnitsRequest": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1LearningServiceMemoryUnitReviewItem"
+          },
+          "title": "批量复习项"
+        }
+      },
+      "title": "复习记忆单元请求"
+    },
+    "v1LearningServiceReviewMemoryUnitsResponse": {
+      "type": "object",
+      "title": "复习记忆单元响应"
+    },
+    "v1LearningServiceUpdateUnitProgressResponse": {
+      "type": "object",
+      "title": "UpdateLearningUnitProgressResponse 更新单元进度响应"
     },
     "v1LoginRequest": {
       "type": "object",
@@ -3375,11 +3485,6 @@
           "format": "int64",
           "title": "记忆单元ID"
         },
-        "userId": {
-          "type": "integer",
-          "format": "int64",
-          "title": "用户ID"
-        },
         "type": {
           "$ref": "#/definitions/v1MemoryUnitType",
           "title": "记忆单元类型"
@@ -3388,16 +3493,6 @@
           "type": "integer",
           "format": "int64",
           "title": "内容ID（对应汉字ID、单词ID等）"
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time",
-          "title": "创建时间"
-        },
-        "updatedAt": {
-          "type": "string",
-          "format": "date-time",
-          "title": "更新时间"
         },
         "masteryLevel": {
           "$ref": "#/definitions/v1MasteryLevel",
@@ -3422,7 +3517,7 @@
         "studyDuration": {
           "type": "integer",
           "format": "int64",
-          "title": "学习时长（秒）"
+          "title": "学习时长（分钟）"
         },
         "retentionRate": {
           "type": "number",
@@ -3447,10 +3542,12 @@
       "enum": [
         "MEMORY_UNIT_TYPE_UNSPECIFIED",
         "MEMORY_UNIT_TYPE_HAN_CHAR",
-        "MEMORY_UNIT_TYPE_WORD"
+        "MEMORY_UNIT_TYPE_WORD",
+        "MEMORY_UNIT_TYPE_PHRASE",
+        "MEMORY_UNIT_TYPE_SENTENCE"
       ],
       "default": "MEMORY_UNIT_TYPE_UNSPECIFIED",
-      "description": "- MEMORY_UNIT_TYPE_HAN_CHAR: 汉字\n - MEMORY_UNIT_TYPE_WORD: 单词",
+      "description": "- MEMORY_UNIT_TYPE_HAN_CHAR: 汉字\n - MEMORY_UNIT_TYPE_WORD: 单词\n - MEMORY_UNIT_TYPE_PHRASE: 词组\n - MEMORY_UNIT_TYPE_SENTENCE: 句子",
       "title": "MemoryUnitType 记忆单元类型"
     },
     "v1PracticeRequest": {
@@ -3582,7 +3679,8 @@
           "title": "时间限制, 单位秒"
         }
       },
-      "title": "用法:\n 1. 听声音选图片类型, 前端可自动打乱选项顺序, 然后播放音频, 用户选择图片, 这里不再依赖答案字段\n 2. 普通选择题的选项, 题目的答案在 answers 字段, 一般是选项在返回数组中的索引, 这里的选项既可以来源于数据库, 也可以是后端动态生成给前端的\n 3. 匹配题的选项, 这里应该存在多种用法, \n   a. 本身选项都是正确, 前端自行打乱顺序, 生成两组选项供用户匹配, 这时不依赖 answers 字段\n 4. 排序题的选项, 题目的答案在 answers 字段, 答案是正确的顺序\n 5. 听写题的选项, 每一个选项是一个听写单元, 不信赖 answer 字段"
+      "description": "用法:\n 1. 听声音选图片类型, 前端可自动打乱选项顺序, 然后播放音频, 用户选择图片, 这里不再依赖答案字段\n 2. 普通选择题的选项, 题目的答案在 answers 字段, 一般是选项在返回数组中的索引, 这里的选项既可以来源于数据库, 也可以是后端动态生成给前端的\n 3. 匹配题的选项, 这里应该存在多种用法, \n   a. 本身选项都是正确, 前端自行打乱顺序, 生成两组选项供用户匹配, 这时不依赖 answers 字段\n 4. 排序题的选项, 题目的答案在 answers 字段, 答案是正确的顺序\n 5. 听写题的选项, 每一个选项是一个听写单元, 不信赖 answer 字段",
+      "title": "Question 题目"
     },
     "v1QuestionCategory": {
       "type": "string",
@@ -3613,8 +3711,8 @@
         "QUESTION_DIFFICULTY_LEVEL_HSK_6"
       ],
       "default": "QUESTION_DIFFICULTY_LEVEL_UNSPECIFIED",
-      "description": "入门级\n - QUESTION_DIFFICULTY_LEVEL_CEFR_A2: 基础级\n - QUESTION_DIFFICULTY_LEVEL_CEFR_B1: 进阶级\n - QUESTION_DIFFICULTY_LEVEL_CEFR_B2: 高阶级\n - QUESTION_DIFFICULTY_LEVEL_CEFR_C1: 熟练级\n - QUESTION_DIFFICULTY_LEVEL_CEFR_C2: 精通级\n - QUESTION_DIFFICULTY_LEVEL_HSK_1: HSK 等级\n\n入门级\n - QUESTION_DIFFICULTY_LEVEL_HSK_2: 基础级\n - QUESTION_DIFFICULTY_LEVEL_HSK_3: 进阶级\n - QUESTION_DIFFICULTY_LEVEL_HSK_4: 中高级\n - QUESTION_DIFFICULTY_LEVEL_HSK_5: 高级\n - QUESTION_DIFFICULTY_LEVEL_HSK_6: 精通级",
-      "title": "- QUESTION_DIFFICULTY_LEVEL_UNSPECIFIED: 未指定难度，用于处理未知的新难度级别，客户端应该显示为\"未知难度\"\n - QUESTION_DIFFICULTY_LEVEL_CEFR_A1: CEFR 等级"
+      "description": "- QUESTION_DIFFICULTY_LEVEL_UNSPECIFIED: 未指定难度，用于处理未知的新难度级别，客户端应该显示为\"未知难度\"\n - QUESTION_DIFFICULTY_LEVEL_CEFR_A1: CEFR 等级\n\n入门级\n - QUESTION_DIFFICULTY_LEVEL_CEFR_A2: 基础级\n - QUESTION_DIFFICULTY_LEVEL_CEFR_B1: 进阶级\n - QUESTION_DIFFICULTY_LEVEL_CEFR_B2: 高阶级\n - QUESTION_DIFFICULTY_LEVEL_CEFR_C1: 熟练级\n - QUESTION_DIFFICULTY_LEVEL_CEFR_C2: 精通级\n - QUESTION_DIFFICULTY_LEVEL_HSK_1: HSK 等级\n\n入门级\n - QUESTION_DIFFICULTY_LEVEL_HSK_2: 基础级\n - QUESTION_DIFFICULTY_LEVEL_HSK_3: 进阶级\n - QUESTION_DIFFICULTY_LEVEL_HSK_4: 中高级\n - QUESTION_DIFFICULTY_LEVEL_HSK_5: 高级\n - QUESTION_DIFFICULTY_LEVEL_HSK_6: 精通级",
+      "title": "QuestionDifficultyLevel 难度等级"
     },
     "v1QuestionOption": {
       "type": "object",
@@ -3737,7 +3835,8 @@
           "format": "int64",
           "title": "时间限制, 单位秒"
         }
-      }
+      },
+      "title": "QuestionServiceCreateRequest 创建题目请求"
     },
     "v1QuestionServiceCreateResponse": {
       "type": "object",
@@ -3747,10 +3846,12 @@
           "format": "uint64",
           "title": "创建成功后返回题目ID"
         }
-      }
+      },
+      "title": "QuestionServiceCreateResponse 创建题目响应"
     },
     "v1QuestionServiceDeleteResponse": {
-      "type": "object"
+      "type": "object",
+      "title": "QuestionServiceDeleteResponse 删除题目响应"
     },
     "v1QuestionServiceGetResponse": {
       "type": "object",
@@ -3760,12 +3861,15 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/v1Question"
-          }
+          },
+          "title": "题目列表"
         }
-      }
+      },
+      "title": "QuestionServiceGetResponse 获取题目响应"
     },
     "v1QuestionServicePublishResponse": {
-      "type": "object"
+      "type": "object",
+      "title": "QuestionServicePublishResponse 发布题目响应"
     },
     "v1QuestionServiceSearchResponse": {
       "type": "object",
@@ -3783,7 +3887,8 @@
           "format": "int64",
           "title": "总数"
         }
-      }
+      },
+      "title": "QuestionServiceSearchResponse 搜索题目响应"
     },
     "v1QuestionServiceUpdateBody": {
       "type": "object",
@@ -3862,10 +3967,12 @@
           "format": "int64",
           "title": "时间限制, 单位秒"
         }
-      }
+      },
+      "title": "QuestionServiceUpdateRequest 更新题目请求"
     },
     "v1QuestionServiceUpdateResponse": {
-      "type": "object"
+      "type": "object",
+      "title": "QuestionServiceUpdateResponse 更新题目响应"
     },
     "v1QuestionStatus": {
       "type": "string",
@@ -3894,15 +4001,19 @@
       "type": "object",
       "properties": {
         "name": {
-          "type": "string"
+          "type": "string",
+          "title": "标签名"
         }
-      }
+      },
+      "title": "QuestionTagServiceCreateTagRequest 创建标签服务请求"
     },
     "v1QuestionTagServiceCreateTagResponse": {
-      "type": "object"
+      "type": "object",
+      "title": "QuestionTagServiceCreateTagResponse 创建标签服务响应"
     },
     "v1QuestionTagServiceDeleteTagResponse": {
-      "type": "object"
+      "type": "object",
+      "title": "QuestionTagServiceDeleteTagResponse 删除标签服务响应"
     },
     "v1QuestionTagServiceListTagResponse": {
       "type": "object",
@@ -3912,12 +4023,15 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/v1QuestionTag"
-          }
+          },
+          "title": "标签列表"
         }
-      }
+      },
+      "title": "QuestionTagServiceListTagResponse 获取标签服务列表响应"
     },
     "v1QuestionTagServiceUpdateTagResponse": {
-      "type": "object"
+      "type": "object",
+      "title": "QuestionTagServiceUpdateTagResponse 更新标签服务响应"
     },
     "v1QuestionType": {
       "type": "string",
@@ -4030,31 +4144,6 @@
       "type": "object",
       "title": "ResetPasswordResponse 重置密码响应"
     },
-    "v1ReviewHanCharRequest": {
-      "type": "object",
-      "properties": {
-        "hanCharId": {
-          "type": "integer",
-          "format": "int64",
-          "title": "汉字ID (对应 MemoryUnit 的 ContentID)"
-        },
-        "result": {
-          "$ref": "#/definitions/v1ReviewResult",
-          "title": "复习结果"
-        },
-        "responseTime": {
-          "type": "integer",
-          "format": "int64",
-          "title": "响应时间（毫秒）"
-        }
-      },
-      "title": "ReviewHanCharRequest 复习汉字请求"
-    },
-    "v1ReviewHanCharResponse": {
-      "type": "object",
-      "description": "可以考虑返回更新后的 MemoryUnit 状态\n MemoryUnit updated_status = 1;",
-      "title": "ReviewHanCharResponse 复习汉字响应"
-    },
     "v1ReviewResult": {
       "type": "string",
       "enum": [
@@ -4066,31 +4155,6 @@
       "default": "REVIEW_RESULT_UNSPECIFIED",
       "description": "- REVIEW_RESULT_UNSPECIFIED: 未指定\n - REVIEW_RESULT_CORRECT: 正确\n - REVIEW_RESULT_WRONG: 错误\n - REVIEW_RESULT_SKIP: 跳过",
       "title": "ReviewResult 复习结果"
-    },
-    "v1ReviewWordRequest": {
-      "type": "object",
-      "properties": {
-        "wordId": {
-          "type": "integer",
-          "format": "int64",
-          "title": "单词ID (对应 MemoryUnit 的 ContentID)"
-        },
-        "result": {
-          "$ref": "#/definitions/v1ReviewResult",
-          "title": "复习结果"
-        },
-        "responseTime": {
-          "type": "integer",
-          "format": "int64",
-          "title": "响应时间（毫秒）"
-        }
-      },
-      "title": "ReviewWordRequest 复习单词请求"
-    },
-    "v1ReviewWordResponse": {
-      "type": "object",
-      "description": "可以考虑返回更新后的 MemoryUnit 状态\n MemoryUnit updated_status = 1;",
-      "title": "ReviewWordResponse 复习单词响应"
     },
     "v1SimpleCourse": {
       "type": "object",
@@ -4187,9 +4251,6 @@
       "default": "SUB_QUESTION_TYPE_UNSPECIFIED",
       "description": "- SUB_QUESTION_TYPE_UNSPECIFIED: 未指定\n - SUB_QUESTION_TYPE_SINGLE_CHOICE: 单选题",
       "title": "SubQuestionType 子问题类型"
-    },
-    "v1UpdateMemoryStatusResponse": {
-      "type": "object"
     },
     "v1UpdateUserInfoRequest": {
       "type": "object",

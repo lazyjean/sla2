@@ -444,16 +444,10 @@ func (s *UserService) LoginWithApple(ctx context.Context, appleToken string) (st
 // Logout handles user logout
 func (s *UserService) Logout(ctx context.Context, req *dto.LogoutRequest) (*dto.LogoutResponse, error) {
 	// Get user ID from context
-	userID, err := utils.GetUserIDFromContext(ctx)
+	_, err := utils.GetUserIDFromContext(ctx)
 	if err != nil {
 		return nil, err
 	}
-
-	// Log the logout action
-	log := logger.GetLogger(ctx)
-	log.Info("User logged out",
-		zap.Int64("user_id", int64(userID)),
-	)
 
 	return &dto.LogoutResponse{}, nil
 }
