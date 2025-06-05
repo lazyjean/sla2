@@ -193,6 +193,1180 @@ func (ReviewResult) EnumDescriptor() ([]byte, []int) {
 	return file_proto_v1_learning_proto_rawDescGZIP(), []int{2}
 }
 
+// LearningProgress 学习进度基础信息
+type LearningProgress struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Progress       float32                `protobuf:"fixed32,1,opt,name=progress,proto3" json:"progress,omitempty"`                                  // 进度百分比 0-100
+	CompletedItems uint32                 `protobuf:"varint,2,opt,name=completed_items,json=completedItems,proto3" json:"completed_items,omitempty"` // 已完成项目数
+	TotalItems     uint32                 `protobuf:"varint,3,opt,name=total_items,json=totalItems,proto3" json:"total_items,omitempty"`             // 总项目数
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *LearningProgress) Reset() {
+	*x = LearningProgress{}
+	mi := &file_proto_v1_learning_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearningProgress) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearningProgress) ProtoMessage() {}
+
+func (x *LearningProgress) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LearningProgress.ProtoReflect.Descriptor instead.
+func (*LearningProgress) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *LearningProgress) GetProgress() float32 {
+	if x != nil {
+		return x.Progress
+	}
+	return 0
+}
+
+func (x *LearningProgress) GetCompletedItems() uint32 {
+	if x != nil {
+		return x.CompletedItems
+	}
+	return 0
+}
+
+func (x *LearningProgress) GetTotalItems() uint32 {
+	if x != nil {
+		return x.TotalItems
+	}
+	return 0
+}
+
+// 汉字测试结果
+type LearningServiceHanCharTestResult struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 汉字ID
+	HanCharId uint32 `protobuf:"varint,1,opt,name=han_char_id,json=hanCharId,proto3" json:"han_char_id,omitempty"`
+	// 是否认识
+	IsRecognized  bool `protobuf:"varint,2,opt,name=is_recognized,json=isRecognized,proto3" json:"is_recognized,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LearningServiceHanCharTestResult) Reset() {
+	*x = LearningServiceHanCharTestResult{}
+	mi := &file_proto_v1_learning_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearningServiceHanCharTestResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearningServiceHanCharTestResult) ProtoMessage() {}
+
+func (x *LearningServiceHanCharTestResult) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LearningServiceHanCharTestResult.ProtoReflect.Descriptor instead.
+func (*LearningServiceHanCharTestResult) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *LearningServiceHanCharTestResult) GetHanCharId() uint32 {
+	if x != nil {
+		return x.HanCharId
+	}
+	return 0
+}
+
+func (x *LearningServiceHanCharTestResult) GetIsRecognized() bool {
+	if x != nil {
+		return x.IsRecognized
+	}
+	return false
+}
+
+// GetLearningCourseProgressRequest 获取课程进度请求
+type LearningServiceGetCourseProgressRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CourseId      uint32                 `protobuf:"varint,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LearningServiceGetCourseProgressRequest) Reset() {
+	*x = LearningServiceGetCourseProgressRequest{}
+	mi := &file_proto_v1_learning_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearningServiceGetCourseProgressRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearningServiceGetCourseProgressRequest) ProtoMessage() {}
+
+func (x *LearningServiceGetCourseProgressRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LearningServiceGetCourseProgressRequest.ProtoReflect.Descriptor instead.
+func (*LearningServiceGetCourseProgressRequest) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *LearningServiceGetCourseProgressRequest) GetCourseId() uint32 {
+	if x != nil {
+		return x.CourseId
+	}
+	return 0
+}
+
+// GetLearningCourseProgressResponse 获取课程进度响应
+type LearningServiceGetCourseProgressResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Progress      *LearningProgress      `protobuf:"bytes,1,opt,name=progress,proto3" json:"progress,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LearningServiceGetCourseProgressResponse) Reset() {
+	*x = LearningServiceGetCourseProgressResponse{}
+	mi := &file_proto_v1_learning_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearningServiceGetCourseProgressResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearningServiceGetCourseProgressResponse) ProtoMessage() {}
+
+func (x *LearningServiceGetCourseProgressResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LearningServiceGetCourseProgressResponse.ProtoReflect.Descriptor instead.
+func (*LearningServiceGetCourseProgressResponse) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *LearningServiceGetCourseProgressResponse) GetProgress() *LearningProgress {
+	if x != nil {
+		return x.Progress
+	}
+	return nil
+}
+
+// GetLearningSectionProgressRequest 获取章节进度请求
+type LearningServiceGetSectionProgressRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SectionId     uint32                 `protobuf:"varint,1,opt,name=section_id,json=sectionId,proto3" json:"section_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LearningServiceGetSectionProgressRequest) Reset() {
+	*x = LearningServiceGetSectionProgressRequest{}
+	mi := &file_proto_v1_learning_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearningServiceGetSectionProgressRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearningServiceGetSectionProgressRequest) ProtoMessage() {}
+
+func (x *LearningServiceGetSectionProgressRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LearningServiceGetSectionProgressRequest.ProtoReflect.Descriptor instead.
+func (*LearningServiceGetSectionProgressRequest) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *LearningServiceGetSectionProgressRequest) GetSectionId() uint32 {
+	if x != nil {
+		return x.SectionId
+	}
+	return 0
+}
+
+// GetLearningSectionProgressResponse 获取章节进度响应
+type LearningServiceGetSectionProgressResponse struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	Progress         *LearningProgress      `protobuf:"bytes,1,opt,name=progress,proto3" json:"progress,omitempty"`
+	CompletedUnitIds []uint32               `protobuf:"varint,2,rep,packed,name=completed_unit_ids,json=completedUnitIds,proto3" json:"completed_unit_ids,omitempty"` // 已完成的单元ID列表
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *LearningServiceGetSectionProgressResponse) Reset() {
+	*x = LearningServiceGetSectionProgressResponse{}
+	mi := &file_proto_v1_learning_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearningServiceGetSectionProgressResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearningServiceGetSectionProgressResponse) ProtoMessage() {}
+
+func (x *LearningServiceGetSectionProgressResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LearningServiceGetSectionProgressResponse.ProtoReflect.Descriptor instead.
+func (*LearningServiceGetSectionProgressResponse) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *LearningServiceGetSectionProgressResponse) GetProgress() *LearningProgress {
+	if x != nil {
+		return x.Progress
+	}
+	return nil
+}
+
+func (x *LearningServiceGetSectionProgressResponse) GetCompletedUnitIds() []uint32 {
+	if x != nil {
+		return x.CompletedUnitIds
+	}
+	return nil
+}
+
+// UpdateLearningUnitProgressRequest 更新单元进度请求
+type LearningServiceUpdateUnitProgressRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UnitId        uint32                 `protobuf:"varint,1,opt,name=unit_id,json=unitId,proto3" json:"unit_id,omitempty"`
+	SectionId     uint32                 `protobuf:"varint,2,opt,name=section_id,json=sectionId,proto3" json:"section_id,omitempty"` // 单元所属的章节ID
+	Completed     bool                   `protobuf:"varint,3,opt,name=completed,proto3" json:"completed,omitempty"`                  // 是否完成
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LearningServiceUpdateUnitProgressRequest) Reset() {
+	*x = LearningServiceUpdateUnitProgressRequest{}
+	mi := &file_proto_v1_learning_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearningServiceUpdateUnitProgressRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearningServiceUpdateUnitProgressRequest) ProtoMessage() {}
+
+func (x *LearningServiceUpdateUnitProgressRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LearningServiceUpdateUnitProgressRequest.ProtoReflect.Descriptor instead.
+func (*LearningServiceUpdateUnitProgressRequest) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *LearningServiceUpdateUnitProgressRequest) GetUnitId() uint32 {
+	if x != nil {
+		return x.UnitId
+	}
+	return 0
+}
+
+func (x *LearningServiceUpdateUnitProgressRequest) GetSectionId() uint32 {
+	if x != nil {
+		return x.SectionId
+	}
+	return 0
+}
+
+func (x *LearningServiceUpdateUnitProgressRequest) GetCompleted() bool {
+	if x != nil {
+		return x.Completed
+	}
+	return false
+}
+
+// UpdateLearningUnitProgressResponse 更新单元进度响应
+type LearningServiceUpdateUnitProgressResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LearningServiceUpdateUnitProgressResponse) Reset() {
+	*x = LearningServiceUpdateUnitProgressResponse{}
+	mi := &file_proto_v1_learning_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearningServiceUpdateUnitProgressResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearningServiceUpdateUnitProgressResponse) ProtoMessage() {}
+
+func (x *LearningServiceUpdateUnitProgressResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LearningServiceUpdateUnitProgressResponse.ProtoReflect.Descriptor instead.
+func (*LearningServiceUpdateUnitProgressResponse) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{7}
+}
+
+// 获取汉字测试请求
+type LearningServiceGetHanCharTestRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 测试数量
+	Count int32 `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
+	// 难度等级（1-5，数字越大难度越高）
+	DifficultyLevel int32 `protobuf:"varint,2,opt,name=difficulty_level,json=difficultyLevel,proto3" json:"difficulty_level,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *LearningServiceGetHanCharTestRequest) Reset() {
+	*x = LearningServiceGetHanCharTestRequest{}
+	mi := &file_proto_v1_learning_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearningServiceGetHanCharTestRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearningServiceGetHanCharTestRequest) ProtoMessage() {}
+
+func (x *LearningServiceGetHanCharTestRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LearningServiceGetHanCharTestRequest.ProtoReflect.Descriptor instead.
+func (*LearningServiceGetHanCharTestRequest) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *LearningServiceGetHanCharTestRequest) GetCount() int32 {
+	if x != nil {
+		return x.Count
+	}
+	return 0
+}
+
+func (x *LearningServiceGetHanCharTestRequest) GetDifficultyLevel() int32 {
+	if x != nil {
+		return x.DifficultyLevel
+	}
+	return 0
+}
+
+// 获取汉字测试响应
+type LearningServiceGetHanCharTestResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 测试汉字列表
+	HanChars      []*HanChar `protobuf:"bytes,1,rep,name=han_chars,json=hanChars,proto3" json:"han_chars,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LearningServiceGetHanCharTestResponse) Reset() {
+	*x = LearningServiceGetHanCharTestResponse{}
+	mi := &file_proto_v1_learning_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearningServiceGetHanCharTestResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearningServiceGetHanCharTestResponse) ProtoMessage() {}
+
+func (x *LearningServiceGetHanCharTestResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LearningServiceGetHanCharTestResponse.ProtoReflect.Descriptor instead.
+func (*LearningServiceGetHanCharTestResponse) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *LearningServiceGetHanCharTestResponse) GetHanChars() []*HanChar {
+	if x != nil {
+		return x.HanChars
+	}
+	return nil
+}
+
+// 提交汉字测试结果请求
+type LearningServiceSubmitHanCharTestResultRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 测试结果
+	Results       []*LearningServiceHanCharTestResult `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LearningServiceSubmitHanCharTestResultRequest) Reset() {
+	*x = LearningServiceSubmitHanCharTestResultRequest{}
+	mi := &file_proto_v1_learning_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearningServiceSubmitHanCharTestResultRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearningServiceSubmitHanCharTestResultRequest) ProtoMessage() {}
+
+func (x *LearningServiceSubmitHanCharTestResultRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LearningServiceSubmitHanCharTestResultRequest.ProtoReflect.Descriptor instead.
+func (*LearningServiceSubmitHanCharTestResultRequest) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *LearningServiceSubmitHanCharTestResultRequest) GetResults() []*LearningServiceHanCharTestResult {
+	if x != nil {
+		return x.Results
+	}
+	return nil
+}
+
+// 提交汉字测试结果响应
+type LearningServiceSubmitHanCharTestResultResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LearningServiceSubmitHanCharTestResultResponse) Reset() {
+	*x = LearningServiceSubmitHanCharTestResultResponse{}
+	mi := &file_proto_v1_learning_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearningServiceSubmitHanCharTestResultResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearningServiceSubmitHanCharTestResultResponse) ProtoMessage() {}
+
+func (x *LearningServiceSubmitHanCharTestResultResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LearningServiceSubmitHanCharTestResultResponse.ProtoReflect.Descriptor instead.
+func (*LearningServiceSubmitHanCharTestResultResponse) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{11}
+}
+
+// 获取生字学习内容请求
+type LearningServiceGetNewHanCharLearningRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 学习数量
+	Count         int32 `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LearningServiceGetNewHanCharLearningRequest) Reset() {
+	*x = LearningServiceGetNewHanCharLearningRequest{}
+	mi := &file_proto_v1_learning_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearningServiceGetNewHanCharLearningRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearningServiceGetNewHanCharLearningRequest) ProtoMessage() {}
+
+func (x *LearningServiceGetNewHanCharLearningRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LearningServiceGetNewHanCharLearningRequest.ProtoReflect.Descriptor instead.
+func (*LearningServiceGetNewHanCharLearningRequest) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *LearningServiceGetNewHanCharLearningRequest) GetCount() int32 {
+	if x != nil {
+		return x.Count
+	}
+	return 0
+}
+
+// 获取生字学习内容响应
+type LearningServiceGetNewHanCharLearningResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 学习内容
+	Contents      []*LearningServiceHanCharLearningContent `protobuf:"bytes,1,rep,name=contents,proto3" json:"contents,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LearningServiceGetNewHanCharLearningResponse) Reset() {
+	*x = LearningServiceGetNewHanCharLearningResponse{}
+	mi := &file_proto_v1_learning_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearningServiceGetNewHanCharLearningResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearningServiceGetNewHanCharLearningResponse) ProtoMessage() {}
+
+func (x *LearningServiceGetNewHanCharLearningResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LearningServiceGetNewHanCharLearningResponse.ProtoReflect.Descriptor instead.
+func (*LearningServiceGetNewHanCharLearningResponse) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *LearningServiceGetNewHanCharLearningResponse) GetContents() []*LearningServiceHanCharLearningContent {
+	if x != nil {
+		return x.Contents
+	}
+	return nil
+}
+
+// 汉字学习内容
+type LearningServiceHanCharLearningContent struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 汉字ID
+	HanCharId string `protobuf:"bytes,1,opt,name=han_char_id,json=hanCharId,proto3" json:"han_char_id,omitempty"`
+	// 汉字
+	HanChar string `protobuf:"bytes,2,opt,name=han_char,json=hanChar,proto3" json:"han_char,omitempty"`
+	// 拼音
+	Pinyin string `protobuf:"bytes,3,opt,name=pinyin,proto3" json:"pinyin,omitempty"`
+	// 释义
+	Meaning string `protobuf:"bytes,4,opt,name=meaning,proto3" json:"meaning,omitempty"`
+	// 例句
+	Examples      []string `protobuf:"bytes,5,rep,name=examples,proto3" json:"examples,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LearningServiceHanCharLearningContent) Reset() {
+	*x = LearningServiceHanCharLearningContent{}
+	mi := &file_proto_v1_learning_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearningServiceHanCharLearningContent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearningServiceHanCharLearningContent) ProtoMessage() {}
+
+func (x *LearningServiceHanCharLearningContent) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LearningServiceHanCharLearningContent.ProtoReflect.Descriptor instead.
+func (*LearningServiceHanCharLearningContent) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *LearningServiceHanCharLearningContent) GetHanCharId() string {
+	if x != nil {
+		return x.HanCharId
+	}
+	return ""
+}
+
+func (x *LearningServiceHanCharLearningContent) GetHanChar() string {
+	if x != nil {
+		return x.HanChar
+	}
+	return ""
+}
+
+func (x *LearningServiceHanCharLearningContent) GetPinyin() string {
+	if x != nil {
+		return x.Pinyin
+	}
+	return ""
+}
+
+func (x *LearningServiceHanCharLearningContent) GetMeaning() string {
+	if x != nil {
+		return x.Meaning
+	}
+	return ""
+}
+
+func (x *LearningServiceHanCharLearningContent) GetExamples() []string {
+	if x != nil {
+		return x.Examples
+	}
+	return nil
+}
+
+// 提交生字学习结果请求
+type LearningServiceSubmitNewHanCharLearningResultRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 学习时间
+	LearningTime *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=learning_time,json=learningTime,proto3" json:"learning_time,omitempty"`
+	// 学习时长（分钟）
+	StudyDuration uint32 `protobuf:"varint,2,opt,name=study_duration,json=studyDuration,proto3" json:"study_duration,omitempty"`
+	// 学习结果列表
+	Results       []*LearningServiceHanCharLearningResultItem `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LearningServiceSubmitNewHanCharLearningResultRequest) Reset() {
+	*x = LearningServiceSubmitNewHanCharLearningResultRequest{}
+	mi := &file_proto_v1_learning_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearningServiceSubmitNewHanCharLearningResultRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearningServiceSubmitNewHanCharLearningResultRequest) ProtoMessage() {}
+
+func (x *LearningServiceSubmitNewHanCharLearningResultRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LearningServiceSubmitNewHanCharLearningResultRequest.ProtoReflect.Descriptor instead.
+func (*LearningServiceSubmitNewHanCharLearningResultRequest) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *LearningServiceSubmitNewHanCharLearningResultRequest) GetLearningTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.LearningTime
+	}
+	return nil
+}
+
+func (x *LearningServiceSubmitNewHanCharLearningResultRequest) GetStudyDuration() uint32 {
+	if x != nil {
+		return x.StudyDuration
+	}
+	return 0
+}
+
+func (x *LearningServiceSubmitNewHanCharLearningResultRequest) GetResults() []*LearningServiceHanCharLearningResultItem {
+	if x != nil {
+		return x.Results
+	}
+	return nil
+}
+
+// 单个汉字学习结果项
+type LearningServiceHanCharLearningResultItem struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 生字ID
+	NewHanCharId string `protobuf:"bytes,1,opt,name=new_han_char_id,json=newHanCharId,proto3" json:"new_han_char_id,omitempty"`
+	// 学习结果
+	Result        *LearningServiceHanCharLearningResult `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LearningServiceHanCharLearningResultItem) Reset() {
+	*x = LearningServiceHanCharLearningResultItem{}
+	mi := &file_proto_v1_learning_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearningServiceHanCharLearningResultItem) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearningServiceHanCharLearningResultItem) ProtoMessage() {}
+
+func (x *LearningServiceHanCharLearningResultItem) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LearningServiceHanCharLearningResultItem.ProtoReflect.Descriptor instead.
+func (*LearningServiceHanCharLearningResultItem) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *LearningServiceHanCharLearningResultItem) GetNewHanCharId() string {
+	if x != nil {
+		return x.NewHanCharId
+	}
+	return ""
+}
+
+func (x *LearningServiceHanCharLearningResultItem) GetResult() *LearningServiceHanCharLearningResult {
+	if x != nil {
+		return x.Result
+	}
+	return nil
+}
+
+// 提交生字学习结果响应
+type SubmitNewHanCharLearningResultResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SubmitNewHanCharLearningResultResponse) Reset() {
+	*x = SubmitNewHanCharLearningResultResponse{}
+	mi := &file_proto_v1_learning_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SubmitNewHanCharLearningResultResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SubmitNewHanCharLearningResultResponse) ProtoMessage() {}
+
+func (x *SubmitNewHanCharLearningResultResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SubmitNewHanCharLearningResultResponse.ProtoReflect.Descriptor instead.
+func (*SubmitNewHanCharLearningResultResponse) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{17}
+}
+
+// 汉字学习结果
+type LearningServiceHanCharLearningResult struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 第一次是否做对
+	FirstTryCorrect bool `protobuf:"varint,1,opt,name=first_try_correct,json=firstTryCorrect,proto3" json:"first_try_correct,omitempty"`
+	// 第二次是否做对
+	SecondTryCorrect bool `protobuf:"varint,2,opt,name=second_try_correct,json=secondTryCorrect,proto3" json:"second_try_correct,omitempty"`
+	// 第三次是否做对
+	ThirdTryCorrect bool `protobuf:"varint,3,opt,name=third_try_correct,json=thirdTryCorrect,proto3" json:"third_try_correct,omitempty"`
+	// 最终是否掌握
+	Mastered bool `protobuf:"varint,4,opt,name=mastered,proto3" json:"mastered,omitempty"`
+	// 学习过程中的错误次数
+	ErrorCount uint32 `protobuf:"varint,5,opt,name=error_count,json=errorCount,proto3" json:"error_count,omitempty"`
+	// 学习过程中的正确次数
+	CorrectCount  uint32 `protobuf:"varint,6,opt,name=correct_count,json=correctCount,proto3" json:"correct_count,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LearningServiceHanCharLearningResult) Reset() {
+	*x = LearningServiceHanCharLearningResult{}
+	mi := &file_proto_v1_learning_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearningServiceHanCharLearningResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearningServiceHanCharLearningResult) ProtoMessage() {}
+
+func (x *LearningServiceHanCharLearningResult) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LearningServiceHanCharLearningResult.ProtoReflect.Descriptor instead.
+func (*LearningServiceHanCharLearningResult) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *LearningServiceHanCharLearningResult) GetFirstTryCorrect() bool {
+	if x != nil {
+		return x.FirstTryCorrect
+	}
+	return false
+}
+
+func (x *LearningServiceHanCharLearningResult) GetSecondTryCorrect() bool {
+	if x != nil {
+		return x.SecondTryCorrect
+	}
+	return false
+}
+
+func (x *LearningServiceHanCharLearningResult) GetThirdTryCorrect() bool {
+	if x != nil {
+		return x.ThirdTryCorrect
+	}
+	return false
+}
+
+func (x *LearningServiceHanCharLearningResult) GetMastered() bool {
+	if x != nil {
+		return x.Mastered
+	}
+	return false
+}
+
+func (x *LearningServiceHanCharLearningResult) GetErrorCount() uint32 {
+	if x != nil {
+		return x.ErrorCount
+	}
+	return 0
+}
+
+func (x *LearningServiceHanCharLearningResult) GetCorrectCount() uint32 {
+	if x != nil {
+		return x.CorrectCount
+	}
+	return 0
+}
+
+// 获取单词测试请求
+type LearningServiceGetWordTestRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Count           int32                  `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`                                            // 测试数量
+	DifficultyLevel int32                  `protobuf:"varint,2,opt,name=difficulty_level,json=difficultyLevel,proto3" json:"difficulty_level,omitempty"` // 难度等级（1-5）
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *LearningServiceGetWordTestRequest) Reset() {
+	*x = LearningServiceGetWordTestRequest{}
+	mi := &file_proto_v1_learning_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearningServiceGetWordTestRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearningServiceGetWordTestRequest) ProtoMessage() {}
+
+func (x *LearningServiceGetWordTestRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LearningServiceGetWordTestRequest.ProtoReflect.Descriptor instead.
+func (*LearningServiceGetWordTestRequest) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *LearningServiceGetWordTestRequest) GetCount() int32 {
+	if x != nil {
+		return x.Count
+	}
+	return 0
+}
+
+func (x *LearningServiceGetWordTestRequest) GetDifficultyLevel() int32 {
+	if x != nil {
+		return x.DifficultyLevel
+	}
+	return 0
+}
+
+// 获取单词测试响应
+type LearningServiceGetWordTestResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Words         []*Word                `protobuf:"bytes,1,rep,name=words,proto3" json:"words,omitempty"` // 测试单词列表
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LearningServiceGetWordTestResponse) Reset() {
+	*x = LearningServiceGetWordTestResponse{}
+	mi := &file_proto_v1_learning_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearningServiceGetWordTestResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearningServiceGetWordTestResponse) ProtoMessage() {}
+
+func (x *LearningServiceGetWordTestResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LearningServiceGetWordTestResponse.ProtoReflect.Descriptor instead.
+func (*LearningServiceGetWordTestResponse) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *LearningServiceGetWordTestResponse) GetWords() []*Word {
+	if x != nil {
+		return x.Words
+	}
+	return nil
+}
+
+// 单个记忆单元初始化项
+type LearningServiceMemoryUnitInitItem struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	Type             MemoryUnitType         `protobuf:"varint,1,opt,name=type,proto3,enum=proto.v1.MemoryUnitType" json:"type,omitempty"`                                   // 记忆单元类型
+	ContentId        uint32                 `protobuf:"varint,2,opt,name=content_id,json=contentId,proto3" json:"content_id,omitempty"`                                     // 内容ID
+	MasteryLevel     MasteryLevel           `protobuf:"varint,3,opt,name=mastery_level,json=masteryLevel,proto3,enum=proto.v1.MasteryLevel" json:"mastery_level,omitempty"` // 掌握程度
+	LearningDuration uint32                 `protobuf:"varint,4,opt,name=learning_duration,json=learningDuration,proto3" json:"learning_duration,omitempty"`                // 学习时长（秒）
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *LearningServiceMemoryUnitInitItem) Reset() {
+	*x = LearningServiceMemoryUnitInitItem{}
+	mi := &file_proto_v1_learning_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearningServiceMemoryUnitInitItem) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearningServiceMemoryUnitInitItem) ProtoMessage() {}
+
+func (x *LearningServiceMemoryUnitInitItem) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LearningServiceMemoryUnitInitItem.ProtoReflect.Descriptor instead.
+func (*LearningServiceMemoryUnitInitItem) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *LearningServiceMemoryUnitInitItem) GetType() MemoryUnitType {
+	if x != nil {
+		return x.Type
+	}
+	return MemoryUnitType_MEMORY_UNIT_TYPE_UNSPECIFIED
+}
+
+func (x *LearningServiceMemoryUnitInitItem) GetContentId() uint32 {
+	if x != nil {
+		return x.ContentId
+	}
+	return 0
+}
+
+func (x *LearningServiceMemoryUnitInitItem) GetMasteryLevel() MasteryLevel {
+	if x != nil {
+		return x.MasteryLevel
+	}
+	return MasteryLevel_MASTERY_LEVEL_UNSPECIFIED
+}
+
+func (x *LearningServiceMemoryUnitInitItem) GetLearningDuration() uint32 {
+	if x != nil {
+		return x.LearningDuration
+	}
+	return 0
+}
+
 // MemoryUnit 记忆单元
 type MemoryUnit struct {
 	state     protoimpl.MessageState `protogen:"open.v1"`
@@ -214,7 +1388,7 @@ type MemoryUnit struct {
 
 func (x *MemoryUnit) Reset() {
 	*x = MemoryUnit{}
-	mi := &file_proto_v1_learning_proto_msgTypes[0]
+	mi := &file_proto_v1_learning_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -226,7 +1400,7 @@ func (x *MemoryUnit) String() string {
 func (*MemoryUnit) ProtoMessage() {}
 
 func (x *MemoryUnit) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[0]
+	mi := &file_proto_v1_learning_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -239,7 +1413,7 @@ func (x *MemoryUnit) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MemoryUnit.ProtoReflect.Descriptor instead.
 func (*MemoryUnit) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{0}
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *MemoryUnit) GetId() uint32 {
@@ -331,7 +1505,7 @@ type ReviewInterval struct {
 
 func (x *ReviewInterval) Reset() {
 	*x = ReviewInterval{}
-	mi := &file_proto_v1_learning_proto_msgTypes[1]
+	mi := &file_proto_v1_learning_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -343,7 +1517,7 @@ func (x *ReviewInterval) String() string {
 func (*ReviewInterval) ProtoMessage() {}
 
 func (x *ReviewInterval) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[1]
+	mi := &file_proto_v1_learning_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -356,7 +1530,7 @@ func (x *ReviewInterval) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReviewInterval.ProtoReflect.Descriptor instead.
 func (*ReviewInterval) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{1}
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ReviewInterval) GetDays() uint32 {
@@ -380,32 +1554,29 @@ func (x *ReviewInterval) GetMinutes() uint32 {
 	return 0
 }
 
-// 单个记忆单元初始化项
-type LearningServiceMemoryUnitInitItem struct {
-	state            protoimpl.MessageState `protogen:"open.v1"`
-	Type             MemoryUnitType         `protobuf:"varint,1,opt,name=type,proto3,enum=proto.v1.MemoryUnitType" json:"type,omitempty"`                                   // 记忆单元类型
-	ContentId        uint32                 `protobuf:"varint,2,opt,name=content_id,json=contentId,proto3" json:"content_id,omitempty"`                                     // 内容ID
-	MasteryLevel     MasteryLevel           `protobuf:"varint,3,opt,name=mastery_level,json=masteryLevel,proto3,enum=proto.v1.MasteryLevel" json:"mastery_level,omitempty"` // 掌握程度
-	LearningDuration uint32                 `protobuf:"varint,4,opt,name=learning_duration,json=learningDuration,proto3" json:"learning_duration,omitempty"`                // 学习时长（秒）
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+// 初始化记忆单元请求
+type LearningServiceInitializeMemoryUnitRequest struct {
+	state         protoimpl.MessageState               `protogen:"open.v1"`
+	Items         []*LearningServiceMemoryUnitInitItem `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"` // 批量初始化项
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
-func (x *LearningServiceMemoryUnitInitItem) Reset() {
-	*x = LearningServiceMemoryUnitInitItem{}
-	mi := &file_proto_v1_learning_proto_msgTypes[2]
+func (x *LearningServiceInitializeMemoryUnitRequest) Reset() {
+	*x = LearningServiceInitializeMemoryUnitRequest{}
+	mi := &file_proto_v1_learning_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *LearningServiceMemoryUnitInitItem) String() string {
+func (x *LearningServiceInitializeMemoryUnitRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*LearningServiceMemoryUnitInitItem) ProtoMessage() {}
+func (*LearningServiceInitializeMemoryUnitRequest) ProtoMessage() {}
 
-func (x *LearningServiceMemoryUnitInitItem) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[2]
+func (x *LearningServiceInitializeMemoryUnitRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -416,64 +1587,133 @@ func (x *LearningServiceMemoryUnitInitItem) ProtoReflect() protoreflect.Message 
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use LearningServiceMemoryUnitInitItem.ProtoReflect.Descriptor instead.
-func (*LearningServiceMemoryUnitInitItem) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{2}
+// Deprecated: Use LearningServiceInitializeMemoryUnitRequest.ProtoReflect.Descriptor instead.
+func (*LearningServiceInitializeMemoryUnitRequest) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{24}
 }
 
-func (x *LearningServiceMemoryUnitInitItem) GetType() MemoryUnitType {
+func (x *LearningServiceInitializeMemoryUnitRequest) GetItems() []*LearningServiceMemoryUnitInitItem {
 	if x != nil {
-		return x.Type
+		return x.Items
 	}
-	return MemoryUnitType_MEMORY_UNIT_TYPE_UNSPECIFIED
+	return nil
 }
 
-func (x *LearningServiceMemoryUnitInitItem) GetContentId() uint32 {
+// 初始化记忆单元响应
+type LearningServiceInitializeMemoryUnitResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	MemoryUnitIds []uint32               `protobuf:"varint,1,rep,packed,name=memory_unit_ids,json=memoryUnitIds,proto3" json:"memory_unit_ids,omitempty"` // 批量初始化结果
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LearningServiceInitializeMemoryUnitResponse) Reset() {
+	*x = LearningServiceInitializeMemoryUnitResponse{}
+	mi := &file_proto_v1_learning_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearningServiceInitializeMemoryUnitResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearningServiceInitializeMemoryUnitResponse) ProtoMessage() {}
+
+func (x *LearningServiceInitializeMemoryUnitResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[25]
 	if x != nil {
-		return x.ContentId
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
 	}
-	return 0
+	return mi.MessageOf(x)
 }
 
-func (x *LearningServiceMemoryUnitInitItem) GetMasteryLevel() MasteryLevel {
+// Deprecated: Use LearningServiceInitializeMemoryUnitResponse.ProtoReflect.Descriptor instead.
+func (*LearningServiceInitializeMemoryUnitResponse) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *LearningServiceInitializeMemoryUnitResponse) GetMemoryUnitIds() []uint32 {
 	if x != nil {
-		return x.MasteryLevel
+		return x.MemoryUnitIds
 	}
-	return MasteryLevel_MASTERY_LEVEL_UNSPECIFIED
+	return nil
 }
 
-func (x *LearningServiceMemoryUnitInitItem) GetLearningDuration() uint32 {
+// 复习记忆单元请求
+type LearningServiceReviewMemoryUnitsRequest struct {
+	state         protoimpl.MessageState                 `protogen:"open.v1"`
+	Items         []*LearningServiceMemoryUnitReviewItem `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"` // 批量复习项
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LearningServiceReviewMemoryUnitsRequest) Reset() {
+	*x = LearningServiceReviewMemoryUnitsRequest{}
+	mi := &file_proto_v1_learning_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LearningServiceReviewMemoryUnitsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LearningServiceReviewMemoryUnitsRequest) ProtoMessage() {}
+
+func (x *LearningServiceReviewMemoryUnitsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[26]
 	if x != nil {
-		return x.LearningDuration
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
 	}
-	return 0
+	return mi.MessageOf(x)
 }
 
-// LearningProgress 学习进度基础信息
-type LearningProgress struct {
+// Deprecated: Use LearningServiceReviewMemoryUnitsRequest.ProtoReflect.Descriptor instead.
+func (*LearningServiceReviewMemoryUnitsRequest) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *LearningServiceReviewMemoryUnitsRequest) GetItems() []*LearningServiceMemoryUnitReviewItem {
+	if x != nil {
+		return x.Items
+	}
+	return nil
+}
+
+// 单个记忆单元复习项
+type LearningServiceMemoryUnitReviewItem struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	Progress       float32                `protobuf:"fixed32,1,opt,name=progress,proto3" json:"progress,omitempty"`                                  // 进度百分比 0-100
-	CompletedItems uint32                 `protobuf:"varint,2,opt,name=completed_items,json=completedItems,proto3" json:"completed_items,omitempty"` // 已完成项目数
-	TotalItems     uint32                 `protobuf:"varint,3,opt,name=total_items,json=totalItems,proto3" json:"total_items,omitempty"`             // 总项目数
+	MemoryUnitId   uint32                 `protobuf:"varint,1,opt,name=memory_unit_id,json=memoryUnitId,proto3" json:"memory_unit_id,omitempty"`     // 记忆单元ID
+	Result         ReviewResult           `protobuf:"varint,2,opt,name=result,proto3,enum=proto.v1.ReviewResult" json:"result,omitempty"`            // 复习结果
+	ReviewDuration uint32                 `protobuf:"varint,3,opt,name=review_duration,json=reviewDuration,proto3" json:"review_duration,omitempty"` // 复习时长（秒）
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
 
-func (x *LearningProgress) Reset() {
-	*x = LearningProgress{}
-	mi := &file_proto_v1_learning_proto_msgTypes[3]
+func (x *LearningServiceMemoryUnitReviewItem) Reset() {
+	*x = LearningServiceMemoryUnitReviewItem{}
+	mi := &file_proto_v1_learning_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *LearningProgress) String() string {
+func (x *LearningServiceMemoryUnitReviewItem) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*LearningProgress) ProtoMessage() {}
+func (*LearningServiceMemoryUnitReviewItem) ProtoMessage() {}
 
-func (x *LearningProgress) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[3]
+func (x *LearningServiceMemoryUnitReviewItem) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -484,358 +1724,54 @@ func (x *LearningProgress) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use LearningProgress.ProtoReflect.Descriptor instead.
-func (*LearningProgress) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{3}
+// Deprecated: Use LearningServiceMemoryUnitReviewItem.ProtoReflect.Descriptor instead.
+func (*LearningServiceMemoryUnitReviewItem) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{27}
 }
 
-func (x *LearningProgress) GetProgress() float32 {
+func (x *LearningServiceMemoryUnitReviewItem) GetMemoryUnitId() uint32 {
 	if x != nil {
-		return x.Progress
+		return x.MemoryUnitId
 	}
 	return 0
 }
 
-func (x *LearningProgress) GetCompletedItems() uint32 {
+func (x *LearningServiceMemoryUnitReviewItem) GetResult() ReviewResult {
 	if x != nil {
-		return x.CompletedItems
+		return x.Result
+	}
+	return ReviewResult_REVIEW_RESULT_UNSPECIFIED
+}
+
+func (x *LearningServiceMemoryUnitReviewItem) GetReviewDuration() uint32 {
+	if x != nil {
+		return x.ReviewDuration
 	}
 	return 0
 }
 
-func (x *LearningProgress) GetTotalItems() uint32 {
-	if x != nil {
-		return x.TotalItems
-	}
-	return 0
-}
-
-// 汉字测试结果
-type LearningServiceHanCharTestResult struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// 汉字ID
-	HanCharId uint32 `protobuf:"varint,1,opt,name=han_char_id,json=hanCharId,proto3" json:"han_char_id,omitempty"`
-	// 是否认识
-	IsRecognized  bool `protobuf:"varint,2,opt,name=is_recognized,json=isRecognized,proto3" json:"is_recognized,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *LearningServiceHanCharTestResult) Reset() {
-	*x = LearningServiceHanCharTestResult{}
-	mi := &file_proto_v1_learning_proto_msgTypes[4]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LearningServiceHanCharTestResult) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LearningServiceHanCharTestResult) ProtoMessage() {}
-
-func (x *LearningServiceHanCharTestResult) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[4]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LearningServiceHanCharTestResult.ProtoReflect.Descriptor instead.
-func (*LearningServiceHanCharTestResult) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *LearningServiceHanCharTestResult) GetHanCharId() uint32 {
-	if x != nil {
-		return x.HanCharId
-	}
-	return 0
-}
-
-func (x *LearningServiceHanCharTestResult) GetIsRecognized() bool {
-	if x != nil {
-		return x.IsRecognized
-	}
-	return false
-}
-
-// GetLearningCourseProgressRequest 获取课程进度请求
-type LearningServiceGetCourseProgressRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	CourseId      uint32                 `protobuf:"varint,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *LearningServiceGetCourseProgressRequest) Reset() {
-	*x = LearningServiceGetCourseProgressRequest{}
-	mi := &file_proto_v1_learning_proto_msgTypes[5]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LearningServiceGetCourseProgressRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LearningServiceGetCourseProgressRequest) ProtoMessage() {}
-
-func (x *LearningServiceGetCourseProgressRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[5]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LearningServiceGetCourseProgressRequest.ProtoReflect.Descriptor instead.
-func (*LearningServiceGetCourseProgressRequest) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *LearningServiceGetCourseProgressRequest) GetCourseId() uint32 {
-	if x != nil {
-		return x.CourseId
-	}
-	return 0
-}
-
-// GetLearningCourseProgressResponse 获取课程进度响应
-type LearningServiceGetCourseProgressResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Progress      *LearningProgress      `protobuf:"bytes,1,opt,name=progress,proto3" json:"progress,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *LearningServiceGetCourseProgressResponse) Reset() {
-	*x = LearningServiceGetCourseProgressResponse{}
-	mi := &file_proto_v1_learning_proto_msgTypes[6]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LearningServiceGetCourseProgressResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LearningServiceGetCourseProgressResponse) ProtoMessage() {}
-
-func (x *LearningServiceGetCourseProgressResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[6]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LearningServiceGetCourseProgressResponse.ProtoReflect.Descriptor instead.
-func (*LearningServiceGetCourseProgressResponse) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{6}
-}
-
-func (x *LearningServiceGetCourseProgressResponse) GetProgress() *LearningProgress {
-	if x != nil {
-		return x.Progress
-	}
-	return nil
-}
-
-// GetLearningSectionProgressRequest 获取章节进度请求
-type LearningServiceGetSectionProgressRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SectionId     uint32                 `protobuf:"varint,1,opt,name=section_id,json=sectionId,proto3" json:"section_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *LearningServiceGetSectionProgressRequest) Reset() {
-	*x = LearningServiceGetSectionProgressRequest{}
-	mi := &file_proto_v1_learning_proto_msgTypes[7]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LearningServiceGetSectionProgressRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LearningServiceGetSectionProgressRequest) ProtoMessage() {}
-
-func (x *LearningServiceGetSectionProgressRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[7]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LearningServiceGetSectionProgressRequest.ProtoReflect.Descriptor instead.
-func (*LearningServiceGetSectionProgressRequest) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{7}
-}
-
-func (x *LearningServiceGetSectionProgressRequest) GetSectionId() uint32 {
-	if x != nil {
-		return x.SectionId
-	}
-	return 0
-}
-
-// GetLearningSectionProgressResponse 获取章节进度响应
-type LearningServiceGetSectionProgressResponse struct {
-	state            protoimpl.MessageState `protogen:"open.v1"`
-	Progress         *LearningProgress      `protobuf:"bytes,1,opt,name=progress,proto3" json:"progress,omitempty"`
-	CompletedUnitIds []uint32               `protobuf:"varint,2,rep,packed,name=completed_unit_ids,json=completedUnitIds,proto3" json:"completed_unit_ids,omitempty"` // 已完成的单元ID列表
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
-}
-
-func (x *LearningServiceGetSectionProgressResponse) Reset() {
-	*x = LearningServiceGetSectionProgressResponse{}
-	mi := &file_proto_v1_learning_proto_msgTypes[8]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LearningServiceGetSectionProgressResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LearningServiceGetSectionProgressResponse) ProtoMessage() {}
-
-func (x *LearningServiceGetSectionProgressResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[8]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LearningServiceGetSectionProgressResponse.ProtoReflect.Descriptor instead.
-func (*LearningServiceGetSectionProgressResponse) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{8}
-}
-
-func (x *LearningServiceGetSectionProgressResponse) GetProgress() *LearningProgress {
-	if x != nil {
-		return x.Progress
-	}
-	return nil
-}
-
-func (x *LearningServiceGetSectionProgressResponse) GetCompletedUnitIds() []uint32 {
-	if x != nil {
-		return x.CompletedUnitIds
-	}
-	return nil
-}
-
-// UpdateLearningUnitProgressRequest 更新单元进度请求
-type LearningServiceUpdateUnitProgressRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	UnitId        uint32                 `protobuf:"varint,1,opt,name=unit_id,json=unitId,proto3" json:"unit_id,omitempty"`
-	SectionId     uint32                 `protobuf:"varint,2,opt,name=section_id,json=sectionId,proto3" json:"section_id,omitempty"` // 单元所属的章节ID
-	Completed     bool                   `protobuf:"varint,3,opt,name=completed,proto3" json:"completed,omitempty"`                  // 是否完成
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *LearningServiceUpdateUnitProgressRequest) Reset() {
-	*x = LearningServiceUpdateUnitProgressRequest{}
-	mi := &file_proto_v1_learning_proto_msgTypes[9]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LearningServiceUpdateUnitProgressRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LearningServiceUpdateUnitProgressRequest) ProtoMessage() {}
-
-func (x *LearningServiceUpdateUnitProgressRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[9]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LearningServiceUpdateUnitProgressRequest.ProtoReflect.Descriptor instead.
-func (*LearningServiceUpdateUnitProgressRequest) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{9}
-}
-
-func (x *LearningServiceUpdateUnitProgressRequest) GetUnitId() uint32 {
-	if x != nil {
-		return x.UnitId
-	}
-	return 0
-}
-
-func (x *LearningServiceUpdateUnitProgressRequest) GetSectionId() uint32 {
-	if x != nil {
-		return x.SectionId
-	}
-	return 0
-}
-
-func (x *LearningServiceUpdateUnitProgressRequest) GetCompleted() bool {
-	if x != nil {
-		return x.Completed
-	}
-	return false
-}
-
-// UpdateLearningUnitProgressResponse 更新单元进度响应
-type LearningServiceUpdateUnitProgressResponse struct {
+// 复习记忆单元响应
+type LearningServiceReviewMemoryUnitsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *LearningServiceUpdateUnitProgressResponse) Reset() {
-	*x = LearningServiceUpdateUnitProgressResponse{}
-	mi := &file_proto_v1_learning_proto_msgTypes[10]
+func (x *LearningServiceReviewMemoryUnitsResponse) Reset() {
+	*x = LearningServiceReviewMemoryUnitsResponse{}
+	mi := &file_proto_v1_learning_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *LearningServiceUpdateUnitProgressResponse) String() string {
+func (x *LearningServiceReviewMemoryUnitsResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*LearningServiceUpdateUnitProgressResponse) ProtoMessage() {}
+func (*LearningServiceReviewMemoryUnitsResponse) ProtoMessage() {}
 
-func (x *LearningServiceUpdateUnitProgressResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[10]
+func (x *LearningServiceReviewMemoryUnitsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -846,26 +1782,21 @@ func (x *LearningServiceUpdateUnitProgressResponse) ProtoReflect() protoreflect.
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use LearningServiceUpdateUnitProgressResponse.ProtoReflect.Descriptor instead.
-func (*LearningServiceUpdateUnitProgressResponse) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{10}
+// Deprecated: Use LearningServiceReviewMemoryUnitsResponse.ProtoReflect.Descriptor instead.
+func (*LearningServiceReviewMemoryUnitsResponse) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{28}
 }
 
 // 获取需要复习的记忆单元列表请求
 type LearningServiceListMemoriesForReviewRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Page          uint32                 `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
-	PageSize      uint32                 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	Types         []MemoryUnitType       `protobuf:"varint,3,rep,packed,name=types,proto3,enum=proto.v1.MemoryUnitType" json:"types,omitempty"` // 可选的记忆单元类型过滤
-	Tags          []string               `protobuf:"bytes,4,rep,name=tags,proto3" json:"tags,omitempty"`                                        // 可选的标签过滤
-	Categories    []string               `protobuf:"bytes,5,rep,name=categories,proto3" json:"categories,omitempty"`                            // 可选的分类过滤
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *LearningServiceListMemoriesForReviewRequest) Reset() {
 	*x = LearningServiceListMemoriesForReviewRequest{}
-	mi := &file_proto_v1_learning_proto_msgTypes[11]
+	mi := &file_proto_v1_learning_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -877,7 +1808,7 @@ func (x *LearningServiceListMemoriesForReviewRequest) String() string {
 func (*LearningServiceListMemoriesForReviewRequest) ProtoMessage() {}
 
 func (x *LearningServiceListMemoriesForReviewRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[11]
+	mi := &file_proto_v1_learning_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -890,42 +1821,7 @@ func (x *LearningServiceListMemoriesForReviewRequest) ProtoReflect() protoreflec
 
 // Deprecated: Use LearningServiceListMemoriesForReviewRequest.ProtoReflect.Descriptor instead.
 func (*LearningServiceListMemoriesForReviewRequest) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{11}
-}
-
-func (x *LearningServiceListMemoriesForReviewRequest) GetPage() uint32 {
-	if x != nil {
-		return x.Page
-	}
-	return 0
-}
-
-func (x *LearningServiceListMemoriesForReviewRequest) GetPageSize() uint32 {
-	if x != nil {
-		return x.PageSize
-	}
-	return 0
-}
-
-func (x *LearningServiceListMemoriesForReviewRequest) GetTypes() []MemoryUnitType {
-	if x != nil {
-		return x.Types
-	}
-	return nil
-}
-
-func (x *LearningServiceListMemoriesForReviewRequest) GetTags() []string {
-	if x != nil {
-		return x.Tags
-	}
-	return nil
-}
-
-func (x *LearningServiceListMemoriesForReviewRequest) GetCategories() []string {
-	if x != nil {
-		return x.Categories
-	}
-	return nil
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{29}
 }
 
 // 获取需要复习的记忆单元列表响应
@@ -939,7 +1835,7 @@ type LearningServiceListMemoriesForReviewResponse struct {
 
 func (x *LearningServiceListMemoriesForReviewResponse) Reset() {
 	*x = LearningServiceListMemoriesForReviewResponse{}
-	mi := &file_proto_v1_learning_proto_msgTypes[12]
+	mi := &file_proto_v1_learning_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -951,7 +1847,7 @@ func (x *LearningServiceListMemoriesForReviewResponse) String() string {
 func (*LearningServiceListMemoriesForReviewResponse) ProtoMessage() {}
 
 func (x *LearningServiceListMemoriesForReviewResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[12]
+	mi := &file_proto_v1_learning_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -964,7 +1860,7 @@ func (x *LearningServiceListMemoriesForReviewResponse) ProtoReflect() protorefle
 
 // Deprecated: Use LearningServiceListMemoriesForReviewResponse.ProtoReflect.Descriptor instead.
 func (*LearningServiceListMemoriesForReviewResponse) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{12}
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *LearningServiceListMemoriesForReviewResponse) GetMemoryUnits() []*MemoryUnit {
@@ -992,7 +1888,7 @@ type LearningServiceGetMemoryStatsRequest struct {
 
 func (x *LearningServiceGetMemoryStatsRequest) Reset() {
 	*x = LearningServiceGetMemoryStatsRequest{}
-	mi := &file_proto_v1_learning_proto_msgTypes[13]
+	mi := &file_proto_v1_learning_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1004,7 +1900,7 @@ func (x *LearningServiceGetMemoryStatsRequest) String() string {
 func (*LearningServiceGetMemoryStatsRequest) ProtoMessage() {}
 
 func (x *LearningServiceGetMemoryStatsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[13]
+	mi := &file_proto_v1_learning_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1017,7 +1913,7 @@ func (x *LearningServiceGetMemoryStatsRequest) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use LearningServiceGetMemoryStatsRequest.ProtoReflect.Descriptor instead.
 func (*LearningServiceGetMemoryStatsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{13}
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *LearningServiceGetMemoryStatsRequest) GetType() MemoryUnitType {
@@ -1055,7 +1951,7 @@ type LearningServiceGetMemoryStatsResponse struct {
 
 func (x *LearningServiceGetMemoryStatsResponse) Reset() {
 	*x = LearningServiceGetMemoryStatsResponse{}
-	mi := &file_proto_v1_learning_proto_msgTypes[14]
+	mi := &file_proto_v1_learning_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1067,7 +1963,7 @@ func (x *LearningServiceGetMemoryStatsResponse) String() string {
 func (*LearningServiceGetMemoryStatsResponse) ProtoMessage() {}
 
 func (x *LearningServiceGetMemoryStatsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[14]
+	mi := &file_proto_v1_learning_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1080,7 +1976,7 @@ func (x *LearningServiceGetMemoryStatsResponse) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use LearningServiceGetMemoryStatsResponse.ProtoReflect.Descriptor instead.
 func (*LearningServiceGetMemoryStatsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{14}
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *LearningServiceGetMemoryStatsResponse) GetTotalLearned() uint32 {
@@ -1125,32 +2021,30 @@ func (x *LearningServiceGetMemoryStatsResponse) GetRetentionRates() map[uint32]f
 	return nil
 }
 
-// 获取汉字测试请求
-type LearningServiceGetHanCharTestRequest struct {
+// 获取复习内容请求
+type GetReviewContentRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// 测试数量
-	Count int32 `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
-	// 难度等级（1-5，数字越大难度越高）
-	DifficultyLevel int32 `protobuf:"varint,2,opt,name=difficulty_level,json=difficultyLevel,proto3" json:"difficulty_level,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// 复习内容数量
+	Count         int32 `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
-func (x *LearningServiceGetHanCharTestRequest) Reset() {
-	*x = LearningServiceGetHanCharTestRequest{}
-	mi := &file_proto_v1_learning_proto_msgTypes[15]
+func (x *GetReviewContentRequest) Reset() {
+	*x = GetReviewContentRequest{}
+	mi := &file_proto_v1_learning_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *LearningServiceGetHanCharTestRequest) String() string {
+func (x *GetReviewContentRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*LearningServiceGetHanCharTestRequest) ProtoMessage() {}
+func (*GetReviewContentRequest) ProtoMessage() {}
 
-func (x *LearningServiceGetHanCharTestRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[15]
+func (x *GetReviewContentRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1161,49 +2055,45 @@ func (x *LearningServiceGetHanCharTestRequest) ProtoReflect() protoreflect.Messa
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use LearningServiceGetHanCharTestRequest.ProtoReflect.Descriptor instead.
-func (*LearningServiceGetHanCharTestRequest) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{15}
+// Deprecated: Use GetReviewContentRequest.ProtoReflect.Descriptor instead.
+func (*GetReviewContentRequest) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{33}
 }
 
-func (x *LearningServiceGetHanCharTestRequest) GetCount() int32 {
+func (x *GetReviewContentRequest) GetCount() int32 {
 	if x != nil {
 		return x.Count
 	}
 	return 0
 }
 
-func (x *LearningServiceGetHanCharTestRequest) GetDifficultyLevel() int32 {
-	if x != nil {
-		return x.DifficultyLevel
-	}
-	return 0
-}
-
-// 获取汉字测试响应
-type LearningServiceGetHanCharTestResponse struct {
+// 获取复习内容响应
+type GetReviewContentResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// 测试汉字列表
-	HanChars      []*HanChar `protobuf:"bytes,1,rep,name=han_chars,json=hanChars,proto3" json:"han_chars,omitempty"`
+	// 汉字复习内容
+	HanChars []*HanChar `protobuf:"bytes,1,rep,name=han_chars,json=hanChars,proto3" json:"han_chars,omitempty"`
+	// 单词复习内容
+	Words         []*Word `protobuf:"bytes,2,rep,name=words,proto3" json:"words,omitempty"`
+	HasMore       bool    `protobuf:"varint,3,opt,name=has_more,json=hasMore,proto3" json:"has_more,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *LearningServiceGetHanCharTestResponse) Reset() {
-	*x = LearningServiceGetHanCharTestResponse{}
-	mi := &file_proto_v1_learning_proto_msgTypes[16]
+func (x *GetReviewContentResponse) Reset() {
+	*x = GetReviewContentResponse{}
+	mi := &file_proto_v1_learning_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *LearningServiceGetHanCharTestResponse) String() string {
+func (x *GetReviewContentResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*LearningServiceGetHanCharTestResponse) ProtoMessage() {}
+func (*GetReviewContentResponse) ProtoMessage() {}
 
-func (x *LearningServiceGetHanCharTestResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[16]
+func (x *GetReviewContentResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_learning_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1214,883 +2104,37 @@ func (x *LearningServiceGetHanCharTestResponse) ProtoReflect() protoreflect.Mess
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use LearningServiceGetHanCharTestResponse.ProtoReflect.Descriptor instead.
-func (*LearningServiceGetHanCharTestResponse) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{16}
+// Deprecated: Use GetReviewContentResponse.ProtoReflect.Descriptor instead.
+func (*GetReviewContentResponse) Descriptor() ([]byte, []int) {
+	return file_proto_v1_learning_proto_rawDescGZIP(), []int{34}
 }
 
-func (x *LearningServiceGetHanCharTestResponse) GetHanChars() []*HanChar {
+func (x *GetReviewContentResponse) GetHanChars() []*HanChar {
 	if x != nil {
 		return x.HanChars
 	}
 	return nil
 }
 
-// 提交汉字测试结果请求
-type LearningServiceSubmitHanCharTestResultRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// 测试结果
-	Results       []*LearningServiceHanCharTestResult `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *LearningServiceSubmitHanCharTestResultRequest) Reset() {
-	*x = LearningServiceSubmitHanCharTestResultRequest{}
-	mi := &file_proto_v1_learning_proto_msgTypes[17]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LearningServiceSubmitHanCharTestResultRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LearningServiceSubmitHanCharTestResultRequest) ProtoMessage() {}
-
-func (x *LearningServiceSubmitHanCharTestResultRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[17]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LearningServiceSubmitHanCharTestResultRequest.ProtoReflect.Descriptor instead.
-func (*LearningServiceSubmitHanCharTestResultRequest) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{17}
-}
-
-func (x *LearningServiceSubmitHanCharTestResultRequest) GetResults() []*LearningServiceHanCharTestResult {
-	if x != nil {
-		return x.Results
-	}
-	return nil
-}
-
-// 提交汉字测试结果响应
-type LearningServiceSubmitHanCharTestResultResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *LearningServiceSubmitHanCharTestResultResponse) Reset() {
-	*x = LearningServiceSubmitHanCharTestResultResponse{}
-	mi := &file_proto_v1_learning_proto_msgTypes[18]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LearningServiceSubmitHanCharTestResultResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LearningServiceSubmitHanCharTestResultResponse) ProtoMessage() {}
-
-func (x *LearningServiceSubmitHanCharTestResultResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[18]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LearningServiceSubmitHanCharTestResultResponse.ProtoReflect.Descriptor instead.
-func (*LearningServiceSubmitHanCharTestResultResponse) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{18}
-}
-
-// 获取生字学习内容请求
-type LearningServiceGetNewHanCharLearningRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// 学习数量
-	Count         int32 `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *LearningServiceGetNewHanCharLearningRequest) Reset() {
-	*x = LearningServiceGetNewHanCharLearningRequest{}
-	mi := &file_proto_v1_learning_proto_msgTypes[19]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LearningServiceGetNewHanCharLearningRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LearningServiceGetNewHanCharLearningRequest) ProtoMessage() {}
-
-func (x *LearningServiceGetNewHanCharLearningRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[19]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LearningServiceGetNewHanCharLearningRequest.ProtoReflect.Descriptor instead.
-func (*LearningServiceGetNewHanCharLearningRequest) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{19}
-}
-
-func (x *LearningServiceGetNewHanCharLearningRequest) GetCount() int32 {
-	if x != nil {
-		return x.Count
-	}
-	return 0
-}
-
-// 获取生字学习内容响应
-type LearningServiceGetNewHanCharLearningResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// 学习内容
-	Contents      []*LearningServiceHanCharLearningContent `protobuf:"bytes,1,rep,name=contents,proto3" json:"contents,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *LearningServiceGetNewHanCharLearningResponse) Reset() {
-	*x = LearningServiceGetNewHanCharLearningResponse{}
-	mi := &file_proto_v1_learning_proto_msgTypes[20]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LearningServiceGetNewHanCharLearningResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LearningServiceGetNewHanCharLearningResponse) ProtoMessage() {}
-
-func (x *LearningServiceGetNewHanCharLearningResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[20]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LearningServiceGetNewHanCharLearningResponse.ProtoReflect.Descriptor instead.
-func (*LearningServiceGetNewHanCharLearningResponse) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{20}
-}
-
-func (x *LearningServiceGetNewHanCharLearningResponse) GetContents() []*LearningServiceHanCharLearningContent {
-	if x != nil {
-		return x.Contents
-	}
-	return nil
-}
-
-// 汉字学习内容
-type LearningServiceHanCharLearningContent struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// 汉字ID
-	HanCharId string `protobuf:"bytes,1,opt,name=han_char_id,json=hanCharId,proto3" json:"han_char_id,omitempty"`
-	// 汉字
-	HanChar string `protobuf:"bytes,2,opt,name=han_char,json=hanChar,proto3" json:"han_char,omitempty"`
-	// 拼音
-	Pinyin string `protobuf:"bytes,3,opt,name=pinyin,proto3" json:"pinyin,omitempty"`
-	// 释义
-	Meaning string `protobuf:"bytes,4,opt,name=meaning,proto3" json:"meaning,omitempty"`
-	// 例句
-	Examples      []string `protobuf:"bytes,5,rep,name=examples,proto3" json:"examples,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *LearningServiceHanCharLearningContent) Reset() {
-	*x = LearningServiceHanCharLearningContent{}
-	mi := &file_proto_v1_learning_proto_msgTypes[21]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LearningServiceHanCharLearningContent) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LearningServiceHanCharLearningContent) ProtoMessage() {}
-
-func (x *LearningServiceHanCharLearningContent) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[21]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LearningServiceHanCharLearningContent.ProtoReflect.Descriptor instead.
-func (*LearningServiceHanCharLearningContent) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{21}
-}
-
-func (x *LearningServiceHanCharLearningContent) GetHanCharId() string {
-	if x != nil {
-		return x.HanCharId
-	}
-	return ""
-}
-
-func (x *LearningServiceHanCharLearningContent) GetHanChar() string {
-	if x != nil {
-		return x.HanChar
-	}
-	return ""
-}
-
-func (x *LearningServiceHanCharLearningContent) GetPinyin() string {
-	if x != nil {
-		return x.Pinyin
-	}
-	return ""
-}
-
-func (x *LearningServiceHanCharLearningContent) GetMeaning() string {
-	if x != nil {
-		return x.Meaning
-	}
-	return ""
-}
-
-func (x *LearningServiceHanCharLearningContent) GetExamples() []string {
-	if x != nil {
-		return x.Examples
-	}
-	return nil
-}
-
-// 提交生字学习结果请求
-type LearningServiceSubmitNewHanCharLearningResultRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// 学习时间
-	LearningTime *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=learning_time,json=learningTime,proto3" json:"learning_time,omitempty"`
-	// 学习时长（分钟）
-	StudyDuration uint32 `protobuf:"varint,2,opt,name=study_duration,json=studyDuration,proto3" json:"study_duration,omitempty"`
-	// 学习结果列表
-	Results       []*LearningServiceHanCharLearningResultItem `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *LearningServiceSubmitNewHanCharLearningResultRequest) Reset() {
-	*x = LearningServiceSubmitNewHanCharLearningResultRequest{}
-	mi := &file_proto_v1_learning_proto_msgTypes[22]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LearningServiceSubmitNewHanCharLearningResultRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LearningServiceSubmitNewHanCharLearningResultRequest) ProtoMessage() {}
-
-func (x *LearningServiceSubmitNewHanCharLearningResultRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[22]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LearningServiceSubmitNewHanCharLearningResultRequest.ProtoReflect.Descriptor instead.
-func (*LearningServiceSubmitNewHanCharLearningResultRequest) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{22}
-}
-
-func (x *LearningServiceSubmitNewHanCharLearningResultRequest) GetLearningTime() *timestamppb.Timestamp {
-	if x != nil {
-		return x.LearningTime
-	}
-	return nil
-}
-
-func (x *LearningServiceSubmitNewHanCharLearningResultRequest) GetStudyDuration() uint32 {
-	if x != nil {
-		return x.StudyDuration
-	}
-	return 0
-}
-
-func (x *LearningServiceSubmitNewHanCharLearningResultRequest) GetResults() []*LearningServiceHanCharLearningResultItem {
-	if x != nil {
-		return x.Results
-	}
-	return nil
-}
-
-// 单个汉字学习结果项
-type LearningServiceHanCharLearningResultItem struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// 生字ID
-	NewHanCharId string `protobuf:"bytes,1,opt,name=new_han_char_id,json=newHanCharId,proto3" json:"new_han_char_id,omitempty"`
-	// 学习结果
-	Result        *LearningServiceHanCharLearningResult `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *LearningServiceHanCharLearningResultItem) Reset() {
-	*x = LearningServiceHanCharLearningResultItem{}
-	mi := &file_proto_v1_learning_proto_msgTypes[23]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LearningServiceHanCharLearningResultItem) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LearningServiceHanCharLearningResultItem) ProtoMessage() {}
-
-func (x *LearningServiceHanCharLearningResultItem) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[23]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LearningServiceHanCharLearningResultItem.ProtoReflect.Descriptor instead.
-func (*LearningServiceHanCharLearningResultItem) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{23}
-}
-
-func (x *LearningServiceHanCharLearningResultItem) GetNewHanCharId() string {
-	if x != nil {
-		return x.NewHanCharId
-	}
-	return ""
-}
-
-func (x *LearningServiceHanCharLearningResultItem) GetResult() *LearningServiceHanCharLearningResult {
-	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-
-// 提交生字学习结果响应
-type SubmitNewHanCharLearningResultResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *SubmitNewHanCharLearningResultResponse) Reset() {
-	*x = SubmitNewHanCharLearningResultResponse{}
-	mi := &file_proto_v1_learning_proto_msgTypes[24]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *SubmitNewHanCharLearningResultResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*SubmitNewHanCharLearningResultResponse) ProtoMessage() {}
-
-func (x *SubmitNewHanCharLearningResultResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[24]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use SubmitNewHanCharLearningResultResponse.ProtoReflect.Descriptor instead.
-func (*SubmitNewHanCharLearningResultResponse) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{24}
-}
-
-// 汉字学习结果
-type LearningServiceHanCharLearningResult struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// 第一次是否做对
-	FirstTryCorrect bool `protobuf:"varint,1,opt,name=first_try_correct,json=firstTryCorrect,proto3" json:"first_try_correct,omitempty"`
-	// 第二次是否做对
-	SecondTryCorrect bool `protobuf:"varint,2,opt,name=second_try_correct,json=secondTryCorrect,proto3" json:"second_try_correct,omitempty"`
-	// 第三次是否做对
-	ThirdTryCorrect bool `protobuf:"varint,3,opt,name=third_try_correct,json=thirdTryCorrect,proto3" json:"third_try_correct,omitempty"`
-	// 最终是否掌握
-	Mastered bool `protobuf:"varint,4,opt,name=mastered,proto3" json:"mastered,omitempty"`
-	// 学习过程中的错误次数
-	ErrorCount uint32 `protobuf:"varint,5,opt,name=error_count,json=errorCount,proto3" json:"error_count,omitempty"`
-	// 学习过程中的正确次数
-	CorrectCount  uint32 `protobuf:"varint,6,opt,name=correct_count,json=correctCount,proto3" json:"correct_count,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *LearningServiceHanCharLearningResult) Reset() {
-	*x = LearningServiceHanCharLearningResult{}
-	mi := &file_proto_v1_learning_proto_msgTypes[25]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LearningServiceHanCharLearningResult) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LearningServiceHanCharLearningResult) ProtoMessage() {}
-
-func (x *LearningServiceHanCharLearningResult) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[25]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LearningServiceHanCharLearningResult.ProtoReflect.Descriptor instead.
-func (*LearningServiceHanCharLearningResult) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{25}
-}
-
-func (x *LearningServiceHanCharLearningResult) GetFirstTryCorrect() bool {
-	if x != nil {
-		return x.FirstTryCorrect
-	}
-	return false
-}
-
-func (x *LearningServiceHanCharLearningResult) GetSecondTryCorrect() bool {
-	if x != nil {
-		return x.SecondTryCorrect
-	}
-	return false
-}
-
-func (x *LearningServiceHanCharLearningResult) GetThirdTryCorrect() bool {
-	if x != nil {
-		return x.ThirdTryCorrect
-	}
-	return false
-}
-
-func (x *LearningServiceHanCharLearningResult) GetMastered() bool {
-	if x != nil {
-		return x.Mastered
-	}
-	return false
-}
-
-func (x *LearningServiceHanCharLearningResult) GetErrorCount() uint32 {
-	if x != nil {
-		return x.ErrorCount
-	}
-	return 0
-}
-
-func (x *LearningServiceHanCharLearningResult) GetCorrectCount() uint32 {
-	if x != nil {
-		return x.CorrectCount
-	}
-	return 0
-}
-
-// 初始化记忆单元请求
-type LearningServiceInitializeMemoryUnitRequest struct {
-	state         protoimpl.MessageState               `protogen:"open.v1"`
-	Items         []*LearningServiceMemoryUnitInitItem `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"` // 批量初始化项
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *LearningServiceInitializeMemoryUnitRequest) Reset() {
-	*x = LearningServiceInitializeMemoryUnitRequest{}
-	mi := &file_proto_v1_learning_proto_msgTypes[26]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LearningServiceInitializeMemoryUnitRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LearningServiceInitializeMemoryUnitRequest) ProtoMessage() {}
-
-func (x *LearningServiceInitializeMemoryUnitRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[26]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LearningServiceInitializeMemoryUnitRequest.ProtoReflect.Descriptor instead.
-func (*LearningServiceInitializeMemoryUnitRequest) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{26}
-}
-
-func (x *LearningServiceInitializeMemoryUnitRequest) GetItems() []*LearningServiceMemoryUnitInitItem {
-	if x != nil {
-		return x.Items
-	}
-	return nil
-}
-
-// 初始化记忆单元响应
-type LearningServiceInitializeMemoryUnitResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	MemoryUnitIds []uint32               `protobuf:"varint,1,rep,packed,name=memory_unit_ids,json=memoryUnitIds,proto3" json:"memory_unit_ids,omitempty"` // 批量初始化结果
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *LearningServiceInitializeMemoryUnitResponse) Reset() {
-	*x = LearningServiceInitializeMemoryUnitResponse{}
-	mi := &file_proto_v1_learning_proto_msgTypes[27]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LearningServiceInitializeMemoryUnitResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LearningServiceInitializeMemoryUnitResponse) ProtoMessage() {}
-
-func (x *LearningServiceInitializeMemoryUnitResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[27]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LearningServiceInitializeMemoryUnitResponse.ProtoReflect.Descriptor instead.
-func (*LearningServiceInitializeMemoryUnitResponse) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{27}
-}
-
-func (x *LearningServiceInitializeMemoryUnitResponse) GetMemoryUnitIds() []uint32 {
-	if x != nil {
-		return x.MemoryUnitIds
-	}
-	return nil
-}
-
-// 复习记忆单元请求
-type LearningServiceReviewMemoryUnitsRequest struct {
-	state         protoimpl.MessageState                 `protogen:"open.v1"`
-	Items         []*LearningServiceMemoryUnitReviewItem `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"` // 批量复习项
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *LearningServiceReviewMemoryUnitsRequest) Reset() {
-	*x = LearningServiceReviewMemoryUnitsRequest{}
-	mi := &file_proto_v1_learning_proto_msgTypes[28]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LearningServiceReviewMemoryUnitsRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LearningServiceReviewMemoryUnitsRequest) ProtoMessage() {}
-
-func (x *LearningServiceReviewMemoryUnitsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[28]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LearningServiceReviewMemoryUnitsRequest.ProtoReflect.Descriptor instead.
-func (*LearningServiceReviewMemoryUnitsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{28}
-}
-
-func (x *LearningServiceReviewMemoryUnitsRequest) GetItems() []*LearningServiceMemoryUnitReviewItem {
-	if x != nil {
-		return x.Items
-	}
-	return nil
-}
-
-// 单个记忆单元复习项
-type LearningServiceMemoryUnitReviewItem struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	MemoryUnitId   uint32                 `protobuf:"varint,1,opt,name=memory_unit_id,json=memoryUnitId,proto3" json:"memory_unit_id,omitempty"`     // 记忆单元ID
-	Result         ReviewResult           `protobuf:"varint,2,opt,name=result,proto3,enum=proto.v1.ReviewResult" json:"result,omitempty"`            // 复习结果
-	ReviewDuration uint32                 `protobuf:"varint,3,opt,name=review_duration,json=reviewDuration,proto3" json:"review_duration,omitempty"` // 复习时长（秒）
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
-}
-
-func (x *LearningServiceMemoryUnitReviewItem) Reset() {
-	*x = LearningServiceMemoryUnitReviewItem{}
-	mi := &file_proto_v1_learning_proto_msgTypes[29]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LearningServiceMemoryUnitReviewItem) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LearningServiceMemoryUnitReviewItem) ProtoMessage() {}
-
-func (x *LearningServiceMemoryUnitReviewItem) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[29]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LearningServiceMemoryUnitReviewItem.ProtoReflect.Descriptor instead.
-func (*LearningServiceMemoryUnitReviewItem) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{29}
-}
-
-func (x *LearningServiceMemoryUnitReviewItem) GetMemoryUnitId() uint32 {
-	if x != nil {
-		return x.MemoryUnitId
-	}
-	return 0
-}
-
-func (x *LearningServiceMemoryUnitReviewItem) GetResult() ReviewResult {
-	if x != nil {
-		return x.Result
-	}
-	return ReviewResult_REVIEW_RESULT_UNSPECIFIED
-}
-
-func (x *LearningServiceMemoryUnitReviewItem) GetReviewDuration() uint32 {
-	if x != nil {
-		return x.ReviewDuration
-	}
-	return 0
-}
-
-// 复习记忆单元响应
-type LearningServiceReviewMemoryUnitsResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *LearningServiceReviewMemoryUnitsResponse) Reset() {
-	*x = LearningServiceReviewMemoryUnitsResponse{}
-	mi := &file_proto_v1_learning_proto_msgTypes[30]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LearningServiceReviewMemoryUnitsResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LearningServiceReviewMemoryUnitsResponse) ProtoMessage() {}
-
-func (x *LearningServiceReviewMemoryUnitsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[30]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LearningServiceReviewMemoryUnitsResponse.ProtoReflect.Descriptor instead.
-func (*LearningServiceReviewMemoryUnitsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{30}
-}
-
-// 获取单词测试请求
-type LearningServiceGetWordTestRequest struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	Count           int32                  `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`                                            // 测试数量
-	DifficultyLevel int32                  `protobuf:"varint,2,opt,name=difficulty_level,json=difficultyLevel,proto3" json:"difficulty_level,omitempty"` // 难度等级（1-5）
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
-}
-
-func (x *LearningServiceGetWordTestRequest) Reset() {
-	*x = LearningServiceGetWordTestRequest{}
-	mi := &file_proto_v1_learning_proto_msgTypes[31]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LearningServiceGetWordTestRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LearningServiceGetWordTestRequest) ProtoMessage() {}
-
-func (x *LearningServiceGetWordTestRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[31]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LearningServiceGetWordTestRequest.ProtoReflect.Descriptor instead.
-func (*LearningServiceGetWordTestRequest) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{31}
-}
-
-func (x *LearningServiceGetWordTestRequest) GetCount() int32 {
-	if x != nil {
-		return x.Count
-	}
-	return 0
-}
-
-func (x *LearningServiceGetWordTestRequest) GetDifficultyLevel() int32 {
-	if x != nil {
-		return x.DifficultyLevel
-	}
-	return 0
-}
-
-// 获取单词测试响应
-type LearningServiceGetWordTestResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Words         []*Word                `protobuf:"bytes,1,rep,name=words,proto3" json:"words,omitempty"` // 测试单词列表
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *LearningServiceGetWordTestResponse) Reset() {
-	*x = LearningServiceGetWordTestResponse{}
-	mi := &file_proto_v1_learning_proto_msgTypes[32]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LearningServiceGetWordTestResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LearningServiceGetWordTestResponse) ProtoMessage() {}
-
-func (x *LearningServiceGetWordTestResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_learning_proto_msgTypes[32]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LearningServiceGetWordTestResponse.ProtoReflect.Descriptor instead.
-func (*LearningServiceGetWordTestResponse) Descriptor() ([]byte, []int) {
-	return file_proto_v1_learning_proto_rawDescGZIP(), []int{32}
-}
-
-func (x *LearningServiceGetWordTestResponse) GetWords() []*Word {
+func (x *GetReviewContentResponse) GetWords() []*Word {
 	if x != nil {
 		return x.Words
 	}
 	return nil
 }
 
+func (x *GetReviewContentResponse) GetHasMore() bool {
+	if x != nil {
+		return x.HasMore
+	}
+	return false
+}
+
 var File_proto_v1_learning_proto protoreflect.FileDescriptor
 
 const file_proto_v1_learning_proto_rawDesc = "" +
 	"\n" +
-	"\x17proto/v1/learning.proto\x12\bproto.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\x1a\x19proto/v1/vocabulary.proto\"\xf9\x03\n" +
-	"\n" +
-	"MemoryUnit\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\x12,\n" +
-	"\x04type\x18\x02 \x01(\x0e2\x18.proto.v1.MemoryUnitTypeR\x04type\x12\x1d\n" +
-	"\n" +
-	"content_id\x18\x03 \x01(\rR\tcontentId\x12;\n" +
-	"\rmastery_level\x18\a \x01(\x0e2\x16.proto.v1.MasteryLevelR\fmasteryLevel\x12!\n" +
-	"\freview_count\x18\b \x01(\rR\vreviewCount\x12@\n" +
-	"\x0enext_review_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\fnextReviewAt\x12@\n" +
-	"\x0elast_review_at\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampR\flastReviewAt\x12%\n" +
-	"\x0estudy_duration\x18\v \x01(\rR\rstudyDuration\x12%\n" +
-	"\x0eretention_rate\x18\f \x01(\x02R\rretentionRate\x12/\n" +
-	"\x13consecutive_correct\x18\r \x01(\rR\x12consecutiveCorrect\x12+\n" +
-	"\x11consecutive_wrong\x18\x0e \x01(\rR\x10consecutiveWrong\"T\n" +
-	"\x0eReviewInterval\x12\x12\n" +
-	"\x04days\x18\x01 \x01(\rR\x04days\x12\x14\n" +
-	"\x05hours\x18\x02 \x01(\rR\x05hours\x12\x18\n" +
-	"\aminutes\x18\x03 \x01(\rR\aminutes\"\xda\x01\n" +
-	"!LearningServiceMemoryUnitInitItem\x12,\n" +
-	"\x04type\x18\x01 \x01(\x0e2\x18.proto.v1.MemoryUnitTypeR\x04type\x12\x1d\n" +
-	"\n" +
-	"content_id\x18\x02 \x01(\rR\tcontentId\x12;\n" +
-	"\rmastery_level\x18\x03 \x01(\x0e2\x16.proto.v1.MasteryLevelR\fmasteryLevel\x12+\n" +
-	"\x11learning_duration\x18\x04 \x01(\rR\x10learningDuration\"x\n" +
+	"\x17proto/v1/learning.proto\x12\bproto.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19proto/v1/vocabulary.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\"x\n" +
 	"\x10LearningProgress\x12\x1a\n" +
 	"\bprogress\x18\x01 \x01(\x02R\bprogress\x12'\n" +
 	"\x0fcompleted_items\x18\x02 \x01(\rR\x0ecompletedItems\x12\x1f\n" +
@@ -2114,39 +2158,7 @@ const file_proto_v1_learning_proto_rawDesc = "" +
 	"\n" +
 	"section_id\x18\x02 \x01(\rR\tsectionId\x12\x1c\n" +
 	"\tcompleted\x18\x03 \x01(\bR\tcompleted\"+\n" +
-	")LearningServiceUpdateUnitProgressResponse\"\xc2\x01\n" +
-	"+LearningServiceListMemoriesForReviewRequest\x12\x12\n" +
-	"\x04page\x18\x01 \x01(\rR\x04page\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\rR\bpageSize\x12.\n" +
-	"\x05types\x18\x03 \x03(\x0e2\x18.proto.v1.MemoryUnitTypeR\x05types\x12\x12\n" +
-	"\x04tags\x18\x04 \x03(\tR\x04tags\x12\x1e\n" +
-	"\n" +
-	"categories\x18\x05 \x03(\tR\n" +
-	"categories\"}\n" +
-	",LearningServiceListMemoriesForReviewResponse\x127\n" +
-	"\fmemory_units\x18\x01 \x03(\v2\x14.proto.v1.MemoryUnitR\vmemoryUnits\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\rR\x05total\"\xaf\x01\n" +
-	"$LearningServiceGetMemoryStatsRequest\x121\n" +
-	"\x04type\x18\x01 \x01(\x0e2\x18.proto.v1.MemoryUnitTypeH\x00R\x04type\x88\x01\x01\x12\x15\n" +
-	"\x03tag\x18\x02 \x01(\tH\x01R\x03tag\x88\x01\x01\x12\x1f\n" +
-	"\bcategory\x18\x03 \x01(\tH\x02R\bcategory\x88\x01\x01B\a\n" +
-	"\x05_typeB\x06\n" +
-	"\x04_tagB\v\n" +
-	"\t_category\"\x9b\x04\n" +
-	"%LearningServiceGetMemoryStatsResponse\x12#\n" +
-	"\rtotal_learned\x18\x01 \x01(\rR\ftotalLearned\x12%\n" +
-	"\x0emastered_count\x18\x02 \x01(\rR\rmasteredCount\x12*\n" +
-	"\x11need_review_count\x18\x03 \x01(\rR\x0fneedReviewCount\x12(\n" +
-	"\x10total_study_time\x18\x04 \x01(\rR\x0etotalStudyTime\x12`\n" +
-	"\vlevel_stats\x18\x05 \x03(\v2?.proto.v1.LearningServiceGetMemoryStatsResponse.LevelStatsEntryR\n" +
-	"levelStats\x12l\n" +
-	"\x0fretention_rates\x18\x06 \x03(\v2C.proto.v1.LearningServiceGetMemoryStatsResponse.RetentionRatesEntryR\x0eretentionRates\x1a=\n" +
-	"\x0fLevelStatsEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\rR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\rR\x05value:\x028\x01\x1aA\n" +
-	"\x13RetentionRatesEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\rR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\x02R\x05value:\x028\x01\"q\n" +
+	")LearningServiceUpdateUnitProgressResponse\"q\n" +
 	"$LearningServiceGetHanCharTestRequest\x12\x19\n" +
 	"\x05count\x18\x01 \x01(\x05B\x03\xe0A\x02R\x05count\x12.\n" +
 	"\x10difficulty_level\x18\x02 \x01(\x05B\x03\xe0A\x02R\x0fdifficultyLevel\"W\n" +
@@ -2180,7 +2192,37 @@ const file_proto_v1_learning_proto_rawDesc = "" +
 	"\bmastered\x18\x04 \x01(\bR\bmastered\x12\x1f\n" +
 	"\verror_count\x18\x05 \x01(\rR\n" +
 	"errorCount\x12#\n" +
-	"\rcorrect_count\x18\x06 \x01(\rR\fcorrectCount\"o\n" +
+	"\rcorrect_count\x18\x06 \x01(\rR\fcorrectCount\"n\n" +
+	"!LearningServiceGetWordTestRequest\x12\x19\n" +
+	"\x05count\x18\x01 \x01(\x05B\x03\xe0A\x02R\x05count\x12.\n" +
+	"\x10difficulty_level\x18\x02 \x01(\x05B\x03\xe0A\x02R\x0fdifficultyLevel\"J\n" +
+	"\"LearningServiceGetWordTestResponse\x12$\n" +
+	"\x05words\x18\x01 \x03(\v2\x0e.proto.v1.WordR\x05words\"\xda\x01\n" +
+	"!LearningServiceMemoryUnitInitItem\x12,\n" +
+	"\x04type\x18\x01 \x01(\x0e2\x18.proto.v1.MemoryUnitTypeR\x04type\x12\x1d\n" +
+	"\n" +
+	"content_id\x18\x02 \x01(\rR\tcontentId\x12;\n" +
+	"\rmastery_level\x18\x03 \x01(\x0e2\x16.proto.v1.MasteryLevelR\fmasteryLevel\x12+\n" +
+	"\x11learning_duration\x18\x04 \x01(\rR\x10learningDuration\"\xf9\x03\n" +
+	"\n" +
+	"MemoryUnit\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\rR\x02id\x12,\n" +
+	"\x04type\x18\x02 \x01(\x0e2\x18.proto.v1.MemoryUnitTypeR\x04type\x12\x1d\n" +
+	"\n" +
+	"content_id\x18\x03 \x01(\rR\tcontentId\x12;\n" +
+	"\rmastery_level\x18\a \x01(\x0e2\x16.proto.v1.MasteryLevelR\fmasteryLevel\x12!\n" +
+	"\freview_count\x18\b \x01(\rR\vreviewCount\x12@\n" +
+	"\x0enext_review_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\fnextReviewAt\x12@\n" +
+	"\x0elast_review_at\x18\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\flastReviewAt\x12%\n" +
+	"\x0estudy_duration\x18\v \x01(\rR\rstudyDuration\x12%\n" +
+	"\x0eretention_rate\x18\f \x01(\x02R\rretentionRate\x12/\n" +
+	"\x13consecutive_correct\x18\r \x01(\rR\x12consecutiveCorrect\x12+\n" +
+	"\x11consecutive_wrong\x18\x0e \x01(\rR\x10consecutiveWrong\"T\n" +
+	"\x0eReviewInterval\x12\x12\n" +
+	"\x04days\x18\x01 \x01(\rR\x04days\x12\x14\n" +
+	"\x05hours\x18\x02 \x01(\rR\x05hours\x12\x18\n" +
+	"\aminutes\x18\x03 \x01(\rR\aminutes\"o\n" +
 	"*LearningServiceInitializeMemoryUnitRequest\x12A\n" +
 	"\x05items\x18\x01 \x03(\v2+.proto.v1.LearningServiceMemoryUnitInitItemR\x05items\"U\n" +
 	"+LearningServiceInitializeMemoryUnitResponse\x12&\n" +
@@ -2191,12 +2233,38 @@ const file_proto_v1_learning_proto_rawDesc = "" +
 	"\x0ememory_unit_id\x18\x01 \x01(\rR\fmemoryUnitId\x12.\n" +
 	"\x06result\x18\x02 \x01(\x0e2\x16.proto.v1.ReviewResultR\x06result\x12'\n" +
 	"\x0freview_duration\x18\x03 \x01(\rR\x0ereviewDuration\"*\n" +
-	"(LearningServiceReviewMemoryUnitsResponse\"n\n" +
-	"!LearningServiceGetWordTestRequest\x12\x19\n" +
-	"\x05count\x18\x01 \x01(\x05B\x03\xe0A\x02R\x05count\x12.\n" +
-	"\x10difficulty_level\x18\x02 \x01(\x05B\x03\xe0A\x02R\x0fdifficultyLevel\"J\n" +
-	"\"LearningServiceGetWordTestResponse\x12$\n" +
-	"\x05words\x18\x01 \x03(\v2\x0e.proto.v1.WordR\x05words*\xa8\x01\n" +
+	"(LearningServiceReviewMemoryUnitsResponse\"-\n" +
+	"+LearningServiceListMemoriesForReviewRequest\"}\n" +
+	",LearningServiceListMemoriesForReviewResponse\x127\n" +
+	"\fmemory_units\x18\x01 \x03(\v2\x14.proto.v1.MemoryUnitR\vmemoryUnits\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\rR\x05total\"\xaf\x01\n" +
+	"$LearningServiceGetMemoryStatsRequest\x121\n" +
+	"\x04type\x18\x01 \x01(\x0e2\x18.proto.v1.MemoryUnitTypeH\x00R\x04type\x88\x01\x01\x12\x15\n" +
+	"\x03tag\x18\x02 \x01(\tH\x01R\x03tag\x88\x01\x01\x12\x1f\n" +
+	"\bcategory\x18\x03 \x01(\tH\x02R\bcategory\x88\x01\x01B\a\n" +
+	"\x05_typeB\x06\n" +
+	"\x04_tagB\v\n" +
+	"\t_category\"\x9b\x04\n" +
+	"%LearningServiceGetMemoryStatsResponse\x12#\n" +
+	"\rtotal_learned\x18\x01 \x01(\rR\ftotalLearned\x12%\n" +
+	"\x0emastered_count\x18\x02 \x01(\rR\rmasteredCount\x12*\n" +
+	"\x11need_review_count\x18\x03 \x01(\rR\x0fneedReviewCount\x12(\n" +
+	"\x10total_study_time\x18\x04 \x01(\rR\x0etotalStudyTime\x12`\n" +
+	"\vlevel_stats\x18\x05 \x03(\v2?.proto.v1.LearningServiceGetMemoryStatsResponse.LevelStatsEntryR\n" +
+	"levelStats\x12l\n" +
+	"\x0fretention_rates\x18\x06 \x03(\v2C.proto.v1.LearningServiceGetMemoryStatsResponse.RetentionRatesEntryR\x0eretentionRates\x1a=\n" +
+	"\x0fLevelStatsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\rR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\rR\x05value:\x028\x01\x1aA\n" +
+	"\x13RetentionRatesEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\rR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x02R\x05value:\x028\x01\"4\n" +
+	"\x17GetReviewContentRequest\x12\x19\n" +
+	"\x05count\x18\x01 \x01(\x05B\x03\xe0A\x02R\x05count\"\x8b\x01\n" +
+	"\x18GetReviewContentResponse\x12.\n" +
+	"\than_chars\x18\x01 \x03(\v2\x11.proto.v1.HanCharR\bhanChars\x12$\n" +
+	"\x05words\x18\x02 \x03(\v2\x0e.proto.v1.WordR\x05words\x12\x19\n" +
+	"\bhas_more\x18\x03 \x01(\bR\ahasMore*\xa8\x01\n" +
 	"\x0eMemoryUnitType\x12 \n" +
 	"\x1cMEMORY_UNIT_TYPE_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19MEMORY_UNIT_TYPE_HAN_CHAR\x10\x01\x12\x19\n" +
@@ -2214,17 +2282,17 @@ const file_proto_v1_learning_proto_rawDesc = "" +
 	"\x19REVIEW_RESULT_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15REVIEW_RESULT_CORRECT\x10\x01\x12\x17\n" +
 	"\x13REVIEW_RESULT_WRONG\x10\x02\x12\x16\n" +
-	"\x12REVIEW_RESULT_SKIP\x10\x032\x8b\f\n" +
+	"\x12REVIEW_RESULT_SKIP\x10\x032\xd8\v\n" +
 	"\x0fLearningService\x12\xb1\x01\n" +
 	"\x11GetCourseProgress\x121.proto.v1.LearningServiceGetCourseProgressRequest\x1a2.proto.v1.LearningServiceGetCourseProgressResponse\"5\x82\xd3\xe4\x93\x02/\x12-/api/v1/learning/courses/{course_id}/progress\x12\xb6\x01\n" +
 	"\x12GetSectionProgress\x122.proto.v1.LearningServiceGetSectionProgressRequest\x1a3.proto.v1.LearningServiceGetSectionProgressResponse\"7\x82\xd3\xe4\x93\x021\x12//api/v1/learning/sections/{section_id}/progress\x12\xb3\x01\n" +
-	"\x12UpdateUnitProgress\x122.proto.v1.LearningServiceUpdateUnitProgressRequest\x1a3.proto.v1.LearningServiceUpdateUnitProgressResponse\"4\x82\xd3\xe4\x93\x02.:\x01*\x1a)/api/v1/learning/units/{unit_id}/progress\x12\xb5\x01\n" +
-	"\x15InitializeMemoryUnits\x124.proto.v1.LearningServiceInitializeMemoryUnitRequest\x1a5.proto.v1.LearningServiceInitializeMemoryUnitResponse\"/\x82\xd3\xe4\x93\x02):\x01*\"$/api/v1/learning/memories/initialize\x12\xb0\x01\n" +
-	"\x15ListMemoriesForReview\x125.proto.v1.LearningServiceListMemoriesForReviewRequest\x1a6.proto.v1.LearningServiceListMemoriesForReviewResponse\"(\x82\xd3\xe4\x93\x02\"\x12 /api/v1/learning/memories/review\x12\xa7\x01\n" +
-	"\x11ReviewMemoryUnits\x121.proto.v1.LearningServiceReviewMemoryUnitsRequest\x1a2.proto.v1.LearningServiceReviewMemoryUnitsResponse\"+\x82\xd3\xe4\x93\x02%:\x01*\" /api/v1/learning/memories/review\x12\x9a\x01\n" +
-	"\x0eGetMemoryStats\x12..proto.v1.LearningServiceGetMemoryStatsRequest\x1a/.proto.v1.LearningServiceGetMemoryStatsResponse\"'\x82\xd3\xe4\x93\x02!\x12\x1f/api/v1/learning/memories/stats\x12\x96\x01\n" +
+	"\x12UpdateUnitProgress\x122.proto.v1.LearningServiceUpdateUnitProgressRequest\x1a3.proto.v1.LearningServiceUpdateUnitProgressResponse\"4\x82\xd3\xe4\x93\x02.:\x01*\x1a)/api/v1/learning/units/{unit_id}/progress\x12\x96\x01\n" +
 	"\x0eGetHanCharTest\x12..proto.v1.LearningServiceGetHanCharTestRequest\x1a/.proto.v1.LearningServiceGetHanCharTestResponse\"#\x82\xd3\xe4\x93\x02\x1d\x12\x1b/v1/learning/han_chars/test\x12\x89\x01\n" +
-	"\vGetWordTest\x12+.proto.v1.LearningServiceGetWordTestRequest\x1a,.proto.v1.LearningServiceGetWordTestResponse\"\x1f\x82\xd3\xe4\x93\x02\x19\x12\x17/v1/learning/words/testB1Z(github.com/lazyjean/sla2/api/proto/v1;pb\xba\x02\x04SLA2b\x06proto3"
+	"\vGetWordTest\x12+.proto.v1.LearningServiceGetWordTestRequest\x1a,.proto.v1.LearningServiceGetWordTestResponse\"\x1f\x82\xd3\xe4\x93\x02\x19\x12\x17/v1/learning/words/test\x12\xb5\x01\n" +
+	"\x15InitializeMemoryUnits\x124.proto.v1.LearningServiceInitializeMemoryUnitRequest\x1a5.proto.v1.LearningServiceInitializeMemoryUnitResponse\"/\x82\xd3\xe4\x93\x02):\x01*\"$/api/v1/learning/memories/initialize\x12\xa7\x01\n" +
+	"\x11ReviewMemoryUnits\x121.proto.v1.LearningServiceReviewMemoryUnitsRequest\x1a2.proto.v1.LearningServiceReviewMemoryUnitsResponse\"+\x82\xd3\xe4\x93\x02%:\x01*\" /api/v1/learning/memories/review\x12\x9a\x01\n" +
+	"\x0eGetMemoryStats\x12..proto.v1.LearningServiceGetMemoryStatsRequest\x1a/.proto.v1.LearningServiceGetMemoryStatsResponse\"'\x82\xd3\xe4\x93\x02!\x12\x1f/api/v1/learning/memories/stats\x12~\n" +
+	"\x10GetReviewContent\x12!.proto.v1.GetReviewContentRequest\x1a\".proto.v1.GetReviewContentResponse\"#\x82\xd3\xe4\x93\x02\x1d\x12\x1b/v1/learning/review/contentB1Z(github.com/lazyjean/sla2/api/proto/v1;pb\xba\x02\x04SLA2b\x06proto3"
 
 var (
 	file_proto_v1_learning_proto_rawDescOnce sync.Once
@@ -2239,97 +2307,100 @@ func file_proto_v1_learning_proto_rawDescGZIP() []byte {
 }
 
 var file_proto_v1_learning_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_proto_v1_learning_proto_msgTypes = make([]protoimpl.MessageInfo, 35)
+var file_proto_v1_learning_proto_msgTypes = make([]protoimpl.MessageInfo, 37)
 var file_proto_v1_learning_proto_goTypes = []any{
 	(MemoryUnitType)(0),                                          // 0: proto.v1.MemoryUnitType
 	(MasteryLevel)(0),                                            // 1: proto.v1.MasteryLevel
 	(ReviewResult)(0),                                            // 2: proto.v1.ReviewResult
-	(*MemoryUnit)(nil),                                           // 3: proto.v1.MemoryUnit
-	(*ReviewInterval)(nil),                                       // 4: proto.v1.ReviewInterval
-	(*LearningServiceMemoryUnitInitItem)(nil),                    // 5: proto.v1.LearningServiceMemoryUnitInitItem
-	(*LearningProgress)(nil),                                     // 6: proto.v1.LearningProgress
-	(*LearningServiceHanCharTestResult)(nil),                     // 7: proto.v1.LearningServiceHanCharTestResult
-	(*LearningServiceGetCourseProgressRequest)(nil),              // 8: proto.v1.LearningServiceGetCourseProgressRequest
-	(*LearningServiceGetCourseProgressResponse)(nil),             // 9: proto.v1.LearningServiceGetCourseProgressResponse
-	(*LearningServiceGetSectionProgressRequest)(nil),             // 10: proto.v1.LearningServiceGetSectionProgressRequest
-	(*LearningServiceGetSectionProgressResponse)(nil),            // 11: proto.v1.LearningServiceGetSectionProgressResponse
-	(*LearningServiceUpdateUnitProgressRequest)(nil),             // 12: proto.v1.LearningServiceUpdateUnitProgressRequest
-	(*LearningServiceUpdateUnitProgressResponse)(nil),            // 13: proto.v1.LearningServiceUpdateUnitProgressResponse
-	(*LearningServiceListMemoriesForReviewRequest)(nil),          // 14: proto.v1.LearningServiceListMemoriesForReviewRequest
-	(*LearningServiceListMemoriesForReviewResponse)(nil),         // 15: proto.v1.LearningServiceListMemoriesForReviewResponse
-	(*LearningServiceGetMemoryStatsRequest)(nil),                 // 16: proto.v1.LearningServiceGetMemoryStatsRequest
-	(*LearningServiceGetMemoryStatsResponse)(nil),                // 17: proto.v1.LearningServiceGetMemoryStatsResponse
-	(*LearningServiceGetHanCharTestRequest)(nil),                 // 18: proto.v1.LearningServiceGetHanCharTestRequest
-	(*LearningServiceGetHanCharTestResponse)(nil),                // 19: proto.v1.LearningServiceGetHanCharTestResponse
-	(*LearningServiceSubmitHanCharTestResultRequest)(nil),        // 20: proto.v1.LearningServiceSubmitHanCharTestResultRequest
-	(*LearningServiceSubmitHanCharTestResultResponse)(nil),       // 21: proto.v1.LearningServiceSubmitHanCharTestResultResponse
-	(*LearningServiceGetNewHanCharLearningRequest)(nil),          // 22: proto.v1.LearningServiceGetNewHanCharLearningRequest
-	(*LearningServiceGetNewHanCharLearningResponse)(nil),         // 23: proto.v1.LearningServiceGetNewHanCharLearningResponse
-	(*LearningServiceHanCharLearningContent)(nil),                // 24: proto.v1.LearningServiceHanCharLearningContent
-	(*LearningServiceSubmitNewHanCharLearningResultRequest)(nil), // 25: proto.v1.LearningServiceSubmitNewHanCharLearningResultRequest
-	(*LearningServiceHanCharLearningResultItem)(nil),             // 26: proto.v1.LearningServiceHanCharLearningResultItem
-	(*SubmitNewHanCharLearningResultResponse)(nil),               // 27: proto.v1.SubmitNewHanCharLearningResultResponse
-	(*LearningServiceHanCharLearningResult)(nil),                 // 28: proto.v1.LearningServiceHanCharLearningResult
-	(*LearningServiceInitializeMemoryUnitRequest)(nil),           // 29: proto.v1.LearningServiceInitializeMemoryUnitRequest
-	(*LearningServiceInitializeMemoryUnitResponse)(nil),          // 30: proto.v1.LearningServiceInitializeMemoryUnitResponse
-	(*LearningServiceReviewMemoryUnitsRequest)(nil),              // 31: proto.v1.LearningServiceReviewMemoryUnitsRequest
-	(*LearningServiceMemoryUnitReviewItem)(nil),                  // 32: proto.v1.LearningServiceMemoryUnitReviewItem
-	(*LearningServiceReviewMemoryUnitsResponse)(nil),             // 33: proto.v1.LearningServiceReviewMemoryUnitsResponse
-	(*LearningServiceGetWordTestRequest)(nil),                    // 34: proto.v1.LearningServiceGetWordTestRequest
-	(*LearningServiceGetWordTestResponse)(nil),                   // 35: proto.v1.LearningServiceGetWordTestResponse
-	nil,                           // 36: proto.v1.LearningServiceGetMemoryStatsResponse.LevelStatsEntry
-	nil,                           // 37: proto.v1.LearningServiceGetMemoryStatsResponse.RetentionRatesEntry
-	(*timestamppb.Timestamp)(nil), // 38: google.protobuf.Timestamp
-	(*HanChar)(nil),               // 39: proto.v1.HanChar
-	(*Word)(nil),                  // 40: proto.v1.Word
+	(*LearningProgress)(nil),                                     // 3: proto.v1.LearningProgress
+	(*LearningServiceHanCharTestResult)(nil),                     // 4: proto.v1.LearningServiceHanCharTestResult
+	(*LearningServiceGetCourseProgressRequest)(nil),              // 5: proto.v1.LearningServiceGetCourseProgressRequest
+	(*LearningServiceGetCourseProgressResponse)(nil),             // 6: proto.v1.LearningServiceGetCourseProgressResponse
+	(*LearningServiceGetSectionProgressRequest)(nil),             // 7: proto.v1.LearningServiceGetSectionProgressRequest
+	(*LearningServiceGetSectionProgressResponse)(nil),            // 8: proto.v1.LearningServiceGetSectionProgressResponse
+	(*LearningServiceUpdateUnitProgressRequest)(nil),             // 9: proto.v1.LearningServiceUpdateUnitProgressRequest
+	(*LearningServiceUpdateUnitProgressResponse)(nil),            // 10: proto.v1.LearningServiceUpdateUnitProgressResponse
+	(*LearningServiceGetHanCharTestRequest)(nil),                 // 11: proto.v1.LearningServiceGetHanCharTestRequest
+	(*LearningServiceGetHanCharTestResponse)(nil),                // 12: proto.v1.LearningServiceGetHanCharTestResponse
+	(*LearningServiceSubmitHanCharTestResultRequest)(nil),        // 13: proto.v1.LearningServiceSubmitHanCharTestResultRequest
+	(*LearningServiceSubmitHanCharTestResultResponse)(nil),       // 14: proto.v1.LearningServiceSubmitHanCharTestResultResponse
+	(*LearningServiceGetNewHanCharLearningRequest)(nil),          // 15: proto.v1.LearningServiceGetNewHanCharLearningRequest
+	(*LearningServiceGetNewHanCharLearningResponse)(nil),         // 16: proto.v1.LearningServiceGetNewHanCharLearningResponse
+	(*LearningServiceHanCharLearningContent)(nil),                // 17: proto.v1.LearningServiceHanCharLearningContent
+	(*LearningServiceSubmitNewHanCharLearningResultRequest)(nil), // 18: proto.v1.LearningServiceSubmitNewHanCharLearningResultRequest
+	(*LearningServiceHanCharLearningResultItem)(nil),             // 19: proto.v1.LearningServiceHanCharLearningResultItem
+	(*SubmitNewHanCharLearningResultResponse)(nil),               // 20: proto.v1.SubmitNewHanCharLearningResultResponse
+	(*LearningServiceHanCharLearningResult)(nil),                 // 21: proto.v1.LearningServiceHanCharLearningResult
+	(*LearningServiceGetWordTestRequest)(nil),                    // 22: proto.v1.LearningServiceGetWordTestRequest
+	(*LearningServiceGetWordTestResponse)(nil),                   // 23: proto.v1.LearningServiceGetWordTestResponse
+	(*LearningServiceMemoryUnitInitItem)(nil),                    // 24: proto.v1.LearningServiceMemoryUnitInitItem
+	(*MemoryUnit)(nil),                                           // 25: proto.v1.MemoryUnit
+	(*ReviewInterval)(nil),                                       // 26: proto.v1.ReviewInterval
+	(*LearningServiceInitializeMemoryUnitRequest)(nil),           // 27: proto.v1.LearningServiceInitializeMemoryUnitRequest
+	(*LearningServiceInitializeMemoryUnitResponse)(nil),          // 28: proto.v1.LearningServiceInitializeMemoryUnitResponse
+	(*LearningServiceReviewMemoryUnitsRequest)(nil),              // 29: proto.v1.LearningServiceReviewMemoryUnitsRequest
+	(*LearningServiceMemoryUnitReviewItem)(nil),                  // 30: proto.v1.LearningServiceMemoryUnitReviewItem
+	(*LearningServiceReviewMemoryUnitsResponse)(nil),             // 31: proto.v1.LearningServiceReviewMemoryUnitsResponse
+	(*LearningServiceListMemoriesForReviewRequest)(nil),          // 32: proto.v1.LearningServiceListMemoriesForReviewRequest
+	(*LearningServiceListMemoriesForReviewResponse)(nil),         // 33: proto.v1.LearningServiceListMemoriesForReviewResponse
+	(*LearningServiceGetMemoryStatsRequest)(nil),                 // 34: proto.v1.LearningServiceGetMemoryStatsRequest
+	(*LearningServiceGetMemoryStatsResponse)(nil),                // 35: proto.v1.LearningServiceGetMemoryStatsResponse
+	(*GetReviewContentRequest)(nil),                              // 36: proto.v1.GetReviewContentRequest
+	(*GetReviewContentResponse)(nil),                             // 37: proto.v1.GetReviewContentResponse
+	nil,                                                          // 38: proto.v1.LearningServiceGetMemoryStatsResponse.LevelStatsEntry
+	nil,                                                          // 39: proto.v1.LearningServiceGetMemoryStatsResponse.RetentionRatesEntry
+	(*HanChar)(nil),                                              // 40: proto.v1.HanChar
+	(*timestamppb.Timestamp)(nil),                                // 41: google.protobuf.Timestamp
+	(*Word)(nil),                                                 // 42: proto.v1.Word
 }
 var file_proto_v1_learning_proto_depIdxs = []int32{
-	0,  // 0: proto.v1.MemoryUnit.type:type_name -> proto.v1.MemoryUnitType
-	1,  // 1: proto.v1.MemoryUnit.mastery_level:type_name -> proto.v1.MasteryLevel
-	38, // 2: proto.v1.MemoryUnit.next_review_at:type_name -> google.protobuf.Timestamp
-	38, // 3: proto.v1.MemoryUnit.last_review_at:type_name -> google.protobuf.Timestamp
-	0,  // 4: proto.v1.LearningServiceMemoryUnitInitItem.type:type_name -> proto.v1.MemoryUnitType
-	1,  // 5: proto.v1.LearningServiceMemoryUnitInitItem.mastery_level:type_name -> proto.v1.MasteryLevel
-	6,  // 6: proto.v1.LearningServiceGetCourseProgressResponse.progress:type_name -> proto.v1.LearningProgress
-	6,  // 7: proto.v1.LearningServiceGetSectionProgressResponse.progress:type_name -> proto.v1.LearningProgress
-	0,  // 8: proto.v1.LearningServiceListMemoriesForReviewRequest.types:type_name -> proto.v1.MemoryUnitType
-	3,  // 9: proto.v1.LearningServiceListMemoriesForReviewResponse.memory_units:type_name -> proto.v1.MemoryUnit
-	0,  // 10: proto.v1.LearningServiceGetMemoryStatsRequest.type:type_name -> proto.v1.MemoryUnitType
-	36, // 11: proto.v1.LearningServiceGetMemoryStatsResponse.level_stats:type_name -> proto.v1.LearningServiceGetMemoryStatsResponse.LevelStatsEntry
-	37, // 12: proto.v1.LearningServiceGetMemoryStatsResponse.retention_rates:type_name -> proto.v1.LearningServiceGetMemoryStatsResponse.RetentionRatesEntry
-	39, // 13: proto.v1.LearningServiceGetHanCharTestResponse.han_chars:type_name -> proto.v1.HanChar
-	7,  // 14: proto.v1.LearningServiceSubmitHanCharTestResultRequest.results:type_name -> proto.v1.LearningServiceHanCharTestResult
-	24, // 15: proto.v1.LearningServiceGetNewHanCharLearningResponse.contents:type_name -> proto.v1.LearningServiceHanCharLearningContent
-	38, // 16: proto.v1.LearningServiceSubmitNewHanCharLearningResultRequest.learning_time:type_name -> google.protobuf.Timestamp
-	26, // 17: proto.v1.LearningServiceSubmitNewHanCharLearningResultRequest.results:type_name -> proto.v1.LearningServiceHanCharLearningResultItem
-	28, // 18: proto.v1.LearningServiceHanCharLearningResultItem.result:type_name -> proto.v1.LearningServiceHanCharLearningResult
-	5,  // 19: proto.v1.LearningServiceInitializeMemoryUnitRequest.items:type_name -> proto.v1.LearningServiceMemoryUnitInitItem
-	32, // 20: proto.v1.LearningServiceReviewMemoryUnitsRequest.items:type_name -> proto.v1.LearningServiceMemoryUnitReviewItem
-	2,  // 21: proto.v1.LearningServiceMemoryUnitReviewItem.result:type_name -> proto.v1.ReviewResult
-	40, // 22: proto.v1.LearningServiceGetWordTestResponse.words:type_name -> proto.v1.Word
-	8,  // 23: proto.v1.LearningService.GetCourseProgress:input_type -> proto.v1.LearningServiceGetCourseProgressRequest
-	10, // 24: proto.v1.LearningService.GetSectionProgress:input_type -> proto.v1.LearningServiceGetSectionProgressRequest
-	12, // 25: proto.v1.LearningService.UpdateUnitProgress:input_type -> proto.v1.LearningServiceUpdateUnitProgressRequest
-	29, // 26: proto.v1.LearningService.InitializeMemoryUnits:input_type -> proto.v1.LearningServiceInitializeMemoryUnitRequest
-	14, // 27: proto.v1.LearningService.ListMemoriesForReview:input_type -> proto.v1.LearningServiceListMemoriesForReviewRequest
-	31, // 28: proto.v1.LearningService.ReviewMemoryUnits:input_type -> proto.v1.LearningServiceReviewMemoryUnitsRequest
-	16, // 29: proto.v1.LearningService.GetMemoryStats:input_type -> proto.v1.LearningServiceGetMemoryStatsRequest
-	18, // 30: proto.v1.LearningService.GetHanCharTest:input_type -> proto.v1.LearningServiceGetHanCharTestRequest
-	34, // 31: proto.v1.LearningService.GetWordTest:input_type -> proto.v1.LearningServiceGetWordTestRequest
-	9,  // 32: proto.v1.LearningService.GetCourseProgress:output_type -> proto.v1.LearningServiceGetCourseProgressResponse
-	11, // 33: proto.v1.LearningService.GetSectionProgress:output_type -> proto.v1.LearningServiceGetSectionProgressResponse
-	13, // 34: proto.v1.LearningService.UpdateUnitProgress:output_type -> proto.v1.LearningServiceUpdateUnitProgressResponse
-	30, // 35: proto.v1.LearningService.InitializeMemoryUnits:output_type -> proto.v1.LearningServiceInitializeMemoryUnitResponse
-	15, // 36: proto.v1.LearningService.ListMemoriesForReview:output_type -> proto.v1.LearningServiceListMemoriesForReviewResponse
-	33, // 37: proto.v1.LearningService.ReviewMemoryUnits:output_type -> proto.v1.LearningServiceReviewMemoryUnitsResponse
-	17, // 38: proto.v1.LearningService.GetMemoryStats:output_type -> proto.v1.LearningServiceGetMemoryStatsResponse
-	19, // 39: proto.v1.LearningService.GetHanCharTest:output_type -> proto.v1.LearningServiceGetHanCharTestResponse
-	35, // 40: proto.v1.LearningService.GetWordTest:output_type -> proto.v1.LearningServiceGetWordTestResponse
-	32, // [32:41] is the sub-list for method output_type
-	23, // [23:32] is the sub-list for method input_type
-	23, // [23:23] is the sub-list for extension type_name
-	23, // [23:23] is the sub-list for extension extendee
-	0,  // [0:23] is the sub-list for field type_name
+	3,  // 0: proto.v1.LearningServiceGetCourseProgressResponse.progress:type_name -> proto.v1.LearningProgress
+	3,  // 1: proto.v1.LearningServiceGetSectionProgressResponse.progress:type_name -> proto.v1.LearningProgress
+	40, // 2: proto.v1.LearningServiceGetHanCharTestResponse.han_chars:type_name -> proto.v1.HanChar
+	4,  // 3: proto.v1.LearningServiceSubmitHanCharTestResultRequest.results:type_name -> proto.v1.LearningServiceHanCharTestResult
+	17, // 4: proto.v1.LearningServiceGetNewHanCharLearningResponse.contents:type_name -> proto.v1.LearningServiceHanCharLearningContent
+	41, // 5: proto.v1.LearningServiceSubmitNewHanCharLearningResultRequest.learning_time:type_name -> google.protobuf.Timestamp
+	19, // 6: proto.v1.LearningServiceSubmitNewHanCharLearningResultRequest.results:type_name -> proto.v1.LearningServiceHanCharLearningResultItem
+	21, // 7: proto.v1.LearningServiceHanCharLearningResultItem.result:type_name -> proto.v1.LearningServiceHanCharLearningResult
+	42, // 8: proto.v1.LearningServiceGetWordTestResponse.words:type_name -> proto.v1.Word
+	0,  // 9: proto.v1.LearningServiceMemoryUnitInitItem.type:type_name -> proto.v1.MemoryUnitType
+	1,  // 10: proto.v1.LearningServiceMemoryUnitInitItem.mastery_level:type_name -> proto.v1.MasteryLevel
+	0,  // 11: proto.v1.MemoryUnit.type:type_name -> proto.v1.MemoryUnitType
+	1,  // 12: proto.v1.MemoryUnit.mastery_level:type_name -> proto.v1.MasteryLevel
+	41, // 13: proto.v1.MemoryUnit.next_review_at:type_name -> google.protobuf.Timestamp
+	41, // 14: proto.v1.MemoryUnit.last_review_at:type_name -> google.protobuf.Timestamp
+	24, // 15: proto.v1.LearningServiceInitializeMemoryUnitRequest.items:type_name -> proto.v1.LearningServiceMemoryUnitInitItem
+	30, // 16: proto.v1.LearningServiceReviewMemoryUnitsRequest.items:type_name -> proto.v1.LearningServiceMemoryUnitReviewItem
+	2,  // 17: proto.v1.LearningServiceMemoryUnitReviewItem.result:type_name -> proto.v1.ReviewResult
+	25, // 18: proto.v1.LearningServiceListMemoriesForReviewResponse.memory_units:type_name -> proto.v1.MemoryUnit
+	0,  // 19: proto.v1.LearningServiceGetMemoryStatsRequest.type:type_name -> proto.v1.MemoryUnitType
+	38, // 20: proto.v1.LearningServiceGetMemoryStatsResponse.level_stats:type_name -> proto.v1.LearningServiceGetMemoryStatsResponse.LevelStatsEntry
+	39, // 21: proto.v1.LearningServiceGetMemoryStatsResponse.retention_rates:type_name -> proto.v1.LearningServiceGetMemoryStatsResponse.RetentionRatesEntry
+	40, // 22: proto.v1.GetReviewContentResponse.han_chars:type_name -> proto.v1.HanChar
+	42, // 23: proto.v1.GetReviewContentResponse.words:type_name -> proto.v1.Word
+	5,  // 24: proto.v1.LearningService.GetCourseProgress:input_type -> proto.v1.LearningServiceGetCourseProgressRequest
+	7,  // 25: proto.v1.LearningService.GetSectionProgress:input_type -> proto.v1.LearningServiceGetSectionProgressRequest
+	9,  // 26: proto.v1.LearningService.UpdateUnitProgress:input_type -> proto.v1.LearningServiceUpdateUnitProgressRequest
+	11, // 27: proto.v1.LearningService.GetHanCharTest:input_type -> proto.v1.LearningServiceGetHanCharTestRequest
+	22, // 28: proto.v1.LearningService.GetWordTest:input_type -> proto.v1.LearningServiceGetWordTestRequest
+	27, // 29: proto.v1.LearningService.InitializeMemoryUnits:input_type -> proto.v1.LearningServiceInitializeMemoryUnitRequest
+	29, // 30: proto.v1.LearningService.ReviewMemoryUnits:input_type -> proto.v1.LearningServiceReviewMemoryUnitsRequest
+	34, // 31: proto.v1.LearningService.GetMemoryStats:input_type -> proto.v1.LearningServiceGetMemoryStatsRequest
+	36, // 32: proto.v1.LearningService.GetReviewContent:input_type -> proto.v1.GetReviewContentRequest
+	6,  // 33: proto.v1.LearningService.GetCourseProgress:output_type -> proto.v1.LearningServiceGetCourseProgressResponse
+	8,  // 34: proto.v1.LearningService.GetSectionProgress:output_type -> proto.v1.LearningServiceGetSectionProgressResponse
+	10, // 35: proto.v1.LearningService.UpdateUnitProgress:output_type -> proto.v1.LearningServiceUpdateUnitProgressResponse
+	12, // 36: proto.v1.LearningService.GetHanCharTest:output_type -> proto.v1.LearningServiceGetHanCharTestResponse
+	23, // 37: proto.v1.LearningService.GetWordTest:output_type -> proto.v1.LearningServiceGetWordTestResponse
+	28, // 38: proto.v1.LearningService.InitializeMemoryUnits:output_type -> proto.v1.LearningServiceInitializeMemoryUnitResponse
+	31, // 39: proto.v1.LearningService.ReviewMemoryUnits:output_type -> proto.v1.LearningServiceReviewMemoryUnitsResponse
+	35, // 40: proto.v1.LearningService.GetMemoryStats:output_type -> proto.v1.LearningServiceGetMemoryStatsResponse
+	37, // 41: proto.v1.LearningService.GetReviewContent:output_type -> proto.v1.GetReviewContentResponse
+	33, // [33:42] is the sub-list for method output_type
+	24, // [24:33] is the sub-list for method input_type
+	24, // [24:24] is the sub-list for extension type_name
+	24, // [24:24] is the sub-list for extension extendee
+	0,  // [0:24] is the sub-list for field type_name
 }
 
 func init() { file_proto_v1_learning_proto_init() }
@@ -2338,14 +2409,14 @@ func file_proto_v1_learning_proto_init() {
 		return
 	}
 	file_proto_v1_vocabulary_proto_init()
-	file_proto_v1_learning_proto_msgTypes[13].OneofWrappers = []any{}
+	file_proto_v1_learning_proto_msgTypes[31].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_v1_learning_proto_rawDesc), len(file_proto_v1_learning_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   35,
+			NumMessages:   37,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

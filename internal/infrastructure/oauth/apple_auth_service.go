@@ -23,31 +23,6 @@ const (
 	appleJWKSURL = "https://appleid.apple.com/auth/keys"
 )
 
-// AppleConfig Apple 认证配置
-type AppleConfig struct {
-	ClientID   string
-	TeamID     string
-	KeyID      string
-	PrivateKey string
-}
-
-// NewAppleConfig 从配置创建 Apple 配置
-func NewAppleConfig(cfg *config.Config) *AppleConfig {
-	return &AppleConfig{
-		ClientID:   cfg.Apple.ClientID,
-		TeamID:     cfg.Apple.TeamID,
-		KeyID:      cfg.Apple.KeyID,
-		PrivateKey: cfg.Apple.PrivateKey,
-	}
-}
-
-// AppleIDToken Apple ID Token 信息
-type AppleIDToken struct {
-	Subject string // 用户的唯一标识符
-	Email   string // 用户的邮箱
-	Name    string // 用户的名字
-}
-
 // JWKS Apple 的 JWKS 响应
 type JWKS struct {
 	Keys []JWK `json:"keys"`
@@ -74,12 +49,13 @@ type AppleAuthService struct {
 	httpClient  *http.Client
 }
 
-func NewAppleAuthService(cfg *AppleConfig) domainOauth.AppleAuthService {
+// NewAppleAuthService 创建 Apple 认证服务
+func NewAppleAuthService(cfg *config.Config) domainOauth.AppleAuthService {
 	return &AppleAuthService{
-		clientID:   cfg.ClientID,
-		teamID:     cfg.TeamID,
-		keyID:      cfg.KeyID,
-		privateKey: cfg.PrivateKey,
+		clientID:   cfg.Apple.ClientID,
+		teamID:     cfg.Apple.TeamID,
+		keyID:      cfg.Apple.KeyID,
+		privateKey: cfg.Apple.PrivateKey,
 		appleKeys:  make(map[string]*rsa.PublicKey),
 		httpClient: &http.Client{
 			Timeout: 10 * time.Second,
@@ -93,7 +69,12 @@ func (s *AppleAuthService) fetchApplePublicKeys() error {
 	if err != nil {
 		return fmt.Errorf("failed to fetch apple jwks: %v", err)
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println("failed to close response body")
+		}
+	}(resp.Body)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -277,7 +258,12 @@ func (s *AppleAuthService) AuthCodeWithApple(ctx context.Context, authorizationC
 	if err != nil {
 		return nil, fmt.Errorf("请求 Apple token 失败: %v", err)
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println("failed to close response body")
+		}
+	}(resp.Body)
 
 	// 3. 解析响应
 	var tokenResp struct {
@@ -289,7 +275,7 @@ func (s *AppleAuthService) AuthCodeWithApple(ctx context.Context, authorizationC
 	}
 
 	if tokenResp.Error != "" {
-		return nil, fmt.Errorf("Apple 返回错误: %s", tokenResp.Error)
+		return nil, fmt.Errorf("apple 返回错误: %s", tokenResp.Error)
 	}
 
 	if tokenResp.IDToken == "" {

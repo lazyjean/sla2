@@ -63,9 +63,10 @@ type RedisConfig struct {
 }
 
 type LogConfig struct {
-	Level    string `mapstructure:"level"`
-	FilePath string `mapstructure:"file_path"`
-	Format   string `mapstructure:"format"` // 日志格式：json 或 console
+	Level      string `mapstructure:"level"`
+	FilePath   string `mapstructure:"file_path"`
+	Format     string `mapstructure:"format"` // 日志格式：json 或 console
+	Production bool   `mapstructure:"production"`
 }
 
 // JWTConfig JWT 配置

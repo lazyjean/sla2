@@ -41,9 +41,9 @@ type VocabularyServiceClient interface {
 	GetAllMetadata(ctx context.Context, in *VocabularyServiceGetAllMetadataRequest, opts ...grpc.CallOption) (*VocabularyServiceGetAllMetadataResponse, error)
 	// ListHanChar 获取汉字列表
 	ListHanChar(ctx context.Context, in *VocabularyServiceListHanCharRequest, opts ...grpc.CallOption) (*VocabularyServiceListHanCharResponse, error)
-	// 批量英文单词
+	// 批量创建英文单词
 	BatchCreate(ctx context.Context, in *VocabularyServiceBatchCreateRequest, opts ...grpc.CallOption) (*VocabularyServiceBatchCreateResponse, error)
-	// 批量汉字
+	// 批量创建汉字
 	BatchCreateHanChar(ctx context.Context, in *VocabularyServiceBatchCreateHanCharRequest, opts ...grpc.CallOption) (*VocabularyServiceBatchCreateHanCharResponse, error)
 }
 
@@ -129,9 +129,9 @@ type VocabularyServiceServer interface {
 	GetAllMetadata(context.Context, *VocabularyServiceGetAllMetadataRequest) (*VocabularyServiceGetAllMetadataResponse, error)
 	// ListHanChar 获取汉字列表
 	ListHanChar(context.Context, *VocabularyServiceListHanCharRequest) (*VocabularyServiceListHanCharResponse, error)
-	// 批量英文单词
+	// 批量创建英文单词
 	BatchCreate(context.Context, *VocabularyServiceBatchCreateRequest) (*VocabularyServiceBatchCreateResponse, error)
-	// 批量汉字
+	// 批量创建汉字
 	BatchCreateHanChar(context.Context, *VocabularyServiceBatchCreateHanCharRequest) (*VocabularyServiceBatchCreateHanCharResponse, error)
 	mustEmbedUnimplementedVocabularyServiceServer()
 }

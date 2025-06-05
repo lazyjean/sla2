@@ -8,49 +8,24 @@ import (
 	"gorm.io/gorm"
 )
 
-// CourseRepository PostgreSQL 课程仓库实现
+// courseRepository PostgreSQL 课程仓库实现
 type courseRepository struct {
-	db *gorm.DB
+	*repository.GenericRepositoryImpl[*entity.Course, entity.CourseID]
 }
 
 // NewCourseRepository 创建课程仓库实例
 func NewCourseRepository(db *gorm.DB) repository.CourseRepository {
 	return &courseRepository{
-		db: db,
+		GenericRepositoryImpl: repository.NewGenericRepository[*entity.Course, entity.CourseID](db),
 	}
 }
 
-// Create 创建课程
-func (r *courseRepository) Create(ctx context.Context, course *entity.Course) error {
-	return r.db.WithContext(ctx).Create(course).Error
-}
-
-// Update 更新课程
-func (r *courseRepository) Update(ctx context.Context, course *entity.Course) error {
-	return r.db.WithContext(ctx).Save(course).Error
-}
-
-// Delete 删除课程
-func (r *courseRepository) Delete(ctx context.Context, id uint) error {
-	return r.db.WithContext(ctx).Delete(&entity.Course{}, id).Error
-}
-
-// GetByID 根据ID获取课程
-func (r *courseRepository) GetByID(ctx context.Context, id uint) (*entity.Course, error) {
-	var course entity.Course
-	err := r.db.WithContext(ctx).First(&course, id).Error
-	if err != nil {
-		return nil, err
-	}
-	return &course, nil
-}
-
-// List 获取课程列表
-func (r *courseRepository) List(ctx context.Context, offset, limit int, filters map[string]interface{}) ([]*entity.Course, int64, error) {
+// ListWithFilters 获取课程列表（带过滤条件）
+func (r *courseRepository) ListWithFilters(ctx context.Context, offset, limit int, filters map[string]interface{}) ([]*entity.Course, int64, error) {
 	var courses []*entity.Course
 	var total int64
 
-	query := r.db.WithContext(ctx).Model(&entity.Course{})
+	query := r.DB.WithContext(ctx).Model(&entity.Course{})
 
 	// 应用过滤条件
 	for key, value := range filters {
@@ -94,7 +69,7 @@ func (r *courseRepository) Search(ctx context.Context, keyword string, offset, l
 	var courses []*entity.Course
 	var total int64
 
-	query := r.db.WithContext(ctx).
+	query := r.DB.WithContext(ctx).
 		Where("title ILIKE ? OR description ILIKE ?", "%"+keyword+"%", "%"+keyword+"%")
 
 	// 应用过滤条件

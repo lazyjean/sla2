@@ -1,7 +1,10 @@
 package converter
 
 import (
+	"time"
+
 	pb "github.com/lazyjean/sla2/api/proto/v1"
+	"github.com/lazyjean/sla2/internal/application/dto"
 	"github.com/lazyjean/sla2/internal/domain/entity"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -212,5 +215,120 @@ func (c *CourseConverter) ToEntitySectionStatus(status pb.CourseSectionStatus) s
 		return "disabled"
 	default:
 		return "enabled" // 默认启用
+	}
+}
+
+// ToEntityCourse 将 CourseServiceCreateRequest 转换为领域实体 Course
+func (c *CourseConverter) ToEntityCourse(req *pb.CourseServiceCreateRequest) *entity.Course {
+	return &entity.Course{
+		Title:          req.Title,
+		Description:    req.Desc,
+		CoverURL:       req.CoverUrl,
+		Level:          c.ToEntityLevel(req.Level),
+		Category:       c.ToEntityCategory(req.Category),
+		Tags:           req.Tags,
+		Status:         "draft",
+		Prompt:         req.Prompt,
+		Resources:      req.Resources,
+		RecommendedAge: req.RecommendedAge,
+		StudyPlan:      req.StudyPlan,
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
+	}
+}
+
+// ToEntityCourseID 将 uint32 转换为 CourseID
+func (c *CourseConverter) ToEntityCourseID(id uint32) entity.CourseID {
+	return entity.CourseID(id)
+}
+
+// ToEntityCourseListInput 将 CourseServiceListRequest 转换为 CourseListInput
+func (c *CourseConverter) ToEntityCourseListInput(req *pb.CourseServiceListRequest) *dto.CourseListInput {
+	return &dto.CourseListInput{
+		Page:     int(req.Page),
+		PageSize: int(req.PageSize),
+		Level:    uint(req.Level),
+		Category: c.ToEntityCategory(req.Category),
+		Tags:     req.Tags,
+		Status:   c.ToEntityStatus(req.Status),
+	}
+}
+
+// ToEntityCourseSearchInput 将 CourseServiceSearchRequest 转换为 CourseSearchInput
+func (c *CourseConverter) ToEntityCourseSearchInput(req *pb.CourseServiceSearchRequest) *dto.CourseSearchInput {
+	return &dto.CourseSearchInput{
+		Keyword:  req.Keyword,
+		Page:     int(req.Page),
+		PageSize: int(req.PageSize),
+		Level:    uint(req.Level),
+		Category: c.ToEntityCategory(req.Category),
+		Tags:     req.Tags,
+	}
+}
+
+// ToEntityBatchCreateCourseInput 将 CourseServiceBatchCreateRequest 转换为 BatchCreateCourseInput
+func (c *CourseConverter) ToEntityBatchCreateCourseInput(req *pb.CourseServiceBatchCreateRequest) []*entity.BatchCreateCourseInput {
+	courses := make([]*entity.BatchCreateCourseInput, 0, len(req.Courses))
+	for _, coursePb := range req.Courses {
+		sections := make([]entity.BatchCreateSectionInput, 0, len(coursePb.Sections))
+		for _, sectionPb := range coursePb.Sections {
+			units := make([]entity.BatchCreateUnitInput, 0, len(sectionPb.Units))
+			for _, unitPb := range sectionPb.Units {
+				units = append(units, entity.BatchCreateUnitInput{
+					Title:      unitPb.Title,
+					Desc:       unitPb.Desc,
+					OrderIndex: unitPb.OrderIndex,
+					Tags:       unitPb.Labels,
+					Prompt:     unitPb.Prompt,
+				})
+			}
+			sections = append(sections, entity.BatchCreateSectionInput{
+				Title:      sectionPb.Title,
+				Desc:       sectionPb.Desc,
+				OrderIndex: sectionPb.OrderIndex,
+				Units:      units,
+			})
+		}
+		courses = append(courses, &entity.BatchCreateCourseInput{
+			Title:          coursePb.Title,
+			Description:    coursePb.Desc,
+			CoverURL:       coursePb.CoverUrl,
+			Level:          c.ToEntityLevel(coursePb.Level),
+			Category:       c.ToEntityCategory(coursePb.Category),
+			Tags:           coursePb.Tags,
+			Prompt:         coursePb.Prompt,
+			Resources:      coursePb.Resources,
+			RecommendedAge: coursePb.RecommendedAge,
+			StudyPlan:      coursePb.StudyPlan,
+			Sections:       sections,
+		})
+	}
+	return courses
+}
+
+// ToPBCourseIDs 将 CourseID 切片转换为 uint32 切片
+func (c *CourseConverter) ToPBCourseIDs(ids []entity.CourseID) []uint32 {
+	result := make([]uint32, len(ids))
+	for i, id := range ids {
+		result[i] = uint32(id)
+	}
+	return result
+}
+
+// ToEntityCourseForUpdate 将 CourseServiceUpdateRequest 转换为领域实体 Course
+func (c *CourseConverter) ToEntityCourseForUpdate(req *pb.CourseServiceUpdateRequest) *entity.Course {
+	return &entity.Course{
+		Title:          req.Title,
+		Description:    req.Desc,
+		CoverURL:       req.CoverUrl,
+		Level:          c.ToEntityLevel(req.Level),
+		Category:       c.ToEntityCategory(req.Category),
+		Tags:           req.Tags,
+		Status:         c.ToEntityStatus(req.Status),
+		Prompt:         req.Prompt,
+		Resources:      req.Resources,
+		RecommendedAge: req.RecommendedAge,
+		StudyPlan:      req.StudyPlan,
+		UpdatedAt:      time.Now(),
 	}
 }

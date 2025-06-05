@@ -6,8 +6,9 @@ import (
 	"net/http"
 	"testing"
 
-	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
+	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/validator"
 	pb "github.com/lazyjean/sla2/api/proto/v1"
+	"github.com/lazyjean/sla2/config"
 	"github.com/lazyjean/sla2/internal/application/dto"
 	"github.com/lazyjean/sla2/internal/application/service"
 	"github.com/lazyjean/sla2/internal/domain/entity"
@@ -102,12 +103,7 @@ func setupTestDB(t *testing.T) (*gorm.DB, func()) {
 }
 
 // setupTestServer 设置测试服务器
-func setupTestServer(t *testing.T) (*grpc.Server, func()) {
-	// 初始化日志
-	if logger.Log == nil {
-		logger.InitBaseLogger()
-	}
-
+func setupTestServer(t *testing.T, log *zap.Logger) (*grpc.Server, func()) {
 	lis = bufconn.Listen(bufSize)
 
 	// 创建 gRPC 服务器，添加验证中间件
@@ -123,6 +119,11 @@ func setupTestServer(t *testing.T) (*grpc.Server, func()) {
 	passwordService := &mockPasswordService{}
 	tokenService := &mockTokenService{}
 	appleAuth := &mockAppleAuthService{}
+
+	// 初始化全局 logger
+	_ = logger.NewAppLogger(&config.LogConfig{
+		Production: false,
+	})
 
 	// 创建服务
 	userService := service.NewUserService(
@@ -153,14 +154,16 @@ func setupTestServer(t *testing.T) (*grpc.Server, func()) {
 
 // TestUserService_Register 测试注册功能
 func TestUserService_Register(t *testing.T) {
+	// 创建测试用的 logger
+	testLogger, _ := zap.NewDevelopment()
+	ctx := context.Background()
+	ctx = logger.WithContext(ctx, testLogger)
+
 	// 设置测试服务器
-	_, cleanup := setupTestServer(t)
+	_, cleanup := setupTestServer(t, testLogger)
 	defer cleanup()
 
 	// 创建 gRPC 客户端
-	ctx := context.Background()
-	// 添加日志到上下文
-	ctx = logger.WithContext(ctx, logger.Log)
 	conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithContextDialer(bufDialer), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	assert.NoError(t, err)
 	defer conn.Close()
@@ -229,12 +232,16 @@ func TestUserService_Register(t *testing.T) {
 
 // TestUserService_Login 测试登录功能
 func TestUserService_Login(t *testing.T) {
+	// 创建测试用的 logger
+	testLogger, _ := zap.NewDevelopment()
+	ctx := context.Background()
+	ctx = logger.WithContext(ctx, testLogger)
+
 	// 设置测试服务器
-	_, cleanup := setupTestServer(t)
+	_, cleanup := setupTestServer(t, testLogger)
 	defer cleanup()
 
 	// 创建 gRPC 客户端
-	ctx := context.Background()
 	conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithContextDialer(bufDialer), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	assert.NoError(t, err)
 	defer conn.Close()

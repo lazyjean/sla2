@@ -2,19 +2,28 @@ package service
 
 import (
 	"context"
-	"errors"
 
-	"github.com/lazyjean/sla2/internal/domain/entity"
+	"github.com/lazyjean/sla2/internal/domain/errors"
 	"github.com/lazyjean/sla2/internal/domain/repository"
 	"github.com/lazyjean/sla2/internal/domain/security"
+
+	"github.com/lazyjean/sla2/internal/domain/entity"
 )
 
-// Domain errors
-var (
-	ErrSystemAlreadyInitialized = errors.New("system already initialized")
-	ErrSystemNotInitialized     = errors.New("system not initialized")
-	ErrAdminNotFound            = errors.New("admin not found")
-)
+// AdminService 管理员领域服务接口
+type AdminService interface {
+	// IsSystemInitialized 检查系统是否已初始化
+	IsSystemInitialized(ctx context.Context) (bool, error)
+
+	// InitializeSystem 初始化系统并创建初始管理员
+	InitializeSystem(ctx context.Context, admin *entity.Admin) error
+
+	// GetAdminByID 根据ID获取管理员信息
+	GetAdminByID(ctx context.Context, adminID entity.UID) (*entity.Admin, error)
+
+	// GetAdminByUsername 根据用户名获取管理员信息
+	GetAdminByUsername(ctx context.Context, username string) (*entity.Admin, error)
+}
 
 // adminService 管理员领域服务实现
 type adminService struct {
@@ -74,7 +83,7 @@ func (s *adminService) InitializeSystem(ctx context.Context, admin *entity.Admin
 		return err
 	}
 	if initialized {
-		return ErrSystemAlreadyInitialized
+		return errors.ErrSystemAlreadyInitialized
 	}
 
 	// 开始事务
@@ -114,14 +123,15 @@ func (s *adminService) InitializeSystem(ctx context.Context, admin *entity.Admin
 // GetAdminByID 根据ID获取管理员信息
 func (s *adminService) GetAdminByID(ctx context.Context, adminID entity.UID) (*entity.Admin, error) {
 	if !s.isInitialized {
-		return nil, ErrSystemNotInitialized
+		return nil, errors.ErrSystemNotInitialized
 	}
-	admin, err := s.adminRepo.FindByID(ctx, adminID)
+	// todo: 这里的判断是否有优化的空间?
+	admin, err := s.adminRepo.GetByID(ctx, adminID)
 	if err != nil {
 		return nil, err
 	}
 	if admin == nil {
-		return nil, ErrAdminNotFound
+		return nil, errors.ErrAdminNotFound
 	}
 	return admin, nil
 }
@@ -129,14 +139,14 @@ func (s *adminService) GetAdminByID(ctx context.Context, adminID entity.UID) (*e
 // GetAdminByUsername 根据用户名获取管理员信息
 func (s *adminService) GetAdminByUsername(ctx context.Context, username string) (*entity.Admin, error) {
 	if !s.isInitialized {
-		return nil, ErrSystemNotInitialized
+		return nil, errors.ErrSystemNotInitialized
 	}
 	admin, err := s.adminRepo.FindByUsername(ctx, username)
 	if err != nil {
 		return nil, err
 	}
 	if admin == nil {
-		return nil, ErrAdminNotFound
+		return nil, errors.ErrAdminNotFound
 	}
 	return admin, nil
 }

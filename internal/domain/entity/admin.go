@@ -4,23 +4,66 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 // Admin 管理员实体
 type Admin struct {
-	ID            UID       `gorm:"primaryKey;autoIncrement"`                     // 修改为自增整型
-	Username      string    `gorm:"uniqueIndex;not null"`                         // 用户名
-	Password      string    `gorm:"not null"`                                     // 密码（加密存储）
-	Nickname      string    `gorm:"not null"`                                     // 昵称
-	Email         string    `gorm:"not null"`                                     // 邮箱
-	EmailVerified bool      `gorm:"column:email_verified;not null;default:false"` // 邮箱是否已验证
-	Roles         []string  `gorm:"type:jsonb;serializer:json"`                   // 权限列表
-	CreatedAt     time.Time `gorm:"type:timestamptz;not null"`                    // 创建时间
-	UpdatedAt     time.Time `gorm:"type:timestamptz;not null"`                    // 更新时间
+	ID            UID            `gorm:"primaryKey;autoIncrement"`                     // 修改为自增整型
+	Username      string         `gorm:"uniqueIndex;not null"`                         // 用户名
+	Password      string         `gorm:"not null"`                                     // 密码（加密存储）
+	Nickname      string         `gorm:"not null"`                                     // 昵称
+	Email         string         `gorm:"not null"`                                     // 邮箱
+	EmailVerified bool           `gorm:"column:email_verified;not null;default:false"` // 邮箱是否已验证
+	Roles         []string       `gorm:"type:jsonb;serializer:json"`                   // 权限列表
+	CreatedAt     time.Time      `gorm:"type:timestamptz;not null"`                    // 创建时间
+	UpdatedAt     time.Time      `gorm:"type:timestamptz;not null"`                    // 更新时间
+	DeletedAt     gorm.DeletedAt `gorm:"index"`                                        // 软删除
+}
+
+// GetID 获取ID
+func (a *Admin) GetID() UID {
+	return a.ID
+}
+
+// SetID 设置ID
+func (a *Admin) SetID(id UID) {
+	a.ID = id
+}
+
+// GetCreatedAt 获取创建时间
+func (a *Admin) GetCreatedAt() time.Time {
+	return a.CreatedAt
+}
+
+// SetCreatedAt 设置创建时间
+func (a *Admin) SetCreatedAt(t time.Time) {
+	a.CreatedAt = t
+}
+
+// GetUpdatedAt 获取更新时间
+func (a *Admin) GetUpdatedAt() time.Time {
+	return a.UpdatedAt
+}
+
+// SetUpdatedAt 设置更新时间
+func (a *Admin) SetUpdatedAt(t time.Time) {
+	a.UpdatedAt = t
+}
+
+// GetDeletedAt 获取删除时间
+func (a *Admin) GetDeletedAt() gorm.DeletedAt {
+	return a.DeletedAt
+}
+
+// SetDeletedAt 设置删除时间
+func (a *Admin) SetDeletedAt(t gorm.DeletedAt) {
+	a.DeletedAt = t
 }
 
 // Value 实现 driver.Valuer 接口
-func (a Admin) Value() (driver.Value, error) {
+func (a *Admin) Value() (driver.Value, error) {
 	if a.Roles == nil {
 		return json.Marshal([]string{}) // 显式返回空数组的 JSON
 	}

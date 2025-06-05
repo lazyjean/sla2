@@ -24,15 +24,8 @@ type VocabularyService interface {
 	ListWords(ctx context.Context, page, pageSize int, level valueobject.WordDifficultyLevel, tags, categories []string) ([]*entity.Word, int64, error)
 	GetAllMetadata(ctx context.Context) ([]string, []string, error)
 	CreateWord(ctx context.Context, req dto.CreateWordRequest) (*entity.Word, error)
-	BatchCreateWords(ctx context.Context, words []dto.BatchCreateWordRequest) error
-	BatchCreateHanChars(ctx context.Context, hanChars []struct {
-		Character  string
-		Pinyin     string
-		Level      valueobject.WordDifficultyLevel
-		Tags       []string
-		Categories []string
-		Examples   []string
-	}) ([]uint, error)
+	BatchCreateWords(ctx context.Context, words []*entity.Word) error
+	BatchCreateHanChars(ctx context.Context, hanChars []*entity.HanChar) ([]entity.HanCharID, error)
 }
 
 // VocabularyServiceImpl 词汇服务实现
@@ -67,19 +60,16 @@ func (s *VocabularyServiceImpl) CreateHanChar(ctx context.Context, character, pi
 	hanChar.Examples = examples
 
 	// 保存到数据库
-	id, err := s.hanCharRepository.Create(ctx, hanChar)
-	if err != nil {
+	if err := s.hanCharRepository.Create(ctx, hanChar); err != nil {
 		return nil, err
 	}
-
-	hanChar.ID = id
 	return hanChar, nil
 }
 
 // UpdateHanChar 更新汉字
 func (s *VocabularyServiceImpl) UpdateHanChar(ctx context.Context, id entity.HanCharID, character, pinyin string, level valueobject.WordDifficultyLevel, tags, categories, examples []string) (*entity.HanChar, error) {
 	// 获取现有汉字
-	hanChar, err := s.hanCharRepository.GetByID(ctx, id)
+	hanChar, err := s.hanCharRepository.GetByCharacter(ctx, character)
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +121,7 @@ func (s *VocabularyServiceImpl) ListHanChars(ctx context.Context, page, pageSize
 		filters["exclude_ids"] = excludeIDs
 	}
 
-	return s.hanCharRepository.List(ctx, offset, pageSize, filters)
+	return s.hanCharRepository.ListWithFilters(ctx, offset, pageSize, filters)
 }
 
 // SearchHanChars 搜索汉字
@@ -149,7 +139,7 @@ func (s *VocabularyServiceImpl) SearchHanChars(ctx context.Context, keyword stri
 		filters["categories"] = categories
 	}
 
-	return s.hanCharRepository.Search(ctx, keyword, offset, pageSize, filters)
+	return s.hanCharRepository.SearchWithFilters(ctx, keyword, offset, pageSize, filters)
 }
 
 // GetWord 获取单词详情
@@ -172,7 +162,7 @@ func (s *VocabularyServiceImpl) ListWords(ctx context.Context, page, pageSize in
 		filters["categories"] = categories
 	}
 
-	return s.wordRepository.List(ctx, offset, pageSize, filters)
+	return s.wordRepository.ListWithFilters(ctx, offset, pageSize, filters)
 }
 
 // GetAllMetadata 获取所有标签和分类信息
@@ -220,66 +210,22 @@ func (s *VocabularyServiceImpl) CreateWord(ctx context.Context, req dto.CreateWo
 }
 
 // BatchCreateWords 批量创建单词
-func (s *VocabularyServiceImpl) BatchCreateWords(ctx context.Context, words []dto.BatchCreateWordRequest) error {
-	for _, word := range words {
-		// 解析难度等级
-		level := word.Level
-
-		// 创建单词请求
-		req := dto.CreateWordRequest{
-			Text:        word.Word,
-			Definitions: make([]entity.Definition, len(word.Definitions)),
-			Examples:    word.Examples,
-			Tags:        word.Tags,
-			Level:       level,
-		}
-
-		// 转换释义
-		for i, def := range word.Definitions {
-			req.Definitions[i] = entity.Definition{
-				PartOfSpeech: def.PartOfSpeech,
-				Meaning:      def.Meaning,
-				Example:      def.Example,
-				Synonyms:     def.Synonyms,
-				Antonyms:     def.Antonyms,
-			}
-		}
-
-		// 创建单词
-		if _, err := s.CreateWord(ctx, req); err != nil {
-			return fmt.Errorf("failed to create word %s: %w", word.Word, err)
-		}
-	}
-
-	return nil
+func (s *VocabularyServiceImpl) BatchCreateWords(ctx context.Context, words []*entity.Word) error {
+	return s.wordRepository.CreateBatch(ctx, words)
 }
 
 // BatchCreateHanChars 批量创建汉字
-func (s *VocabularyServiceImpl) BatchCreateHanChars(ctx context.Context, hanChars []struct {
-	Character  string
-	Pinyin     string
-	Level      valueobject.WordDifficultyLevel
-	Tags       []string
-	Categories []string
-	Examples   []string
-}) ([]uint, error) {
-	var ids []uint
-	for _, hanChar := range hanChars {
-		// 创建新的汉字实体
-		newHanChar := entity.NewHanChar(hanChar.Character, hanChar.Pinyin, hanChar.Level)
-		newHanChar.Tags = hanChar.Tags
-		newHanChar.Categories = hanChar.Categories
-		newHanChar.Examples = hanChar.Examples
-
-		// 保存到数据库
-		id, err := s.hanCharRepository.Create(ctx, newHanChar)
-		if err != nil {
-			return nil, err
-		}
-
-		ids = append(ids, uint(id))
+func (s *VocabularyServiceImpl) BatchCreateHanChars(ctx context.Context, hanChars []*entity.HanChar) ([]entity.HanCharID, error) {
+	err := s.hanCharRepository.CreateBatch(ctx, hanChars)
+	if err != nil {
+		return nil, err
 	}
-	return ids, nil
+	// todo: how to deal with insert failed record?
+	result := make([]entity.HanCharID, len(hanChars))
+	for _, hanChar := range hanChars {
+		result = append(result, hanChar.GetID())
+	}
+	return result, nil
 }
 
 // 确保 VocabularyServiceImpl 实现了 VocabularyService 接口

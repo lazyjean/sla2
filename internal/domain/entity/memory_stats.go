@@ -1,8 +1,6 @@
 package entity
 
-import (
-	"time"
-)
+import "time"
 
 // MemoryStats 记忆统计
 // 用于记录和展示用户的学习统计信息

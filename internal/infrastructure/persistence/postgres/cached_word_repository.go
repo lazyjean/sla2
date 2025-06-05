@@ -54,8 +54,9 @@ func (r *CachedWordRepository) GetByWord(ctx context.Context, word string) (*ent
 	return r.repo.GetByWord(ctx, word)
 }
 
-func (r *CachedWordRepository) List(ctx context.Context, offset, limit int, filters map[string]interface{}) ([]*entity.Word, int64, error) {
-	return r.repo.List(ctx, offset, limit, filters)
+func (r *CachedWordRepository) List(ctx context.Context, offset, limit int) ([]*entity.Word, error) {
+	words, _, err := r.repo.ListWithFilters(ctx, offset, limit, nil)
+	return words, err
 }
 
 func (r *CachedWordRepository) Search(ctx context.Context, keyword string, offset, limit int, filters map[string]interface{}) ([]*entity.Word, int64, error) {
@@ -109,6 +110,11 @@ func (r *CachedWordRepository) FindByID(ctx context.Context, id uint) (*entity.W
 	return word, nil
 }
 
+// ListWithFilters 获取单词列表（带过滤条件）
+func (r *CachedWordRepository) ListWithFilters(ctx context.Context, offset, limit int, filters map[string]interface{}) ([]*entity.Word, int64, error) {
+	return r.repo.ListWithFilters(ctx, offset, limit, filters)
+}
+
 // ListByUserID 根据用户ID获取单词列表
 func (r *CachedWordRepository) ListByUserID(ctx context.Context, userID uint, offset, limit int) ([]*entity.Word, int64, error) {
 	// 从缓存获取
@@ -119,7 +125,7 @@ func (r *CachedWordRepository) ListByUserID(ctx context.Context, userID uint, of
 	// 尝试从缓存获取
 	if cachedData, err := r.cache.Get(ctx, cacheKey); err == nil {
 		if err := json.Unmarshal([]byte(cachedData), &words); err == nil {
-			return words, total, nil
+			return words, 0, nil // 缓存不存储 total
 		}
 	}
 
@@ -127,7 +133,7 @@ func (r *CachedWordRepository) ListByUserID(ctx context.Context, userID uint, of
 	filters["user_id"] = userID
 
 	// 从数据库获取
-	words, total, err := r.List(ctx, offset, limit, filters)
+	words, total, err := r.ListWithFilters(ctx, offset, limit, filters)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -186,24 +192,48 @@ func (r *CachedWordRepository) ListByIDs(ctx context.Context, ids []entity.WordI
 
 // ListNeedReview 获取需要复习的单词
 func (r *CachedWordRepository) ListNeedReview(ctx context.Context, before time.Time, limit int) ([]*entity.Word, error) {
-	// 1. 从数据库中获取需要复习的单词
-	words, err := r.repo.ListNeedReview(ctx, before, limit)
-	if err != nil {
-		return nil, err
+	filters := map[string]interface{}{
+		"review_before": before,
+	}
+	words, _, err := r.repo.ListWithFilters(ctx, 0, limit, filters)
+	return words, err
+}
+
+// Count 获取单词总数
+func (r *CachedWordRepository) Count(ctx context.Context) (int64, error) {
+	return r.repo.Count(ctx)
+}
+
+// CreateBatch 批量创建单词
+func (r *CachedWordRepository) CreateBatch(ctx context.Context, words []*entity.Word) error {
+	if err := r.repo.CreateBatch(ctx, words); err != nil {
+		return err
 	}
 
-	// 2. 将单词存入缓存
+	// 写入缓存
 	for _, word := range words {
-		wordBytes, err := json.Marshal(word)
-		if err != nil {
-			return nil, err
-		}
-		if err := r.cache.Set(ctx, fmt.Sprintf("word:%d", word.ID), string(wordBytes), 24*time.Hour); err != nil {
-			return nil, err
+		if wordJSON, err := json.Marshal(word); err == nil {
+			cacheKey := fmt.Sprintf("word:%d", word.ID)
+			r.cache.Set(ctx, cacheKey, string(wordJSON), 30*time.Minute)
 		}
 	}
 
-	return words, nil
+	return nil
+}
+
+// UpdateBatch 批量更新单词
+func (r *CachedWordRepository) UpdateBatch(ctx context.Context, words []*entity.Word) error {
+	if err := r.repo.UpdateBatch(ctx, words); err != nil {
+		return err
+	}
+	// 可选：批量更新缓存
+	for _, word := range words {
+		if wordJSON, err := json.Marshal(word); err == nil {
+			cacheKey := fmt.Sprintf("word:%d", word.ID)
+			r.cache.Set(ctx, cacheKey, string(wordJSON), 30*time.Minute)
+		}
+	}
+	return nil
 }
 
 var _ repository.CachedWordRepository = (*CachedWordRepository)(nil)

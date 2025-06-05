@@ -32,7 +32,7 @@ func setupTest(t *testing.T) (context.Context, pb.LearningServiceClient, pb.Voca
 	ctx := logger.WithContext(context.Background(), logger.NewAppLogger(&config.GetConfig().Log))
 	go func() {
 		t.Logf("Starting app for test: %s", t.Name())
-		err = app.Start(ctx)
+		err = app.Start()
 		require.NoError(t, err)
 	}()
 
@@ -81,7 +81,7 @@ func setupTest(t *testing.T) (context.Context, pb.LearningServiceClient, pb.Voca
 	cleanup := func() {
 		t.Logf("=== Cleaning up test: %s ===", t.Name())
 		conn.Close()
-		app.Stop(ctx)
+		app.Stop()
 		test.CleanupTestDB()
 	}
 

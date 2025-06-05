@@ -13,44 +13,16 @@ import (
 
 // memoryUnitRepository 记忆单元仓储实现
 type memoryUnitRepository struct {
+	*repository.GenericRepositoryImpl[*entity.MemoryUnit, entity.MemoryUnitID]
 	db *gorm.DB
 }
 
 // NewMemoryUnitRepository 创建记忆单元仓储实例
 func NewMemoryUnitRepository(db *gorm.DB) repository.MemoryUnitRepository {
 	return &memoryUnitRepository{
-		db: db,
+		GenericRepositoryImpl: repository.NewGenericRepository[*entity.MemoryUnit, entity.MemoryUnitID](db),
+		db:                    db,
 	}
-}
-
-// Create 创建记忆单元
-func (r *memoryUnitRepository) Create(ctx context.Context, unit *entity.MemoryUnit) error {
-	return r.db.WithContext(ctx).Create(unit).Error
-}
-
-// CreateBatch 批量创建记忆单元
-func (r *memoryUnitRepository) CreateBatch(ctx context.Context, units []*entity.MemoryUnit) error {
-	return r.db.WithContext(ctx).Create(units).Error
-}
-
-// Update 更新记忆单元
-func (r *memoryUnitRepository) Update(ctx context.Context, unit *entity.MemoryUnit) error {
-	return r.db.WithContext(ctx).Save(unit).Error
-}
-
-// GetByID 根据ID获取记忆单元
-func (r *memoryUnitRepository) GetByID(ctx context.Context, userID entity.UID, id uint32) (*entity.MemoryUnit, error) {
-	var unit entity.MemoryUnit
-	err := r.db.WithContext(ctx).
-		Where("user_id = ? AND id = ?", userID, id).
-		First(&unit).Error
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
-		return nil, err
-	}
-	return &unit, nil
 }
 
 // GetByTypeAndContentID 根据类型和内容ID获取记忆单元
@@ -68,50 +40,8 @@ func (r *memoryUnitRepository) GetByTypeAndContentID(ctx context.Context, userID
 	return &unit, nil
 }
 
-// ListNeedReview 获取需要复习的记忆单元列表
-func (r *memoryUnitRepository) ListNeedReview(ctx context.Context, userID entity.UID, unitType entity.MemoryUnitType, before time.Time, limit int) ([]*entity.MemoryUnit, error) {
-	// 构建基础查询
-	query := r.db.WithContext(ctx).Model(&entity.MemoryUnit{}).
-		Where("user_id = ? AND type = ? AND next_review_at <= ?::timestamptz", userID, unitType, before) // 使用 timestamptz 类型
-
-	// 执行查询
-	var units []*entity.MemoryUnit
-	err := query.
-		Order("next_review_at ASC"). // 按复习时间升序排序，优先复习时间早的
-		Limit(limit).
-		Find(&units).Error
-	if err != nil {
-		return nil, err
-	}
-	return units, nil
-}
-
-// ListByUserID 获取用户的所有记忆单元
-func (r *memoryUnitRepository) ListByUserID(ctx context.Context, userID entity.UID) ([]*entity.MemoryUnit, error) {
-	var units []*entity.MemoryUnit
-	err := r.db.WithContext(ctx).
-		Where("user_id = ?", userID).
-		Find(&units).Error
-	if err != nil {
-		return nil, err
-	}
-	return units, nil
-}
-
-// ListByUserIDAndType 获取用户指定类型的所有记忆单元
-func (r *memoryUnitRepository) ListByUserIDAndType(ctx context.Context, userID entity.UID, unitType entity.MemoryUnitType) ([]*entity.MemoryUnit, error) {
-	var units []*entity.MemoryUnit
-	err := r.db.WithContext(ctx).
-		Where("user_id = ? AND type = ?", userID, unitType).
-		Find(&units).Error
-	if err != nil {
-		return nil, err
-	}
-	return units, nil
-}
-
 // ListNeedReviewByTypes 根据类型列表获取需要复习的记忆单元列表（分页）
-func (r *memoryUnitRepository) ListNeedReviewByTypes(ctx context.Context, userID entity.UID, types []entity.MemoryUnitType, before time.Time, offset uint32, limit int, masteryLevels []entity.MasteryLevel) ([]*entity.MemoryUnit, error) {
+func (r *memoryUnitRepository) ListNeedReviewByTypes(ctx context.Context, userID entity.UID, types []entity.MemoryUnitType, before time.Time, offset, limit int, masteryLevels []entity.MasteryLevel) ([]*entity.MemoryUnit, error) {
 	// 构建基础查询
 	query := r.db.WithContext(ctx).Model(&entity.MemoryUnit{}).
 		Where("user_id = ? AND type IN ? AND next_review_at <= ?::timestamptz", userID, types, before)
@@ -125,7 +55,7 @@ func (r *memoryUnitRepository) ListNeedReviewByTypes(ctx context.Context, userID
 	var units []*entity.MemoryUnit
 	err := query.
 		Order("next_review_at ASC"). // 按复习时间升序排序，优先复习时间早的
-		Offset(int(offset)).
+		Offset(offset).
 		Limit(limit).
 		Find(&units).Error
 	if err != nil {
@@ -159,8 +89,8 @@ func (r *memoryUnitRepository) CountNeedReviewByTypes(ctx context.Context, userI
 }
 
 // GetStats 获取统计信息
-func (r *memoryUnitRepository) GetStats(ctx context.Context, userID entity.UID, unitType entity.MemoryUnitType) (*repository.MemoryUnitStats, error) {
-	var stats repository.MemoryUnitStats
+func (r *memoryUnitRepository) GetStats(ctx context.Context, userID entity.UID, unitType entity.MemoryUnitType) (*entity.MemoryUnitStats, error) {
+	var stats entity.MemoryUnitStats
 	var totalLearned, masteredCount, learningCount, newCount int64
 
 	// 获取已学习总数（按 content_id 去重）
@@ -171,7 +101,7 @@ func (r *memoryUnitRepository) GetStats(ctx context.Context, userID entity.UID, 
 		Count(&totalLearned).Error; err != nil {
 		return nil, err
 	}
-	stats.TotalCount = int(totalLearned)
+	stats.TotalCount = totalLearned
 
 	// 获取已掌握数量（掌握和精通，按 content_id 去重）
 	if err := r.db.WithContext(ctx).
@@ -181,7 +111,7 @@ func (r *memoryUnitRepository) GetStats(ctx context.Context, userID entity.UID, 
 		Count(&masteredCount).Error; err != nil {
 		return nil, err
 	}
-	stats.MasteredCount = int(masteredCount)
+	stats.MasteredCount = masteredCount
 
 	// 获取学习中数量（初学和熟悉，按 content_id 去重）
 	if err := r.db.WithContext(ctx).
@@ -191,7 +121,7 @@ func (r *memoryUnitRepository) GetStats(ctx context.Context, userID entity.UID, 
 		Count(&learningCount).Error; err != nil {
 		return nil, err
 	}
-	stats.LearningCount = int(learningCount)
+	stats.LearningCount = learningCount
 
 	// 获取新内容数量（未学习，按 content_id 去重）
 	if err := r.db.WithContext(ctx).
@@ -201,21 +131,76 @@ func (r *memoryUnitRepository) GetStats(ctx context.Context, userID entity.UID, 
 		Count(&newCount).Error; err != nil {
 		return nil, err
 	}
-	stats.NewCount = int(newCount)
-
-	// 计算掌握率
-	if stats.TotalCount > 0 {
-		stats.MasteryRate = float64(stats.MasteredCount) / float64(stats.TotalCount)
-	}
+	stats.NewCount = newCount
 
 	// 计算记忆保持率
-	// TODO: 实现记忆保持率计算
-	stats.RetentionRate = 1.0
-
-	// 设置每日目标
-	// TODO: 从配置或用户设置中获取
-	stats.DailyReviewGoal = 20
-	stats.DailyNewGoal = 5
+	if stats.TotalCount > 0 {
+		stats.RetentionRate = float64(stats.MasteredCount) / float64(stats.TotalCount)
+	}
 
 	return &stats, nil
 }
+
+// GetOrCreate 获取或创建记忆单元
+func (r *memoryUnitRepository) GetOrCreate(ctx context.Context, userID entity.UID, unitType entity.MemoryUnitType, contentID uint32) (*entity.MemoryUnit, error) {
+	var unit entity.MemoryUnit
+	result := r.db.WithContext(ctx).Where("user_id = ? AND type = ? AND content_id = ?", userID, unitType, contentID).
+		FirstOrCreate(&unit, entity.MemoryUnit{
+			UserID:    userID,
+			Type:      unitType,
+			ContentID: contentID,
+		})
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &unit, nil
+}
+
+// ListByUserID 获取用户的所有记忆单元
+func (r *memoryUnitRepository) ListByUserID(ctx context.Context, userID entity.UID) ([]*entity.MemoryUnit, error) {
+	var units []*entity.MemoryUnit
+	err := r.db.WithContext(ctx).
+		Where("user_id = ?", userID).
+		Find(&units).Error
+	if err != nil {
+		return nil, err
+	}
+	return units, nil
+}
+
+// ListByUserIDAndType 获取用户指定类型的所有记忆单元
+func (r *memoryUnitRepository) ListByUserIDAndType(ctx context.Context, userID entity.UID, unitType entity.MemoryUnitType) ([]*entity.MemoryUnit, error) {
+	var units []*entity.MemoryUnit
+	err := r.db.WithContext(ctx).
+		Where("user_id = ? AND type = ?", userID, unitType).
+		Find(&units).Error
+	if err != nil {
+		return nil, err
+	}
+	return units, nil
+}
+
+// ListNeedReview 获取需要复习的记忆单元列表
+func (r *memoryUnitRepository) ListNeedReview(ctx context.Context, userID entity.UID, unitType entity.MemoryUnitType, before time.Time, limit int) ([]*entity.MemoryUnit, error) {
+	// 构建基础查询
+	query := r.db.WithContext(ctx).Model(&entity.MemoryUnit{}).
+		Where("user_id = ? AND type = ? AND next_review_at <= ?::timestamptz", userID, unitType, before) // 使用 timestamptz 类型
+
+	// 执行查询
+	var units []*entity.MemoryUnit
+	err := query.
+		Order("next_review_at ASC"). // 按复习时间升序排序，优先复习时间早的
+		Limit(limit).
+		Find(&units).Error
+	if err != nil {
+		return nil, err
+	}
+	return units, nil
+}
+
+func (r *memoryUnitRepository) CountNeedReviewByType(ctx context.Context, userID entity.UID, unitType entity.MemoryUnitType, before time.Time) (int64, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+var _ repository.MemoryUnitRepository = (*memoryUnitRepository)(nil)

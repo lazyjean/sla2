@@ -138,7 +138,7 @@ func (pm *CasbinPermissionManager) CheckPermission(ctx context.Context, sub stri
 	// 标准权限检查
 	res, err := pm.enforcer.Enforce(sub, obj, act)
 	if err != nil {
-		logger.Log.Error("Failed to check permission",
+		logger.GetLogger(ctx).Error("Failed to check permission",
 			zap.String("subject", sub),
 			zap.String("object", obj),
 			zap.String("action", act),
@@ -147,12 +147,12 @@ func (pm *CasbinPermissionManager) CheckPermission(ctx context.Context, sub stri
 	}
 
 	if res {
-		logger.Log.Debug("Permission granted",
+		logger.GetLogger(ctx).Debug("Permission granted",
 			zap.String("subject", sub),
 			zap.String("object", obj),
 			zap.String("action", act))
 	} else {
-		logger.Log.Warn("Permission denied",
+		logger.GetLogger(ctx).Warn("Permission denied",
 			zap.String("subject", sub),
 			zap.String("object", obj),
 			zap.String("action", act))

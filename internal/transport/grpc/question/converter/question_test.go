@@ -130,3 +130,120 @@ func TestQuestionConverter_ToPBTagList(t *testing.T) {
 		})
 	}
 }
+
+func TestQuestionConverter_ToEntityFromCreateRequest(t *testing.T) {
+	converter := NewQuestionConverter()
+
+	tests := []struct {
+		name    string
+		req     *pb.QuestionServiceCreateRequest
+		wantErr bool
+	}{
+		{
+			name: "正常转换",
+			req: &pb.QuestionServiceCreateRequest{
+				Title:          "测试问题",
+				Content:        &pb.HyperTextTag{Type: pb.HyperTextTagType_HYPER_TEXT_TAG_TYPE_TEXT, Value: "测试内容"},
+				SimpleQuestion: "简单问题",
+				QuestionType:   pb.QuestionType_QUESTION_TYPE_SINGLE_CHOICE,
+				Difficulty:     pb.QuestionDifficultyLevel_QUESTION_DIFFICULTY_LEVEL_CEFR_A1,
+				Options: []*pb.QuestionOption{
+					{Value: "选项1"},
+					{Value: "选项2"},
+				},
+				OptionTuples: []*pb.QuestionOptionTuple{
+					{
+						Option1: &pb.QuestionOption{Value: "选项1"},
+						Option2: &pb.QuestionOption{Value: "选项2"},
+					},
+				},
+				Answers:     []string{"选项1"},
+				Category:    pb.QuestionCategory_QUESTION_CATEGORY_EXERCISE,
+				Labels:      []string{"标签1", "标签2"},
+				Explanation: "解释",
+				Attachments: []string{"附件1"},
+				TimeLimit:   60,
+			},
+			wantErr: false,
+		},
+		{
+			name:    "空请求",
+			req:     nil,
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := converter.ToEntityFromCreateRequest(tt.req)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ToEntityFromCreateRequest() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !tt.wantErr && got == nil {
+				t.Error("ToEntityFromCreateRequest() got = nil, want non-nil")
+			}
+		})
+	}
+}
+
+func TestQuestionConverter_ToEntityFromUpdateRequest(t *testing.T) {
+	converter := NewQuestionConverter()
+
+	tests := []struct {
+		name             string
+		req              *pb.QuestionServiceUpdateRequest
+		existingQuestion *entity.Question
+		wantErr          bool
+	}{
+		{
+			name: "正常转换",
+			req: &pb.QuestionServiceUpdateRequest{
+				Id:             1,
+				Title:          "测试问题",
+				Content:        &pb.HyperTextTag{Type: pb.HyperTextTagType_HYPER_TEXT_TAG_TYPE_TEXT, Value: "测试内容"},
+				SimpleQuestion: "简单问题",
+				Difficulty:     pb.QuestionDifficultyLevel_QUESTION_DIFFICULTY_LEVEL_CEFR_A1,
+				Options: []*pb.QuestionOption{
+					{Value: "选项1"},
+					{Value: "选项2"},
+				},
+				OptionTuples: []*pb.QuestionOptionTuple{
+					{
+						Option1: &pb.QuestionOption{Value: "选项1"},
+						Option2: &pb.QuestionOption{Value: "选项2"},
+					},
+				},
+				Answers:     []string{"选项1"},
+				Category:    pb.QuestionCategory_QUESTION_CATEGORY_EXERCISE,
+				Labels:      []string{"标签1", "标签2"},
+				Explanation: "解释",
+				Attachments: []string{"附件1"},
+				TimeLimit:   60,
+			},
+			existingQuestion: &entity.Question{
+				Type: "single_choice",
+			},
+			wantErr: false,
+		},
+		{
+			name:             "空请求",
+			req:              nil,
+			existingQuestion: &entity.Question{},
+			wantErr:          true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := converter.ToEntityFromUpdateRequest(tt.req, tt.existingQuestion)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ToEntityFromUpdateRequest() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !tt.wantErr && got == nil {
+				t.Error("ToEntityFromUpdateRequest() got = nil, want non-nil")
+			}
+		})
+	}
+}

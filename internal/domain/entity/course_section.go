@@ -2,6 +2,8 @@ package entity
 
 import (
 	"time"
+
+	"gorm.io/gorm"
 )
 
 // CourseSectionID 章节ID类型
@@ -21,6 +23,7 @@ type CourseSection struct {
 	Units      []*CourseSectionUnit `gorm:"-"`                                           // 章节单元列表，不存储在数据库中
 	CreatedAt  time.Time            `gorm:"type:timestamptz;not null"`                   // 创建时间
 	UpdatedAt  time.Time            `gorm:"type:timestamptz;not null"`                   // 更新时间
+	DeletedAt  gorm.DeletedAt       `gorm:"index"`
 }
 
 // CourseSectionUnit 课程章节单元实体
@@ -46,4 +49,84 @@ func (CourseSection) TableName() string {
 // TableName 指定表名
 func (CourseSectionUnit) TableName() string {
 	return "course_section_units"
+}
+
+// GetID 获取ID
+func (s *CourseSection) GetID() CourseSectionID {
+	return s.ID
+}
+
+// SetID 设置ID
+func (s *CourseSection) SetID(id CourseSectionID) {
+	s.ID = id
+}
+
+// GetCreatedAt 获取创建时间
+func (s *CourseSection) GetCreatedAt() time.Time {
+	return s.CreatedAt
+}
+
+// SetCreatedAt 设置创建时间
+func (s *CourseSection) SetCreatedAt(t time.Time) {
+	s.CreatedAt = t
+}
+
+// GetUpdatedAt 获取更新时间
+func (s *CourseSection) GetUpdatedAt() time.Time {
+	return s.UpdatedAt
+}
+
+// SetUpdatedAt 设置更新时间
+func (s *CourseSection) SetUpdatedAt(t time.Time) {
+	s.UpdatedAt = t
+}
+
+// GetDeletedAt 获取删除时间
+func (s *CourseSection) GetDeletedAt() gorm.DeletedAt {
+	return s.DeletedAt
+}
+
+// SetDeletedAt 设置删除时间
+func (s *CourseSection) SetDeletedAt(t gorm.DeletedAt) {
+	s.DeletedAt = t
+}
+
+// GetID 获取ID
+func (u *CourseSectionUnit) GetID() CourseSectionUnitID {
+	return u.ID
+}
+
+// SetID 设置ID
+func (u *CourseSectionUnit) SetID(id CourseSectionUnitID) {
+	u.ID = id
+}
+
+// GetCreatedAt 获取创建时间
+func (u *CourseSectionUnit) GetCreatedAt() time.Time {
+	return u.CreatedAt
+}
+
+// SetCreatedAt 设置创建时间
+func (u *CourseSectionUnit) SetCreatedAt(t time.Time) {
+	u.CreatedAt = t
+}
+
+// GetUpdatedAt 获取更新时间
+func (u *CourseSectionUnit) GetUpdatedAt() time.Time {
+	return u.UpdatedAt
+}
+
+// SetUpdatedAt 设置更新时间
+func (u *CourseSectionUnit) SetUpdatedAt(t time.Time) {
+	u.UpdatedAt = t
+}
+
+// GetDeletedAt 获取删除时间
+func (u *CourseSectionUnit) GetDeletedAt() gorm.DeletedAt {
+	return gorm.DeletedAt{}
+}
+
+// SetDeletedAt 设置删除时间
+func (u *CourseSectionUnit) SetDeletedAt(t gorm.DeletedAt) {
+	// CourseSectionUnit 不支持软删除
 }

@@ -8,18 +8,11 @@ import (
 
 // HanCharRepository 汉字仓库接口
 type HanCharRepository interface {
-	// Create 创建汉字
-	Create(ctx context.Context, hanChar *entity.HanChar) (entity.HanCharID, error)
-	// Update 更新汉字
-	Update(ctx context.Context, hanChar *entity.HanChar) error
-	// Delete 删除汉字
-	Delete(ctx context.Context, id entity.HanCharID) error
-	// GetByID 根据ID获取汉字
-	GetByID(ctx context.Context, id entity.HanCharID) (*entity.HanChar, error)
+	GenericRepository[*entity.HanChar, entity.HanCharID]
 	// GetByCharacter 根据字符获取汉字
 	GetByCharacter(ctx context.Context, character string) (*entity.HanChar, error)
-	// List 获取汉字列表
-	List(ctx context.Context, offset, limit int, filters map[string]interface{}) ([]*entity.HanChar, int64, error)
-	// Search 搜索汉字
-	Search(ctx context.Context, keyword string, offset, limit int, filters map[string]interface{}) ([]*entity.HanChar, int64, error)
+	// ListWithFilters 获取汉字列表（带过滤条件）
+	ListWithFilters(ctx context.Context, offset, limit int, filters map[string]interface{}) ([]*entity.HanChar, int64, error)
+	// SearchWithFilters 搜索汉字（带过滤条件）
+	SearchWithFilters(ctx context.Context, keyword string, offset, limit int, filters map[string]interface{}) ([]*entity.HanChar, int64, error)
 }

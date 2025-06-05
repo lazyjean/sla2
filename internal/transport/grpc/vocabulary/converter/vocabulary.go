@@ -53,6 +53,18 @@ func (c *VocabularyConverter) ToProtoHanChar(hanChar *entity.HanChar) *pb.HanCha
 	}
 }
 
+// PbToEntityHanChar 将 Proto 汉字消息转换为实体
+func (c *VocabularyConverter) PbToEntityHanChar(hanCharPb *pb.HanChar) *entity.HanChar {
+	return &entity.HanChar{
+		Character:  hanCharPb.Character,
+		Pinyin:     hanCharPb.Pinyin,
+		Level:      c.ConvertLevelToValueObject(hanCharPb.Level),
+		Tags:       hanCharPb.Tags,
+		Categories: hanCharPb.Categories,
+		Examples:   hanCharPb.Examples,
+	}
+}
+
 // ConvertLevelToString 将 protobuf 枚举类型转换为字符串
 func (c *VocabularyConverter) ConvertLevelToString(level pb.WordDifficultyLevel) string {
 	switch level {
@@ -176,5 +188,39 @@ func (c *VocabularyConverter) ConvertLevelToProto(level valueobject.WordDifficul
 		return pb.WordDifficultyLevel_WORD_DIFFICULTY_LEVEL_HSK6
 	default:
 		return pb.WordDifficultyLevel_WORD_DIFFICULTY_LEVEL_UNSPECIFIED
+	}
+}
+
+// PbWordsToEntities 将 []*pb.Word 转换为 []*entity.Word
+func (c *VocabularyConverter) PbWordsToEntities(wordPbs []*pb.Word) []*entity.Word {
+	words := make([]*entity.Word, 0, len(wordPbs))
+	for _, wordPb := range wordPbs {
+		words = append(words, c.PbToEntityWord(wordPb))
+	}
+	return words
+}
+
+// PbToEntityWord 将 pb.Word 转换为 entity.Word
+func (c *VocabularyConverter) PbToEntityWord(wordPb *pb.Word) *entity.Word {
+	if wordPb == nil {
+		return nil
+	}
+	definitions := make([]entity.Definition, 0, len(wordPb.Definitions))
+	for _, def := range wordPb.Definitions {
+		definitions = append(definitions, entity.Definition{
+			PartOfSpeech: def.PartOfSpeech.String(),
+			Meaning:      def.Meaning,
+			Example:      def.Example,
+			Synonyms:     def.Synonyms,
+			Antonyms:     def.Antonyms,
+		})
+	}
+	return &entity.Word{
+		Text:        wordPb.Word,
+		Phonetic:    wordPb.Spelling,
+		Definitions: definitions,
+		Examples:    wordPb.Examples,
+		Tags:        wordPb.Tags,
+		Level:       c.ConvertLevelToValueObject(wordPb.Level),
 	}
 }

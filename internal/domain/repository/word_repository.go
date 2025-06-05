@@ -9,18 +9,13 @@ import (
 
 // WordRepository 单词仓库接口
 type WordRepository interface {
-	// Create 创建单词
-	Create(ctx context.Context, word *entity.Word) error
-	// Update 更新单词
-	Update(ctx context.Context, word *entity.Word) error
-	// Delete 删除单词
-	Delete(ctx context.Context, id entity.WordID) error
-	// GetByID 根据ID获取单词
-	GetByID(ctx context.Context, id entity.WordID) (*entity.Word, error)
+	// GenericRepository 继承通用仓储接口
+	GenericRepository[*entity.Word, entity.WordID]
+
 	// GetByWord 根据单词获取
 	GetByWord(ctx context.Context, word string) (*entity.Word, error)
-	// List 获取单词列表
-	List(ctx context.Context, offset, limit int, filters map[string]interface{}) ([]*entity.Word, int64, error)
+	// ListWithFilters 获取单词列表（带过滤条件）
+	ListWithFilters(ctx context.Context, offset, limit int, filters map[string]interface{}) ([]*entity.Word, int64, error)
 	// ListByIDs 通过ID列表获取单词
 	ListByIDs(ctx context.Context, ids []entity.WordID) ([]*entity.Word, error)
 	// Search 搜索单词
@@ -29,8 +24,6 @@ type WordRepository interface {
 	GetAllTags(ctx context.Context) ([]string, error)
 	// GetAllCategories 获取所有分类
 	GetAllCategories(ctx context.Context) ([]string, error)
-	// ListNeedReview 获取需要复习的单词列表
-	ListNeedReview(ctx context.Context, before time.Time, limit int) ([]*entity.Word, error)
 }
 
 // CachedWordRepository 缓存单词仓储接口

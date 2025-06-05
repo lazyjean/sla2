@@ -2,8 +2,7 @@ package postgres
 
 import (
 	"context"
-	"fmt"
-
+	"errors"
 	"github.com/lazyjean/sla2/internal/domain/entity"
 	"github.com/lazyjean/sla2/internal/domain/repository"
 	"github.com/lazyjean/sla2/internal/domain/valueobject"
@@ -13,57 +12,33 @@ import (
 
 // hanCharRepository PostgreSQL 汉字仓库实现
 type hanCharRepository struct {
-	db *gorm.DB
+	*repository.GenericRepositoryImpl[*entity.HanChar, entity.HanCharID]
 }
 
 // NewHanCharRepository 创建汉字仓库实例
 func NewHanCharRepository(db *gorm.DB) repository.HanCharRepository {
 	return &hanCharRepository{
-		db: db,
+		GenericRepositoryImpl: repository.NewGenericRepository[*entity.HanChar, entity.HanCharID](db),
 	}
 }
 
 // Create 创建汉字
-func (r *hanCharRepository) Create(ctx context.Context, hanChar *entity.HanChar) (entity.HanCharID, error) {
+func (r *hanCharRepository) Create(ctx context.Context, hanChar *entity.HanChar) error {
 	// 使用 GORM 的 Create 方法，GORM 会自动处理 JSONB 字段的序列化
-	err := r.db.WithContext(ctx).
+	return r.DB.WithContext(ctx).
 		Clauses(clause.OnConflict{
 			Columns:   []clause.Column{{Name: "character"}},
 			DoNothing: true,
 		}).
 		Create(hanChar).Error
-	if err != nil {
-		return 0, err
-	}
-	return hanChar.ID, nil
-}
-
-// Update 更新汉字
-func (r *hanCharRepository) Update(ctx context.Context, hanChar *entity.HanChar) error {
-	return r.db.WithContext(ctx).Save(hanChar).Error
-}
-
-// Delete 删除汉字
-func (r *hanCharRepository) Delete(ctx context.Context, id entity.HanCharID) error {
-	return r.db.WithContext(ctx).Delete(&entity.HanChar{}, id).Error
-}
-
-// GetByID 根据ID获取汉字
-func (r *hanCharRepository) GetByID(ctx context.Context, id entity.HanCharID) (*entity.HanChar, error) {
-	var hanChar entity.HanChar
-	err := r.db.WithContext(ctx).First(&hanChar, id).Error
-	if err != nil {
-		return nil, err
-	}
-	return &hanChar, nil
 }
 
 // GetByCharacter 根据字符获取汉字
 func (r *hanCharRepository) GetByCharacter(ctx context.Context, character string) (*entity.HanChar, error) {
 	var hanChar entity.HanChar
-	err := r.db.WithContext(ctx).Where("character = ?", character).First(&hanChar).Error
+	err := r.DB.WithContext(ctx).Where("character = ?", character).First(&hanChar).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
 		return nil, err
@@ -71,12 +46,12 @@ func (r *hanCharRepository) GetByCharacter(ctx context.Context, character string
 	return &hanChar, nil
 }
 
-// List 获取汉字列表
-func (r *hanCharRepository) List(ctx context.Context, offset, limit int, filters map[string]interface{}) ([]*entity.HanChar, int64, error) {
+// ListWithFilters 获取汉字列表（带过滤条件）
+func (r *hanCharRepository) ListWithFilters(ctx context.Context, offset, limit int, filters map[string]interface{}) ([]*entity.HanChar, int64, error) {
 	var hanChars []*entity.HanChar
 	var total int64
 
-	query := r.db.WithContext(ctx).Model(&entity.HanChar{})
+	query := r.DB.WithContext(ctx).Model(&entity.HanChar{})
 
 	// 应用过滤条件
 	for key, value := range filters {
@@ -84,7 +59,6 @@ func (r *hanCharRepository) List(ctx context.Context, offset, limit int, filters
 		case "level":
 			if v, ok := value.(valueobject.WordDifficultyLevel); ok {
 				query = query.Where("level = ?", v)
-				fmt.Printf("Filtering by level: %d\n", v)
 			}
 		case "tags":
 			if v, ok := value.([]string); ok && len(v) > 0 {
@@ -112,18 +86,15 @@ func (r *hanCharRepository) List(ctx context.Context, offset, limit int, filters
 	if err != nil {
 		return nil, 0, err
 	}
-
-	fmt.Printf("Found %d han chars, total: %d\n", len(hanChars), total)
-
 	return hanChars, total, nil
 }
 
-// Search 搜索汉字
-func (r *hanCharRepository) Search(ctx context.Context, keyword string, offset, limit int, filters map[string]interface{}) ([]*entity.HanChar, int64, error) {
+// SearchWithFilters 搜索汉字（带过滤条件）
+func (r *hanCharRepository) SearchWithFilters(ctx context.Context, keyword string, offset, limit int, filters map[string]interface{}) ([]*entity.HanChar, int64, error) {
 	var hanChars []*entity.HanChar
 	var total int64
 
-	query := r.db.WithContext(ctx).
+	query := r.DB.WithContext(ctx).
 		Where("character ILIKE ? OR pinyin ILIKE ?", "%"+keyword+"%", "%"+keyword+"%")
 
 	// 应用过滤条件

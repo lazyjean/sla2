@@ -35,400 +35,6 @@ var (
 	_ = sort.Sort
 )
 
-// Validate checks the field values on MemoryUnit with the rules defined in the
-// proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *MemoryUnit) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on MemoryUnit with the rules defined in
-// the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in MemoryUnitMultiError, or
-// nil if none found.
-func (m *MemoryUnit) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *MemoryUnit) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for Id
-
-	// no validation rules for Type
-
-	// no validation rules for ContentId
-
-	// no validation rules for MasteryLevel
-
-	// no validation rules for ReviewCount
-
-	if all {
-		switch v := interface{}(m.GetNextReviewAt()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, MemoryUnitValidationError{
-					field:  "NextReviewAt",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, MemoryUnitValidationError{
-					field:  "NextReviewAt",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetNextReviewAt()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return MemoryUnitValidationError{
-				field:  "NextReviewAt",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if all {
-		switch v := interface{}(m.GetLastReviewAt()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, MemoryUnitValidationError{
-					field:  "LastReviewAt",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, MemoryUnitValidationError{
-					field:  "LastReviewAt",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetLastReviewAt()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return MemoryUnitValidationError{
-				field:  "LastReviewAt",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	// no validation rules for StudyDuration
-
-	// no validation rules for RetentionRate
-
-	// no validation rules for ConsecutiveCorrect
-
-	// no validation rules for ConsecutiveWrong
-
-	if len(errors) > 0 {
-		return MemoryUnitMultiError(errors)
-	}
-
-	return nil
-}
-
-// MemoryUnitMultiError is an error wrapping multiple validation errors
-// returned by MemoryUnit.ValidateAll() if the designated constraints aren't met.
-type MemoryUnitMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m MemoryUnitMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m MemoryUnitMultiError) AllErrors() []error { return m }
-
-// MemoryUnitValidationError is the validation error returned by
-// MemoryUnit.Validate if the designated constraints aren't met.
-type MemoryUnitValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e MemoryUnitValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e MemoryUnitValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e MemoryUnitValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e MemoryUnitValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e MemoryUnitValidationError) ErrorName() string { return "MemoryUnitValidationError" }
-
-// Error satisfies the builtin error interface
-func (e MemoryUnitValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sMemoryUnit.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = MemoryUnitValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = MemoryUnitValidationError{}
-
-// Validate checks the field values on ReviewInterval with the rules defined in
-// the proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *ReviewInterval) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on ReviewInterval with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in ReviewIntervalMultiError,
-// or nil if none found.
-func (m *ReviewInterval) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *ReviewInterval) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for Days
-
-	// no validation rules for Hours
-
-	// no validation rules for Minutes
-
-	if len(errors) > 0 {
-		return ReviewIntervalMultiError(errors)
-	}
-
-	return nil
-}
-
-// ReviewIntervalMultiError is an error wrapping multiple validation errors
-// returned by ReviewInterval.ValidateAll() if the designated constraints
-// aren't met.
-type ReviewIntervalMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m ReviewIntervalMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m ReviewIntervalMultiError) AllErrors() []error { return m }
-
-// ReviewIntervalValidationError is the validation error returned by
-// ReviewInterval.Validate if the designated constraints aren't met.
-type ReviewIntervalValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e ReviewIntervalValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e ReviewIntervalValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e ReviewIntervalValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e ReviewIntervalValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e ReviewIntervalValidationError) ErrorName() string { return "ReviewIntervalValidationError" }
-
-// Error satisfies the builtin error interface
-func (e ReviewIntervalValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sReviewInterval.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = ReviewIntervalValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = ReviewIntervalValidationError{}
-
-// Validate checks the field values on LearningServiceMemoryUnitInitItem with
-// the rules defined in the proto definition for this message. If any rules
-// are violated, the first error encountered is returned, or nil if there are
-// no violations.
-func (m *LearningServiceMemoryUnitInitItem) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on LearningServiceMemoryUnitInitItem
-// with the rules defined in the proto definition for this message. If any
-// rules are violated, the result is a list of violation errors wrapped in
-// LearningServiceMemoryUnitInitItemMultiError, or nil if none found.
-func (m *LearningServiceMemoryUnitInitItem) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *LearningServiceMemoryUnitInitItem) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for Type
-
-	// no validation rules for ContentId
-
-	// no validation rules for MasteryLevel
-
-	// no validation rules for LearningDuration
-
-	if len(errors) > 0 {
-		return LearningServiceMemoryUnitInitItemMultiError(errors)
-	}
-
-	return nil
-}
-
-// LearningServiceMemoryUnitInitItemMultiError is an error wrapping multiple
-// validation errors returned by
-// LearningServiceMemoryUnitInitItem.ValidateAll() if the designated
-// constraints aren't met.
-type LearningServiceMemoryUnitInitItemMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m LearningServiceMemoryUnitInitItemMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m LearningServiceMemoryUnitInitItemMultiError) AllErrors() []error { return m }
-
-// LearningServiceMemoryUnitInitItemValidationError is the validation error
-// returned by LearningServiceMemoryUnitInitItem.Validate if the designated
-// constraints aren't met.
-type LearningServiceMemoryUnitInitItemValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e LearningServiceMemoryUnitInitItemValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e LearningServiceMemoryUnitInitItemValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e LearningServiceMemoryUnitInitItemValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e LearningServiceMemoryUnitInitItemValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e LearningServiceMemoryUnitInitItemValidationError) ErrorName() string {
-	return "LearningServiceMemoryUnitInitItemValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e LearningServiceMemoryUnitInitItemValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sLearningServiceMemoryUnitInitItem.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = LearningServiceMemoryUnitInitItemValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = LearningServiceMemoryUnitInitItemValidationError{}
-
 // Validate checks the field values on LearningProgress with the rules defined
 // in the proto definition for this message. If any rules are violated, the
 // first error encountered is returned, or nil if there are no violations.
@@ -1347,493 +953,6 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = LearningServiceUpdateUnitProgressResponseValidationError{}
-
-// Validate checks the field values on
-// LearningServiceListMemoriesForReviewRequest with the rules defined in the
-// proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *LearningServiceListMemoriesForReviewRequest) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on
-// LearningServiceListMemoriesForReviewRequest with the rules defined in the
-// proto definition for this message. If any rules are violated, the result is
-// a list of violation errors wrapped in
-// LearningServiceListMemoriesForReviewRequestMultiError, or nil if none found.
-func (m *LearningServiceListMemoriesForReviewRequest) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *LearningServiceListMemoriesForReviewRequest) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for Page
-
-	// no validation rules for PageSize
-
-	if len(errors) > 0 {
-		return LearningServiceListMemoriesForReviewRequestMultiError(errors)
-	}
-
-	return nil
-}
-
-// LearningServiceListMemoriesForReviewRequestMultiError is an error wrapping
-// multiple validation errors returned by
-// LearningServiceListMemoriesForReviewRequest.ValidateAll() if the designated
-// constraints aren't met.
-type LearningServiceListMemoriesForReviewRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m LearningServiceListMemoriesForReviewRequestMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m LearningServiceListMemoriesForReviewRequestMultiError) AllErrors() []error { return m }
-
-// LearningServiceListMemoriesForReviewRequestValidationError is the validation
-// error returned by LearningServiceListMemoriesForReviewRequest.Validate if
-// the designated constraints aren't met.
-type LearningServiceListMemoriesForReviewRequestValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e LearningServiceListMemoriesForReviewRequestValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e LearningServiceListMemoriesForReviewRequestValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e LearningServiceListMemoriesForReviewRequestValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e LearningServiceListMemoriesForReviewRequestValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e LearningServiceListMemoriesForReviewRequestValidationError) ErrorName() string {
-	return "LearningServiceListMemoriesForReviewRequestValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e LearningServiceListMemoriesForReviewRequestValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sLearningServiceListMemoriesForReviewRequest.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = LearningServiceListMemoriesForReviewRequestValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = LearningServiceListMemoriesForReviewRequestValidationError{}
-
-// Validate checks the field values on
-// LearningServiceListMemoriesForReviewResponse with the rules defined in the
-// proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *LearningServiceListMemoriesForReviewResponse) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on
-// LearningServiceListMemoriesForReviewResponse with the rules defined in the
-// proto definition for this message. If any rules are violated, the result is
-// a list of violation errors wrapped in
-// LearningServiceListMemoriesForReviewResponseMultiError, or nil if none found.
-func (m *LearningServiceListMemoriesForReviewResponse) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *LearningServiceListMemoriesForReviewResponse) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	for idx, item := range m.GetMemoryUnits() {
-		_, _ = idx, item
-
-		if all {
-			switch v := interface{}(item).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, LearningServiceListMemoriesForReviewResponseValidationError{
-						field:  fmt.Sprintf("MemoryUnits[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, LearningServiceListMemoriesForReviewResponseValidationError{
-						field:  fmt.Sprintf("MemoryUnits[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return LearningServiceListMemoriesForReviewResponseValidationError{
-					field:  fmt.Sprintf("MemoryUnits[%v]", idx),
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
-
-	}
-
-	// no validation rules for Total
-
-	if len(errors) > 0 {
-		return LearningServiceListMemoriesForReviewResponseMultiError(errors)
-	}
-
-	return nil
-}
-
-// LearningServiceListMemoriesForReviewResponseMultiError is an error wrapping
-// multiple validation errors returned by
-// LearningServiceListMemoriesForReviewResponse.ValidateAll() if the
-// designated constraints aren't met.
-type LearningServiceListMemoriesForReviewResponseMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m LearningServiceListMemoriesForReviewResponseMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m LearningServiceListMemoriesForReviewResponseMultiError) AllErrors() []error { return m }
-
-// LearningServiceListMemoriesForReviewResponseValidationError is the
-// validation error returned by
-// LearningServiceListMemoriesForReviewResponse.Validate if the designated
-// constraints aren't met.
-type LearningServiceListMemoriesForReviewResponseValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e LearningServiceListMemoriesForReviewResponseValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e LearningServiceListMemoriesForReviewResponseValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e LearningServiceListMemoriesForReviewResponseValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e LearningServiceListMemoriesForReviewResponseValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e LearningServiceListMemoriesForReviewResponseValidationError) ErrorName() string {
-	return "LearningServiceListMemoriesForReviewResponseValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e LearningServiceListMemoriesForReviewResponseValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sLearningServiceListMemoriesForReviewResponse.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = LearningServiceListMemoriesForReviewResponseValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = LearningServiceListMemoriesForReviewResponseValidationError{}
-
-// Validate checks the field values on LearningServiceGetMemoryStatsRequest
-// with the rules defined in the proto definition for this message. If any
-// rules are violated, the first error encountered is returned, or nil if
-// there are no violations.
-func (m *LearningServiceGetMemoryStatsRequest) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on LearningServiceGetMemoryStatsRequest
-// with the rules defined in the proto definition for this message. If any
-// rules are violated, the result is a list of violation errors wrapped in
-// LearningServiceGetMemoryStatsRequestMultiError, or nil if none found.
-func (m *LearningServiceGetMemoryStatsRequest) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *LearningServiceGetMemoryStatsRequest) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if m.Type != nil {
-		// no validation rules for Type
-	}
-
-	if m.Tag != nil {
-		// no validation rules for Tag
-	}
-
-	if m.Category != nil {
-		// no validation rules for Category
-	}
-
-	if len(errors) > 0 {
-		return LearningServiceGetMemoryStatsRequestMultiError(errors)
-	}
-
-	return nil
-}
-
-// LearningServiceGetMemoryStatsRequestMultiError is an error wrapping multiple
-// validation errors returned by
-// LearningServiceGetMemoryStatsRequest.ValidateAll() if the designated
-// constraints aren't met.
-type LearningServiceGetMemoryStatsRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m LearningServiceGetMemoryStatsRequestMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m LearningServiceGetMemoryStatsRequestMultiError) AllErrors() []error { return m }
-
-// LearningServiceGetMemoryStatsRequestValidationError is the validation error
-// returned by LearningServiceGetMemoryStatsRequest.Validate if the designated
-// constraints aren't met.
-type LearningServiceGetMemoryStatsRequestValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e LearningServiceGetMemoryStatsRequestValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e LearningServiceGetMemoryStatsRequestValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e LearningServiceGetMemoryStatsRequestValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e LearningServiceGetMemoryStatsRequestValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e LearningServiceGetMemoryStatsRequestValidationError) ErrorName() string {
-	return "LearningServiceGetMemoryStatsRequestValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e LearningServiceGetMemoryStatsRequestValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sLearningServiceGetMemoryStatsRequest.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = LearningServiceGetMemoryStatsRequestValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = LearningServiceGetMemoryStatsRequestValidationError{}
-
-// Validate checks the field values on LearningServiceGetMemoryStatsResponse
-// with the rules defined in the proto definition for this message. If any
-// rules are violated, the first error encountered is returned, or nil if
-// there are no violations.
-func (m *LearningServiceGetMemoryStatsResponse) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on LearningServiceGetMemoryStatsResponse
-// with the rules defined in the proto definition for this message. If any
-// rules are violated, the result is a list of violation errors wrapped in
-// LearningServiceGetMemoryStatsResponseMultiError, or nil if none found.
-func (m *LearningServiceGetMemoryStatsResponse) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *LearningServiceGetMemoryStatsResponse) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for TotalLearned
-
-	// no validation rules for MasteredCount
-
-	// no validation rules for NeedReviewCount
-
-	// no validation rules for TotalStudyTime
-
-	// no validation rules for LevelStats
-
-	// no validation rules for RetentionRates
-
-	if len(errors) > 0 {
-		return LearningServiceGetMemoryStatsResponseMultiError(errors)
-	}
-
-	return nil
-}
-
-// LearningServiceGetMemoryStatsResponseMultiError is an error wrapping
-// multiple validation errors returned by
-// LearningServiceGetMemoryStatsResponse.ValidateAll() if the designated
-// constraints aren't met.
-type LearningServiceGetMemoryStatsResponseMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m LearningServiceGetMemoryStatsResponseMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m LearningServiceGetMemoryStatsResponseMultiError) AllErrors() []error { return m }
-
-// LearningServiceGetMemoryStatsResponseValidationError is the validation error
-// returned by LearningServiceGetMemoryStatsResponse.Validate if the
-// designated constraints aren't met.
-type LearningServiceGetMemoryStatsResponseValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e LearningServiceGetMemoryStatsResponseValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e LearningServiceGetMemoryStatsResponseValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e LearningServiceGetMemoryStatsResponseValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e LearningServiceGetMemoryStatsResponseValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e LearningServiceGetMemoryStatsResponseValidationError) ErrorName() string {
-	return "LearningServiceGetMemoryStatsResponseValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e LearningServiceGetMemoryStatsResponseValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sLearningServiceGetMemoryStatsResponse.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = LearningServiceGetMemoryStatsResponseValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = LearningServiceGetMemoryStatsResponseValidationError{}
 
 // Validate checks the field values on LearningServiceGetHanCharTestRequest
 // with the rules defined in the proto definition for this message. If any
@@ -3236,6 +2355,648 @@ var _ interface {
 	ErrorName() string
 } = LearningServiceHanCharLearningResultValidationError{}
 
+// Validate checks the field values on LearningServiceGetWordTestRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *LearningServiceGetWordTestRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on LearningServiceGetWordTestRequest
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// LearningServiceGetWordTestRequestMultiError, or nil if none found.
+func (m *LearningServiceGetWordTestRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *LearningServiceGetWordTestRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Count
+
+	// no validation rules for DifficultyLevel
+
+	if len(errors) > 0 {
+		return LearningServiceGetWordTestRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// LearningServiceGetWordTestRequestMultiError is an error wrapping multiple
+// validation errors returned by
+// LearningServiceGetWordTestRequest.ValidateAll() if the designated
+// constraints aren't met.
+type LearningServiceGetWordTestRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m LearningServiceGetWordTestRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m LearningServiceGetWordTestRequestMultiError) AllErrors() []error { return m }
+
+// LearningServiceGetWordTestRequestValidationError is the validation error
+// returned by LearningServiceGetWordTestRequest.Validate if the designated
+// constraints aren't met.
+type LearningServiceGetWordTestRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e LearningServiceGetWordTestRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e LearningServiceGetWordTestRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e LearningServiceGetWordTestRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e LearningServiceGetWordTestRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e LearningServiceGetWordTestRequestValidationError) ErrorName() string {
+	return "LearningServiceGetWordTestRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e LearningServiceGetWordTestRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sLearningServiceGetWordTestRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = LearningServiceGetWordTestRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = LearningServiceGetWordTestRequestValidationError{}
+
+// Validate checks the field values on LearningServiceGetWordTestResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *LearningServiceGetWordTestResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on LearningServiceGetWordTestResponse
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// LearningServiceGetWordTestResponseMultiError, or nil if none found.
+func (m *LearningServiceGetWordTestResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *LearningServiceGetWordTestResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetWords() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, LearningServiceGetWordTestResponseValidationError{
+						field:  fmt.Sprintf("Words[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, LearningServiceGetWordTestResponseValidationError{
+						field:  fmt.Sprintf("Words[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return LearningServiceGetWordTestResponseValidationError{
+					field:  fmt.Sprintf("Words[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return LearningServiceGetWordTestResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// LearningServiceGetWordTestResponseMultiError is an error wrapping multiple
+// validation errors returned by
+// LearningServiceGetWordTestResponse.ValidateAll() if the designated
+// constraints aren't met.
+type LearningServiceGetWordTestResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m LearningServiceGetWordTestResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m LearningServiceGetWordTestResponseMultiError) AllErrors() []error { return m }
+
+// LearningServiceGetWordTestResponseValidationError is the validation error
+// returned by LearningServiceGetWordTestResponse.Validate if the designated
+// constraints aren't met.
+type LearningServiceGetWordTestResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e LearningServiceGetWordTestResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e LearningServiceGetWordTestResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e LearningServiceGetWordTestResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e LearningServiceGetWordTestResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e LearningServiceGetWordTestResponseValidationError) ErrorName() string {
+	return "LearningServiceGetWordTestResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e LearningServiceGetWordTestResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sLearningServiceGetWordTestResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = LearningServiceGetWordTestResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = LearningServiceGetWordTestResponseValidationError{}
+
+// Validate checks the field values on LearningServiceMemoryUnitInitItem with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *LearningServiceMemoryUnitInitItem) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on LearningServiceMemoryUnitInitItem
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// LearningServiceMemoryUnitInitItemMultiError, or nil if none found.
+func (m *LearningServiceMemoryUnitInitItem) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *LearningServiceMemoryUnitInitItem) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Type
+
+	// no validation rules for ContentId
+
+	// no validation rules for MasteryLevel
+
+	// no validation rules for LearningDuration
+
+	if len(errors) > 0 {
+		return LearningServiceMemoryUnitInitItemMultiError(errors)
+	}
+
+	return nil
+}
+
+// LearningServiceMemoryUnitInitItemMultiError is an error wrapping multiple
+// validation errors returned by
+// LearningServiceMemoryUnitInitItem.ValidateAll() if the designated
+// constraints aren't met.
+type LearningServiceMemoryUnitInitItemMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m LearningServiceMemoryUnitInitItemMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m LearningServiceMemoryUnitInitItemMultiError) AllErrors() []error { return m }
+
+// LearningServiceMemoryUnitInitItemValidationError is the validation error
+// returned by LearningServiceMemoryUnitInitItem.Validate if the designated
+// constraints aren't met.
+type LearningServiceMemoryUnitInitItemValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e LearningServiceMemoryUnitInitItemValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e LearningServiceMemoryUnitInitItemValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e LearningServiceMemoryUnitInitItemValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e LearningServiceMemoryUnitInitItemValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e LearningServiceMemoryUnitInitItemValidationError) ErrorName() string {
+	return "LearningServiceMemoryUnitInitItemValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e LearningServiceMemoryUnitInitItemValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sLearningServiceMemoryUnitInitItem.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = LearningServiceMemoryUnitInitItemValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = LearningServiceMemoryUnitInitItemValidationError{}
+
+// Validate checks the field values on MemoryUnit with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *MemoryUnit) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on MemoryUnit with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in MemoryUnitMultiError, or
+// nil if none found.
+func (m *MemoryUnit) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *MemoryUnit) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for Type
+
+	// no validation rules for ContentId
+
+	// no validation rules for MasteryLevel
+
+	// no validation rules for ReviewCount
+
+	if all {
+		switch v := interface{}(m.GetNextReviewAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, MemoryUnitValidationError{
+					field:  "NextReviewAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, MemoryUnitValidationError{
+					field:  "NextReviewAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetNextReviewAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return MemoryUnitValidationError{
+				field:  "NextReviewAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetLastReviewAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, MemoryUnitValidationError{
+					field:  "LastReviewAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, MemoryUnitValidationError{
+					field:  "LastReviewAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetLastReviewAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return MemoryUnitValidationError{
+				field:  "LastReviewAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for StudyDuration
+
+	// no validation rules for RetentionRate
+
+	// no validation rules for ConsecutiveCorrect
+
+	// no validation rules for ConsecutiveWrong
+
+	if len(errors) > 0 {
+		return MemoryUnitMultiError(errors)
+	}
+
+	return nil
+}
+
+// MemoryUnitMultiError is an error wrapping multiple validation errors
+// returned by MemoryUnit.ValidateAll() if the designated constraints aren't met.
+type MemoryUnitMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m MemoryUnitMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m MemoryUnitMultiError) AllErrors() []error { return m }
+
+// MemoryUnitValidationError is the validation error returned by
+// MemoryUnit.Validate if the designated constraints aren't met.
+type MemoryUnitValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e MemoryUnitValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e MemoryUnitValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e MemoryUnitValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e MemoryUnitValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e MemoryUnitValidationError) ErrorName() string { return "MemoryUnitValidationError" }
+
+// Error satisfies the builtin error interface
+func (e MemoryUnitValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sMemoryUnit.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = MemoryUnitValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = MemoryUnitValidationError{}
+
+// Validate checks the field values on ReviewInterval with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *ReviewInterval) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ReviewInterval with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in ReviewIntervalMultiError,
+// or nil if none found.
+func (m *ReviewInterval) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ReviewInterval) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Days
+
+	// no validation rules for Hours
+
+	// no validation rules for Minutes
+
+	if len(errors) > 0 {
+		return ReviewIntervalMultiError(errors)
+	}
+
+	return nil
+}
+
+// ReviewIntervalMultiError is an error wrapping multiple validation errors
+// returned by ReviewInterval.ValidateAll() if the designated constraints
+// aren't met.
+type ReviewIntervalMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ReviewIntervalMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ReviewIntervalMultiError) AllErrors() []error { return m }
+
+// ReviewIntervalValidationError is the validation error returned by
+// ReviewInterval.Validate if the designated constraints aren't met.
+type ReviewIntervalValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ReviewIntervalValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ReviewIntervalValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ReviewIntervalValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ReviewIntervalValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ReviewIntervalValidationError) ErrorName() string { return "ReviewIntervalValidationError" }
+
+// Error satisfies the builtin error interface
+func (e ReviewIntervalValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sReviewInterval.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ReviewIntervalValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ReviewIntervalValidationError{}
+
 // Validate checks the field values on
 // LearningServiceInitializeMemoryUnitRequest with the rules defined in the
 // proto definition for this message. If any rules are violated, the first
@@ -3839,48 +3600,45 @@ var _ interface {
 	ErrorName() string
 } = LearningServiceReviewMemoryUnitsResponseValidationError{}
 
-// Validate checks the field values on LearningServiceGetWordTestRequest with
-// the rules defined in the proto definition for this message. If any rules
-// are violated, the first error encountered is returned, or nil if there are
-// no violations.
-func (m *LearningServiceGetWordTestRequest) Validate() error {
+// Validate checks the field values on
+// LearningServiceListMemoriesForReviewRequest with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *LearningServiceListMemoriesForReviewRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on LearningServiceGetWordTestRequest
-// with the rules defined in the proto definition for this message. If any
-// rules are violated, the result is a list of violation errors wrapped in
-// LearningServiceGetWordTestRequestMultiError, or nil if none found.
-func (m *LearningServiceGetWordTestRequest) ValidateAll() error {
+// ValidateAll checks the field values on
+// LearningServiceListMemoriesForReviewRequest with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in
+// LearningServiceListMemoriesForReviewRequestMultiError, or nil if none found.
+func (m *LearningServiceListMemoriesForReviewRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *LearningServiceGetWordTestRequest) validate(all bool) error {
+func (m *LearningServiceListMemoriesForReviewRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
-	// no validation rules for Count
-
-	// no validation rules for DifficultyLevel
-
 	if len(errors) > 0 {
-		return LearningServiceGetWordTestRequestMultiError(errors)
+		return LearningServiceListMemoriesForReviewRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// LearningServiceGetWordTestRequestMultiError is an error wrapping multiple
-// validation errors returned by
-// LearningServiceGetWordTestRequest.ValidateAll() if the designated
+// LearningServiceListMemoriesForReviewRequestMultiError is an error wrapping
+// multiple validation errors returned by
+// LearningServiceListMemoriesForReviewRequest.ValidateAll() if the designated
 // constraints aren't met.
-type LearningServiceGetWordTestRequestMultiError []error
+type LearningServiceListMemoriesForReviewRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m LearningServiceGetWordTestRequestMultiError) Error() string {
+func (m LearningServiceListMemoriesForReviewRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -3889,12 +3647,12 @@ func (m LearningServiceGetWordTestRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m LearningServiceGetWordTestRequestMultiError) AllErrors() []error { return m }
+func (m LearningServiceListMemoriesForReviewRequestMultiError) AllErrors() []error { return m }
 
-// LearningServiceGetWordTestRequestValidationError is the validation error
-// returned by LearningServiceGetWordTestRequest.Validate if the designated
-// constraints aren't met.
-type LearningServiceGetWordTestRequestValidationError struct {
+// LearningServiceListMemoriesForReviewRequestValidationError is the validation
+// error returned by LearningServiceListMemoriesForReviewRequest.Validate if
+// the designated constraints aren't met.
+type LearningServiceListMemoriesForReviewRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -3902,24 +3660,24 @@ type LearningServiceGetWordTestRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e LearningServiceGetWordTestRequestValidationError) Field() string { return e.field }
+func (e LearningServiceListMemoriesForReviewRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e LearningServiceGetWordTestRequestValidationError) Reason() string { return e.reason }
+func (e LearningServiceListMemoriesForReviewRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e LearningServiceGetWordTestRequestValidationError) Cause() error { return e.cause }
+func (e LearningServiceListMemoriesForReviewRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e LearningServiceGetWordTestRequestValidationError) Key() bool { return e.key }
+func (e LearningServiceListMemoriesForReviewRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e LearningServiceGetWordTestRequestValidationError) ErrorName() string {
-	return "LearningServiceGetWordTestRequestValidationError"
+func (e LearningServiceListMemoriesForReviewRequestValidationError) ErrorName() string {
+	return "LearningServiceListMemoriesForReviewRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e LearningServiceGetWordTestRequestValidationError) Error() string {
+func (e LearningServiceListMemoriesForReviewRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -3931,14 +3689,14 @@ func (e LearningServiceGetWordTestRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sLearningServiceGetWordTestRequest.%s: %s%s",
+		"invalid %sLearningServiceListMemoriesForReviewRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = LearningServiceGetWordTestRequestValidationError{}
+var _ error = LearningServiceListMemoriesForReviewRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -3946,30 +3704,544 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = LearningServiceGetWordTestRequestValidationError{}
+} = LearningServiceListMemoriesForReviewRequestValidationError{}
 
-// Validate checks the field values on LearningServiceGetWordTestResponse with
-// the rules defined in the proto definition for this message. If any rules
-// are violated, the first error encountered is returned, or nil if there are
-// no violations.
-func (m *LearningServiceGetWordTestResponse) Validate() error {
+// Validate checks the field values on
+// LearningServiceListMemoriesForReviewResponse with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *LearningServiceListMemoriesForReviewResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on LearningServiceGetWordTestResponse
-// with the rules defined in the proto definition for this message. If any
-// rules are violated, the result is a list of violation errors wrapped in
-// LearningServiceGetWordTestResponseMultiError, or nil if none found.
-func (m *LearningServiceGetWordTestResponse) ValidateAll() error {
+// ValidateAll checks the field values on
+// LearningServiceListMemoriesForReviewResponse with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in
+// LearningServiceListMemoriesForReviewResponseMultiError, or nil if none found.
+func (m *LearningServiceListMemoriesForReviewResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *LearningServiceGetWordTestResponse) validate(all bool) error {
+func (m *LearningServiceListMemoriesForReviewResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
+
+	for idx, item := range m.GetMemoryUnits() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, LearningServiceListMemoriesForReviewResponseValidationError{
+						field:  fmt.Sprintf("MemoryUnits[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, LearningServiceListMemoriesForReviewResponseValidationError{
+						field:  fmt.Sprintf("MemoryUnits[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return LearningServiceListMemoriesForReviewResponseValidationError{
+					field:  fmt.Sprintf("MemoryUnits[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	// no validation rules for Total
+
+	if len(errors) > 0 {
+		return LearningServiceListMemoriesForReviewResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// LearningServiceListMemoriesForReviewResponseMultiError is an error wrapping
+// multiple validation errors returned by
+// LearningServiceListMemoriesForReviewResponse.ValidateAll() if the
+// designated constraints aren't met.
+type LearningServiceListMemoriesForReviewResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m LearningServiceListMemoriesForReviewResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m LearningServiceListMemoriesForReviewResponseMultiError) AllErrors() []error { return m }
+
+// LearningServiceListMemoriesForReviewResponseValidationError is the
+// validation error returned by
+// LearningServiceListMemoriesForReviewResponse.Validate if the designated
+// constraints aren't met.
+type LearningServiceListMemoriesForReviewResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e LearningServiceListMemoriesForReviewResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e LearningServiceListMemoriesForReviewResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e LearningServiceListMemoriesForReviewResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e LearningServiceListMemoriesForReviewResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e LearningServiceListMemoriesForReviewResponseValidationError) ErrorName() string {
+	return "LearningServiceListMemoriesForReviewResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e LearningServiceListMemoriesForReviewResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sLearningServiceListMemoriesForReviewResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = LearningServiceListMemoriesForReviewResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = LearningServiceListMemoriesForReviewResponseValidationError{}
+
+// Validate checks the field values on LearningServiceGetMemoryStatsRequest
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the first error encountered is returned, or nil if
+// there are no violations.
+func (m *LearningServiceGetMemoryStatsRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on LearningServiceGetMemoryStatsRequest
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// LearningServiceGetMemoryStatsRequestMultiError, or nil if none found.
+func (m *LearningServiceGetMemoryStatsRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *LearningServiceGetMemoryStatsRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.Type != nil {
+		// no validation rules for Type
+	}
+
+	if m.Tag != nil {
+		// no validation rules for Tag
+	}
+
+	if m.Category != nil {
+		// no validation rules for Category
+	}
+
+	if len(errors) > 0 {
+		return LearningServiceGetMemoryStatsRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// LearningServiceGetMemoryStatsRequestMultiError is an error wrapping multiple
+// validation errors returned by
+// LearningServiceGetMemoryStatsRequest.ValidateAll() if the designated
+// constraints aren't met.
+type LearningServiceGetMemoryStatsRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m LearningServiceGetMemoryStatsRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m LearningServiceGetMemoryStatsRequestMultiError) AllErrors() []error { return m }
+
+// LearningServiceGetMemoryStatsRequestValidationError is the validation error
+// returned by LearningServiceGetMemoryStatsRequest.Validate if the designated
+// constraints aren't met.
+type LearningServiceGetMemoryStatsRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e LearningServiceGetMemoryStatsRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e LearningServiceGetMemoryStatsRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e LearningServiceGetMemoryStatsRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e LearningServiceGetMemoryStatsRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e LearningServiceGetMemoryStatsRequestValidationError) ErrorName() string {
+	return "LearningServiceGetMemoryStatsRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e LearningServiceGetMemoryStatsRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sLearningServiceGetMemoryStatsRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = LearningServiceGetMemoryStatsRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = LearningServiceGetMemoryStatsRequestValidationError{}
+
+// Validate checks the field values on LearningServiceGetMemoryStatsResponse
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the first error encountered is returned, or nil if
+// there are no violations.
+func (m *LearningServiceGetMemoryStatsResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on LearningServiceGetMemoryStatsResponse
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// LearningServiceGetMemoryStatsResponseMultiError, or nil if none found.
+func (m *LearningServiceGetMemoryStatsResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *LearningServiceGetMemoryStatsResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for TotalLearned
+
+	// no validation rules for MasteredCount
+
+	// no validation rules for NeedReviewCount
+
+	// no validation rules for TotalStudyTime
+
+	// no validation rules for LevelStats
+
+	// no validation rules for RetentionRates
+
+	if len(errors) > 0 {
+		return LearningServiceGetMemoryStatsResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// LearningServiceGetMemoryStatsResponseMultiError is an error wrapping
+// multiple validation errors returned by
+// LearningServiceGetMemoryStatsResponse.ValidateAll() if the designated
+// constraints aren't met.
+type LearningServiceGetMemoryStatsResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m LearningServiceGetMemoryStatsResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m LearningServiceGetMemoryStatsResponseMultiError) AllErrors() []error { return m }
+
+// LearningServiceGetMemoryStatsResponseValidationError is the validation error
+// returned by LearningServiceGetMemoryStatsResponse.Validate if the
+// designated constraints aren't met.
+type LearningServiceGetMemoryStatsResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e LearningServiceGetMemoryStatsResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e LearningServiceGetMemoryStatsResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e LearningServiceGetMemoryStatsResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e LearningServiceGetMemoryStatsResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e LearningServiceGetMemoryStatsResponseValidationError) ErrorName() string {
+	return "LearningServiceGetMemoryStatsResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e LearningServiceGetMemoryStatsResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sLearningServiceGetMemoryStatsResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = LearningServiceGetMemoryStatsResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = LearningServiceGetMemoryStatsResponseValidationError{}
+
+// Validate checks the field values on GetReviewContentRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetReviewContentRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetReviewContentRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetReviewContentRequestMultiError, or nil if none found.
+func (m *GetReviewContentRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetReviewContentRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Count
+
+	if len(errors) > 0 {
+		return GetReviewContentRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetReviewContentRequestMultiError is an error wrapping multiple validation
+// errors returned by GetReviewContentRequest.ValidateAll() if the designated
+// constraints aren't met.
+type GetReviewContentRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetReviewContentRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetReviewContentRequestMultiError) AllErrors() []error { return m }
+
+// GetReviewContentRequestValidationError is the validation error returned by
+// GetReviewContentRequest.Validate if the designated constraints aren't met.
+type GetReviewContentRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetReviewContentRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetReviewContentRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetReviewContentRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetReviewContentRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetReviewContentRequestValidationError) ErrorName() string {
+	return "GetReviewContentRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetReviewContentRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetReviewContentRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetReviewContentRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetReviewContentRequestValidationError{}
+
+// Validate checks the field values on GetReviewContentResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetReviewContentResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetReviewContentResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetReviewContentResponseMultiError, or nil if none found.
+func (m *GetReviewContentResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetReviewContentResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetHanChars() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, GetReviewContentResponseValidationError{
+						field:  fmt.Sprintf("HanChars[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, GetReviewContentResponseValidationError{
+						field:  fmt.Sprintf("HanChars[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return GetReviewContentResponseValidationError{
+					field:  fmt.Sprintf("HanChars[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
 
 	for idx, item := range m.GetWords() {
 		_, _ = idx, item
@@ -3978,7 +4250,7 @@ func (m *LearningServiceGetWordTestResponse) validate(all bool) error {
 			switch v := interface{}(item).(type) {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, LearningServiceGetWordTestResponseValidationError{
+					errors = append(errors, GetReviewContentResponseValidationError{
 						field:  fmt.Sprintf("Words[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -3986,7 +4258,7 @@ func (m *LearningServiceGetWordTestResponse) validate(all bool) error {
 				}
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
-					errors = append(errors, LearningServiceGetWordTestResponseValidationError{
+					errors = append(errors, GetReviewContentResponseValidationError{
 						field:  fmt.Sprintf("Words[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -3995,7 +4267,7 @@ func (m *LearningServiceGetWordTestResponse) validate(all bool) error {
 			}
 		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				return LearningServiceGetWordTestResponseValidationError{
+				return GetReviewContentResponseValidationError{
 					field:  fmt.Sprintf("Words[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -4005,21 +4277,22 @@ func (m *LearningServiceGetWordTestResponse) validate(all bool) error {
 
 	}
 
+	// no validation rules for HasMore
+
 	if len(errors) > 0 {
-		return LearningServiceGetWordTestResponseMultiError(errors)
+		return GetReviewContentResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// LearningServiceGetWordTestResponseMultiError is an error wrapping multiple
-// validation errors returned by
-// LearningServiceGetWordTestResponse.ValidateAll() if the designated
+// GetReviewContentResponseMultiError is an error wrapping multiple validation
+// errors returned by GetReviewContentResponse.ValidateAll() if the designated
 // constraints aren't met.
-type LearningServiceGetWordTestResponseMultiError []error
+type GetReviewContentResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m LearningServiceGetWordTestResponseMultiError) Error() string {
+func (m GetReviewContentResponseMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -4028,12 +4301,11 @@ func (m LearningServiceGetWordTestResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m LearningServiceGetWordTestResponseMultiError) AllErrors() []error { return m }
+func (m GetReviewContentResponseMultiError) AllErrors() []error { return m }
 
-// LearningServiceGetWordTestResponseValidationError is the validation error
-// returned by LearningServiceGetWordTestResponse.Validate if the designated
-// constraints aren't met.
-type LearningServiceGetWordTestResponseValidationError struct {
+// GetReviewContentResponseValidationError is the validation error returned by
+// GetReviewContentResponse.Validate if the designated constraints aren't met.
+type GetReviewContentResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -4041,24 +4313,24 @@ type LearningServiceGetWordTestResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e LearningServiceGetWordTestResponseValidationError) Field() string { return e.field }
+func (e GetReviewContentResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e LearningServiceGetWordTestResponseValidationError) Reason() string { return e.reason }
+func (e GetReviewContentResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e LearningServiceGetWordTestResponseValidationError) Cause() error { return e.cause }
+func (e GetReviewContentResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e LearningServiceGetWordTestResponseValidationError) Key() bool { return e.key }
+func (e GetReviewContentResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e LearningServiceGetWordTestResponseValidationError) ErrorName() string {
-	return "LearningServiceGetWordTestResponseValidationError"
+func (e GetReviewContentResponseValidationError) ErrorName() string {
+	return "GetReviewContentResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e LearningServiceGetWordTestResponseValidationError) Error() string {
+func (e GetReviewContentResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -4070,14 +4342,14 @@ func (e LearningServiceGetWordTestResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sLearningServiceGetWordTestResponse.%s: %s%s",
+		"invalid %sGetReviewContentResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = LearningServiceGetWordTestResponseValidationError{}
+var _ error = GetReviewContentResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -4085,4 +4357,4 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = LearningServiceGetWordTestResponseValidationError{}
+} = GetReviewContentResponseValidationError{}

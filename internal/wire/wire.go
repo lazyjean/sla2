@@ -6,15 +6,22 @@ package wire
 import (
 	"testing"
 
-	"github.com/google/wire"
-	"go.uber.org/zap"
+	"github.com/lazyjean/sla2/internal/transport/grpc/admin"
+	"github.com/lazyjean/sla2/internal/transport/grpc/course"
+	"github.com/lazyjean/sla2/internal/transport/grpc/learning"
+	"github.com/lazyjean/sla2/internal/transport/grpc/question"
+	"github.com/lazyjean/sla2/internal/transport/grpc/user"
+	"github.com/lazyjean/sla2/internal/transport/grpc/vocabulary"
 
+	"github.com/lazyjean/sla2/internal/transport/grpc/middleware"
+
+	"github.com/google/wire"
 	"github.com/lazyjean/sla2/config"
 	"github.com/lazyjean/sla2/pkg/logger"
 
 	"github.com/lazyjean/sla2/internal/application/service"
-	"github.com/lazyjean/sla2/internal/domain/repository"
 	domainsecurity "github.com/lazyjean/sla2/internal/domain/security"
+	domainservice "github.com/lazyjean/sla2/internal/domain/service"
 
 	"github.com/lazyjean/sla2/internal/infrastructure/cache/redis"
 	"github.com/lazyjean/sla2/internal/infrastructure/listen"
@@ -31,13 +38,9 @@ import (
 	learningconverter "github.com/lazyjean/sla2/internal/transport/grpc/learning/converter"
 	questionconverter "github.com/lazyjean/sla2/internal/transport/grpc/question/converter"
 	vocabularyconverter "github.com/lazyjean/sla2/internal/transport/grpc/vocabulary/converter"
-)
 
-// 提供 Logger 实例
-func ProvideLogger() *zap.Logger {
-	// 使用项目中的标准 logger 实例
-	return logger.Log
-}
+	infravalidator "github.com/lazyjean/sla2/internal/infrastructure/validator"
+)
 
 // 配置集
 var configSet = wire.NewSet(
@@ -61,12 +64,13 @@ var cacheSet = wire.NewSet(
 
 // 仓储集
 var repositorySet = wire.NewSet(
-	postgres.NewWordRepository,
+	postgres.NewVocabularyRepository,
 	postgres.NewCachedWordRepository,
 	postgres.NewLearningRepository,
 	postgres.NewUserRepository,
 	postgres.NewCourseRepository,
 	postgres.NewCourseSectionRepository,
+	postgres.NewCourseSectionUnitRepository,
 	postgres.NewAdminRepository,
 	postgres.NewQuestionRepository,
 	postgres.NewHanCharRepository,
@@ -84,33 +88,17 @@ var converterSet = wire.NewSet(
 
 // 服务集
 var serviceSet = wire.NewSet(
+	domainservice.NewMemoryService,
 	service.NewVocabularyService,
 	service.NewLearningService,
 	service.NewUserService,
 	service.NewCourseService,
-	provideAdminService,
 	service.NewQuestionService,
-	service.NewMemoryService,
+	service.NewAdminService,
 )
-
-// provideAdminService 提供管理员服务
-func provideAdminService(
-	adminRepo repository.AdminRepository,
-	passwordService domainsecurity.PasswordService,
-	tokenService domainsecurity.TokenService,
-	permissionHelper *domainsecurity.PermissionHelper,
-) *service.AdminService {
-	return service.NewAdminService(
-		adminRepo,
-		passwordService,
-		tokenService,
-		permissionHelper,
-	)
-}
 
 // 认证集
 var authSet = wire.NewSet(
-	oauth.NewAppleConfig,
 	oauth.NewAppleAuthService,
 )
 
@@ -132,15 +120,27 @@ var wsSet = wire.NewSet(
 	handler.NewWebSocketHandler,
 )
 
+// transport 服务集
+var transportSet = wire.NewSet(
+	user.NewUserService,
+	question.NewQuestionService,
+	course.NewCourseService,
+	learning.NewLearningService,
+	admin.NewAdminService,
+	vocabulary.NewVocabularyService,
+)
+
 // gRPC服务器集
 var grpcSet = wire.NewSet(
 	listen.NewListener,
 	grpcserver.NewGRPCServer,
+	grpcserver.NewServer,
 )
 
 var bufConnGrpcSet = wire.NewSet(
 	test.NewTestListener,
 	grpcserver.NewGRPCServer,
+	grpcserver.NewServer,
 )
 
 // 提供 PermissionHelper
@@ -163,11 +163,23 @@ var testSecuritySet = wire.NewSet(
 	infrasecurity.NewBCryptPasswordService,
 )
 
+// 验证器集
+var validatorSet = wire.NewSet(
+	infravalidator.NewValidator,
+)
+
+// 测试验证器集
+var testValidatorSet = wire.NewSet(
+	infravalidator.NewValidator,
+)
+
 // InitializeApp 初始化应用程序
 func InitializeApp() (*Application, error) {
 	wire.Build(
 		NewApplication,
 		logger.NewAppLogger,
+		middleware.NewMetrics,
+		middleware.NewRegistry,
 		configSet,
 		dbSet,
 		repositorySet,
@@ -175,8 +187,11 @@ func InitializeApp() (*Application, error) {
 		authSet,
 		securitySet,
 		wsSet,
+		transportSet,
+		converterSet,
 		grpcSet,
 		rbacSet,
+		//validatorSet,
 	)
 	return nil, nil
 }
@@ -185,6 +200,8 @@ func InitializeTestApp(t *testing.T) (*Application, error) {
 	wire.Build(
 		NewApplication,
 		logger.NewAppLogger,
+		middleware.NewMetrics,
+		middleware.NewRegistry,
 		configSet,
 		testDBSet,
 		repositorySet,
@@ -192,8 +209,11 @@ func InitializeTestApp(t *testing.T) (*Application, error) {
 		testAuthSet,
 		testSecuritySet,
 		wsSet,
+		transportSet,
+		converterSet,
 		bufConnGrpcSet,
 		rbacSet,
+		//testValidatorSet,
 	)
 	return nil, nil
 }

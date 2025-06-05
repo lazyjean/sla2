@@ -2,8 +2,6 @@ package dto
 
 import (
 	"time"
-
-	"github.com/lazyjean/sla2/internal/domain/entity"
 )
 
 // CourseProgressDTO 课程进度DTO
@@ -37,48 +35,4 @@ type UnitProgressDTO struct {
 	StartedAt   time.Time  `json:"started_at"`
 	UpdatedAt   time.Time  `json:"updated_at"`
 	CompletedAt *time.Time `json:"completed_at,omitempty"`
-}
-
-// 转换函数
-func CourseProgressToDTO(progress *entity.CourseLearningProgress) *CourseProgressDTO {
-	return &CourseProgressDTO{
-		ID:          progress.ID,
-		CourseID:    progress.CourseID,
-		Status:      progress.Status,
-		Score:       progress.Score,
-		StartedAt:   progress.CreatedAt,
-		CompletedAt: nil,
-		UpdatedAt:   progress.UpdatedAt,
-	}
-}
-
-func SectionProgressToDTO(progress *entity.CourseSectionProgress) *SectionProgressDTO {
-	dto := &SectionProgressDTO{
-		ID:        progress.ID,
-		SectionID: progress.SectionID,
-		Status:    progress.Status,
-		Progress:  progress.Progress,
-		StartedAt: progress.CreatedAt,
-		UpdatedAt: progress.UpdatedAt,
-	}
-
-	if progress.Status == "completed" {
-		dto.CompletedAt = &progress.UpdatedAt
-	}
-	return dto
-}
-
-func UnitProgressToDTO(progress *entity.CourseSectionUnitProgress) *UnitProgressDTO {
-	dto := &UnitProgressDTO{
-		ID:        progress.ID,
-		UnitID:    progress.UnitID,
-		Status:    progress.Status,
-		StartedAt: progress.CreatedAt,
-		UpdatedAt: progress.UpdatedAt,
-	}
-
-	if progress.Status == "completed" {
-		dto.CompletedAt = &progress.UpdatedAt
-	}
-	return dto
 }

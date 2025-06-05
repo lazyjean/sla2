@@ -5,15 +5,16 @@ import (
 	"fmt"
 	"strings"
 
-	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
-	"github.com/lazyjean/sla2/internal/application/service"
-	"github.com/lazyjean/sla2/internal/domain/security"
-	"github.com/lazyjean/sla2/pkg/logger"
+	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors"
+	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/auth"
 	"go.uber.org/zap"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+
+	"github.com/lazyjean/sla2/internal/application/service"
+	"github.com/lazyjean/sla2/internal/domain/security"
+	"github.com/lazyjean/sla2/pkg/logger"
 )
 
 // 不需要认证的方法列表
@@ -25,9 +26,9 @@ var noAuthMethods = map[string]bool{
 	"/proto.v1.UserService/ResetPassword": true,
 
 	// 管理员服务
-	"/proto.v1.AdminService/CheckSystemStatus": true,
-	"/proto.v1.AdminService/InitializeSystem":  true,
-	"/proto.v1.AdminService/AdminLogin":        true,
+	"/proto.v1.AdminService/IsSystemInitialized": true,
+	"/proto.v1.AdminService/InitializeSystem":    true,
+	"/proto.v1.AdminService/AdminLogin":          true,
 
 	// gRPC 反射服务
 	"/grpc.reflection.v1.ServerReflection/ServerReflectionInfo": true,
@@ -35,6 +36,12 @@ var noAuthMethods = map[string]bool{
 	// 健康检查服务
 	"/grpc.health.v1.Health/Check": true,
 	"/grpc.health.v1.Health/Watch": true,
+}
+
+func AuthFunc(tokenService security.TokenService) auth.AuthFunc {
+	return func(ctx context.Context) (context.Context, error) {
+		return authenticate(ctx, tokenService)
+	}
 }
 
 // authenticate 通用的认证逻辑
@@ -62,21 +69,11 @@ func authenticate(ctx context.Context, tokenService security.TokenService) (cont
 	return newCtx, nil
 }
 
-// UnaryServerInterceptor 一元 RPC 认证中间件
-func UnaryServerInterceptor(tokenService security.TokenService) grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-		// 检查是否需要认证
-		if noAuthMethods[info.FullMethod] {
-			return handler(ctx, req)
-		}
-
-		newCtx, err := authenticate(ctx, tokenService)
-		if err != nil {
-			return nil, err
-		}
-
-		return handler(newCtx, req)
+func RequireAuth(ctx context.Context, callMeta interceptors.CallMeta) bool {
+	if noAuthMethods[callMeta.FullMethod()] {
+		return false
 	}
+	return true
 }
 
 // extractToken 从上下文中提取 token
@@ -119,24 +116,4 @@ func extractToken(ctx context.Context) (string, error) {
 	}
 
 	return values[0], nil
-}
-
-// StreamServerInterceptor 流式 RPC 认证中间件
-func StreamServerInterceptor(tokenService security.TokenService) grpc.StreamServerInterceptor {
-	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
-		// 检查是否需要认证
-		if noAuthMethods[info.FullMethod] {
-			return handler(srv, ss)
-		}
-
-		newCtx, err := authenticate(ss.Context(), tokenService)
-		if err != nil {
-			return err
-		}
-
-		wrapped := grpc_middleware.WrapServerStream(ss)
-		wrapped.WrappedContext = newCtx
-
-		return handler(srv, wrapped)
-	}
 }

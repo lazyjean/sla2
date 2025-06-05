@@ -113,3 +113,43 @@ func (h *HanChar) Update(character, pinyin string, level valueobject.WordDifficu
 	h.Level = level
 	h.UpdatedAt = time.Now()
 }
+
+// GetID 获取ID
+func (h *HanChar) GetID() HanCharID {
+	return h.ID
+}
+
+// SetID 设置ID
+func (h *HanChar) SetID(id HanCharID) {
+	h.ID = id
+}
+
+// GetCreatedAt 获取创建时间
+func (h *HanChar) GetCreatedAt() time.Time {
+	return h.CreatedAt
+}
+
+// SetCreatedAt 设置创建时间
+func (h *HanChar) SetCreatedAt(t time.Time) {
+	h.CreatedAt = t
+}
+
+// GetUpdatedAt 获取更新时间
+func (h *HanChar) GetUpdatedAt() time.Time {
+	return h.UpdatedAt
+}
+
+// SetUpdatedAt 设置更新时间
+func (h *HanChar) SetUpdatedAt(t time.Time) {
+	h.UpdatedAt = t
+}
+
+// GetDeletedAt 获取删除时间
+func (h *HanChar) GetDeletedAt() gorm.DeletedAt {
+	return h.DeletedAt
+}
+
+// SetDeletedAt 设置删除时间
+func (h *HanChar) SetDeletedAt(t gorm.DeletedAt) {
+	h.DeletedAt = t
+}

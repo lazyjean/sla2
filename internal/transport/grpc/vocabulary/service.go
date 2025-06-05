@@ -3,32 +3,33 @@ package vocabulary
 import (
 	"context"
 
+	"github.com/lazyjean/sla2/internal/domain/entity"
+
 	pb "github.com/lazyjean/sla2/api/proto/v1"
 	"github.com/lazyjean/sla2/internal/application/dto"
 	"github.com/lazyjean/sla2/internal/application/service"
-	"github.com/lazyjean/sla2/internal/domain/valueobject"
 	"github.com/lazyjean/sla2/internal/transport/grpc/vocabulary/converter"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-// VocabularyService 词汇服务实现
-type VocabularyService struct {
+// Service 词汇服务实现
+type Service struct {
 	pb.UnimplementedVocabularyServiceServer
 	service   service.VocabularyService
 	converter *converter.VocabularyConverter
 }
 
 // NewVocabularyService 创建词汇服务实例
-func NewVocabularyService(service service.VocabularyService) *VocabularyService {
-	return &VocabularyService{
+func NewVocabularyService(service service.VocabularyService) *Service {
+	return &Service{
 		service:   service,
 		converter: converter.NewVocabularyConverter(),
 	}
 }
 
 // Get 获取单词详情
-func (s *VocabularyService) Get(ctx context.Context, req *pb.VocabularyServiceGetRequest) (*pb.VocabularyServiceGetResponse, error) {
+func (s *Service) Get(ctx context.Context, req *pb.VocabularyServiceGetRequest) (*pb.VocabularyServiceGetResponse, error) {
 	word, err := s.service.GetWord(ctx, uint(req.Id))
 	if err != nil {
 		return nil, err
@@ -40,7 +41,7 @@ func (s *VocabularyService) Get(ctx context.Context, req *pb.VocabularyServiceGe
 }
 
 // List 获取单词列表
-func (s *VocabularyService) List(ctx context.Context, req *pb.VocabularyServiceListRequest) (*pb.VocabularyServiceListResponse, error) {
+func (s *Service) List(ctx context.Context, req *pb.VocabularyServiceListRequest) (*pb.VocabularyServiceListResponse, error) {
 	words, total, err := s.service.ListWords(
 		ctx,
 		int(req.Page),
@@ -65,7 +66,7 @@ func (s *VocabularyService) List(ctx context.Context, req *pb.VocabularyServiceL
 }
 
 // GetAllMetadata 获取所有标签和分类信息
-func (s *VocabularyService) GetAllMetadata(ctx context.Context, req *pb.VocabularyServiceGetAllMetadataRequest) (*pb.VocabularyServiceGetAllMetadataResponse, error) {
+func (s *Service) GetAllMetadata(ctx context.Context, req *pb.VocabularyServiceGetAllMetadataRequest) (*pb.VocabularyServiceGetAllMetadataResponse, error) {
 	tags, categories, err := s.service.GetAllMetadata(ctx)
 	if err != nil {
 		return nil, err
@@ -78,7 +79,7 @@ func (s *VocabularyService) GetAllMetadata(ctx context.Context, req *pb.Vocabula
 }
 
 // ListHanChar 获取汉字列表
-func (s *VocabularyService) ListHanChar(ctx context.Context, req *pb.VocabularyServiceListHanCharRequest) (*pb.VocabularyServiceListHanCharResponse, error) {
+func (s *Service) ListHanChar(ctx context.Context, req *pb.VocabularyServiceListHanCharRequest) (*pb.VocabularyServiceListHanCharResponse, error) {
 	// 将 protobuf 枚举值转换为内部枚举值
 	level := s.converter.ConvertLevelToValueObject(req.Level)
 
@@ -115,72 +116,21 @@ func (s *VocabularyService) ListHanChar(ctx context.Context, req *pb.VocabularyS
 }
 
 // BatchCreate 批量创建英文单词
-func (s *VocabularyService) BatchCreate(ctx context.Context, req *pb.VocabularyServiceBatchCreateRequest) (*pb.VocabularyServiceBatchCreateResponse, error) {
-	var words []dto.BatchCreateWordRequest
-	for _, wordPb := range req.Words {
-		word := dto.BatchCreateWordRequest{
-			Word:     wordPb.Word,
-			Level:    s.converter.ConvertLevelToValueObject(wordPb.Level),
-			Tags:     wordPb.Tags,
-			Examples: wordPb.Examples,
-		}
-
-		for _, def := range wordPb.Definitions {
-			word.Definitions = append(word.Definitions, struct {
-				PartOfSpeech string
-				Meaning      string
-				Example      string
-				Synonyms     []string
-				Antonyms     []string
-			}{
-				PartOfSpeech: def.PartOfSpeech.String(),
-				Meaning:      def.Meaning,
-				Example:      def.Example,
-				Synonyms:     def.Synonyms,
-				Antonyms:     def.Antonyms,
-			})
-		}
-
-		words = append(words, word)
-	}
-
+func (s *Service) BatchCreate(ctx context.Context, req *pb.VocabularyServiceBatchCreateRequest) (*pb.VocabularyServiceBatchCreateResponse, error) {
+	words := s.converter.PbWordsToEntities(req.Words)
 	err := s.service.BatchCreateWords(ctx, words)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-
 	return &pb.VocabularyServiceBatchCreateResponse{}, nil
 }
 
 // BatchCreateHanChar 批量创建汉字
-func (s *VocabularyService) BatchCreateHanChar(ctx context.Context, req *pb.VocabularyServiceBatchCreateHanCharRequest) (*pb.VocabularyServiceBatchCreateHanCharResponse, error) {
-	var hanChars []struct {
-		Character  string
-		Pinyin     string
-		Level      valueobject.WordDifficultyLevel
-		Tags       []string
-		Categories []string
-		Examples   []string
-	}
-
+func (s *Service) BatchCreateHanChar(ctx context.Context, req *pb.VocabularyServiceBatchCreateHanCharRequest) (*pb.VocabularyServiceBatchCreateHanCharResponse, error) {
+	var hanChars []*entity.HanChar
 	for _, hanCharPb := range req.HanChars {
-		hanChars = append(hanChars, struct {
-			Character  string
-			Pinyin     string
-			Level      valueobject.WordDifficultyLevel
-			Tags       []string
-			Categories []string
-			Examples   []string
-		}{
-			Character:  hanCharPb.Character,
-			Pinyin:     hanCharPb.Pinyin,
-			Level:      s.converter.ConvertLevelToValueObject(hanCharPb.Level),
-			Tags:       hanCharPb.Tags,
-			Categories: hanCharPb.Categories,
-			Examples:   hanCharPb.Examples,
-		})
+		hanChars = append(hanChars, s.converter.PbToEntityHanChar(hanCharPb))
 	}
-
 	ids, err := s.service.BatchCreateHanChars(ctx, hanChars)
 	if err != nil {
 		return nil, err

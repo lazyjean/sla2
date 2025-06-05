@@ -2230,694 +2230,6 @@ func (*QuestionServicePublishResponse) Descriptor() ([]byte, []int) {
 	return file_proto_v1_question_proto_rawDescGZIP(), []int{24}
 }
 
-// ListQuestionTagRequest 获取标签列表请求
-type ListQuestionTagRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	TopN          uint32                 `protobuf:"varint,1,opt,name=top_n,json=topN,proto3" json:"top_n,omitempty"` // 获取前N个标签
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ListQuestionTagRequest) Reset() {
-	*x = ListQuestionTagRequest{}
-	mi := &file_proto_v1_question_proto_msgTypes[25]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListQuestionTagRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListQuestionTagRequest) ProtoMessage() {}
-
-func (x *ListQuestionTagRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_question_proto_msgTypes[25]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListQuestionTagRequest.ProtoReflect.Descriptor instead.
-func (*ListQuestionTagRequest) Descriptor() ([]byte, []int) {
-	return file_proto_v1_question_proto_rawDescGZIP(), []int{25}
-}
-
-func (x *ListQuestionTagRequest) GetTopN() uint32 {
-	if x != nil {
-		return x.TopN
-	}
-	return 0
-}
-
-// ListQuestionTagResponse 获取标签列表响应
-type ListQuestionTagResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Tags          []*QuestionTag         `protobuf:"bytes,1,rep,name=tags,proto3" json:"tags,omitempty"` // 标签列表
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ListQuestionTagResponse) Reset() {
-	*x = ListQuestionTagResponse{}
-	mi := &file_proto_v1_question_proto_msgTypes[26]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListQuestionTagResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListQuestionTagResponse) ProtoMessage() {}
-
-func (x *ListQuestionTagResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_question_proto_msgTypes[26]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListQuestionTagResponse.ProtoReflect.Descriptor instead.
-func (*ListQuestionTagResponse) Descriptor() ([]byte, []int) {
-	return file_proto_v1_question_proto_rawDescGZIP(), []int{26}
-}
-
-func (x *ListQuestionTagResponse) GetTags() []*QuestionTag {
-	if x != nil {
-		return x.Tags
-	}
-	return nil
-}
-
-// CreateQuestionTagRequest 创建标签请求
-type CreateQuestionTagRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"` // 标签名
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CreateQuestionTagRequest) Reset() {
-	*x = CreateQuestionTagRequest{}
-	mi := &file_proto_v1_question_proto_msgTypes[27]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CreateQuestionTagRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreateQuestionTagRequest) ProtoMessage() {}
-
-func (x *CreateQuestionTagRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_question_proto_msgTypes[27]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreateQuestionTagRequest.ProtoReflect.Descriptor instead.
-func (*CreateQuestionTagRequest) Descriptor() ([]byte, []int) {
-	return file_proto_v1_question_proto_rawDescGZIP(), []int{27}
-}
-
-func (x *CreateQuestionTagRequest) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-// CreateQuestionTagResponse 创建标签响应
-type CreateQuestionTagResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CreateQuestionTagResponse) Reset() {
-	*x = CreateQuestionTagResponse{}
-	mi := &file_proto_v1_question_proto_msgTypes[28]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CreateQuestionTagResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreateQuestionTagResponse) ProtoMessage() {}
-
-func (x *CreateQuestionTagResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_question_proto_msgTypes[28]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreateQuestionTagResponse.ProtoReflect.Descriptor instead.
-func (*CreateQuestionTagResponse) Descriptor() ([]byte, []int) {
-	return file_proto_v1_question_proto_rawDescGZIP(), []int{28}
-}
-
-// UpdateQuestionTagRequest 更新标签请求
-type UpdateQuestionTagRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`      // 标签名
-	Weight        uint32                 `protobuf:"varint,2,opt,name=weight,proto3" json:"weight,omitempty"` // 标签权重
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *UpdateQuestionTagRequest) Reset() {
-	*x = UpdateQuestionTagRequest{}
-	mi := &file_proto_v1_question_proto_msgTypes[29]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *UpdateQuestionTagRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*UpdateQuestionTagRequest) ProtoMessage() {}
-
-func (x *UpdateQuestionTagRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_question_proto_msgTypes[29]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use UpdateQuestionTagRequest.ProtoReflect.Descriptor instead.
-func (*UpdateQuestionTagRequest) Descriptor() ([]byte, []int) {
-	return file_proto_v1_question_proto_rawDescGZIP(), []int{29}
-}
-
-func (x *UpdateQuestionTagRequest) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-func (x *UpdateQuestionTagRequest) GetWeight() uint32 {
-	if x != nil {
-		return x.Weight
-	}
-	return 0
-}
-
-// UpdateQuestionTagResponse 更新标签响应
-type UpdateQuestionTagResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *UpdateQuestionTagResponse) Reset() {
-	*x = UpdateQuestionTagResponse{}
-	mi := &file_proto_v1_question_proto_msgTypes[30]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *UpdateQuestionTagResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*UpdateQuestionTagResponse) ProtoMessage() {}
-
-func (x *UpdateQuestionTagResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_question_proto_msgTypes[30]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use UpdateQuestionTagResponse.ProtoReflect.Descriptor instead.
-func (*UpdateQuestionTagResponse) Descriptor() ([]byte, []int) {
-	return file_proto_v1_question_proto_rawDescGZIP(), []int{30}
-}
-
-// DeleteQuestionTagRequest 删除标签请求
-type DeleteQuestionTagRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"` // 标签名
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *DeleteQuestionTagRequest) Reset() {
-	*x = DeleteQuestionTagRequest{}
-	mi := &file_proto_v1_question_proto_msgTypes[31]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *DeleteQuestionTagRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*DeleteQuestionTagRequest) ProtoMessage() {}
-
-func (x *DeleteQuestionTagRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_question_proto_msgTypes[31]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use DeleteQuestionTagRequest.ProtoReflect.Descriptor instead.
-func (*DeleteQuestionTagRequest) Descriptor() ([]byte, []int) {
-	return file_proto_v1_question_proto_rawDescGZIP(), []int{31}
-}
-
-func (x *DeleteQuestionTagRequest) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-// DeleteQuestionTagResponse 删除标签响应
-type DeleteQuestionTagResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *DeleteQuestionTagResponse) Reset() {
-	*x = DeleteQuestionTagResponse{}
-	mi := &file_proto_v1_question_proto_msgTypes[32]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *DeleteQuestionTagResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*DeleteQuestionTagResponse) ProtoMessage() {}
-
-func (x *DeleteQuestionTagResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_question_proto_msgTypes[32]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use DeleteQuestionTagResponse.ProtoReflect.Descriptor instead.
-func (*DeleteQuestionTagResponse) Descriptor() ([]byte, []int) {
-	return file_proto_v1_question_proto_rawDescGZIP(), []int{32}
-}
-
-// QuestionTagServiceListTagRequest 获取标签服务列表请求
-type QuestionTagServiceListTagRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	TopN          uint32                 `protobuf:"varint,1,opt,name=top_n,json=topN,proto3" json:"top_n,omitempty"` // 获取前N个标签
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *QuestionTagServiceListTagRequest) Reset() {
-	*x = QuestionTagServiceListTagRequest{}
-	mi := &file_proto_v1_question_proto_msgTypes[33]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *QuestionTagServiceListTagRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*QuestionTagServiceListTagRequest) ProtoMessage() {}
-
-func (x *QuestionTagServiceListTagRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_question_proto_msgTypes[33]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use QuestionTagServiceListTagRequest.ProtoReflect.Descriptor instead.
-func (*QuestionTagServiceListTagRequest) Descriptor() ([]byte, []int) {
-	return file_proto_v1_question_proto_rawDescGZIP(), []int{33}
-}
-
-func (x *QuestionTagServiceListTagRequest) GetTopN() uint32 {
-	if x != nil {
-		return x.TopN
-	}
-	return 0
-}
-
-// QuestionTagServiceListTagResponse 获取标签服务列表响应
-type QuestionTagServiceListTagResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Tags          []*QuestionTag         `protobuf:"bytes,1,rep,name=tags,proto3" json:"tags,omitempty"` // 标签列表
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *QuestionTagServiceListTagResponse) Reset() {
-	*x = QuestionTagServiceListTagResponse{}
-	mi := &file_proto_v1_question_proto_msgTypes[34]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *QuestionTagServiceListTagResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*QuestionTagServiceListTagResponse) ProtoMessage() {}
-
-func (x *QuestionTagServiceListTagResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_question_proto_msgTypes[34]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use QuestionTagServiceListTagResponse.ProtoReflect.Descriptor instead.
-func (*QuestionTagServiceListTagResponse) Descriptor() ([]byte, []int) {
-	return file_proto_v1_question_proto_rawDescGZIP(), []int{34}
-}
-
-func (x *QuestionTagServiceListTagResponse) GetTags() []*QuestionTag {
-	if x != nil {
-		return x.Tags
-	}
-	return nil
-}
-
-// QuestionTagServiceCreateTagRequest 创建标签服务请求
-type QuestionTagServiceCreateTagRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"` // 标签名
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *QuestionTagServiceCreateTagRequest) Reset() {
-	*x = QuestionTagServiceCreateTagRequest{}
-	mi := &file_proto_v1_question_proto_msgTypes[35]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *QuestionTagServiceCreateTagRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*QuestionTagServiceCreateTagRequest) ProtoMessage() {}
-
-func (x *QuestionTagServiceCreateTagRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_question_proto_msgTypes[35]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use QuestionTagServiceCreateTagRequest.ProtoReflect.Descriptor instead.
-func (*QuestionTagServiceCreateTagRequest) Descriptor() ([]byte, []int) {
-	return file_proto_v1_question_proto_rawDescGZIP(), []int{35}
-}
-
-func (x *QuestionTagServiceCreateTagRequest) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-// QuestionTagServiceCreateTagResponse 创建标签服务响应
-type QuestionTagServiceCreateTagResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *QuestionTagServiceCreateTagResponse) Reset() {
-	*x = QuestionTagServiceCreateTagResponse{}
-	mi := &file_proto_v1_question_proto_msgTypes[36]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *QuestionTagServiceCreateTagResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*QuestionTagServiceCreateTagResponse) ProtoMessage() {}
-
-func (x *QuestionTagServiceCreateTagResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_question_proto_msgTypes[36]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use QuestionTagServiceCreateTagResponse.ProtoReflect.Descriptor instead.
-func (*QuestionTagServiceCreateTagResponse) Descriptor() ([]byte, []int) {
-	return file_proto_v1_question_proto_rawDescGZIP(), []int{36}
-}
-
-// QuestionTagServiceUpdateTagRequest 更新标签服务请求
-type QuestionTagServiceUpdateTagRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`      // 标签名
-	Weight        uint32                 `protobuf:"varint,2,opt,name=weight,proto3" json:"weight,omitempty"` // 标签权重
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *QuestionTagServiceUpdateTagRequest) Reset() {
-	*x = QuestionTagServiceUpdateTagRequest{}
-	mi := &file_proto_v1_question_proto_msgTypes[37]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *QuestionTagServiceUpdateTagRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*QuestionTagServiceUpdateTagRequest) ProtoMessage() {}
-
-func (x *QuestionTagServiceUpdateTagRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_question_proto_msgTypes[37]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use QuestionTagServiceUpdateTagRequest.ProtoReflect.Descriptor instead.
-func (*QuestionTagServiceUpdateTagRequest) Descriptor() ([]byte, []int) {
-	return file_proto_v1_question_proto_rawDescGZIP(), []int{37}
-}
-
-func (x *QuestionTagServiceUpdateTagRequest) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-func (x *QuestionTagServiceUpdateTagRequest) GetWeight() uint32 {
-	if x != nil {
-		return x.Weight
-	}
-	return 0
-}
-
-// QuestionTagServiceUpdateTagResponse 更新标签服务响应
-type QuestionTagServiceUpdateTagResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *QuestionTagServiceUpdateTagResponse) Reset() {
-	*x = QuestionTagServiceUpdateTagResponse{}
-	mi := &file_proto_v1_question_proto_msgTypes[38]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *QuestionTagServiceUpdateTagResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*QuestionTagServiceUpdateTagResponse) ProtoMessage() {}
-
-func (x *QuestionTagServiceUpdateTagResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_question_proto_msgTypes[38]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use QuestionTagServiceUpdateTagResponse.ProtoReflect.Descriptor instead.
-func (*QuestionTagServiceUpdateTagResponse) Descriptor() ([]byte, []int) {
-	return file_proto_v1_question_proto_rawDescGZIP(), []int{38}
-}
-
-// QuestionTagServiceDeleteTagRequest 删除标签服务请求
-type QuestionTagServiceDeleteTagRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"` // 标签名
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *QuestionTagServiceDeleteTagRequest) Reset() {
-	*x = QuestionTagServiceDeleteTagRequest{}
-	mi := &file_proto_v1_question_proto_msgTypes[39]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *QuestionTagServiceDeleteTagRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*QuestionTagServiceDeleteTagRequest) ProtoMessage() {}
-
-func (x *QuestionTagServiceDeleteTagRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_question_proto_msgTypes[39]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use QuestionTagServiceDeleteTagRequest.ProtoReflect.Descriptor instead.
-func (*QuestionTagServiceDeleteTagRequest) Descriptor() ([]byte, []int) {
-	return file_proto_v1_question_proto_rawDescGZIP(), []int{39}
-}
-
-func (x *QuestionTagServiceDeleteTagRequest) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-// QuestionTagServiceDeleteTagResponse 删除标签服务响应
-type QuestionTagServiceDeleteTagResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *QuestionTagServiceDeleteTagResponse) Reset() {
-	*x = QuestionTagServiceDeleteTagResponse{}
-	mi := &file_proto_v1_question_proto_msgTypes[40]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *QuestionTagServiceDeleteTagResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*QuestionTagServiceDeleteTagResponse) ProtoMessage() {}
-
-func (x *QuestionTagServiceDeleteTagResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_question_proto_msgTypes[40]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use QuestionTagServiceDeleteTagResponse.ProtoReflect.Descriptor instead.
-func (*QuestionTagServiceDeleteTagResponse) Descriptor() ([]byte, []int) {
-	return file_proto_v1_question_proto_rawDescGZIP(), []int{40}
-}
-
 var File_proto_v1_question_proto protoreflect.FileDescriptor
 
 const file_proto_v1_question_proto_rawDesc = "" +
@@ -3054,35 +2366,7 @@ const file_proto_v1_question_proto_rawDesc = "" +
 	"\x1dQuestionServicePublishRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x04R\x02id\x120\n" +
 	"\x06status\x18\x02 \x01(\x0e2\x18.proto.v1.QuestionStatusR\x06status\" \n" +
-	"\x1eQuestionServicePublishResponse\"-\n" +
-	"\x16ListQuestionTagRequest\x12\x13\n" +
-	"\x05top_n\x18\x01 \x01(\rR\x04topN\"D\n" +
-	"\x17ListQuestionTagResponse\x12)\n" +
-	"\x04tags\x18\x01 \x03(\v2\x15.proto.v1.QuestionTagR\x04tags\".\n" +
-	"\x18CreateQuestionTagRequest\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\"\x1b\n" +
-	"\x19CreateQuestionTagResponse\"F\n" +
-	"\x18UpdateQuestionTagRequest\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n" +
-	"\x06weight\x18\x02 \x01(\rR\x06weight\"\x1b\n" +
-	"\x19UpdateQuestionTagResponse\".\n" +
-	"\x18DeleteQuestionTagRequest\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\"\x1b\n" +
-	"\x19DeleteQuestionTagResponse\"7\n" +
-	" QuestionTagServiceListTagRequest\x12\x13\n" +
-	"\x05top_n\x18\x01 \x01(\rR\x04topN\"N\n" +
-	"!QuestionTagServiceListTagResponse\x12)\n" +
-	"\x04tags\x18\x01 \x03(\v2\x15.proto.v1.QuestionTagR\x04tags\"8\n" +
-	"\"QuestionTagServiceCreateTagRequest\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\"%\n" +
-	"#QuestionTagServiceCreateTagResponse\"P\n" +
-	"\"QuestionTagServiceUpdateTagRequest\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n" +
-	"\x06weight\x18\x02 \x01(\rR\x06weight\"%\n" +
-	"#QuestionTagServiceUpdateTagResponse\"8\n" +
-	"\"QuestionTagServiceDeleteTagRequest\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\"%\n" +
-	"#QuestionTagServiceDeleteTagResponse*\x95\x02\n" +
+	"\x1eQuestionServicePublishResponse*\x95\x02\n" +
 	"\x10HyperTextTagType\x12#\n" +
 	"\x1fHYPER_TEXT_TAG_TYPE_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19HYPER_TEXT_TAG_TYPE_IMAGE\x10\x01\x12\x1d\n" +
@@ -3154,19 +2438,14 @@ const file_proto_v1_question_proto_rawDesc = "" +
 	" QUESTION_HYPER_TEXT_TAG_TYPE_URL\x10\x04\x12*\n" +
 	"&QUESTION_HYPER_TEXT_TAG_TYPE_ANIMATION\x10\x05\x12(\n" +
 	"$QUESTION_HYPER_TEXT_TAG_TYPE_V_STACK\x10\x06\x12(\n" +
-	"$QUESTION_HYPER_TEXT_TAG_TYPE_H_STACK\x10\a2\xb0\n" +
-	"\n" +
+	"$QUESTION_HYPER_TEXT_TAG_TYPE_H_STACK\x10\a2\xfa\x05\n" +
 	"\x0fQuestionService\x12q\n" +
 	"\x03Get\x12#.proto.v1.QuestionServiceGetRequest\x1a$.proto.v1.QuestionServiceGetResponse\"\x1f\x82\xd3\xe4\x93\x02\x19\x12\x17/api/v1/questions/{ids}\x12w\n" +
 	"\x06Create\x12&.proto.v1.QuestionServiceCreateRequest\x1a'.proto.v1.QuestionServiceCreateResponse\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/api/v1/questions\x12{\n" +
 	"\x06Search\x12&.proto.v1.QuestionServiceSearchRequest\x1a'.proto.v1.QuestionServiceSearchResponse\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/api/v1/questions/search\x12|\n" +
 	"\x06Update\x12&.proto.v1.QuestionServiceUpdateRequest\x1a'.proto.v1.QuestionServiceUpdateResponse\"!\x82\xd3\xe4\x93\x02\x1b:\x01*\x1a\x16/api/v1/questions/{id}\x12y\n" +
 	"\x06Delete\x12&.proto.v1.QuestionServiceDeleteRequest\x1a'.proto.v1.QuestionServiceDeleteResponse\"\x1e\x82\xd3\xe4\x93\x02\x18*\x16/api/v1/questions/{id}\x12\x84\x01\n" +
-	"\aPublish\x12'.proto.v1.QuestionServicePublishRequest\x1a(.proto.v1.QuestionServicePublishResponse\"&\x82\xd3\xe4\x93\x02 \"\x1e/api/v1/questions/{id}/publish\x12\x81\x01\n" +
-	"\aListTag\x12*.proto.v1.QuestionTagServiceListTagRequest\x1a+.proto.v1.QuestionTagServiceListTagResponse\"\x1d\x82\xd3\xe4\x93\x02\x17\x12\x15/api/v1/question-tags\x12\x8a\x01\n" +
-	"\tCreateTag\x12,.proto.v1.QuestionTagServiceCreateTagRequest\x1a-.proto.v1.QuestionTagServiceCreateTagResponse\" \x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/api/v1/question-tags\x12\x91\x01\n" +
-	"\tUpdateTag\x12,.proto.v1.QuestionTagServiceUpdateTagRequest\x1a-.proto.v1.QuestionTagServiceUpdateTagResponse\"'\x82\xd3\xe4\x93\x02!:\x01*\x1a\x1c/api/v1/question-tags/{name}\x12\x8e\x01\n" +
-	"\tDeleteTag\x12,.proto.v1.QuestionTagServiceDeleteTagRequest\x1a-.proto.v1.QuestionTagServiceDeleteTagResponse\"$\x82\xd3\xe4\x93\x02\x1e*\x1c/api/v1/question-tags/{name}B1Z(github.com/lazyjean/sla2/api/proto/v1;pb\xba\x02\x04SLA2b\x06proto3"
+	"\aPublish\x12'.proto.v1.QuestionServicePublishRequest\x1a(.proto.v1.QuestionServicePublishResponse\"&\x82\xd3\xe4\x93\x02 \"\x1e/api/v1/questions/{id}/publishB1Z(github.com/lazyjean/sla2/api/proto/v1;pb\xba\x02\x04SLA2b\x06proto3"
 
 var (
 	file_proto_v1_question_proto_rawDescOnce sync.Once
@@ -3181,58 +2460,42 @@ func file_proto_v1_question_proto_rawDescGZIP() []byte {
 }
 
 var file_proto_v1_question_proto_enumTypes = make([]protoimpl.EnumInfo, 9)
-var file_proto_v1_question_proto_msgTypes = make([]protoimpl.MessageInfo, 41)
+var file_proto_v1_question_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
 var file_proto_v1_question_proto_goTypes = []any{
-	(HyperTextTagType)(0),                       // 0: proto.v1.HyperTextTagType
-	(QuestionOptionType)(0),                     // 1: proto.v1.QuestionOptionType
-	(QuestionDifficultyLevel)(0),                // 2: proto.v1.QuestionDifficultyLevel
-	(QuestionStatus)(0),                         // 3: proto.v1.QuestionStatus
-	(QuestionCategory)(0),                       // 4: proto.v1.QuestionCategory
-	(QuestionType)(0),                           // 5: proto.v1.QuestionType
-	(QuestionSubType)(0),                        // 6: proto.v1.QuestionSubType
-	(SubQuestionType)(0),                        // 7: proto.v1.SubQuestionType
-	(QuestionHyperTextTagType)(0),               // 8: proto.v1.QuestionHyperTextTagType
-	(*HyperTextTag)(nil),                        // 9: proto.v1.HyperTextTag
-	(*Size)(nil),                                // 10: proto.v1.Size
-	(*QuestionChatSenderAvatar)(nil),            // 11: proto.v1.QuestionChatSenderAvatar
-	(*QuestionChatSender)(nil),                  // 12: proto.v1.QuestionChatSender
-	(*QuestionChatMessage)(nil),                 // 13: proto.v1.QuestionChatMessage
-	(*QuestionOption)(nil),                      // 14: proto.v1.QuestionOption
-	(*QuestionOptionTuple)(nil),                 // 15: proto.v1.QuestionOptionTuple
-	(*Tag)(nil),                                 // 16: proto.v1.Tag
-	(*SubQuestion)(nil),                         // 17: proto.v1.SubQuestion
-	(*Question)(nil),                            // 18: proto.v1.Question
-	(*QuestionHyperTextTag)(nil),                // 19: proto.v1.QuestionHyperTextTag
-	(*QuestionSize)(nil),                        // 20: proto.v1.QuestionSize
-	(*QuestionTag)(nil),                         // 21: proto.v1.QuestionTag
-	(*QuestionServiceGetRequest)(nil),           // 22: proto.v1.QuestionServiceGetRequest
-	(*QuestionServiceGetResponse)(nil),          // 23: proto.v1.QuestionServiceGetResponse
-	(*QuestionServiceCreateRequest)(nil),        // 24: proto.v1.QuestionServiceCreateRequest
-	(*QuestionServiceCreateResponse)(nil),       // 25: proto.v1.QuestionServiceCreateResponse
-	(*QuestionServiceSearchRequest)(nil),        // 26: proto.v1.QuestionServiceSearchRequest
-	(*QuestionServiceSearchResponse)(nil),       // 27: proto.v1.QuestionServiceSearchResponse
-	(*QuestionServiceUpdateRequest)(nil),        // 28: proto.v1.QuestionServiceUpdateRequest
-	(*QuestionServiceUpdateResponse)(nil),       // 29: proto.v1.QuestionServiceUpdateResponse
-	(*QuestionServiceDeleteRequest)(nil),        // 30: proto.v1.QuestionServiceDeleteRequest
-	(*QuestionServiceDeleteResponse)(nil),       // 31: proto.v1.QuestionServiceDeleteResponse
-	(*QuestionServicePublishRequest)(nil),       // 32: proto.v1.QuestionServicePublishRequest
-	(*QuestionServicePublishResponse)(nil),      // 33: proto.v1.QuestionServicePublishResponse
-	(*ListQuestionTagRequest)(nil),              // 34: proto.v1.ListQuestionTagRequest
-	(*ListQuestionTagResponse)(nil),             // 35: proto.v1.ListQuestionTagResponse
-	(*CreateQuestionTagRequest)(nil),            // 36: proto.v1.CreateQuestionTagRequest
-	(*CreateQuestionTagResponse)(nil),           // 37: proto.v1.CreateQuestionTagResponse
-	(*UpdateQuestionTagRequest)(nil),            // 38: proto.v1.UpdateQuestionTagRequest
-	(*UpdateQuestionTagResponse)(nil),           // 39: proto.v1.UpdateQuestionTagResponse
-	(*DeleteQuestionTagRequest)(nil),            // 40: proto.v1.DeleteQuestionTagRequest
-	(*DeleteQuestionTagResponse)(nil),           // 41: proto.v1.DeleteQuestionTagResponse
-	(*QuestionTagServiceListTagRequest)(nil),    // 42: proto.v1.QuestionTagServiceListTagRequest
-	(*QuestionTagServiceListTagResponse)(nil),   // 43: proto.v1.QuestionTagServiceListTagResponse
-	(*QuestionTagServiceCreateTagRequest)(nil),  // 44: proto.v1.QuestionTagServiceCreateTagRequest
-	(*QuestionTagServiceCreateTagResponse)(nil), // 45: proto.v1.QuestionTagServiceCreateTagResponse
-	(*QuestionTagServiceUpdateTagRequest)(nil),  // 46: proto.v1.QuestionTagServiceUpdateTagRequest
-	(*QuestionTagServiceUpdateTagResponse)(nil), // 47: proto.v1.QuestionTagServiceUpdateTagResponse
-	(*QuestionTagServiceDeleteTagRequest)(nil),  // 48: proto.v1.QuestionTagServiceDeleteTagRequest
-	(*QuestionTagServiceDeleteTagResponse)(nil), // 49: proto.v1.QuestionTagServiceDeleteTagResponse
+	(HyperTextTagType)(0),                  // 0: proto.v1.HyperTextTagType
+	(QuestionOptionType)(0),                // 1: proto.v1.QuestionOptionType
+	(QuestionDifficultyLevel)(0),           // 2: proto.v1.QuestionDifficultyLevel
+	(QuestionStatus)(0),                    // 3: proto.v1.QuestionStatus
+	(QuestionCategory)(0),                  // 4: proto.v1.QuestionCategory
+	(QuestionType)(0),                      // 5: proto.v1.QuestionType
+	(QuestionSubType)(0),                   // 6: proto.v1.QuestionSubType
+	(SubQuestionType)(0),                   // 7: proto.v1.SubQuestionType
+	(QuestionHyperTextTagType)(0),          // 8: proto.v1.QuestionHyperTextTagType
+	(*HyperTextTag)(nil),                   // 9: proto.v1.HyperTextTag
+	(*Size)(nil),                           // 10: proto.v1.Size
+	(*QuestionChatSenderAvatar)(nil),       // 11: proto.v1.QuestionChatSenderAvatar
+	(*QuestionChatSender)(nil),             // 12: proto.v1.QuestionChatSender
+	(*QuestionChatMessage)(nil),            // 13: proto.v1.QuestionChatMessage
+	(*QuestionOption)(nil),                 // 14: proto.v1.QuestionOption
+	(*QuestionOptionTuple)(nil),            // 15: proto.v1.QuestionOptionTuple
+	(*Tag)(nil),                            // 16: proto.v1.Tag
+	(*SubQuestion)(nil),                    // 17: proto.v1.SubQuestion
+	(*Question)(nil),                       // 18: proto.v1.Question
+	(*QuestionHyperTextTag)(nil),           // 19: proto.v1.QuestionHyperTextTag
+	(*QuestionSize)(nil),                   // 20: proto.v1.QuestionSize
+	(*QuestionTag)(nil),                    // 21: proto.v1.QuestionTag
+	(*QuestionServiceGetRequest)(nil),      // 22: proto.v1.QuestionServiceGetRequest
+	(*QuestionServiceGetResponse)(nil),     // 23: proto.v1.QuestionServiceGetResponse
+	(*QuestionServiceCreateRequest)(nil),   // 24: proto.v1.QuestionServiceCreateRequest
+	(*QuestionServiceCreateResponse)(nil),  // 25: proto.v1.QuestionServiceCreateResponse
+	(*QuestionServiceSearchRequest)(nil),   // 26: proto.v1.QuestionServiceSearchRequest
+	(*QuestionServiceSearchResponse)(nil),  // 27: proto.v1.QuestionServiceSearchResponse
+	(*QuestionServiceUpdateRequest)(nil),   // 28: proto.v1.QuestionServiceUpdateRequest
+	(*QuestionServiceUpdateResponse)(nil),  // 29: proto.v1.QuestionServiceUpdateResponse
+	(*QuestionServiceDeleteRequest)(nil),   // 30: proto.v1.QuestionServiceDeleteRequest
+	(*QuestionServiceDeleteResponse)(nil),  // 31: proto.v1.QuestionServiceDeleteResponse
+	(*QuestionServicePublishRequest)(nil),  // 32: proto.v1.QuestionServicePublishRequest
+	(*QuestionServicePublishResponse)(nil), // 33: proto.v1.QuestionServicePublishResponse
 }
 var file_proto_v1_question_proto_depIdxs = []int32{
 	0,  // 0: proto.v1.HyperTextTag.type:type_name -> proto.v1.HyperTextTagType
@@ -3276,33 +2539,23 @@ var file_proto_v1_question_proto_depIdxs = []int32{
 	2,  // 38: proto.v1.QuestionServiceUpdateRequest.difficulty:type_name -> proto.v1.QuestionDifficultyLevel
 	4,  // 39: proto.v1.QuestionServiceUpdateRequest.category:type_name -> proto.v1.QuestionCategory
 	3,  // 40: proto.v1.QuestionServicePublishRequest.status:type_name -> proto.v1.QuestionStatus
-	21, // 41: proto.v1.ListQuestionTagResponse.tags:type_name -> proto.v1.QuestionTag
-	21, // 42: proto.v1.QuestionTagServiceListTagResponse.tags:type_name -> proto.v1.QuestionTag
-	22, // 43: proto.v1.QuestionService.Get:input_type -> proto.v1.QuestionServiceGetRequest
-	24, // 44: proto.v1.QuestionService.Create:input_type -> proto.v1.QuestionServiceCreateRequest
-	26, // 45: proto.v1.QuestionService.Search:input_type -> proto.v1.QuestionServiceSearchRequest
-	28, // 46: proto.v1.QuestionService.Update:input_type -> proto.v1.QuestionServiceUpdateRequest
-	30, // 47: proto.v1.QuestionService.Delete:input_type -> proto.v1.QuestionServiceDeleteRequest
-	32, // 48: proto.v1.QuestionService.Publish:input_type -> proto.v1.QuestionServicePublishRequest
-	42, // 49: proto.v1.QuestionService.ListTag:input_type -> proto.v1.QuestionTagServiceListTagRequest
-	44, // 50: proto.v1.QuestionService.CreateTag:input_type -> proto.v1.QuestionTagServiceCreateTagRequest
-	46, // 51: proto.v1.QuestionService.UpdateTag:input_type -> proto.v1.QuestionTagServiceUpdateTagRequest
-	48, // 52: proto.v1.QuestionService.DeleteTag:input_type -> proto.v1.QuestionTagServiceDeleteTagRequest
-	23, // 53: proto.v1.QuestionService.Get:output_type -> proto.v1.QuestionServiceGetResponse
-	25, // 54: proto.v1.QuestionService.Create:output_type -> proto.v1.QuestionServiceCreateResponse
-	27, // 55: proto.v1.QuestionService.Search:output_type -> proto.v1.QuestionServiceSearchResponse
-	29, // 56: proto.v1.QuestionService.Update:output_type -> proto.v1.QuestionServiceUpdateResponse
-	31, // 57: proto.v1.QuestionService.Delete:output_type -> proto.v1.QuestionServiceDeleteResponse
-	33, // 58: proto.v1.QuestionService.Publish:output_type -> proto.v1.QuestionServicePublishResponse
-	43, // 59: proto.v1.QuestionService.ListTag:output_type -> proto.v1.QuestionTagServiceListTagResponse
-	45, // 60: proto.v1.QuestionService.CreateTag:output_type -> proto.v1.QuestionTagServiceCreateTagResponse
-	47, // 61: proto.v1.QuestionService.UpdateTag:output_type -> proto.v1.QuestionTagServiceUpdateTagResponse
-	49, // 62: proto.v1.QuestionService.DeleteTag:output_type -> proto.v1.QuestionTagServiceDeleteTagResponse
-	53, // [53:63] is the sub-list for method output_type
-	43, // [43:53] is the sub-list for method input_type
-	43, // [43:43] is the sub-list for extension type_name
-	43, // [43:43] is the sub-list for extension extendee
-	0,  // [0:43] is the sub-list for field type_name
+	22, // 41: proto.v1.QuestionService.Get:input_type -> proto.v1.QuestionServiceGetRequest
+	24, // 42: proto.v1.QuestionService.Create:input_type -> proto.v1.QuestionServiceCreateRequest
+	26, // 43: proto.v1.QuestionService.Search:input_type -> proto.v1.QuestionServiceSearchRequest
+	28, // 44: proto.v1.QuestionService.Update:input_type -> proto.v1.QuestionServiceUpdateRequest
+	30, // 45: proto.v1.QuestionService.Delete:input_type -> proto.v1.QuestionServiceDeleteRequest
+	32, // 46: proto.v1.QuestionService.Publish:input_type -> proto.v1.QuestionServicePublishRequest
+	23, // 47: proto.v1.QuestionService.Get:output_type -> proto.v1.QuestionServiceGetResponse
+	25, // 48: proto.v1.QuestionService.Create:output_type -> proto.v1.QuestionServiceCreateResponse
+	27, // 49: proto.v1.QuestionService.Search:output_type -> proto.v1.QuestionServiceSearchResponse
+	29, // 50: proto.v1.QuestionService.Update:output_type -> proto.v1.QuestionServiceUpdateResponse
+	31, // 51: proto.v1.QuestionService.Delete:output_type -> proto.v1.QuestionServiceDeleteResponse
+	33, // 52: proto.v1.QuestionService.Publish:output_type -> proto.v1.QuestionServicePublishResponse
+	47, // [47:53] is the sub-list for method output_type
+	41, // [41:47] is the sub-list for method input_type
+	41, // [41:41] is the sub-list for extension type_name
+	41, // [41:41] is the sub-list for extension extendee
+	0,  // [0:41] is the sub-list for field type_name
 }
 
 func init() { file_proto_v1_question_proto_init() }
@@ -3316,7 +2569,7 @@ func file_proto_v1_question_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_v1_question_proto_rawDesc), len(file_proto_v1_question_proto_rawDesc)),
 			NumEnums:      9,
-			NumMessages:   41,
+			NumMessages:   25,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

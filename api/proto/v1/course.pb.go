@@ -1424,9 +1424,10 @@ func (x *CourseSectionUnit) GetTags() string {
 // Section 相关请求响应消息
 type CourseServiceCreateSectionRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	CourseId      uint32                 `protobuf:"varint,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"` // 课程ID
-	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`                        // 章节标题
-	Desc          string                 `protobuf:"bytes,3,opt,name=desc,proto3" json:"desc,omitempty"`                          // 章节描述
+	CourseId      uint32                 `protobuf:"varint,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`       // 课程ID
+	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`                              // 章节标题
+	Desc          string                 `protobuf:"bytes,3,opt,name=desc,proto3" json:"desc,omitempty"`                                // 章节描述
+	OrderIndex    uint32                 `protobuf:"varint,4,opt,name=order_index,json=orderIndex,proto3" json:"order_index,omitempty"` // 章节顺序
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1480,6 +1481,13 @@ func (x *CourseServiceCreateSectionRequest) GetDesc() string {
 		return x.Desc
 	}
 	return ""
+}
+
+func (x *CourseServiceCreateSectionRequest) GetOrderIndex() uint32 {
+	if x != nil {
+		return x.OrderIndex
+	}
+	return 0
 }
 
 type CourseServiceCreateSectionResponse struct {
@@ -1605,7 +1613,6 @@ func (x *CourseServiceUpdateSectionRequest) GetStatus() CourseSectionStatus {
 
 type CourseServiceUpdateSectionResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"` // 更新的章节ID
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1638,13 +1645,6 @@ func (x *CourseServiceUpdateSectionResponse) ProtoReflect() protoreflect.Message
 // Deprecated: Use CourseServiceUpdateSectionResponse.ProtoReflect.Descriptor instead.
 func (*CourseServiceUpdateSectionResponse) Descriptor() ([]byte, []int) {
 	return file_proto_v1_course_proto_rawDescGZIP(), []int{17}
-}
-
-func (x *CourseServiceUpdateSectionResponse) GetId() int64 {
-	if x != nil {
-		return x.Id
-	}
-	return 0
 }
 
 type CourseServiceDeleteSectionRequest struct {
@@ -2686,11 +2686,13 @@ const file_proto_v1_course_proto_rawDesc = "" +
 	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
 	"updated_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12\x12\n" +
-	"\x04tags\x18\t \x01(\tR\x04tags\"\x88\x01\n" +
+	"\x04tags\x18\t \x01(\tR\x04tags\"\xa9\x01\n" +
 	"!CourseServiceCreateSectionRequest\x12$\n" +
 	"\tcourse_id\x18\x01 \x01(\rB\a\xfaB\x04*\x02 \x00R\bcourseId\x12\x1f\n" +
 	"\x05title\x18\x02 \x01(\tB\t\xfaB\x06r\x04\x10\x01\x18dR\x05title\x12\x1c\n" +
-	"\x04desc\x18\x03 \x01(\tB\b\xfaB\x05r\x03\x18\xf4\x03R\x04desc\"4\n" +
+	"\x04desc\x18\x03 \x01(\tB\b\xfaB\x05r\x03\x18\xf4\x03R\x04desc\x12\x1f\n" +
+	"\vorder_index\x18\x04 \x01(\rR\n" +
+	"orderIndex\"4\n" +
 	"\"CourseServiceCreateSectionResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\"\xdd\x01\n" +
 	"!CourseServiceUpdateSectionRequest\x12\x17\n" +
@@ -2699,9 +2701,8 @@ const file_proto_v1_course_proto_rawDesc = "" +
 	"\x04desc\x18\x03 \x01(\tB\b\xfaB\x05r\x03\x18\xf4\x03R\x04desc\x12\x1f\n" +
 	"\vorder_index\x18\x04 \x01(\x05R\n" +
 	"orderIndex\x12?\n" +
-	"\x06status\x18\x05 \x01(\x0e2\x1d.proto.v1.CourseSectionStatusB\b\xfaB\x05\x82\x01\x02 \x00R\x06status\"4\n" +
-	"\"CourseServiceUpdateSectionResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\"3\n" +
+	"\x06status\x18\x05 \x01(\x0e2\x1d.proto.v1.CourseSectionStatusB\b\xfaB\x05\x82\x01\x02 \x00R\x06status\"$\n" +
+	"\"CourseServiceUpdateSectionResponse\"3\n" +
 	"!CourseServiceDeleteSectionRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\"$\n" +
 	"\"CourseServiceDeleteSectionResponse\"\xc1\x01\n" +

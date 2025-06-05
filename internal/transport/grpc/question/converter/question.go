@@ -2,6 +2,8 @@ package converter
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 
 	pb "github.com/lazyjean/sla2/api/proto/v1"
 	"github.com/lazyjean/sla2/internal/domain/entity"
@@ -13,6 +15,86 @@ type QuestionConverter struct{}
 // NewQuestionConverter 创建新的 QuestionConverter 实例
 func NewQuestionConverter() *QuestionConverter {
 	return &QuestionConverter{}
+}
+
+// ToEntityFromCreateRequest 将创建请求转换为问题实体
+func (c *QuestionConverter) ToEntityFromCreateRequest(req *pb.QuestionServiceCreateRequest) (*entity.Question, error) {
+	// 将 HyperTextTag 对象转换为 JSON
+	content, err := json.Marshal(req.GetContent())
+	if err != nil {
+		return nil, err
+	}
+
+	// 将选项列表转换为 JSON
+	options, err := json.Marshal(req.GetOptions())
+	if err != nil {
+		return nil, err
+	}
+
+	// 将选项双元组列表转换为 JSON
+	optionTuples, err := json.Marshal(req.GetOptionTuples())
+	if err != nil {
+		return nil, err
+	}
+
+	// 创建问题实体
+	return entity.NewQuestion(
+		req.GetTitle(),
+		content,
+		req.GetSimpleQuestion(),
+		req.GetQuestionType().String(),
+		c.ToEntityDifficulty(req.GetDifficulty()),
+		options,
+		optionTuples,
+		req.GetAnswers(),
+		req.GetCategory().String(),
+		req.GetLabels(),
+		req.GetExplanation(),
+		req.GetAttachments(),
+		req.GetTimeLimit(),
+	), nil
+}
+
+// ToEntityFromUpdateRequest 将更新请求转换为问题实体
+func (c *QuestionConverter) ToEntityFromUpdateRequest(req *pb.QuestionServiceUpdateRequest) (*entity.Question, error) {
+	if req == nil {
+		return nil, errors.New("request cannot be nil")
+	}
+
+	// 将 HyperTextTag 对象转换为 JSON
+	content, err := json.Marshal(req.GetContent())
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal HyperTextTag: %w", err)
+	}
+
+	// 将选项列表转换为 JSON
+	options, err := json.Marshal(req.GetOptions())
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal options: %w", err)
+	}
+
+	// 将选项双元组列表转换为 JSON
+	optionTuples, err := json.Marshal(req.GetOptionTuples())
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal option tuples: %w", err)
+	}
+
+	// todo: 这里没有设置题目类型, 理论上更新时, 只更新有变化的字段, 这个需要验证
+	return &entity.Question{
+		ID:             entity.QuestionID(req.GetId()),
+		Title:          req.GetTitle(),
+		Content:        content,
+		SimpleQuestion: req.GetSimpleQuestion(),
+		Difficulty:     c.ToEntityDifficulty(req.GetDifficulty()),
+		Options:        options,
+		OptionTuples:   optionTuples,
+		Answers:        req.GetAnswers(),
+		Category:       req.GetCategory().String(),
+		Labels:         req.GetLabels(),
+		Explanation:    req.GetExplanation(),
+		Attachments:    req.GetAttachments(),
+		TimeLimit:      req.GetTimeLimit(),
+	}, nil
 }
 
 // ToPB 将 Question 实体转换为 protobuf 消息
@@ -162,38 +244,4 @@ func (c *QuestionConverter) ToEntityOptions(options []*pb.QuestionOption) []stri
 		result[i] = opt.GetValue()
 	}
 	return result
-}
-
-// ToPBTag 将问题标签实体转换为 PB 消息
-func (c *QuestionConverter) ToPBTag(tag *entity.QuestionTag) *pb.QuestionTag {
-	if tag == nil {
-		return nil
-	}
-	return &pb.QuestionTag{
-		Name:   tag.Name,
-		Weight: 0, // 目前实体中没有 weight 字段，默认设为 0
-	}
-}
-
-// ToEntityTag 将 PB 消息转换为问题标签实体
-func (c *QuestionConverter) ToEntityTag(tag *pb.QuestionTag) *entity.QuestionTag {
-	if tag == nil {
-		return nil
-	}
-	return &entity.QuestionTag{
-		Name: tag.Name,
-		// ID、CreatedAt、UpdatedAt 由服务层处理
-	}
-}
-
-// ToPBTagList 将问题标签实体切片转换为 PB 消息切片
-func (c *QuestionConverter) ToPBTagList(tags []*entity.QuestionTag) []*pb.QuestionTag {
-	if tags == nil {
-		return nil
-	}
-	pbTags := make([]*pb.QuestionTag, len(tags))
-	for i, tag := range tags {
-		pbTags[i] = c.ToPBTag(tag)
-	}
-	return pbTags
 }

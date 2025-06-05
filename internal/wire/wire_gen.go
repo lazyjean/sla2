@@ -10,23 +10,30 @@ import (
 	"github.com/google/wire"
 	"github.com/lazyjean/sla2/config"
 	"github.com/lazyjean/sla2/internal/application/service"
-	"github.com/lazyjean/sla2/internal/domain/repository"
 	security2 "github.com/lazyjean/sla2/internal/domain/security"
+	service2 "github.com/lazyjean/sla2/internal/domain/service"
 	"github.com/lazyjean/sla2/internal/infrastructure/cache/redis"
 	"github.com/lazyjean/sla2/internal/infrastructure/listen"
 	"github.com/lazyjean/sla2/internal/infrastructure/oauth"
 	"github.com/lazyjean/sla2/internal/infrastructure/persistence/postgres"
 	"github.com/lazyjean/sla2/internal/infrastructure/security"
 	"github.com/lazyjean/sla2/internal/infrastructure/test"
+	"github.com/lazyjean/sla2/internal/infrastructure/validator"
 	"github.com/lazyjean/sla2/internal/transport/grpc"
+	"github.com/lazyjean/sla2/internal/transport/grpc/admin"
 	converter4 "github.com/lazyjean/sla2/internal/transport/grpc/admin/converter"
-	"github.com/lazyjean/sla2/internal/transport/grpc/course/converter"
+	"github.com/lazyjean/sla2/internal/transport/grpc/course"
+	converter2 "github.com/lazyjean/sla2/internal/transport/grpc/course/converter"
+	"github.com/lazyjean/sla2/internal/transport/grpc/learning"
 	converter5 "github.com/lazyjean/sla2/internal/transport/grpc/learning/converter"
-	converter3 "github.com/lazyjean/sla2/internal/transport/grpc/question/converter"
-	converter2 "github.com/lazyjean/sla2/internal/transport/grpc/vocabulary/converter"
+	"github.com/lazyjean/sla2/internal/transport/grpc/middleware"
+	"github.com/lazyjean/sla2/internal/transport/grpc/question"
+	"github.com/lazyjean/sla2/internal/transport/grpc/question/converter"
+	"github.com/lazyjean/sla2/internal/transport/grpc/user"
+	"github.com/lazyjean/sla2/internal/transport/grpc/vocabulary"
+	converter3 "github.com/lazyjean/sla2/internal/transport/grpc/vocabulary/converter"
 	"github.com/lazyjean/sla2/internal/transport/http/ws/handler"
 	"github.com/lazyjean/sla2/pkg/logger"
-	"go.uber.org/zap"
 	"testing"
 )
 
@@ -35,90 +42,105 @@ import (
 // InitializeApp 初始化应用程序
 func InitializeApp() (*Application, error) {
 	configConfig := config.GetConfig()
+	webSocketHandler := handler.NewWebSocketHandler()
+	tokenService := security.NewJWTTokenService(configConfig)
+	listener := listen.NewListener()
+	logConfig := &configConfig.Log
+	zapLogger := logger.NewAppLogger(logConfig)
+	registry := middleware.NewRegistry()
+	serverMetrics := middleware.NewMetrics(registry)
+	server := grpc.NewServer(serverMetrics, zapLogger, tokenService)
 	databaseConfig := &configConfig.Database
 	db, err := postgres.NewDB(databaseConfig)
 	if err != nil {
 		return nil, err
 	}
 	userRepository := postgres.NewUserRepository(db)
-	tokenService := security.NewJWTTokenService(configConfig)
 	passwordService := security.NewBCryptPasswordService()
-	appleConfig := oauth.NewAppleConfig(configConfig)
-	appleAuthService := oauth.NewAppleAuthService(appleConfig)
+	appleAuthService := oauth.NewAppleAuthService(configConfig)
 	userService := service.NewUserService(userRepository, tokenService, passwordService, appleAuthService)
-	questionRepository := postgres.NewQuestionRepository(db)
-	questionService := service.NewQuestionService(questionRepository)
-	hanCharRepository := postgres.NewHanCharRepository(db)
-	wordRepository := postgres.NewWordRepository(db)
-	vocabularyService := service.NewVocabularyService(hanCharRepository, wordRepository)
-	courseRepository := postgres.NewCourseRepository(db)
-	courseSectionRepository := postgres.NewCourseSectionRepository(db)
-	courseService := service.NewCourseService(courseRepository, courseSectionRepository)
+	service3 := user.NewUserService(userService)
 	learningRepository := postgres.NewLearningRepository(db)
 	memoryUnitRepository := postgres.NewMemoryUnitRepository(db)
-	memoryService := service.NewMemoryService(wordRepository, memoryUnitRepository, hanCharRepository)
-	learningService := service.NewLearningService(learningRepository, memoryService, vocabularyService)
+	wordRepository := postgres.NewVocabularyRepository(db)
+	hanCharRepository := postgres.NewHanCharRepository(db)
+	memoryService := service2.NewMemoryService(memoryUnitRepository)
+	vocabularyService := service.NewVocabularyService(hanCharRepository, wordRepository)
+	learningService := service.NewLearningService(learningRepository, memoryUnitRepository, wordRepository, hanCharRepository, memoryService, vocabularyService)
+	service4 := learning.NewLearningService(learningService, vocabularyService)
+	courseRepository := postgres.NewCourseRepository(db)
+	courseSectionRepository := postgres.NewCourseSectionRepository(db)
+	courseSectionUnitRepository := postgres.NewCourseSectionUnitRepository(db)
+	courseService := service.NewCourseService(courseRepository, courseSectionRepository, courseSectionUnitRepository)
+	service5 := course.NewCourseService(courseService)
 	adminRepository := postgres.NewAdminRepository(db)
 	rbacConfig := &configConfig.RBAC
-	logConfig := &configConfig.Log
-	zapLogger := logger.NewAppLogger(logConfig)
 	rbacProvider, err := security2.NewRBACProvider(db, rbacConfig, zapLogger)
 	if err != nil {
 		return nil, err
 	}
 	permissionHelper := rbacProvider.PermissionHelper
-	adminService := provideAdminService(adminRepository, passwordService, tokenService, permissionHelper)
-	webSocketHandler := handler.NewWebSocketHandler()
-	listener := listen.NewListener()
-	grpcServer := grpc.NewGRPCServer(userService, questionService, vocabularyService, courseService, learningService, memoryService, adminService, webSocketHandler, tokenService, listener, zapLogger)
-	application := NewApplication(configConfig, grpcServer)
+	adminService := service.NewAdminService(adminRepository, passwordService, tokenService, permissionHelper)
+	service6 := admin.NewAdminService(adminService)
+	questionRepository := postgres.NewQuestionRepository(db)
+	questionService := service.NewQuestionService(questionRepository)
+	questionConverter := converter.NewQuestionConverter()
+	service7 := question.NewQuestionService(questionService, questionConverter)
+	service8 := vocabulary.NewVocabularyService(vocabularyService)
+	grpcServer := grpc.NewGRPCServer(webSocketHandler, tokenService, listener, zapLogger, server, service3, service4, service5, service6, service7, service8)
+	application := NewApplication(configConfig, grpcServer, zapLogger)
 	return application, nil
 }
 
 func InitializeTestApp(t *testing.T) (*Application, error) {
 	configConfig := config.GetConfig()
+	webSocketHandler := handler.NewWebSocketHandler()
+	mockTokenService := test.NewMockTokenService()
+	listener := test.NewTestListener()
+	logConfig := &configConfig.Log
+	zapLogger := logger.NewAppLogger(logConfig)
+	registry := middleware.NewRegistry()
+	serverMetrics := middleware.NewMetrics(registry)
+	server := grpc.NewServer(serverMetrics, zapLogger, mockTokenService)
 	db := test.NewTestDB(t)
 	userRepository := postgres.NewUserRepository(db)
-	mockTokenService := test.NewMockTokenService()
 	passwordService := security.NewBCryptPasswordService()
 	appleAuthService := test.NewMockAppleAuthService()
 	userService := service.NewUserService(userRepository, mockTokenService, passwordService, appleAuthService)
-	questionRepository := postgres.NewQuestionRepository(db)
-	questionService := service.NewQuestionService(questionRepository)
-	hanCharRepository := postgres.NewHanCharRepository(db)
-	wordRepository := postgres.NewWordRepository(db)
-	vocabularyService := service.NewVocabularyService(hanCharRepository, wordRepository)
-	courseRepository := postgres.NewCourseRepository(db)
-	courseSectionRepository := postgres.NewCourseSectionRepository(db)
-	courseService := service.NewCourseService(courseRepository, courseSectionRepository)
+	service3 := user.NewUserService(userService)
 	learningRepository := postgres.NewLearningRepository(db)
 	memoryUnitRepository := postgres.NewMemoryUnitRepository(db)
-	memoryService := service.NewMemoryService(wordRepository, memoryUnitRepository, hanCharRepository)
-	learningService := service.NewLearningService(learningRepository, memoryService, vocabularyService)
+	wordRepository := postgres.NewVocabularyRepository(db)
+	hanCharRepository := postgres.NewHanCharRepository(db)
+	memoryService := service2.NewMemoryService(memoryUnitRepository)
+	vocabularyService := service.NewVocabularyService(hanCharRepository, wordRepository)
+	learningService := service.NewLearningService(learningRepository, memoryUnitRepository, wordRepository, hanCharRepository, memoryService, vocabularyService)
+	service4 := learning.NewLearningService(learningService, vocabularyService)
+	courseRepository := postgres.NewCourseRepository(db)
+	courseSectionRepository := postgres.NewCourseSectionRepository(db)
+	courseSectionUnitRepository := postgres.NewCourseSectionUnitRepository(db)
+	courseService := service.NewCourseService(courseRepository, courseSectionRepository, courseSectionUnitRepository)
+	service5 := course.NewCourseService(courseService)
 	adminRepository := postgres.NewAdminRepository(db)
 	rbacConfig := &configConfig.RBAC
-	logConfig := &configConfig.Log
-	zapLogger := logger.NewAppLogger(logConfig)
 	rbacProvider, err := security2.NewRBACProvider(db, rbacConfig, zapLogger)
 	if err != nil {
 		return nil, err
 	}
 	permissionHelper := rbacProvider.PermissionHelper
-	adminService := provideAdminService(adminRepository, passwordService, mockTokenService, permissionHelper)
-	webSocketHandler := handler.NewWebSocketHandler()
-	listener := test.NewTestListener()
-	grpcServer := grpc.NewGRPCServer(userService, questionService, vocabularyService, courseService, learningService, memoryService, adminService, webSocketHandler, mockTokenService, listener, zapLogger)
-	application := NewApplication(configConfig, grpcServer)
+	adminService := service.NewAdminService(adminRepository, passwordService, mockTokenService, permissionHelper)
+	service6 := admin.NewAdminService(adminService)
+	questionRepository := postgres.NewQuestionRepository(db)
+	questionService := service.NewQuestionService(questionRepository)
+	questionConverter := converter.NewQuestionConverter()
+	service7 := question.NewQuestionService(questionService, questionConverter)
+	service8 := vocabulary.NewVocabularyService(vocabularyService)
+	grpcServer := grpc.NewGRPCServer(webSocketHandler, mockTokenService, listener, zapLogger, server, service3, service4, service5, service6, service7, service8)
+	application := NewApplication(configConfig, grpcServer, zapLogger)
 	return application, nil
 }
 
 // wire.go:
-
-// 提供 Logger 实例
-func ProvideLogger() *zap.Logger {
-
-	return logger.Log
-}
 
 // 配置集
 var configSet = wire.NewSet(config.GetConfig, wire.FieldsOf(new(*config.Config), "Database", "Redis", "JWT", "Apple", "RBAC", "Log"))
@@ -132,31 +154,16 @@ var testDBSet = wire.NewSet(test.NewTestDB)
 var cacheSet = wire.NewSet(redis.NewRedisCache)
 
 // 仓储集
-var repositorySet = wire.NewSet(postgres.NewWordRepository, postgres.NewCachedWordRepository, postgres.NewLearningRepository, postgres.NewUserRepository, postgres.NewCourseRepository, postgres.NewCourseSectionRepository, postgres.NewAdminRepository, postgres.NewQuestionRepository, postgres.NewHanCharRepository, postgres.NewMemoryUnitRepository)
+var repositorySet = wire.NewSet(postgres.NewVocabularyRepository, postgres.NewCachedWordRepository, postgres.NewLearningRepository, postgres.NewUserRepository, postgres.NewCourseRepository, postgres.NewCourseSectionRepository, postgres.NewCourseSectionUnitRepository, postgres.NewAdminRepository, postgres.NewQuestionRepository, postgres.NewHanCharRepository, postgres.NewMemoryUnitRepository)
 
 // 转换器
-var converterSet = wire.NewSet(converter.NewCourseConverter, converter2.NewVocabularyConverter, converter3.NewQuestionConverter, converter4.NewAdminConverter, converter5.NewLearningConverter)
+var converterSet = wire.NewSet(converter2.NewCourseConverter, converter3.NewVocabularyConverter, converter.NewQuestionConverter, converter4.NewAdminConverter, converter5.NewLearningConverter)
 
 // 服务集
-var serviceSet = wire.NewSet(service.NewVocabularyService, service.NewLearningService, service.NewUserService, service.NewCourseService, provideAdminService, service.NewQuestionService, service.NewMemoryService)
-
-// provideAdminService 提供管理员服务
-func provideAdminService(
-	adminRepo repository.AdminRepository,
-	passwordService security2.PasswordService,
-	tokenService security2.TokenService,
-	permissionHelper *security2.PermissionHelper,
-) *service.AdminService {
-	return service.NewAdminService(
-		adminRepo,
-		passwordService,
-		tokenService,
-		permissionHelper,
-	)
-}
+var serviceSet = wire.NewSet(service2.NewMemoryService, service.NewVocabularyService, service.NewLearningService, service.NewUserService, service.NewCourseService, service.NewQuestionService, service.NewAdminService)
 
 // 认证集
-var authSet = wire.NewSet(oauth.NewAppleConfig, oauth.NewAppleAuthService)
+var authSet = wire.NewSet(oauth.NewAppleAuthService)
 
 var testAuthSet = wire.NewSet(test.NewMockAppleAuthService)
 
@@ -166,10 +173,13 @@ var securitySet = wire.NewSet(security.NewBCryptPasswordService, security.NewJWT
 // WebSocket处理器集
 var wsSet = wire.NewSet(handler.NewWebSocketHandler)
 
-// gRPC服务器集
-var grpcSet = wire.NewSet(listen.NewListener, grpc.NewGRPCServer)
+// transport 服务集
+var transportSet = wire.NewSet(user.NewUserService, question.NewQuestionService, course.NewCourseService, learning.NewLearningService, admin.NewAdminService, vocabulary.NewVocabularyService)
 
-var bufConnGrpcSet = wire.NewSet(test.NewTestListener, grpc.NewGRPCServer)
+// gRPC服务器集
+var grpcSet = wire.NewSet(listen.NewListener, grpc.NewGRPCServer, grpc.NewServer)
+
+var bufConnGrpcSet = wire.NewSet(test.NewTestListener, grpc.NewGRPCServer, grpc.NewServer)
 
 // 提供 PermissionHelper
 func ProvidePermissionHelper(rbacConfig *config.RBACConfig) *security2.PermissionHelper {
@@ -181,3 +191,9 @@ var rbacSet = wire.NewSet(security2.NewRBACProvider, wire.FieldsOf(new(*security
 
 // 测试安全服务集
 var testSecuritySet = wire.NewSet(test.NewMockTokenService, wire.Bind(new(security2.TokenService), new(*test.MockTokenService)), security.NewBCryptPasswordService)
+
+// 验证器集
+var validatorSet = wire.NewSet(validator.NewValidator)
+
+// 测试验证器集
+var testValidatorSet = wire.NewSet(validator.NewValidator)

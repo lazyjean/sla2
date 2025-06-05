@@ -53,47 +53,16 @@ type LoginResponse struct {
 	IsNewUser     bool       `json:"is_new_user"`
 }
 
-// UpdateUserRequest 更新用户信息请求
+// UpdateUserRequest 更新用户信息请求 todo: 这里只有 2 个字段, 是否有必要使用 DTO 对象?
 type UpdateUserRequest struct {
 	Nickname string `json:"nickname,omitempty"`
 	Avatar   string `json:"avatar,omitempty"`
-}
-
-type UpdateUserResponse struct {
 }
 
 // ChangePasswordRequest 修改密码请求
 type ChangePasswordRequest struct {
 	OldPassword string `json:"old_password"`
 	NewPassword string `json:"new_password"`
-}
-
-type ChangePasswordResponse struct {
-}
-
-type LogoutRequest struct {
-}
-
-type LogoutResponse struct {
-}
-
-type GetUserInfoRequest struct {
-	UserID uint32 `json:"user_id"`
-}
-
-type GetUserInfoResponse struct {
-	UserID        uint32 `json:"user_id"`
-	Username      string `json:"username"`
-	Email         string `json:"email"`
-	EmailVerified bool   `json:"email_verified"`
-	Nickname      string `json:"nickname,omitempty"`
-	Avatar        string `json:"avatar,omitempty"`
-}
-
-// UserRefreshTokenResponse 用户刷新token响应
-type UserRefreshTokenResponse struct {
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
 }
 
 // UserDTO 用户数据传输对象

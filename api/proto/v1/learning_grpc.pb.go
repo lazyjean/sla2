@@ -22,12 +22,12 @@ const (
 	LearningService_GetCourseProgress_FullMethodName     = "/proto.v1.LearningService/GetCourseProgress"
 	LearningService_GetSectionProgress_FullMethodName    = "/proto.v1.LearningService/GetSectionProgress"
 	LearningService_UpdateUnitProgress_FullMethodName    = "/proto.v1.LearningService/UpdateUnitProgress"
-	LearningService_InitializeMemoryUnits_FullMethodName = "/proto.v1.LearningService/InitializeMemoryUnits"
-	LearningService_ListMemoriesForReview_FullMethodName = "/proto.v1.LearningService/ListMemoriesForReview"
-	LearningService_ReviewMemoryUnits_FullMethodName     = "/proto.v1.LearningService/ReviewMemoryUnits"
-	LearningService_GetMemoryStats_FullMethodName        = "/proto.v1.LearningService/GetMemoryStats"
 	LearningService_GetHanCharTest_FullMethodName        = "/proto.v1.LearningService/GetHanCharTest"
 	LearningService_GetWordTest_FullMethodName           = "/proto.v1.LearningService/GetWordTest"
+	LearningService_InitializeMemoryUnits_FullMethodName = "/proto.v1.LearningService/InitializeMemoryUnits"
+	LearningService_ReviewMemoryUnits_FullMethodName     = "/proto.v1.LearningService/ReviewMemoryUnits"
+	LearningService_GetMemoryStats_FullMethodName        = "/proto.v1.LearningService/GetMemoryStats"
+	LearningService_GetReviewContent_FullMethodName      = "/proto.v1.LearningService/GetReviewContent"
 )
 
 // LearningServiceClient is the client API for LearningService service.
@@ -48,15 +48,18 @@ type LearningServiceClient interface {
 	// summary: 更新指定单元的学习进度状态，标记单元是否完成
 	// required: unit_id, section_id, completed
 	UpdateUnitProgress(ctx context.Context, in *LearningServiceUpdateUnitProgressRequest, opts ...grpc.CallOption) (*LearningServiceUpdateUnitProgressResponse, error)
+	// name: 获取汉字测试
+	// summary: 获取汉字测试内容，支持指定测试数量和难度等级
+	// required: count, difficulty_level
+	GetHanCharTest(ctx context.Context, in *LearningServiceGetHanCharTestRequest, opts ...grpc.CallOption) (*LearningServiceGetHanCharTestResponse, error)
+	// name: 获取单词测试
+	// summary: 获取单词测试内容，支持指定测试数量和难度等级
+	// required: count, difficulty_level
+	GetWordTest(ctx context.Context, in *LearningServiceGetWordTestRequest, opts ...grpc.CallOption) (*LearningServiceGetWordTestResponse, error)
 	// name: 初始化记忆单元
 	// summary: 测试或学习过程中, 将未掌握, 或者未学习过的内容, 在这里进行初始化, 后续会追踪记忆状态, 提醒及时复习
 	// required: user_id
 	InitializeMemoryUnits(ctx context.Context, in *LearningServiceInitializeMemoryUnitRequest, opts ...grpc.CallOption) (*LearningServiceInitializeMemoryUnitResponse, error)
-	// name: 获取需要复习的记忆单元列表
-	// summary: 获取当前需要复习的记忆单元列表，支持分页和类型过滤
-	// required: user_id
-	// optional: page, page_size, types, tags, categories
-	ListMemoriesForReview(ctx context.Context, in *LearningServiceListMemoriesForReviewRequest, opts ...grpc.CallOption) (*LearningServiceListMemoriesForReviewResponse, error)
 	// name: 复习记忆单元
 	// summary: 提交记忆单元的复习结果，系统会根据复习结果更新记忆状态和下次复习时间
 	// required: user_id, items
@@ -66,14 +69,10 @@ type LearningServiceClient interface {
 	// required: user_id
 	// optional: type, tag, category
 	GetMemoryStats(ctx context.Context, in *LearningServiceGetMemoryStatsRequest, opts ...grpc.CallOption) (*LearningServiceGetMemoryStatsResponse, error)
-	// name: 获取汉字测试
-	// summary: 获取汉字测试内容，支持指定测试数量和难度等级
-	// required: count, difficulty_level
-	GetHanCharTest(ctx context.Context, in *LearningServiceGetHanCharTestRequest, opts ...grpc.CallOption) (*LearningServiceGetHanCharTestResponse, error)
-	// name: 获取单词测试
-	// summary: 获取单词测试内容，支持指定测试数量和难度等级
-	// required: count, difficulty_level
-	GetWordTest(ctx context.Context, in *LearningServiceGetWordTestRequest, opts ...grpc.CallOption) (*LearningServiceGetWordTestResponse, error)
+	// name: 获取复习内容
+	// summary: 获取需要复习的学习内容，包括汉字和单词
+	// required: count
+	GetReviewContent(ctx context.Context, in *GetReviewContentRequest, opts ...grpc.CallOption) (*GetReviewContentResponse, error)
 }
 
 type learningServiceClient struct {
@@ -114,20 +113,30 @@ func (c *learningServiceClient) UpdateUnitProgress(ctx context.Context, in *Lear
 	return out, nil
 }
 
-func (c *learningServiceClient) InitializeMemoryUnits(ctx context.Context, in *LearningServiceInitializeMemoryUnitRequest, opts ...grpc.CallOption) (*LearningServiceInitializeMemoryUnitResponse, error) {
+func (c *learningServiceClient) GetHanCharTest(ctx context.Context, in *LearningServiceGetHanCharTestRequest, opts ...grpc.CallOption) (*LearningServiceGetHanCharTestResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(LearningServiceInitializeMemoryUnitResponse)
-	err := c.cc.Invoke(ctx, LearningService_InitializeMemoryUnits_FullMethodName, in, out, cOpts...)
+	out := new(LearningServiceGetHanCharTestResponse)
+	err := c.cc.Invoke(ctx, LearningService_GetHanCharTest_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *learningServiceClient) ListMemoriesForReview(ctx context.Context, in *LearningServiceListMemoriesForReviewRequest, opts ...grpc.CallOption) (*LearningServiceListMemoriesForReviewResponse, error) {
+func (c *learningServiceClient) GetWordTest(ctx context.Context, in *LearningServiceGetWordTestRequest, opts ...grpc.CallOption) (*LearningServiceGetWordTestResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(LearningServiceListMemoriesForReviewResponse)
-	err := c.cc.Invoke(ctx, LearningService_ListMemoriesForReview_FullMethodName, in, out, cOpts...)
+	out := new(LearningServiceGetWordTestResponse)
+	err := c.cc.Invoke(ctx, LearningService_GetWordTest_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *learningServiceClient) InitializeMemoryUnits(ctx context.Context, in *LearningServiceInitializeMemoryUnitRequest, opts ...grpc.CallOption) (*LearningServiceInitializeMemoryUnitResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LearningServiceInitializeMemoryUnitResponse)
+	err := c.cc.Invoke(ctx, LearningService_InitializeMemoryUnits_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -154,20 +163,10 @@ func (c *learningServiceClient) GetMemoryStats(ctx context.Context, in *Learning
 	return out, nil
 }
 
-func (c *learningServiceClient) GetHanCharTest(ctx context.Context, in *LearningServiceGetHanCharTestRequest, opts ...grpc.CallOption) (*LearningServiceGetHanCharTestResponse, error) {
+func (c *learningServiceClient) GetReviewContent(ctx context.Context, in *GetReviewContentRequest, opts ...grpc.CallOption) (*GetReviewContentResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(LearningServiceGetHanCharTestResponse)
-	err := c.cc.Invoke(ctx, LearningService_GetHanCharTest_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *learningServiceClient) GetWordTest(ctx context.Context, in *LearningServiceGetWordTestRequest, opts ...grpc.CallOption) (*LearningServiceGetWordTestResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(LearningServiceGetWordTestResponse)
-	err := c.cc.Invoke(ctx, LearningService_GetWordTest_FullMethodName, in, out, cOpts...)
+	out := new(GetReviewContentResponse)
+	err := c.cc.Invoke(ctx, LearningService_GetReviewContent_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -192,15 +191,18 @@ type LearningServiceServer interface {
 	// summary: 更新指定单元的学习进度状态，标记单元是否完成
 	// required: unit_id, section_id, completed
 	UpdateUnitProgress(context.Context, *LearningServiceUpdateUnitProgressRequest) (*LearningServiceUpdateUnitProgressResponse, error)
+	// name: 获取汉字测试
+	// summary: 获取汉字测试内容，支持指定测试数量和难度等级
+	// required: count, difficulty_level
+	GetHanCharTest(context.Context, *LearningServiceGetHanCharTestRequest) (*LearningServiceGetHanCharTestResponse, error)
+	// name: 获取单词测试
+	// summary: 获取单词测试内容，支持指定测试数量和难度等级
+	// required: count, difficulty_level
+	GetWordTest(context.Context, *LearningServiceGetWordTestRequest) (*LearningServiceGetWordTestResponse, error)
 	// name: 初始化记忆单元
 	// summary: 测试或学习过程中, 将未掌握, 或者未学习过的内容, 在这里进行初始化, 后续会追踪记忆状态, 提醒及时复习
 	// required: user_id
 	InitializeMemoryUnits(context.Context, *LearningServiceInitializeMemoryUnitRequest) (*LearningServiceInitializeMemoryUnitResponse, error)
-	// name: 获取需要复习的记忆单元列表
-	// summary: 获取当前需要复习的记忆单元列表，支持分页和类型过滤
-	// required: user_id
-	// optional: page, page_size, types, tags, categories
-	ListMemoriesForReview(context.Context, *LearningServiceListMemoriesForReviewRequest) (*LearningServiceListMemoriesForReviewResponse, error)
 	// name: 复习记忆单元
 	// summary: 提交记忆单元的复习结果，系统会根据复习结果更新记忆状态和下次复习时间
 	// required: user_id, items
@@ -210,14 +212,10 @@ type LearningServiceServer interface {
 	// required: user_id
 	// optional: type, tag, category
 	GetMemoryStats(context.Context, *LearningServiceGetMemoryStatsRequest) (*LearningServiceGetMemoryStatsResponse, error)
-	// name: 获取汉字测试
-	// summary: 获取汉字测试内容，支持指定测试数量和难度等级
-	// required: count, difficulty_level
-	GetHanCharTest(context.Context, *LearningServiceGetHanCharTestRequest) (*LearningServiceGetHanCharTestResponse, error)
-	// name: 获取单词测试
-	// summary: 获取单词测试内容，支持指定测试数量和难度等级
-	// required: count, difficulty_level
-	GetWordTest(context.Context, *LearningServiceGetWordTestRequest) (*LearningServiceGetWordTestResponse, error)
+	// name: 获取复习内容
+	// summary: 获取需要复习的学习内容，包括汉字和单词
+	// required: count
+	GetReviewContent(context.Context, *GetReviewContentRequest) (*GetReviewContentResponse, error)
 	mustEmbedUnimplementedLearningServiceServer()
 }
 
@@ -237,11 +235,14 @@ func (UnimplementedLearningServiceServer) GetSectionProgress(context.Context, *L
 func (UnimplementedLearningServiceServer) UpdateUnitProgress(context.Context, *LearningServiceUpdateUnitProgressRequest) (*LearningServiceUpdateUnitProgressResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUnitProgress not implemented")
 }
+func (UnimplementedLearningServiceServer) GetHanCharTest(context.Context, *LearningServiceGetHanCharTestRequest) (*LearningServiceGetHanCharTestResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetHanCharTest not implemented")
+}
+func (UnimplementedLearningServiceServer) GetWordTest(context.Context, *LearningServiceGetWordTestRequest) (*LearningServiceGetWordTestResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetWordTest not implemented")
+}
 func (UnimplementedLearningServiceServer) InitializeMemoryUnits(context.Context, *LearningServiceInitializeMemoryUnitRequest) (*LearningServiceInitializeMemoryUnitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InitializeMemoryUnits not implemented")
-}
-func (UnimplementedLearningServiceServer) ListMemoriesForReview(context.Context, *LearningServiceListMemoriesForReviewRequest) (*LearningServiceListMemoriesForReviewResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListMemoriesForReview not implemented")
 }
 func (UnimplementedLearningServiceServer) ReviewMemoryUnits(context.Context, *LearningServiceReviewMemoryUnitsRequest) (*LearningServiceReviewMemoryUnitsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReviewMemoryUnits not implemented")
@@ -249,11 +250,8 @@ func (UnimplementedLearningServiceServer) ReviewMemoryUnits(context.Context, *Le
 func (UnimplementedLearningServiceServer) GetMemoryStats(context.Context, *LearningServiceGetMemoryStatsRequest) (*LearningServiceGetMemoryStatsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMemoryStats not implemented")
 }
-func (UnimplementedLearningServiceServer) GetHanCharTest(context.Context, *LearningServiceGetHanCharTestRequest) (*LearningServiceGetHanCharTestResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetHanCharTest not implemented")
-}
-func (UnimplementedLearningServiceServer) GetWordTest(context.Context, *LearningServiceGetWordTestRequest) (*LearningServiceGetWordTestResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetWordTest not implemented")
+func (UnimplementedLearningServiceServer) GetReviewContent(context.Context, *GetReviewContentRequest) (*GetReviewContentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetReviewContent not implemented")
 }
 func (UnimplementedLearningServiceServer) mustEmbedUnimplementedLearningServiceServer() {}
 func (UnimplementedLearningServiceServer) testEmbeddedByValue()                         {}
@@ -330,6 +328,42 @@ func _LearningService_UpdateUnitProgress_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _LearningService_GetHanCharTest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LearningServiceGetHanCharTestRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LearningServiceServer).GetHanCharTest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LearningService_GetHanCharTest_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LearningServiceServer).GetHanCharTest(ctx, req.(*LearningServiceGetHanCharTestRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LearningService_GetWordTest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LearningServiceGetWordTestRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LearningServiceServer).GetWordTest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LearningService_GetWordTest_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LearningServiceServer).GetWordTest(ctx, req.(*LearningServiceGetWordTestRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _LearningService_InitializeMemoryUnits_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(LearningServiceInitializeMemoryUnitRequest)
 	if err := dec(in); err != nil {
@@ -344,24 +378,6 @@ func _LearningService_InitializeMemoryUnits_Handler(srv interface{}, ctx context
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(LearningServiceServer).InitializeMemoryUnits(ctx, req.(*LearningServiceInitializeMemoryUnitRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _LearningService_ListMemoriesForReview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LearningServiceListMemoriesForReviewRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(LearningServiceServer).ListMemoriesForReview(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: LearningService_ListMemoriesForReview_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LearningServiceServer).ListMemoriesForReview(ctx, req.(*LearningServiceListMemoriesForReviewRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -402,38 +418,20 @@ func _LearningService_GetMemoryStats_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
-func _LearningService_GetHanCharTest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LearningServiceGetHanCharTestRequest)
+func _LearningService_GetReviewContent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetReviewContentRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(LearningServiceServer).GetHanCharTest(ctx, in)
+		return srv.(LearningServiceServer).GetReviewContent(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: LearningService_GetHanCharTest_FullMethodName,
+		FullMethod: LearningService_GetReviewContent_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LearningServiceServer).GetHanCharTest(ctx, req.(*LearningServiceGetHanCharTestRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _LearningService_GetWordTest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LearningServiceGetWordTestRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(LearningServiceServer).GetWordTest(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: LearningService_GetWordTest_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LearningServiceServer).GetWordTest(ctx, req.(*LearningServiceGetWordTestRequest))
+		return srv.(LearningServiceServer).GetReviewContent(ctx, req.(*GetReviewContentRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -458,12 +456,16 @@ var LearningService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _LearningService_UpdateUnitProgress_Handler,
 		},
 		{
-			MethodName: "InitializeMemoryUnits",
-			Handler:    _LearningService_InitializeMemoryUnits_Handler,
+			MethodName: "GetHanCharTest",
+			Handler:    _LearningService_GetHanCharTest_Handler,
 		},
 		{
-			MethodName: "ListMemoriesForReview",
-			Handler:    _LearningService_ListMemoriesForReview_Handler,
+			MethodName: "GetWordTest",
+			Handler:    _LearningService_GetWordTest_Handler,
+		},
+		{
+			MethodName: "InitializeMemoryUnits",
+			Handler:    _LearningService_InitializeMemoryUnits_Handler,
 		},
 		{
 			MethodName: "ReviewMemoryUnits",
@@ -474,12 +476,8 @@ var LearningService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _LearningService_GetMemoryStats_Handler,
 		},
 		{
-			MethodName: "GetHanCharTest",
-			Handler:    _LearningService_GetHanCharTest_Handler,
-		},
-		{
-			MethodName: "GetWordTest",
-			Handler:    _LearningService_GetWordTest_Handler,
+			MethodName: "GetReviewContent",
+			Handler:    _LearningService_GetReviewContent_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

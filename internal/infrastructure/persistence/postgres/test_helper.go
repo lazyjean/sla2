@@ -10,6 +10,8 @@ import (
 	"gorm.io/gorm"
 )
 
+// todo: 这里该如何优化?
+
 func setupTestDB(t *testing.T) (*gorm.DB, func()) {
 	// 从环境变量获取测试数据库配置
 	cfg := &config.DatabaseConfig{

@@ -31,21 +31,21 @@ func NewRBACInterceptor(permissionHelper *security.PermissionHelper) *RBACInterc
 }
 
 // RegisterMethodPermission 注册方法对应的权限
-func (r *RBACInterceptor) RegisterMethodPermission(fullMethod, resource, action string) {
+func (r *RBACInterceptor) RegisterMethodPermission(ctx context.Context, fullMethod, resource, action string) {
 	r.methodPermissionMap[fullMethod] = map[string]string{
 		"resource": resource,
 		"action":   action,
 	}
-	logger.Log.Debug("Registered method permission",
+	logger.GetLogger(ctx).Debug("Registered method permission",
 		zap.String("method", fullMethod),
 		zap.String("resource", resource),
 		zap.String("action", action))
 }
 
 // AddToWhitelist 添加方法到白名单
-func (r *RBACInterceptor) AddToWhitelist(fullMethod string) {
+func (r *RBACInterceptor) AddToWhitelist(ctx context.Context, fullMethod string) {
 	r.whitelistMethods[fullMethod] = true
-	logger.Log.Debug("Added method to whitelist", zap.String("method", fullMethod))
+	logger.GetLogger(ctx).Debug("Added method to whitelist", zap.String("method", fullMethod))
 }
 
 // UnaryServerInterceptor 一元RPC拦截器

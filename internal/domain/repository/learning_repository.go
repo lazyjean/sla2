@@ -18,6 +18,7 @@ type LearningRepository interface {
 	GetSectionProgress(ctx context.Context, userID, sectionID uint) (*entity.CourseSectionProgress, error)
 	ListSectionProgress(ctx context.Context, userID, courseID uint) ([]*entity.CourseSectionProgress, error)
 
+	// todo: upsert 能否放到 GenericRepository 中？
 	// 单元进度
 	UpsertUnitProgress(ctx context.Context, progress *entity.CourseSectionUnitProgress) error
 	ListUnitProgress(ctx context.Context, userID, sectionID uint) ([]*entity.CourseSectionUnitProgress, error)

@@ -13,19 +13,19 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type UserService struct {
+type Service struct {
 	pb.UnimplementedUserServiceServer
 	userService *service.UserService
 }
 
-func NewUserService(userService *service.UserService) *UserService {
-	return &UserService{
+func NewUserService(userService *service.UserService) *Service {
+	return &Service{
 		userService: userService,
 	}
 }
 
 // Register 用户注册
-func (s *UserService) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {
+func (s *Service) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 	result, err := s.userService.Register(ctx, &dto.RegisterRequest{
 		Username: req.Username,
 		Password: req.Password,
@@ -58,7 +58,7 @@ func (s *UserService) Register(ctx context.Context, req *pb.RegisterRequest) (*p
 }
 
 // Login 处理用户登录请求
-func (s *UserService) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResponse, error) {
+func (s *Service) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResponse, error) {
 	result, err := s.userService.Login(ctx, &dto.LoginRequest{
 		Account:  req.Account,
 		Password: req.Password,
@@ -89,7 +89,7 @@ func (s *UserService) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Logi
 	}, nil
 }
 
-func (s *UserService) GetUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
+func (s *Service) GetUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
 	user, err := s.userService.GetLoginUser(ctx)
 	if err != nil {
 		return nil, err
@@ -107,7 +107,7 @@ func (s *UserService) GetUserInfo(ctx context.Context, req *pb.GetUserInfoReques
 	}, nil
 }
 
-func (s *UserService) UpdateUserInfo(ctx context.Context, req *pb.UpdateUserInfoRequest) (*pb.UpdateUserInfoResponse, error) {
+func (s *Service) UpdateUserInfo(ctx context.Context, req *pb.UpdateUserInfoRequest) (*pb.UpdateUserInfoResponse, error) {
 	err := s.userService.UpdateUser(ctx, &dto.UpdateUserRequest{
 		Nickname: req.Nickname,
 		Avatar:   req.Avatar,
@@ -119,7 +119,7 @@ func (s *UserService) UpdateUserInfo(ctx context.Context, req *pb.UpdateUserInfo
 	return &pb.UpdateUserInfoResponse{}, nil
 }
 
-func (s *UserService) ChangePassword(ctx context.Context, req *pb.ChangePasswordRequest) (*pb.ChangePasswordResponse, error) {
+func (s *Service) ChangePassword(ctx context.Context, req *pb.ChangePasswordRequest) (*pb.ChangePasswordResponse, error) {
 	err := s.userService.ChangePassword(ctx, &dto.ChangePasswordRequest{
 		OldPassword: req.OldPassword,
 		NewPassword: req.NewPassword,
@@ -131,7 +131,7 @@ func (s *UserService) ChangePassword(ctx context.Context, req *pb.ChangePassword
 	return &pb.ChangePasswordResponse{}, nil
 }
 
-func (s *UserService) ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest) (*pb.ResetPasswordResponse, error) {
+func (s *Service) ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest) (*pb.ResetPasswordResponse, error) {
 	err := s.userService.ResetPassword(ctx, &dto.ResetPasswordRequest{
 		ResetType:        req.ResetType,
 		Phone:            req.Phone,
@@ -147,7 +147,7 @@ func (s *UserService) ResetPassword(ctx context.Context, req *pb.ResetPasswordRe
 }
 
 // AppleLogin 处理苹果登录请求
-func (s *UserService) AppleLogin(ctx context.Context, req *pb.AppleLoginRequest) (*pb.AppleLoginResponse, error) {
+func (s *Service) AppleLogin(ctx context.Context, req *pb.AppleLoginRequest) (*pb.AppleLoginResponse, error) {
 	resp, err := s.userService.AppleLogin(ctx, &dto.AppleLoginRequest{
 		AuthorizationCode: req.AuthorizationCode,
 		UserIdentifier:    req.UserIdentifier,
@@ -180,34 +180,32 @@ func (s *UserService) AppleLogin(ctx context.Context, req *pb.AppleLoginRequest)
 }
 
 // RefreshToken 刷新token
-func (s *UserService) RefreshToken(ctx context.Context, req *pb.RefreshTokenRequest) (*pb.RefreshTokenResponse, error) {
+func (s *Service) RefreshToken(ctx context.Context, req *pb.RefreshTokenRequest) (*pb.RefreshTokenResponse, error) {
 	if req.RefreshToken == "" {
 		return nil, status.Error(codes.InvalidArgument, "refresh token不能为空")
 	}
 
-	resp, err := s.userService.RefreshToken(ctx, &dto.RefreshTokenRequest{
-		RefreshToken: req.RefreshToken,
-	})
+	token, refresh, err := s.userService.RefreshToken(ctx, req.RefreshToken)
 	if err != nil {
 		return nil, err
 	}
 
 	// 设置 cookie
 	if err := grpc.SetHeader(ctx, metadata.Pairs(
-		middleware.MDHeaderAccessToken, resp.AccessToken,
-		middleware.MDHeaderRefreshToken, resp.RefreshToken,
+		middleware.MDHeaderAccessToken, token,
+		middleware.MDHeaderRefreshToken, refresh,
 	)); err != nil {
 		return nil, err
 	}
 
 	return &pb.RefreshTokenResponse{
-		Token:        resp.AccessToken,
-		RefreshToken: resp.RefreshToken,
+		Token:        token,
+		RefreshToken: refresh,
 	}, nil
 }
 
 // Logout 登出
-func (s *UserService) Logout(ctx context.Context, req *pb.LogoutRequest) (*pb.LogoutResponse, error) {
+func (s *Service) Logout(ctx context.Context, req *pb.LogoutRequest) (*pb.LogoutResponse, error) {
 	// 清除 cookie
 	if err := grpc.SetHeader(ctx, metadata.Pairs(
 		middleware.MDHeaderAccessToken, "",

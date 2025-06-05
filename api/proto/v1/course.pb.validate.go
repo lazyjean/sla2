@@ -2323,6 +2323,8 @@ func (m *CourseServiceCreateSectionRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
+	// no validation rules for OrderIndex
+
 	if len(errors) > 0 {
 		return CourseServiceCreateSectionRequestMultiError(errors)
 	}
@@ -2689,8 +2691,6 @@ func (m *CourseServiceUpdateSectionResponse) validate(all bool) error {
 	}
 
 	var errors []error
-
-	// no validation rules for Id
 
 	if len(errors) > 0 {
 		return CourseServiceUpdateSectionResponseMultiError(errors)

@@ -45,7 +45,7 @@ func NewPermissionHelper(permissionManager PermissionManager) *PermissionHelper 
 // CheckUserPermission 检查用户对特定资源和操作的权限
 func (ph *PermissionHelper) CheckUserPermission(ctx context.Context, userID entity.UID, resource, action string) (bool, error) {
 	if userID == 0 {
-		logger.Log.Warn("Checking permission for invalid user ID",
+		logger.GetLogger(ctx).Warn("Checking permission for invalid user ID",
 			zap.String("resource", resource),
 			zap.String("action", action))
 		return false, nil
@@ -76,7 +76,7 @@ func (ph *PermissionHelper) RequireUserPermission(ctx context.Context, userID en
 // CheckRolePermission 检查角色对特定资源和操作的权限
 func (ph *PermissionHelper) CheckRolePermission(ctx context.Context, roleName, resource, action string) (bool, error) {
 	if roleName == "" {
-		logger.Log.Warn("Checking permission for empty role name",
+		logger.GetLogger(ctx).Warn("Checking permission for empty role name",
 			zap.String("resource", resource),
 			zap.String("action", action))
 		return false, nil

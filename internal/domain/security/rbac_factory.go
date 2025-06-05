@@ -4,10 +4,12 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/lazyjean/sla2/config"
-	"github.com/lazyjean/sla2/pkg/logger"
+	"github.com/apolloconfig/agollo/v4/component/log"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+
+	"github.com/lazyjean/sla2/config"
+	pkgLog "github.com/lazyjean/sla2/pkg/logger"
 )
 
 // RBACProvider RBAC权限系统供应商
@@ -18,9 +20,9 @@ type RBACProvider struct {
 }
 
 // NewRBACProvider 创建新的RBAC权限系统供应商
-func NewRBACProvider(db *gorm.DB, cfg *config.RBACConfig, log *zap.Logger) (*RBACProvider, error) {
+func NewRBACProvider(db *gorm.DB, cfg *config.RBACConfig, logger *zap.Logger) (*RBACProvider, error) {
 	// 创建Casbin权限管理器
-	permManager, err := NewCasbinPermissionManager(db, cfg.ConfigDir, log)
+	permManager, err := NewCasbinPermissionManager(db, cfg.ConfigDir, logger)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create permission manager: %w", err)
 	}
@@ -33,7 +35,7 @@ func NewRBACProvider(db *gorm.DB, cfg *config.RBACConfig, log *zap.Logger) (*RBA
 
 	// 如果配置了自动初始化，则初始化权限
 	log.Info("Auto-initializing RBAC permissions...")
-	if err := initializer.Initialize(logger.WithContext(context.Background(), log)); err != nil {
+	if err := initializer.Initialize(pkgLog.WithContext(context.Background(), logger)); err != nil {
 		log.Error("Failed to initialize permissions", zap.Error(err))
 		return nil, fmt.Errorf("failed to initialize permissions: %w", err)
 	}

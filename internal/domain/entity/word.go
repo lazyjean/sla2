@@ -5,6 +5,7 @@ import (
 
 	"github.com/lazyjean/sla2/internal/domain/errors"
 	"github.com/lazyjean/sla2/internal/domain/valueobject"
+	"gorm.io/gorm"
 )
 
 type WordID uint32
@@ -152,4 +153,44 @@ func (w *Word) Update(
 	w.Tags = tags
 	w.Level = level
 	w.UpdatedAt = time.Now()
+}
+
+// GetID 获取ID
+func (w *Word) GetID() WordID {
+	return w.ID
+}
+
+// SetID 设置ID
+func (w *Word) SetID(id WordID) {
+	w.ID = id
+}
+
+// GetCreatedAt 获取创建时间
+func (w *Word) GetCreatedAt() time.Time {
+	return w.CreatedAt
+}
+
+// SetCreatedAt 设置创建时间
+func (w *Word) SetCreatedAt(t time.Time) {
+	w.CreatedAt = t
+}
+
+// GetUpdatedAt 获取更新时间
+func (w *Word) GetUpdatedAt() time.Time {
+	return w.UpdatedAt
+}
+
+// SetUpdatedAt 设置更新时间
+func (w *Word) SetUpdatedAt(t time.Time) {
+	w.UpdatedAt = t
+}
+
+// GetDeletedAt 获取删除时间
+func (w *Word) GetDeletedAt() gorm.DeletedAt {
+	return gorm.DeletedAt{}
+}
+
+// SetDeletedAt 设置删除时间
+func (w *Word) SetDeletedAt(t gorm.DeletedAt) {
+	// Word 实体不支持软删除，所以这个方法不做任何事
 }

@@ -1,10 +1,21 @@
 package entity
 
 import (
+	"strconv"
 	"time"
+
+	"gorm.io/gorm"
 )
 
-type QuestionID uint32
+// QuestionID 问题ID类型
+type QuestionID uint64
+
+var NullQuestionID QuestionID = 0
+
+// String 转换为字符串
+func (id QuestionID) String() string {
+	return strconv.FormatUint(uint64(id), 10)
+}
 
 // 难度常量
 const (
@@ -23,49 +34,33 @@ const (
 	DifficultyHsk4 = "HSK_4" // 中高级
 	DifficultyHsk5 = "HSK_5" // 高级
 	DifficultyHsk6 = "HSK_6" // 精通级
-
-	// 预留其他难度等级
-	/*
-		// Math 等级
-		DifficultyMath1 = "MATH_1" // 基础级
-		DifficultyMath2 = "MATH_2" // 进阶级
-		DifficultyMath3 = "MATH_3" // 中高级
-		DifficultyMath4 = "MATH_4" // 高级
-		DifficultyMath5 = "MATH_5" // 专家级
-
-		// Music 等级
-		DifficultyMusic1 = "MUSIC_1" // 入门级
-		DifficultyMusic2 = "MUSIC_2" // 基础级
-		DifficultyMusic3 = "MUSIC_3" // 进阶级
-		DifficultyMusic4 = "MUSIC_4" // 中高级
-		DifficultyMusic5 = "MUSIC_5" // 专业级
-	*/
 )
 
 // Question 问题实体
 type Question struct {
-	ID             QuestionID `gorm:"primaryKey"`
-	Title          string     `gorm:"type:varchar(255);not null"`
-	Content        []byte     `gorm:"type:jsonb;not null"`                              // HyperText 对象
-	SimpleQuestion string     `gorm:"type:text"`                                        // 简单文本内容
-	Type           string     `gorm:"type:varchar(50);not null"`                        // 题目类型：单选、多选、填空等
-	Difficulty     string     `gorm:"type:varchar(50);not null;default:'CEFR_A1'"`      // 难度等级：CEFR_A1, HSK_1 等
-	Options        []byte     `gorm:"type:jsonb;not null;default:'[]'"`                 // 选项列表
-	OptionTuples   []byte     `gorm:"type:jsonb;not null;default:'[]'"`                 // 选项双元组列表
-	Answers        []string   `gorm:"type:jsonb;not null;default:'[]'"`                 // 答案列表
-	Status         string     `gorm:"type:varchar(50);not null;default:'draft'"`        // 状态：draft-草稿，published-已发布
-	Category       string     `gorm:"type:varchar(50)"`                                 // 题目分类
-	Labels         []string   `gorm:"type:jsonb;serializer:json;not null;default:'[]'"` // 标签列表
-	Explanation    string     `gorm:"type:text"`                                        // 解析
-	Attachments    []string   `gorm:"type:jsonb;serializer:json;not null;default:'[]'"` // 附件列表
-	CorrectRate    float64    `gorm:"type:float8;not null;default:0"`                   // 正确率
-	TimeLimit      uint32     `gorm:"type:int;not null;default:0"`                      // 时间限制，单位秒
-	CreatedAt      time.Time  `gorm:"type:timestamptz;not null"`
-	UpdatedAt      time.Time  `gorm:"type:timestamptz;not null"`
+	ID             QuestionID     `gorm:"primaryKey"`
+	Title          string         `gorm:"type:varchar(255);not null"`
+	Content        []byte         `gorm:"type:jsonb;not null"`                              // HyperText 对象
+	SimpleQuestion string         `gorm:"type:text"`                                        // 简单文本内容
+	Type           string         `gorm:"type:varchar(50);not null"`                        // 题目类型：单选、多选、填空等
+	Difficulty     string         `gorm:"type:varchar(50);not null;default:'CEFR_A1'"`      // 难度等级：CEFR_A1, HSK_1 等
+	Options        []byte         `gorm:"type:jsonb;not null;default:'[]'"`                 // 选项列表
+	OptionTuples   []byte         `gorm:"type:jsonb;not null;default:'[]'"`                 // 选项双元组列表
+	Answers        []string       `gorm:"type:jsonb;not null;default:'[]'"`                 // 答案列表
+	Status         string         `gorm:"type:varchar(50);not null;default:'draft'"`        // 状态：draft-草稿，published-已发布
+	Category       string         `gorm:"type:varchar(50)"`                                 // 题目分类
+	Labels         []string       `gorm:"type:jsonb;serializer:json;not null;default:'[]'"` // 标签列表
+	Explanation    string         `gorm:"type:text"`                                        // 解析
+	Attachments    []string       `gorm:"type:jsonb;serializer:json;not null;default:'[]'"` // 附件列表
+	CorrectRate    float64        `gorm:"type:float8;not null;default:0"`                   // 正确率
+	TimeLimit      uint32         `gorm:"type:int;not null;default:0"`                      // 时间限制，单位秒
+	CreatedAt      time.Time      `gorm:"type:timestamptz;not null"`
+	UpdatedAt      time.Time      `gorm:"type:timestamptz;not null"`
+	DeletedAt      gorm.DeletedAt `gorm:"index"`
 }
 
 // TableName 指定表名
-func (Question) TableName() string {
+func (*Question) TableName() string {
 	return "questions"
 }
 
@@ -106,8 +101,8 @@ func NewQuestion(
 	}
 }
 
-// Publish 发布问题
-func (q *Question) Publish() {
+// Published 发布问题
+func (q *Question) Published() {
 	q.Status = "published"
 	q.UpdatedAt = time.Now()
 }
@@ -148,4 +143,44 @@ func (q *Question) Update(
 func (q *Question) Delete() {
 	q.Status = "deleted"
 	q.UpdatedAt = time.Now()
+}
+
+// GetID 获取ID
+func (q *Question) GetID() QuestionID {
+	return q.ID
+}
+
+// SetID 设置ID
+func (q *Question) SetID(id QuestionID) {
+	q.ID = id
+}
+
+// GetCreatedAt 获取创建时间
+func (q *Question) GetCreatedAt() time.Time {
+	return q.CreatedAt
+}
+
+// SetCreatedAt 设置创建时间
+func (q *Question) SetCreatedAt(t time.Time) {
+	q.CreatedAt = t
+}
+
+// GetUpdatedAt 获取更新时间
+func (q *Question) GetUpdatedAt() time.Time {
+	return q.UpdatedAt
+}
+
+// SetUpdatedAt 设置更新时间
+func (q *Question) SetUpdatedAt(t time.Time) {
+	q.UpdatedAt = t
+}
+
+// GetDeletedAt 获取删除时间
+func (q *Question) GetDeletedAt() gorm.DeletedAt {
+	return q.DeletedAt
+}
+
+// SetDeletedAt 设置删除时间
+func (q *Question) SetDeletedAt(t gorm.DeletedAt) {
+	q.DeletedAt = t
 }

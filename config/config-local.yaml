@@ -1,3 +1,6 @@
+server:
+  mode: "debug"
+
 # 本地环境特定配置
 database:
   host: localhost
@@ -21,3 +24,4 @@ jwt:
 log:
   level: "info"
   format: "console"
+  production: false

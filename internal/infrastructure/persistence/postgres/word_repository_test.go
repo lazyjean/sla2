@@ -14,7 +14,7 @@ import (
 func TestWordRepository_Create(t *testing.T) {
 	db, cleanup := setupTestDB(t)
 	defer cleanup()
-	repo := NewWordRepository(db)
+	repo := NewVocabularyRepository(db)
 	ctx := context.Background()
 
 	word := &entity.Word{
@@ -81,7 +81,7 @@ func TestWordRepository_Create(t *testing.T) {
 func TestWordRepository_GetByWord(t *testing.T) {
 	db, cleanup := setupTestDB(t)
 	defer cleanup()
-	repo := NewWordRepository(db)
+	repo := NewVocabularyRepository(db)
 	ctx := context.Background()
 
 	word := &entity.Word{
@@ -124,7 +124,7 @@ func TestWordRepository_GetByWord(t *testing.T) {
 func TestWordRepository_GetByID(t *testing.T) {
 	db, cleanup := setupTestDB(t)
 	defer cleanup()
-	repo := NewWordRepository(db)
+	repo := NewVocabularyRepository(db)
 	ctx := context.Background()
 
 	word := &entity.Word{

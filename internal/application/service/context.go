@@ -21,10 +21,6 @@ const (
 )
 
 var (
-	// ErrNoUserInContext 当context中没有用户信息时返回此错误
-	ErrNoUserInContext = errors.New("context中没有用户信息")
-	// ErrInvalidUserIDType 当用户ID类型不正确时返回此错误
-	ErrInvalidUserIDType = errors.New("context中的用户ID类型不正确")
 	// ErrInvalidRolesType 当角色类型不正确时返回此错误
 	ErrInvalidRolesType = errors.New("context中的角色类型不正确")
 )

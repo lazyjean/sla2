@@ -2,6 +2,8 @@ package entity
 
 import (
 	"time"
+
+	"gorm.io/gorm"
 )
 
 // MemoryUnitType 记忆单元类型
@@ -49,6 +51,13 @@ type MemoryUnit struct {
 	RetentionRate      float32      `gorm:"not null;default:0;comment:记忆保持率（0-1），表示记忆的牢固程度"`
 	ConsecutiveCorrect uint32       `gorm:"not null;default:0;comment:连续正确次数，用于评估记忆稳定性"`
 	ConsecutiveWrong   uint32       `gorm:"not null;default:0;comment:连续错误次数，用于评估记忆难度"`
+}
+
+// MemoryUnitInitItem 记忆单元初始化项
+type MemoryUnitInitItem struct {
+	Type         MemoryUnitType
+	ContentID    uint32
+	MasteryLevel MasteryLevel
 }
 
 // NewMemoryUnit 创建新的记忆单元
@@ -114,4 +123,53 @@ func (m *MemoryUnit) updateMasteryLevel() {
 	case m.ConsecutiveWrong >= 3:
 		m.MasteryLevel = MasteryLevelUnlearned
 	}
+}
+
+// GetID 获取ID
+func (m *MemoryUnit) GetID() MemoryUnitID {
+	return m.ID
+}
+
+// SetID 设置ID
+func (m *MemoryUnit) SetID(id MemoryUnitID) {
+	m.ID = id
+}
+
+// GetCreatedAt 获取创建时间
+func (m *MemoryUnit) GetCreatedAt() time.Time {
+	return m.CreatedAt
+}
+
+// SetCreatedAt 设置创建时间
+func (m *MemoryUnit) SetCreatedAt(t time.Time) {
+	m.CreatedAt = t
+}
+
+// GetUpdatedAt 获取更新时间
+func (m *MemoryUnit) GetUpdatedAt() time.Time {
+	return m.UpdatedAt
+}
+
+// SetUpdatedAt 设置更新时间
+func (m *MemoryUnit) SetUpdatedAt(t time.Time) {
+	m.UpdatedAt = t
+}
+
+// GetDeletedAt 获取删除时间
+func (m *MemoryUnit) GetDeletedAt() gorm.DeletedAt {
+	return gorm.DeletedAt{}
+}
+
+// SetDeletedAt 设置删除时间
+func (m *MemoryUnit) SetDeletedAt(t gorm.DeletedAt) {
+	// 由于我们使用物理删除，这个方法可以留空
+}
+
+// MemoryUnitStats 记忆单元统计信息
+type MemoryUnitStats struct {
+	TotalCount    int64   // 总数
+	MasteredCount int64   // 已掌握数量
+	LearningCount int64   // 学习中数量
+	NewCount      int64   // 新学数量
+	RetentionRate float64 // 记忆保持率
 }
